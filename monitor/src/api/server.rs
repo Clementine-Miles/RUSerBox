@@ -247,24 +247,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
                     .route(web::get().to(crate::api::desk::get_session))
                     .route(web::put().to(crate::api::desk::put_session)),
             )
-            .service(
-                web::resource("/desk/themes")
-                    .route(web::get().to(crate::api::desk_themes::list))
-                    .route(web::post().to(crate::api::desk_themes::upload)),
-            )
-            .service(
-                web::resource("/desk/themes/store")
-                    .route(web::get().to(crate::api::desk_themes::store)),
-            )
-            .service(
-                web::resource("/desk/themes/store/install")
-                    .route(web::post().to(crate::api::desk_themes::store_install)),
-            )
-            .service(web::resource("/desk/themes/{installation}").route(web::delete().to(crate::api::desk_themes::remove)))
-            .service(
-                web::resource("/desk/themes/{installation}/background")
-                    .route(web::get().to(crate::api::desk_themes::background)),
-            )
             .service(web::resource("/desk/notifications").route(web::get().to(crate::api::desk::notifications)))
             .route("/alerts", web::get().to(crate::api::desk::alerts))
             .route("/update", web::get().to(crate::api::update::get))

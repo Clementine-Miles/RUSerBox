@@ -483,29 +483,13 @@ extension _Widgets on _FileBrowserPageState {
     );
   }
 
-  /// The icon pack's or theme's `file.<ext>` glyph when either has one, else
-  /// an alias such as `file.css` for `.scss`, else `file.default`, else the
-  /// built-in glyph.
   Widget _iconOf(FileEntry entry) {
-    final key = ThemeFileIcon.keyOf(
+    final key = FileIcon.keyOf(
       name: entry.name,
       isDir: entry.isDir,
       isLink: entry.kind == FileKind.link,
     );
-    final built = ThemeFileIcon.builtIn(key);
-    final material = Icon(built.$1, color: built.$2);
-    if (key == ThemeFileIcon.dir || key == ThemeFileIcon.link) {
-      return ThemeIconAsset(keyName: key, fallback: material);
-    }
-    final generic = ThemeIconAsset(
-      keyName: ThemeFileIcon.fallback,
-      fallback: material,
-    );
-    if (key == ThemeFileIcon.fallback) return generic;
-    final aliased = ThemeFileIcon.aliasOf(key);
-    final next = aliased == null
-        ? generic
-        : ThemeIconAsset(keyName: aliased, fallback: generic);
-    return ThemeIconAsset(keyName: key, fallback: next);
+    final (icon, color) = FileIcon.builtIn(key);
+    return Icon(icon, color: color);
   }
 }

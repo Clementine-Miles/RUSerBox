@@ -426,7 +426,7 @@ class _QuickOpenState extends ConsumerState<_QuickOpen> {
                   children: [
                     for (final it in items)
                       ListTile(
-                        leading: ThemedIcon(it.icon),
+                        leading: AppIcon(it.icon),
                         title: Text(it.title),
                         subtitle: Text(it.subtitle, style: UIs.text12Grey),
                         onTap: it.run,

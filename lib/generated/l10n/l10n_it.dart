@@ -286,10 +286,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Ripristinato, tranne questi temi. Installali di nuovo dal negozio dei temi o dal file di origine.';
-
-  @override
   String get icloudBackupStateConflict => 'Conflitto rilevato';
 
   @override
@@ -1175,7 +1171,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get keyPassphrases => 'Passphrase delle chiavi';
 
   @override
-  String get syncFiles => 'Font, immagini e skill';
+  String get syncFiles => 'Competenze dell’agente';
 
   @override
   String get syncRemoteTooNew =>
@@ -5433,10 +5429,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'Lo spazio occupato da una riga del terminale, come multiplo della dimensione del carattere da 1,0 a 2,0. Come la dimensione del carattere, determina quante righe possono essere visualizzate.';
-
-  @override
-  String get termFontTip =>
-      'Se non è selezionato alcun file di font, il terminale usa il font monospaziato del sistema e poi font con glifi CJK ed emoji per quelli mancanti.';
 
   @override
   String get netSpeed => 'Velocità di rete';

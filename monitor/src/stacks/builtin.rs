@@ -1,4 +1,4 @@
-//! The web apps shipped inside the agent: `store/apps/<id>/`, file by file,
+//! The web apps shipped inside the agent: `monitor/catalog/apps/<id>/`, file by file,
 //! so an agent with no network still offers them. A test holds this list
 //! equal to the folders.
 
@@ -9,7 +9,7 @@ use super::manifest::Package;
 
 macro_rules! app {
     ($id:literal: $($file:literal),+ $(,)?) => {
-        ($id, &[$(($file, include_str!(concat!("../../../store/apps/", $id, "/", $file)))),+])
+        ($id, &[$(($file, include_str!(concat!("../../catalog/apps/", $id, "/", $file)))),+])
     };
 }
 
@@ -131,7 +131,7 @@ mod tests {
 
     #[test]
     fn every_store_app_is_built_in_whole() {
-        assert_whole(FILES, &Path::new(env!("CARGO_MANIFEST_DIR")).join("../store/apps"));
+        assert_whole(FILES, &Path::new(env!("CARGO_MANIFEST_DIR")).join("catalog/apps"));
         assert_eq!(packages().len(), FILES.len(), "every built-in app reads");
     }
 

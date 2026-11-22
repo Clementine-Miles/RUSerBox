@@ -352,7 +352,7 @@ List<Widget> _paneButtons(
     Builder(
       builder: (anchor) => Btn.icon(
         text: l10n.workspacePaneActions,
-        icon: const ThemedIcon(Icons.more_horiz, size: 18),
+        icon: const AppIcon(Icons.more_horiz, size: 18),
         onTap: () => p.openMenu(anchor, folded),
       ),
     ),
@@ -541,7 +541,7 @@ Widget _draggable(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ThemedIcon(icon, size: 17, color: scheme.onSecondaryContainer),
+          AppIcon(icon, size: 17, color: scheme.onSecondaryContainer),
           const SizedBox(width: 7),
           Text(label, style: TextStyle(color: scheme.onSecondaryContainer)),
         ],
@@ -703,7 +703,7 @@ class _StripTabState extends State<_StripTab> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ThemedIcon(tab.view.icon, size: 17, color: fg),
+          AppIcon(tab.view.icon, size: 17, color: fg),
           const SizedBox(width: 7),
           Flexible(
             child: Text(

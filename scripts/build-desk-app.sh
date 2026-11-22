@@ -10,7 +10,7 @@
 # SBM_APP_UNSIGNED=1 leaves the package unsigned.
 #
 #   scripts/build-desk-app.sh <name>          # → monitor/apps/<name>/target/<publisher>.<name>.fsba
-#   scripts/build-desk-app.sh <name> --store  # and into store/desk/, which the agent ships and the store offers
+#   scripts/build-desk-app.sh <name> --store  # and into monitor/catalog/desk/, which the agent ships and the store offers
 set -eu
 
 name=${1:?usage: scripts/build-desk-app.sh <name> [--store]}
@@ -67,6 +67,6 @@ if [ "${2:-}" = --store ]; then
   # A repository's file is at most 8 MiB (fl_theme's MAX_ENTRY_BYTES): a
   # larger one would leave the whole store unreadable to agents.
   [ "$(wc -c < "$app/target/$pkg")" -le 8388608 ] || { echo "$pkg is over 8 MiB, more than the store takes" >&2; exit 1; }
-  cp "$app/target/$pkg" "$root/store/desk/$pkg"
-  echo "$root/store/desk/$pkg"
+  cp "$app/target/$pkg" "$root/monitor/catalog/desk/$pkg"
+  echo "$root/monitor/catalog/desk/$pkg"
 fi

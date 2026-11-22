@@ -621,12 +621,12 @@ async fn migration_032_keeps_the_oldest_admin_and_moves_the_others_work_to_it() 
         .fetch_all(&pool)
         .await
         .unwrap();
-    assert_eq!(themes, ["i1", "i3"]);
+    assert!(themes.is_empty());
     let backgrounds: Vec<String> = sqlx::query_scalar("SELECT installation_id FROM desk_theme_background ORDER BY installation_id")
         .fetch_all(&pool)
         .await
         .unwrap();
-    assert_eq!(backgrounds, ["i1", "i3"]);
+    assert!(backgrounds.is_empty());
     let preferences: i64 = sqlx::query_scalar("SELECT count(*) FROM desk_preferences")
         .fetch_one(&pool)
         .await

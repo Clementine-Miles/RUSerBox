@@ -19,7 +19,7 @@
 # password, a systemd user service started at boot, over TLS with a
 # self-signed certificate; then runs frontend/e2e/<spec>.e2e.ts against it.
 # A `<name>_app` spec gets the package of `monitor/apps/<name>` built here
-# into store/desk/ (`scripts/build-desk-app.sh --store`), so the agent offers
+# into monitor/catalog/desk/ (`scripts/build-desk-app.sh --store`), so the agent offers
 # it in the App Store.
 # For `kernel_app` it picks a version of the running kernel's flavour older than
 # it (SBM_E2E_KERNEL_VERSION). SBM_E2E_VM_PROXY (an HTTP proxy) reaches the
@@ -37,7 +37,7 @@ lab="$root/scripts/e2e-vm.sh"
 work=$(mktemp -d)
 remote() { printf '%s\n' "$1" | ssh "$build" sh -s; }
 
-# The package goes into store/desk/ first: the agent ships what is there.
+# The package goes into monitor/catalog/desk/ first: the agent ships what is there.
 case $spec in *_app)
   echo "==> build: package ${spec%_app}"
   "$root/scripts/build-desk-app.sh" "${spec%_app}" --store | tail -n 1 ;;

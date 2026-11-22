@@ -51,7 +51,7 @@ let
   # The monorepo root: `monitor` is a workspace member, and the crate it
   # depends on (`crates/sbm_parser`) is a sibling, so the source cannot be
   # `monitor/` alone.
-  # The agent also reads theme packages with fl_lib's `fl_theme`, a path
+  # The agent reads desktop catalog archives with fl_lib's `fl_theme`, a path
   # dependency into the `packages/fl_lib` submodule: a checkout without
   # submodules has an empty directory there and the build fails.
   src = lib.cleanSource ../..;

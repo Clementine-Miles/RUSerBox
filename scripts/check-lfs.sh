@@ -1,7 +1,6 @@
 #!/bin/sh
 # Fails when a Git LFS file in the working tree is still its pointer text — a
-# checkout without LFS — so a build never ships a pointer as an image, font or
-# theme package.
+# checkout without LFS — so a build never ships a pointer as an image or font.
 #
 #   scripts/check-lfs.sh [path…]   # default: the whole repository
 set -eu

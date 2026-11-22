@@ -1,5 +1,5 @@
 //! Catalog apps on a real Docker, as a desk window reaches them: each app
-//! deployed with the settings its check offers (a copy of its `store/apps`
+//! deployed with the settings its check offers (a copy of its `monitor/catalog/apps`
 //! folder under a name of its own, so a copy an agent on the same machine
 //! deployed is never touched), healthy, its page opened through the agent's
 //! proxy over HTTPS, signed in to there with the sign-in its details show,

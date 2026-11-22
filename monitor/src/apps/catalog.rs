@@ -1,4 +1,4 @@
-//! The desk app packages this agent offers to install (`store/desk/*.fsba`):
+//! The desk app packages this agent offers to install (`monitor/catalog/desk/*.fsba`):
 //! the ones it ships, so an agent with no network offers them, and each
 //! repository of the store's, read with the web apps' catalog
 //! (`stacks::catalog`) and kept in `<stacks>/.desk-catalog/` so an agent
@@ -23,12 +23,12 @@ use crate::utils::lock::RwLockExt;
 
 macro_rules! desk {
     ($($id:literal),+ $(,)?) => {
-        &[$(($id, include_bytes!(concat!("../../../store/desk/", $id, ".fsba")))),+]
+        &[$(($id, include_bytes!(concat!("../../catalog/desk/", $id, ".fsba")))),+]
     };
 }
 
 /// The shipped packages, by app id. A test holds this list equal to
-/// `store/desk/`.
+/// `monitor/catalog/desk/`.
 const BUNDLED: &[(&str, &[u8])] = desk!["serverbox.agent_tools", "serverbox.cleanup", "serverbox.inference", "serverbox.kernel", "serverbox.proxy", "serverbox.tailscale", "serverbox.ubuntu_pro"];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -217,7 +217,7 @@ mod tests {
 
     #[test]
     fn every_shipped_package_is_store_desk_and_reads_signed() {
-        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../store/desk");
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("catalog/desk");
         let mut files: Vec<String> = std::fs::read_dir(&dir)
             .unwrap()
             .flatten()
@@ -225,7 +225,7 @@ mod tests {
             .collect();
         files.sort();
         let listed: Vec<&str> = BUNDLED.iter().map(|(id, _)| *id).collect();
-        assert_eq!(files, listed, "BUNDLED lists store/desk/");
+        assert_eq!(files, listed, "BUNDLED lists monitor/catalog/desk/");
         for (id, _) in BUNDLED {
             let o = SHIPPED.get(*id).unwrap_or_else(|| panic!("{id} reads"));
             assert_eq!(o.package.signed_by, Some("serverbox-2026"), "{id} is signed");

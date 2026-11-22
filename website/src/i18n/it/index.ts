@@ -12,10 +12,8 @@ const it: Translation = {
     capabilities: 'Capacità',
     download: 'Scarica',
     docs: 'Docs',
-    themes: 'Temi',
     os: 'ServerBox OS',
     beta: 'Beta',
-    plugins: 'Plugin',
     otherApps: 'Altro',
     signIn: 'Accedi',
     languageLabel: 'Lingua',
@@ -93,11 +91,6 @@ const it: Translation = {
       title: 'Virtualizzazione',
       description:
         'Controlla VM e container su Proxmox VE e libvirt: alimentazione, vCPU, memoria, dischi e console integrata.',
-    },
-    themes: {
-      title: 'Store dei temi',
-      description:
-        'Personalizza palette, icone, sfondi e schermate di avvio dallo store integrato oppure crea il tuo tema.',
     },
   },
   capabilities: {
@@ -192,58 +185,6 @@ const it: Translation = {
     docs: 'Docs Monitor',
     appAction: 'Scarica l’app',
   },
-  themes: {
-    title: 'Fallo tuo.',
-    subtitle:
-      'Prova in anteprima i temi ufficiali qui sotto. Installali da Impostazioni → Aspetto → Negozio temi o importa un file .fsbt.',
-    empty:
-      'Nessun tema ufficiale presente. Consulta la guida per creare e inviare il tuo.',
-    note:
-      'Ogni pacchetto viene verificato tramite checksum SHA-256 prima dell’installazione.',
-    authoring: 'Guida ai temi',
-    download: 'Scarica .fsbt',
-    source: 'Sorgente',
-    light: 'Chiaro',
-    dark: 'Scuro',
-    search: 'Cerca temi o icone',
-    modeLabel: 'Modalità',
-    all: 'Tutti',
-    sortLabel: 'Ordina',
-    sortName: 'Nome',
-    sortUpdated: 'Recenti',
-    noMatch: 'Nessun tema trovato. Prova un altro termine o modalità.',
-    storeTitle: 'Negozio temi',
-    storeSubtitle:
-      'Esplora tutti i temi e i pacchetti di icone ufficiali renderizzati dal vivo con colori, componenti e icone reali.',
-    browse: 'Apri il Negozio temi',
-    back: 'Tutti i temi',
-    details: 'Dettagli',
-    icons: 'Icone',
-    tabIcons: 'Schede e stato attivo',
-    navIcons: 'Simboli di navigazione',
-    palette: 'Palette colori',
-    components: 'Componenti',
-    splash: 'Schermata iniziale',
-    install: 'Installazione',
-    installSteps:
-      'Nell’app apri Impostazioni → Aspetto → Negozio temi e scegli {name}, oppure scarica il file .fsbt e seleziona Installa tema → File.',
-    base: 'Normale',
-    hovered: 'Al passaggio',
-    pressed: 'Premuto',
-    disabled: 'Disattivato',
-    loadFailed: 'Impossibile caricare l’anteprima del tema.',
-    retry: 'Riprova',
-    iconPacks: 'Pacchetti di icone',
-    iconPacksSubtitle:
-      'Combina liberamente i pacchetti di icone con qualsiasi tema da Impostazioni → Aspetto → Negozio temi → Pacchetti di icone.',
-  },
-  plugins: {
-    title: 'Estendi ServerBox',
-    subtitle:
-      'Aggiungi nuove funzionalità con i plugin ufficiali.',
-    empty: 'Nessun plugin ufficiale disponibile.',
-    download: 'Scarica',
-  },
   download: {
     title: 'Nativo su ogni piattaforma.',
     subtitle:
@@ -259,15 +200,6 @@ const it: Translation = {
       'Esplora il codice su GitHub o scarica l’ultima versione per il tuo dispositivo.',
     appStoreAction: 'App Store',
     githubAction: 'GitHub Releases',
-  },
-  pride: {
-    badge: 'LGBTQ+ Friendly',
-    title: 'Creato con Orgoglio.',
-    description:
-      'ServerBox sostiene con orgoglio la comunità LGBTQ+. Il tema ufficiale Pride nello store include le varianti Rainbow, Trans e Nonbinary.',
-    rainbow: 'Rainbow',
-    trans: 'Trans',
-    nonbinary: 'Nonbinary',
   },
   otherApps: {
     title: 'Altri servizi e app.',

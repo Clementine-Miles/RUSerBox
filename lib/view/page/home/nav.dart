@@ -133,13 +133,13 @@ extension _HomePageStrip on _HomePageState {
           // addresses — tapping it pushes rather than switches.
           trailing: overflow > 0
               ? NavRailItem(
-                  icon: const ThemedIcon(Icons.more_vert),
-                  selectedIcon: const ThemedIcon(Icons.more_vert),
+                  icon: const AppIcon(Icons.more_vert),
+                  selectedIcon: const AppIcon(Icons.more_vert),
                   label: libL10n.more,
                 )
               : NavRailItem(
-                  icon: const ThemedIcon(Icons.settings_outlined),
-                  selectedIcon: const ThemedIcon(Icons.settings),
+                  icon: const AppIcon(Icons.settings_outlined),
+                  selectedIcon: const AppIcon(Icons.settings),
                   label: libL10n.setting,
                 ),
           onTrailingTap: overflow > 0
@@ -291,8 +291,8 @@ extension _HomePageStrip on _HomePageState {
               tab.navRailItem(onMenu: _navMenuFor(tab)),
             if (more)
               NavRailItem(
-                icon: const ThemedIcon(Icons.more_horiz),
-                selectedIcon: const ThemedIcon(Icons.more_horiz),
+                icon: const AppIcon(Icons.more_horiz),
+                selectedIcon: const AppIcon(Icons.more_horiz),
                 label: libL10n.more,
               ),
           ],
@@ -306,8 +306,8 @@ extension _HomePageStrip on _HomePageState {
           // because that is what it is — what it shows arrives beside this
           // rail rather than over it.
           footer: NavRailItem(
-            icon: const ThemedIcon(Icons.settings_outlined),
-            selectedIcon: const ThemedIcon(Icons.settings),
+            icon: const AppIcon(Icons.settings_outlined),
+            selectedIcon: const AppIcon(Icons.settings),
             label: libL10n.setting,
           ),
           footerSelected: _settingsOpen,

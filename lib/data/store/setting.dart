@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart';
 import 'package:fl_tty/fl_tty.dart';
 import 'package:server_box/data/model/app/diagnostics_level.dart';
 import 'package:server_box/data/model/app/float_shell_config.dart';
@@ -11,8 +10,11 @@ import 'package:server_box/data/model/app/tab.dart';
 import 'package:server_box/data/model/app/tray.dart';
 import 'package:server_box/data/model/server/host_cert_authority.dart';
 import 'package:server_box/data/model/server/server_sort.dart';
+import 'package:server_box/data/model/terminal/typeface.dart';
 import 'package:server_box/data/model/terminal/virtual_key.dart';
 import 'package:server_box/data/res/default.dart';
+import 'package:server_box/data/res/gruvbox.dart';
+import 'package:server_box/data/res/icon_style.dart';
 import 'package:server_box/data/store/field_prop.dart';
 import 'package:server_box/data/store/migrations/m008_settings_fixups.dart';
 import 'package:server_box/data/store/migrations/m011_virt_key_rows.dart';
@@ -27,7 +29,7 @@ import 'package:server_box/data/store/schema.dart';
 List<String> _virtKeyNames(Object? raw) =>
     raw is List ? raw.whereType<String>().toList() : const [];
 
-class SettingStore extends SqliteStore with ThemeSettings {
+class SettingStore extends SqliteStore {
   SettingStore([super.storeName = 'setting']);
 
   static final instance = SettingStore();
@@ -61,8 +63,27 @@ class SettingStore extends SqliteStore with ThemeSettings {
     toObj: (pref) => pref?.name,
   );
 
-  // Path to the terminal font file.
-  late final fontPath = propertyDefault('fontPath', '');
+  late final appThemePreset = propertyDefault(
+    'appThemePreset', Gruvbox.material,
+    fromObj: Gruvbox.fromSetting,
+    toObj: (theme) => theme?.name,
+  );
+
+  /// 0 follows the system, 1 is light, 2 is dark.
+  late final themeMode = propertyDefault('themeMode', 0);
+
+  late final appIconStyle = propertyDefault(
+    'appIconStyle', IconStyle.classic,
+    fromObj: IconStyle.parse,
+    toObj: (style) => style?.name,
+  );
+
+  late final terminalTypeface = propertyDefault<TerminalTypeface>(
+    'terminalTypeface',
+    TerminalTypeface.hack,
+    fromObj: TerminalTypeface.fromStored,
+    toObj: (font) => font?.name,
+  );
 
   // Whether the app may continue running in the background on Android.
   late final bgRun = propertyDefault('bgRun', isAndroid);
@@ -210,14 +231,6 @@ class SettingStore extends SqliteStore with ThemeSettings {
   /// `linuxNameservers()`, which is also what decides what counts as an address
   /// in it.
   late final linuxDns = propertyDefault('linuxDns', FlTty.defaultDns);
-
-  // Editor theme
-  late final editorTheme = propertyDefault('editorTheme', Defaults.editorTheme);
-
-  late final editorDarkTheme = propertyDefault(
-    'editorDarkTheme',
-    Defaults.editorDarkTheme,
-  );
 
   late final fullScreen = propertyDefault('fullScreen', false);
 
@@ -554,19 +567,6 @@ class SettingStore extends SqliteStore with ThemeSettings {
     // Whether this device keeps key passphrases: one that does not neither
     // sends nor takes them (`SyncCategory.passphrases`).
     'rememberKeyPassphrase',
-    // Where this device installed the selected theme, and its background
-    // inside that: the backup carries the themes themselves (`themes`), and a
-    // restore points these at this device's copy — `ThemeBackup.reselect`.
-    'appThemePackage',
-    'appBackgroundPath',
-    // This device's copy of a picked file; the file syncs (`PickedFiles`).
-    'appCustomBackgroundPath',
-    'appImportedFontPath',
-    'themeStoreCache',
-    // What this device's themes directory holds, like `appThemePackage`.
-    // TODO: remove with the key; no theme is bundled any more, it only
-    // records the ones seeded before.
-    'bundledThemesSeeded',
     // The rootfs manifest this device last verified: a cache, re-verified
     // when read.
     'rootfsManifestSerial',
@@ -585,9 +585,34 @@ class SettingStore extends SqliteStore with ThemeSettings {
     'dmgTipBuild',
     'legacyStatusNoticePending',
     'firstTimeReadSSHCfg',
-    // This device's copy of a picked file, as above.
+    // Legacy appearance values are ignored when reading old syncs/backups.
+    'primaryColor',
+    'useSystemPrimaryColor',
+    'appCustomTheme',
+    'appThemePackage',
+    'appThemePaletteEnabled',
+    'appIconPack',
+    'appCardRadius',
+    'appTileRadius',
+    'appButtonRadius',
+    'appBackgroundStyle',
+    'appBackgroundPath',
+    'appCustomBackgroundPath',
+    'appBackgroundOpacity',
+    'appBackgroundBlur',
+    'appBackgroundTile',
+    'appFontFamilies',
+    'appImportedFontPath',
+    'appImportedFontName',
+    'themeStoreSort',
+    'themeStoreCache',
+    'bundledThemesSeeded',
     'fontPath',
     'sshBgImage',
+    'sshBgOpacity',
+    'sshBlurRadius',
+    'editorTheme',
+    'editorDarkTheme',
     // This device's screen, hardware and network.
     'windowState',
     'agentShell',
@@ -772,9 +797,6 @@ class SettingStore extends SqliteStore with ThemeSettings {
   /// The server's CPU, memory, network and disk under its terminal — see
   /// `TerminalMetricsBar`.
   late final termMetricsBar = propertyDefault('termMetricsBar', false);
-  late final sshBgImage = propertyDefault('sshBgImage', '');
-  late final sshBgOpacity = propertyDefault('sshBgOpacity', 0.3);
-  late final sshBlurRadius = propertyDefault('sshBlurRadius', 0.0);
 
   /// fmt: https://example.com/{DIST}-{BRIGHT}.png
   late final serverLogoUrl = propertyDefault('serverLogoUrl', '');

@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart';
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LocalPermissionsSource, llmL10n;
 import 'package:fl_tty/fl_tty.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kReleaseMode;
-import 'package:flutter_highlight/theme_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:material_ui/material_ui.dart';
@@ -27,10 +24,13 @@ import 'package:server_box/data/model/app/feature.dart';
 import 'package:server_box/data/model/app/geo_manifest.dart';
 import 'package:server_box/data/model/app/keybinding.dart';
 import 'package:server_box/data/model/server/host_cert_authority.dart';
+import 'package:server_box/data/model/terminal/typeface.dart';
 import 'package:server_box/data/provider/app/keybindings.dart';
 import 'package:server_box/data/provider/server/all.dart';
 import 'package:server_box/data/res/build_data.dart';
 import 'package:server_box/data/res/github_id.dart';
+import 'package:server_box/data/res/gruvbox.dart';
+import 'package:server_box/data/res/icon_style.dart';
 import 'package:server_box/data/res/terminal.dart';
 import 'package:server_box/data/res/url.dart';
 import 'package:server_box/data/store/setting.dart';
@@ -51,6 +51,7 @@ import 'package:server_box/view/page/setting/seq/known_hosts.dart';
 import 'package:server_box/view/page/setting/seq/srv_orders.dart';
 import 'package:server_box/view/page/setting/seq/virtual_key.dart';
 import 'package:server_box/view/page/setting/tiles.dart';
+import 'package:server_box/view/widget/app_icon.dart';
 import 'package:server_box/view/widget/crash_debug.dart';
 import 'package:server_box/view/widget/crash_report_dialog.dart';
 import 'package:server_box/view/widget/diagnostics_level_picker.dart';
@@ -64,6 +65,7 @@ import 'package:server_box/view/widget/pane_settings.dart';
 import 'package:server_box/view/widget/rootfs_install.dart';
 import 'package:server_box/view/widget/server_picker.dart';
 import 'package:server_box/view/widget/ssh_discovery/view.dart';
+import 'package:server_box/view/widget/theme_mode_tile.dart';
 
 part 'about.dart';
 part 'app_page.dart';
@@ -145,16 +147,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   void initState() {
     super.initState();
     _selectedId = _buildNodes().firstOrNull?.firstLeaf?.id;
-    // Which appearance rows there are follows what is installed: the icon
-    // pack row is one only once a pack is — see [ThemeAppearance.themeRows].
-    ThemePackages.installedChanged.addListener(_onInstalledChanged);
   }
-
-  void _onInstalledChanged() => setStateSafe(() {});
 
   @override
   void dispose() {
-    ThemePackages.installedChanged.removeListener(_onInstalledChanged);
     _searchCtrl.dispose();
     _searchFocus.dispose();
     super.dispose();

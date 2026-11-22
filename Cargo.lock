@@ -5737,7 +5737,6 @@ dependencies = [
  "http-body-util",
  "hyper",
  "hyper-util",
- "indexmap",
  "ironrdp-rdcleanpath 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "lettre",
  "libc",
@@ -5778,7 +5777,6 @@ dependencies = [
  "wat",
  "windows-sys 0.61.2",
  "zeroize",
- "zip",
 ]
 
 [[package]]

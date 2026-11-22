@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart' show ThemeRestoreReport;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/diag.dart';
@@ -133,7 +132,11 @@ class BackupService {
     final backup = opened.backup;
     if (!context.mounted) return _Opened.failed;
     if (backup == null) {
-      context.showErrSheet('${libL10n.empty}: ${libL10n.backup}', null, libL10n.restore);
+      context.showErrSheet(
+        '${libL10n.empty}: ${libL10n.backup}',
+        null,
+        libL10n.restore,
+      );
       return _Opened.failed;
     }
     await _confirmAndRestore(context, backup);
@@ -181,25 +184,8 @@ class BackupService {
         Btn.ok(
           onTap: () async {
             try {
-              final mergeable = backup.$1;
-              ThemeRestoreReport? themes;
-              if (mergeable is BackupV2) {
-                themes = await mergeable.restoreStores(force: true);
-              } else {
-                await mergeable.merge(force: true);
-              }
+              await backup.$1.merge(force: true);
               close?.call();
-              // Said once the restore is done, not as a failure of it: the
-              // rest of the backup is in place, and these can be installed
-              // again by hand.
-              if (themes != null && themes.failed.isNotEmpty) {
-                Toast.show(
-                  l10n.backupThemesNotRestored,
-                  body: themes.failed.join(', '),
-                  duration: const Duration(seconds: 8),
-                  level: ToastLevel.warn,
-                );
-              }
             } catch (e, s) {
               close?.call();
               if (context.mounted) context.showErrSheet(e, s, libL10n.restore);

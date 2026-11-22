@@ -1,14 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/extension/context/locale.dart';
+import 'package:server_box/data/res/gruvbox.dart';
 import 'package:server_box/data/store/private_key.dart';
 import 'package:server_box/data/store/server.dart';
 import 'package:server_box/data/store/setting.dart';
@@ -292,229 +290,25 @@ void main() {
     expect(fillOf(libL10n.general), Colors.transparent);
   });
 
-  testWidgets('one appearance page holds the theme and the font', (
+  testWidgets('Appearance offers both Gruvbox palettes and built-in icons', (
     tester,
   ) async {
     await pump(tester, width: 1200);
     await tester.tap(menuRow(libL10n.app));
     await settle(tester);
-
-    // One leaf rather than two: as two pages each held a group the other's
-    // name would have covered — "Appearance" over the theme's own rows, and a
-    // page called Font with one group called Font inside it.
-    expect(headerTab(libL10n.appearanceSettings), findsOneWidget);
-    expect(headerTab(libL10n.theme), findsNothing);
-    expect(headerTab(libL10n.font), findsNothing);
-
     await tester.tap(headerTab(libL10n.appearanceSettings));
     await settle(tester);
-    final content = find.byType(AppSettingsPage);
-    // Both groups on the one page, each heading drawn once — and the page's
-    // own name is not one of them, since the tab above already says it.
-    expect(
-      find.descendant(
-        of: content,
-        matching: find.text(libL10n.theme.toUpperCase()),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: content,
-        matching: find.text(libL10n.font.toUpperCase()),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: content,
-        matching: find.text(libL10n.appearanceSettings.toUpperCase()),
-      ),
-      findsNothing,
-    );
+
     expect(find.widgetWithText(ListTile, libL10n.themeMode), findsOneWidget);
-    expect(
-      find.widgetWithText(ListTile, libL10n.primaryColorSeed),
-      findsOneWidget,
-    );
-    expect(
-      find.widgetWithText(ListTile, libL10n.appearancePreset),
-      findsOneWidget,
-    );
-    // The font is on the page the theme is on rather than one tap away, which
-    // is what the merge is for.
-    expect(
-      find.widgetWithText(ListTile, libL10n.appearanceFontFamilies),
-      findsOneWidget,
-    );
-    for (final label in [
-      libL10n.appearanceThemeInstall,
-      libL10n.appearanceThemeStore,
-      libL10n.appearanceFontImport,
-    ]) {
-      expect(
-        find.descendant(
-          of: find.widgetWithText(ListTile, label),
-          matching: find.byIcon(Icons.keyboard_arrow_right),
-        ),
-        findsOneWidget,
-      );
-    }
-    for (final label in [
-      libL10n.themeMode,
-      libL10n.primaryColorSeed,
-      libL10n.appearancePreset,
-    ]) {
-      expect(
-        find.descendant(
-          of: find.widgetWithText(ListTile, label),
-          matching: find.byIcon(Icons.keyboard_arrow_right),
-        ),
-        findsNothing,
-      );
-    }
-    final installTile = find.widgetWithText(
-      ListTile,
-      libL10n.appearanceThemeInstall,
-    );
-    final installTip = tester.widget<TipText>(
-      find.descendant(of: installTile, matching: find.byType(TipText)),
-    );
-    expect(
-      installTip.tip,
-      '${libL10n.appearanceThemeSchemaRange}: ${ThemePackages.supportedSchemaRange}',
-    );
-    expect(tester.widget<ListTile>(installTile).subtitle, isNull);
-    expect(
-      find.widgetWithText(ListTile, libL10n.appearanceCardCorners),
-      findsNothing,
-    );
-    expect(find.widgetWithText(ListTile, libL10n.opacity), findsNothing);
-
-    final image = File('${tempDir.path}/custom.png');
-    image.writeAsBytesSync(
-      base64Decode(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lXcAAAAASUVORK5CYII=',
-      ),
-    );
-    Stores.setting.appThemePreset.put('custom');
-    Stores.setting.appBackgroundStyle.put(BackgroundStyle.image);
-    Stores.setting.appBackgroundPath.put(image.path);
-    // The rows a custom theme adds are read off the store while the page is
-    // built, and nothing here went through the sheet that would rebuild it —
-    // so the page is left and come back to, which is what a rebuild is.
-    await tester.tap(headerTab(libL10n.general));
+    expect(find.widgetWithText(ListTile, libL10n.appearanceIcons), findsOneWidget);
+    final palette = find.widgetWithText(ListTile, libL10n.appearancePreset);
+    expect(find.descendant(of: palette, matching: find.text('Gruvbox Material')), findsOneWidget);
+    await tester.tap(palette);
     await settle(tester);
-    await tester.tap(headerTab(libL10n.appearanceSettings));
+    await tester.tap(find.text('Gruvbox').last);
     await settle(tester);
-    expect(
-      find.widgetWithText(ExpansionTile, libL10n.appearanceCorners),
-      findsOneWidget,
-    );
-    expect(
-      find.widgetWithText(ListTile, libL10n.appearanceCardCorners),
-      findsNothing,
-    );
-    await tester.ensureVisible(
-      find.widgetWithText(ExpansionTile, libL10n.appearanceCorners),
-    );
-    await tester.tap(
-      find.widgetWithText(ExpansionTile, libL10n.appearanceCorners),
-    );
-    await settle(tester);
-    expect(
-      find.widgetWithText(ListTile, libL10n.appearanceCardCorners),
-      findsOneWidget,
-    );
-    expect(
-      find.widgetWithText(ListTile, libL10n.appearanceTileCorners),
-      findsOneWidget,
-    );
-    expect(
-      find.widgetWithText(ListTile, libL10n.appearanceButtonCorners),
-      findsOneWidget,
-    );
-    expect(find.widgetWithText(ListTile, libL10n.opacity), findsOneWidget);
-
-    // Still the same page: the font rows were under all of it.
-    expect(
-      find.widgetWithText(ListTile, libL10n.appearanceFontImport),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: find.widgetWithText(ListTile, libL10n.appearanceFontImport),
-        matching: find.byIcon(Icons.keyboard_arrow_right),
-      ),
-      findsOneWidget,
-    );
+    expect(Stores.setting.appThemePreset.fetch(), Gruvbox.original);
   });
-
-  for (final (legacyMode, expectedMode) in [
-    (3, ThemeMode.dark),
-    (4, ThemeMode.system),
-  ]) {
-    test(
-      'migrates legacy theme mode $legacyMode to AMOLED and $expectedMode',
-      () async {
-        Stores.setting.themeMode.put(legacyMode);
-        await ThemePackages.prepareSelectedTheme();
-        expect(Stores.setting.appThemePreset.fetch(), 'amoled');
-        expect(Stores.setting.themeMode.fetch(), expectedMode.index);
-        expect(ThemePackages.effectiveMode, expectedMode);
-        expect(ThemePackages.activeTheme!.lockedMode, isNull);
-        // Subsequent startup must preserve a new user preference.
-        Stores.setting.themeMode.put(ThemeMode.light.index);
-        await ThemePackages.prepareSelectedTheme();
-        expect(Stores.setting.themeMode.fetch(), ThemeMode.light.index);
-        expect(ThemePackages.effectiveMode, ThemeMode.light);
-      },
-    );
-  }
-
-  testWidgets(
-    'theme arrow preview cancels with Escape and commits with Enter',
-    (tester) async {
-      ThemePackages.select(
-        ThemePackages.defaultTheme,
-        preset: BuiltinTheme.defaultTheme.id,
-      );
-      final originalSeed = Stores.setting.colorSeed.fetch();
-      await tester.runAsync(
-        () => ThemePackages.loadBuiltin(BuiltinTheme.amoled),
-      );
-      await pump(tester, width: 1200);
-      await tester.tap(menuRow(libL10n.app));
-      await settle(tester);
-      await tester.tap(headerTab(libL10n.appearanceSettings));
-      await settle(tester);
-      final row = find.widgetWithText(ListTile, libL10n.appearancePreset);
-      await tester.tap(row);
-      await settle(tester);
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await settle(tester);
-      expect(ThemePackages.preview.value?.id, 'amoled');
-      expect(ThemePackages.activePalette(dark: true)['surface'], 0xff000000);
-      expect(Stores.setting.appThemePreset.fetch(), 'default');
-      expect(Stores.setting.colorSeed.fetch(), originalSeed);
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await settle(tester);
-      expect(find.byType(RowsSheet), findsNothing);
-      expect(ThemePackages.preview.value, isNull);
-      expect(Stores.setting.appThemePreset.fetch(), 'default');
-      expect(ThemePackages.activeTheme!.id, 'default');
-
-      await tester.tap(row);
-      await settle(tester);
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await settle(tester);
-      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      await settle(tester);
-      expect(find.byType(RowsSheet), findsNothing);
-      expect(ThemePackages.preview.value, isNull);
-      expect(Stores.setting.appThemePreset.fetch(), 'amoled');
-    },
-  );
 
   testWidgets('remote desktop is under Server, not a subject of its own', (
     tester,
@@ -530,58 +324,6 @@ void main() {
     await tester.tap(headerTab(l10n.remoteDesktop));
     await settle(tester);
     expect(find.text(l10n.remoteSessionIdleTimeout), findsOneWidget);
-  });
-
-  testWidgets('built-in presets apply their appearance without a package', (
-    tester,
-  ) async {
-    await pump(tester, width: 1200);
-    await tester.tap(menuRow(libL10n.app));
-    await settle(tester);
-    await tester.tap(headerTab(libL10n.appearanceSettings));
-    await settle(tester);
-    for (final builtin in BuiltinTheme.values.reversed) {
-      await tester.tap(
-        find.widgetWithText(ListTile, libL10n.appearancePreset),
-      );
-      await settle(tester);
-      late ThemePackage theme;
-      await tester.runAsync(() async {
-        await tester.tap(
-          find
-              .text(
-                builtin == BuiltinTheme.defaultTheme
-                    ? libL10n.defaultLabel
-                    : builtin.label,
-              )
-              .last,
-        );
-        theme = await ThemePackages.loadBuiltin(builtin);
-      });
-      await settle(tester);
-      expect(Stores.setting.appThemePreset.fetch(), theme.id);
-      expect(Stores.setting.colorSeed.fetch(), theme.seed);
-      expect(Stores.setting.themeMode.fetch(), theme.mode);
-      expect(Stores.setting.appThemePackage.fetch(), isEmpty);
-      expect(Stores.setting.appBackgroundStyle.fetch(), BackgroundStyle.none);
-      expect(Stores.setting.appCardRadius.fetch(), theme.cardRadius);
-      final modeRow = tester.widget<ListTile>(
-        find.widgetWithText(ListTile, libL10n.themeMode),
-      );
-      expect(modeRow.enabled, theme.lockedMode == null);
-      if (theme.lockedMode != null) {
-        expect(modeRow.onTap, isNull);
-        expect(
-          (modeRow.subtitle as Text).data,
-          libL10n.appearanceThemeModeLocked(
-            theme.lockedMode == ThemeMode.dark ? libL10n.dark : libL10n.bright,
-          ),
-        );
-      } else {
-        expect(modeRow.subtitle, isNull);
-        expect(modeRow.onTap, isNotNull);
-      }
-    }
   });
 
   testWidgets('a subject with one page gets no tabs', (tester) async {

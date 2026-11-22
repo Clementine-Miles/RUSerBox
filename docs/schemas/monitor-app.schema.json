@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/lollipopkit/flutter_server_box/main/docs/schemas/monitor-app.schema.json",
   "title": "ServerBox Monitor web app manifest",
-  "description": "store/apps/<publisher>.<name>/manifest.toml: a web service the Monitor agent deploys with Docker Compose and shows in a desk window. Read by monitor/src/stacks/manifest.rs; checked further by the serverbox-webapp skill's validate.py.",
+  "description": "monitor/catalog/apps/<publisher>.<name>/manifest.toml: a web service the Monitor agent deploys with Docker Compose and shows in a desk window. Read by monitor/src/stacks/manifest.rs; checked further by the serverbox-webapp skill's validate.py.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "publisher", "name", "project", "version", "homepage", "source", "glyph", "tone", "title", "description", "license", "compose"],

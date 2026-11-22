@@ -1,7 +1,7 @@
 /// `Paths` fields are `late final`, and `main.dart` initializes only the
 /// directories it names in `Paths.init(dirs: ...)`. Reading any other one
 /// throws `LateInitializationError` the first time a user reaches that code —
-/// the theme store's preview did, with `Paths.cache`.
+/// this test checks the startup directory list against its callers.
 library;
 
 import 'dart:io';

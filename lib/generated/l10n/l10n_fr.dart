@@ -288,10 +288,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Restauration effectuée, sauf pour ces thèmes. Réinstallez-les depuis la boutique de thèmes ou depuis le fichier d’origine.';
-
-  @override
   String get icloudBackupStateConflict => 'Conflit détecté';
 
   @override
@@ -1176,7 +1172,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get keyPassphrases => 'Phrases secrètes des clés';
 
   @override
-  String get syncFiles => 'Polices, images et skills';
+  String get syncFiles => 'Compétences de l’agent';
 
   @override
   String get syncRemoteTooNew =>
@@ -5462,10 +5458,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'L’espace occupé par une ligne du terminal, exprimé en multiple de la taille de police, de 1,0 à 2,0. Comme la taille de police, ce réglage modifie le nombre de lignes affichées.';
-
-  @override
-  String get termFontTip =>
-      'Si aucun fichier de police n’est sélectionné, le terminal utilise la police à chasse fixe du système, puis des polices contenant les glyphes CJK et emoji manquants.';
 
   @override
   String get netSpeed => 'Débit réseau';

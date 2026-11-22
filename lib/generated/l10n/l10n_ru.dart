@@ -286,10 +286,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Восстановлено, кроме этих тем. Установите их снова из магазина тем или из исходного файла.';
-
-  @override
   String get icloudBackupStateConflict => 'Обнаружен конфликт';
 
   @override
@@ -1169,7 +1165,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get keyPassphrases => 'Парольные фразы ключей';
 
   @override
-  String get syncFiles => 'Шрифты, изображения и Skills';
+  String get syncFiles => 'Навыки агента';
 
   @override
   String get syncRemoteTooNew =>
@@ -5406,10 +5402,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'Высота строки терминала в диапазоне от 1,0 до 2,0 размера шрифта. Как и размер шрифта, этот параметр влияет на количество помещающихся строк.';
-
-  @override
-  String get termFontTip =>
-      'Если файл шрифта не выбран, терминал использует системный моноширинный шрифт, а для отсутствующих глифов — шрифты с глифами CJK и emoji.';
 
   @override
   String get netSpeed => 'Скорость сети';

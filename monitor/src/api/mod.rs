@@ -23,7 +23,6 @@ pub mod virt_resources;
 pub mod desk;
 pub mod desk_storage;
 pub mod assets;
-pub mod desk_themes;
 pub mod desktops;
 pub mod custom_cmds;
 pub mod exec;

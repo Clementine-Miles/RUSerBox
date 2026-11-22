@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart';
 import 'package:flutter/gestures.dart'
     show kDoubleTapSlop, kDoubleTapTimeout, kMiddleMouseButton;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +19,7 @@ import 'package:server_box/data/provider/workspace.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/view/page/workspace/tab_host.dart';
 import 'package:server_box/view/page/workspace/view_meta.dart';
+import 'package:server_box/view/widget/app_icon.dart';
 import 'package:server_box/view/widget/edge_fade_scroll.dart';
 import 'package:server_box/view/widget/server_picker.dart';
 

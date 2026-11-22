@@ -1,4 +1,4 @@
-/// Store web apps (`/stacks`, `store/apps/<publisher>.<name>`) as desk apps:
+/// Store web apps (`/stacks`, `monitor/catalog/apps/<publisher>.<name>`) as desk apps:
 /// read when a desk starts, each registered by its catalog id with its
 /// manifest's name and icon, offered in All Apps while it is deployed
 /// (`stackDeployed`), and opening the service in a window (`StackHost`). An

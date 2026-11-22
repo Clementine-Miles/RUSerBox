@@ -1,5 +1,4 @@
-//! Files the agent keeps for its account — custom wallpapers, theme
-//! backgrounds, desk app files, hosted backups — stored beside the database,
+//! Files the agent keeps for its account — custom wallpapers, desk app files, hosted backups — stored beside the database,
 //! not in it: `<database dir>/blobs/<sha256[..2]>/<sha256>`.
 //!
 //! The database holds what a file is (its owner, name, type, size) and its
@@ -25,7 +24,6 @@ use tokio::sync::{RwLock, RwLockReadGuard};
 /// Every digest a row names. A table added with a blob column has to be
 /// listed here, or [`Blobs::collect`] removes its files.
 const NAMED: &str = "SELECT sha256 FROM desk_wallpaper \
-     UNION SELECT sha256 FROM desk_theme_background \
      UNION SELECT sha256 FROM desk_app_file";
 
 pub struct Blobs {
@@ -184,7 +182,7 @@ mod tests {
 
     async fn db() -> SqlitePool {
         let pool = SqlitePool::connect("sqlite::memory:").await.unwrap();
-        for table in ["desk_wallpaper", "desk_theme_background", "desk_app_file"] {
+        for table in ["desk_wallpaper", "desk_app_file"] {
             sqlx::query(sqlx::AssertSqlSafe(format!("CREATE TABLE {table} (sha256 TEXT)"))).execute(&pool).await.unwrap();
         }
         pool

@@ -1,6 +1,6 @@
 //! Web apps the agent deploys with Docker Compose and the desk shows in a
 //! window. Where they come from is [`catalog`]: shipped ([`builtin`], from
-//! `store/apps/`), the store's repositories, the operator's own folder; each
+//! `monitor/catalog/apps/`), the store's repositories, the operator's own folder; each
 //! one folder read by [`manifest`].
 //!
 //! A deployed app is a stack: its folder's files and an env file in

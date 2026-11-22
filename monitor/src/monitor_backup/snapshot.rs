@@ -51,8 +51,6 @@ pub const KEPT: &[Kept] = &[
     kept("desk_wallpaper"),
     kept("desk_background_denied"),
     kept("desk_onboarding"),
-    kept("desk_theme"),
-    kept("desk_theme_background"),
     Kept { table: "desk_app_storage", volatile: &["value", "updated_at"] },
     kept("desk_app_declined"),
     kept("agent_settings"),
@@ -90,6 +88,8 @@ pub const LEFT_OUT: &[&str] = &[
     "performance_metrics",
     "access_log",
     "benchmark_run",
+    "desk_theme",
+    "desk_theme_background",
     "desk_session",
     "desk_window",
     "desk_notification",
@@ -117,7 +117,7 @@ pub const LEFT_OUT: &[&str] = &[
 const USER_COLUMNS: &[&str] = &["id", "password_hash"];
 
 /// Blob columns of the [`KEPT`] tables (`core::blobs`).
-const BLOBS: &str = "SELECT sha256 FROM main.desk_wallpaper UNION SELECT sha256 FROM main.desk_theme_background";
+const BLOBS: &str = "SELECT sha256 FROM main.desk_wallpaper";
 
 pub const MANIFEST: &str = "manifest.json";
 pub const CONFIG: &str = "config.toml";

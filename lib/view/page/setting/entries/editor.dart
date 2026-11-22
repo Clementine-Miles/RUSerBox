@@ -1,18 +1,6 @@
 part of '../entry.dart';
 
 extension _Editor on _AppSettingsPageState {
-  Future<void> _pickEditorTheme(SqliteProp<String> property) async {
-    final selected = await context.showPickSingleSheet(
-      title: libL10n.theme,
-      items: themeMap.keys.toList(),
-      display: (p0) => p0,
-      initial: property.fetch(),
-    );
-    if (selected != null) {
-      property.put(selected);
-    }
-  }
-
   List<SettingsGroup> _buildEditor() {
     return [
       SettingsGroup(libL10n.general, [
@@ -23,10 +11,6 @@ extension _Editor on _AppSettingsPageState {
       SettingsGroup(libL10n.font, [
         _buildEditorFontFamily(),
         _buildEditorFontSize(),
-      ]),
-      SettingsGroup(libL10n.theme, [
-        _buildEditorTheme(),
-        _buildEditorDarkTheme(),
       ]),
     ];
   }
@@ -53,38 +37,6 @@ extension _Editor on _AppSettingsPageState {
         trailing: StoreSwitch(prop: _setting.editorHighlight),
       ),
       keywords: l10n.editorHighlightTip,
-    );
-  }
-
-  SettingsRow _buildEditorTheme() {
-    final label = '${libL10n.bright} ${libL10n.theme.toLowerCase()}';
-    return SettingsRow(
-      label,
-      () => ListTile(
-        leading: const Icon(MingCute.sun_fill),
-        title: Text(label),
-        trailing: ValBuilder(
-          listenable: _setting.editorTheme.listenable(),
-          builder: (val) => Text(val, style: UIs.text15),
-        ),
-        onTap: () => _pickEditorTheme(_setting.editorTheme),
-      ),
-    );
-  }
-
-  SettingsRow _buildEditorDarkTheme() {
-    final label = '${libL10n.dark} ${libL10n.theme.toLowerCase()}';
-    return SettingsRow(
-      label,
-      () => ListTile(
-        leading: const Icon(MingCute.moon_stars_fill),
-        title: Text(label),
-        trailing: ValBuilder(
-          listenable: _setting.editorDarkTheme.listenable(),
-          builder: (val) => Text(val, style: UIs.text15),
-        ),
-        onTap: () => _pickEditorTheme(_setting.editorDarkTheme),
-      ),
     );
   }
 

@@ -3,7 +3,7 @@ title: Developing Monitor Apps
 description: Build and test web apps for the Monitor
 ---
 
-Monitor apps are Docker Compose packages under `store/apps/<publisher>.<name>/`.
+Monitor apps are Docker Compose packages under `monitor/catalog/apps/<publisher>.<name>/`.
 The Monitor reads their `manifest.toml` and Compose files, and the desk shows
 installed apps in a window.
 
@@ -26,9 +26,9 @@ local_apps = "/srv/sbm-apps"
 
 Restart the Monitor after changing a local package. The App Store reads the local
 catalog entry, so you can install it and test the deploy flow without adding it
-to the shipped catalog. For a package at `store/apps/example.web`, validate it
+to the shipped catalog. For a package at `monitor/catalog/apps/example.web`, validate it
 from the repository root with:
 
 ```sh
-python3 .claude/skills/serverbox-webapp/scripts/validate.py store/apps/example.web --compose
+python3 .claude/skills/serverbox-webapp/scripts/validate.py monitor/catalog/apps/example.web --compose
 ```

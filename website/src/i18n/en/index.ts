@@ -12,10 +12,8 @@ const en: BaseTranslation = {
     capabilities: 'Capabilities',
     download: 'Download',
     docs: 'Docs',
-    themes: 'Themes',
     os: 'ServerBox OS',
     beta: 'Beta',
-    plugins: 'Plugins',
     otherApps: 'More',
     signIn: 'Sign in',
     languageLabel: 'Language',
@@ -93,11 +91,6 @@ const en: BaseTranslation = {
       title: 'Virtualization',
       description:
         'Control VMs and LXC containers on Proxmox VE and libvirt. Toggle power states, tune vCPU and memory, and open consoles.',
-    },
-    themes: {
-      title: 'Theme Store',
-      description:
-        'Customize palettes, component styles, icons, and splash screens from the built-in store—or craft your own.',
     },
   },
   capabilities: {
@@ -192,58 +185,6 @@ const en: BaseTranslation = {
     docs: 'Monitor docs',
     appAction: 'Get the app',
   },
-  themes: {
-    title: 'Make it yours.',
-    subtitle:
-      'Preview official themes live below. Install in one tap from Settings → Appearance → Theme Store, or import a .fsbt package.',
-    empty:
-      'No official themes yet. Check the theme authoring guide to build and submit your own.',
-    note:
-      'Every store package is verified against its SHA-256 checksum before installation.',
-    authoring: 'Theme guide',
-    download: 'Download .fsbt',
-    source: 'Source',
-    light: 'Light',
-    dark: 'Dark',
-    search: 'Search themes',
-    modeLabel: 'Mode',
-    all: 'All',
-    sortLabel: 'Sort',
-    sortName: 'Name',
-    sortUpdated: 'Recently updated',
-    noMatch: 'No matching themes. Try another keyword or mode.',
-    storeTitle: 'Theme Store',
-    storeSubtitle:
-      'Explore official ServerBox themes and icon packs rendered live with their real palettes, components, and icons.',
-    browse: 'Browse Theme Store',
-    back: 'All themes',
-    details: 'Details',
-    icons: 'Icons',
-    tabIcons: 'Tab bar & active states',
-    navIcons: 'Navigation symbols',
-    palette: 'Color Palette',
-    components: 'Components',
-    splash: 'Splash screen',
-    install: 'Install',
-    installSteps:
-      'In ServerBox, go to Settings → Appearance → Theme Store and pick {name}, or download the .fsbt file and choose Install Theme → File.',
-    base: 'Default',
-    hovered: 'Hovered',
-    pressed: 'Pressed',
-    disabled: 'Disabled',
-    loadFailed: 'Could not load theme preview.',
-    retry: 'Retry',
-    iconPacks: 'Icon Packs',
-    iconPacksSubtitle:
-      'Mix and match icon packs with any theme via Settings → Appearance → Theme Store → Icon Packs.',
-  },
-  plugins: {
-    title: 'Extend ServerBox',
-    subtitle:
-      'Add new capabilities with official ServerBox plugins.',
-    empty: 'No official plugins yet.',
-    download: 'Download',
-  },
   download: {
     title: 'Native on every platform.',
     subtitle:
@@ -259,15 +200,6 @@ const en: BaseTranslation = {
       'Inspect the code, contribute on GitHub, or grab the latest release for your device.',
     appStoreAction: 'App Store',
     githubAction: 'GitHub Releases',
-  },
-  pride: {
-    badge: 'LGBTQ+ Friendly',
-    title: 'Built with Pride.',
-    description:
-      'ServerBox proudly supports the LGBTQ+ community. The official Pride theme ships in the Theme Store with Rainbow, Trans, and Nonbinary flag variants.',
-    rainbow: 'Rainbow',
-    trans: 'Trans',
-    nonbinary: 'Nonbinary',
   },
   otherApps: {
     title: 'More from lollipopkit.',

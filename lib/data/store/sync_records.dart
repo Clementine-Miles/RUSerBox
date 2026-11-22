@@ -4,15 +4,13 @@ import 'package:fl_lib/fl_lib.dart';
 import 'package:server_box/core/ssh/key_passphrase.dart';
 import 'package:server_box/data/store/benchmark.dart';
 import 'package:server_box/data/store/entity_store.dart';
-import 'package:server_box/data/store/picked_files.dart';
 import 'package:server_box/data/store/store_reload.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/store/sync_skills.dart';
-import 'package:server_box/data/store/sync_themes.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 /// ServerBox's records for fl_lib's [SyncRecords]: the entity tables, and the
-/// kinds kept outside the stores (themes, picked files, skills, benchmarks).
+/// kinds kept outside the stores (skills and benchmarks).
 abstract final class ServerSyncRecords {
   /// Registers them, and what tells the app of other devices' ops. Before any
   /// sync runs.
@@ -21,35 +19,20 @@ abstract final class ServerSyncRecords {
     SyncRecords.kinds
       ..clear()
       ..addAll({
-        // A theme is added only: one removed here says nothing to the others.
-        SyncThemes.c: SyncKind.batched(
-          reader: () {
-            Future<Map<String, Object?>?>? themes;
-            return (id) => (themes ??= SyncThemes.read()).then(
-              (t) => t == null ? SyncRecords.unread : t[id] ?? SyncRecords.silent,
-            );
-          },
-          stamp: SyncThemes.stamp,
-          install: SyncThemes.install,
-        ),
-        PickedFiles.c: const SyncKind(read: PickedFiles.read, stamp: PickedFiles.stamp, install: PickedFiles.install),
         SyncSkills.c: const SyncKind(read: SyncSkills.read, stamp: SyncSkills.stamp, install: SyncSkills.install),
         BenchmarkStore.c: SyncKind(read: (id) => Stores.benchmark.read(id), install: (ops) => Stores.benchmark.install(ops)),
       });
     SyncRecords.afterRead = (carries) async {
       // Read past: what could not be written then is tried again.
       if (carries(BenchmarkStore.c)) Stores.benchmark.retry();
-      if (carries(SyncThemes.c)) await SyncThemes.retry();
     };
     SyncRecords.announce = _announce;
   }
 
   /// Tells the app what other devices' ops changed, as a backup's merge does.
-  static void _announce(List<SyncOp> won, Set<String> written) {
+  static void _announce(List<SyncOp> _, Set<String> written) {
     final keysBefore = EntityRecords.instance._keysBefore;
     EntityRecords.instance._keysBefore = null;
-    // The preset may have come before or after its theme.
-    if (won.any((op) => op.c == SyncThemes.c) || written.contains('kv:${Stores.setting.name}')) SyncThemes.reselect();
     final servers = written.contains(Stores.server.table);
     if (written.contains(Stores.key.table)) {
       Stores.key.invalidate();

@@ -268,7 +268,7 @@ void main() {
           expect(Stores.setting.recordHistory.get(), isFalse);
           expect(Stores.setting.useBioAuth.get(), isTrue);
           expect(Stores.setting.locale.get(), 'zh');
-          expect(Stores.setting.colorSeed.get(), 4287106639);
+          expect(Stores.setting.get<int>('primaryColor'), 4287106639);
           expect(Stores.setting.termFontSize.get(), 13.0);
           expect(Stores.setting.maxRetryCount.get(), 2);
 

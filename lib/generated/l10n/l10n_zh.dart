@@ -267,9 +267,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored => '已恢复，但以下主题除外。请从主题商店或原始文件重新安装。';
-
-  @override
   String get icloudBackupStateConflict => '检测到冲突';
 
   @override
@@ -1087,7 +1084,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get keyPassphrases => '私钥口令';
 
   @override
-  String get syncFiles => '字体、图片与 Skills';
+  String get syncFiles => 'Agent 技能';
 
   @override
   String get syncRemoteTooNew => '同步数据来自更高版本的 ServerBox，请更新应用后继续同步。';
@@ -5035,10 +5032,6 @@ class AppLocalizationsZh extends AppLocalizations {
       '终端一行占用的空间，以字体大小的倍数表示，范围为 1.0 到 2.0。与字体大小一样，它会影响可显示的行数。';
 
   @override
-  String get termFontTip =>
-      '未选择字体文件时，终端会使用系统等宽字体；对于缺少的字形，则使用包含 CJK 和 emoji 字形的字体。';
-
-  @override
   String get netSpeed => '网速';
 
   @override
@@ -7281,9 +7274,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String get backupThemesNotRestored => '已還原，但以下主題除外。請從主題商店或原始檔案重新安裝。';
-
-  @override
   String get icloudBackupStateConflict => '偵測到衝突';
 
   @override
@@ -8101,7 +8091,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get keyPassphrases => '私鑰通行密碼';
 
   @override
-  String get syncFiles => '字型、圖片與 Skills';
+  String get syncFiles => 'Agent 技能';
 
   @override
   String get syncRemoteTooNew => '同步資料來自較新版本的 ServerBox，請更新應用程式以繼續同步。';
@@ -12045,10 +12035,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get termLineHeightTip =>
       '終端機一行所佔的空間，以字型大小的倍數表示，範圍為 1.0 到 2.0。與字型大小一樣，這會影響可顯示的行數。';
-
-  @override
-  String get termFontTip =>
-      '未選擇字型檔案時，終端機會使用系統等寬字型；對於缺少的字形，則使用包含 CJK 和 emoji 字形的字型。';
 
   @override
   String get netSpeed => '網速';

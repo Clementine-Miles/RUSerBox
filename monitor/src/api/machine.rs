@@ -64,9 +64,7 @@ pub const FEATURES: &[&str] = &[
     // (`api::update`).
     "update",
     // The panel's desk (`api::desk`): its arrangement and preferences, each
-    // app's storage, installed apps (`api::apps`) and theme packages
-    // (`api::desk_themes`). Without it the panel keeps the desk in the
-    // browser.
+    // app's storage and installed apps (`api::apps`).
     "desk",
     // Agent mode (`api::agent`): tasks an AI agent runs here.
     "agent_mode",

@@ -2,33 +2,25 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:archive/archive.dart';
-import 'package:crypto/crypto.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart' show ThemePackages;
 import 'package:fl_pi_llm/fl_pi_llm.dart' show LlmApi, LlmCustomProvider;
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores, Skills;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:server_box/core/service/theme_host.dart';
 import 'package:server_box/core/sync/category.dart';
 import 'package:server_box/data/model/container/type.dart';
 import 'package:server_box/data/model/server/benchmark/benchmark_run.dart';
 import 'package:server_box/data/model/server/benchmark/yabs_options.dart';
 import 'package:server_box/data/model/server/pve_config.dart';
 import 'package:server_box/data/model/server/snippet.dart';
-import 'package:server_box/data/res/url.dart';
 import 'package:server_box/data/store/benchmark.dart';
 import 'package:server_box/data/store/entity_store.dart';
-import 'package:server_box/data/store/picked_files.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/store/sync_recorder.dart';
 import 'package:server_box/data/store/sync_records.dart';
 import 'package:server_box/data/store/sync_skills.dart';
-import 'package:server_box/data/store/sync_themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../helpers/fsbt.dart';
 import '../../helpers/spi_fixture.dart';
 import '../../helpers/sync_key.dart';
 
@@ -560,15 +552,12 @@ void main() {
     expect(Stores.setting.get<String>('bigNote'), big);
   });
 
-  test('a picked file missing for a while, or an unreadable skills lock, removes nothing elsewhere', () async {
+  test('an unreadable skills lock removes nothing elsewhere', () async {
     final log = _Log();
     final skills = await Directory.systemTemp.createTemp('sbm-skills-lock-');
     addTearDown(() => skills.delete(recursive: true));
     Skills.root = skills.path;
     await _device();
-    await Directory(Paths.img).create(recursive: true);
-    final picked = File(Paths.img.joinPath('ssh_bg_2.png'))..writeAsBytesSync([4, 5]);
-    Stores.setting.sshBgImage.put(picked.path);
     Skills.import('notes', {
       'lock': {'name': 'notes', 'description': 'Takes notes.', 'hash': 'h1'},
       'files': {'SKILL.md': base64Encode(utf8.encode('---\nname: notes\n---\n'))},
@@ -578,7 +567,6 @@ void main() {
 
     final lock = File('${skills.path}/.lock.json');
     final readable = lock.readAsStringSync();
-    picked.deleteSync();
     lock.writeAsStringSync('{');
     Skills.root = skills.path;
     await _sync(log).sync();
@@ -669,109 +657,6 @@ void main() {
     expect(Stores.snippet.fetchOneRaw('phone0001')?.script, 'from the phone');
   });
 
-  test('a theme installed on one device is installed on the next, with its own package', () async {
-    final log = _Log();
-    addTearDown(() => SyncThemes.root = null);
-    Future<void> device(String name) async {
-      final dir = await Directory.systemTemp.createTemp('sbm-themes-$name-');
-      addTearDown(() => dir.delete(recursive: true));
-      SyncThemes.root = dir.path;
-      await _device();
-      initThemeHost();
-    }
-
-    await device('a');
-    final theme = await ThemePackages.install(fsbtOf('example.amethyst', 'Amethyst'), rootDirectory: SyncThemes.root);
-    await _sync(log).sync();
-
-    await device('b');
-    expect(ThemePackages.installed(theme.installationId, rootDirectory: SyncThemes.root), isNull);
-    await _sync(log).sync();
-    expect(ThemePackages.installed(theme.installationId, rootDirectory: SyncThemes.root)?.name, 'Amethyst');
-
-    // Chosen elsewhere: this device points its own keys at its copy, and a
-    // preset whose theme is not here yet is left as it is, not undone.
-    Stores.setting.appThemePreset.put(theme.preset);
-    SyncThemes.reselect();
-    expect(Stores.setting.appThemePackage.fetch(), theme.installationId);
-    Stores.setting.appThemePreset.put(ThemePackages.presetOf('0' * 64));
-    final preset = Stores.setting.appThemePreset.fetch();
-    SyncThemes.reselect();
-    expect(Stores.setting.appThemePreset.fetch(), preset);
-
-    // Left alone where the settings do not sync.
-    await device('c');
-    await _sync(log, settings: false).sync();
-    expect(ThemePackages.installed(theme.installationId, rootDirectory: SyncThemes.root), isNull);
-  });
-
-  test('a store theme the sender could only name is installed from the store, once it answers', () async {
-    final log = _Log();
-    addTearDown(() => SyncThemes.root = null);
-    addTearDown(() => ThemePackages.debugFetch = null);
-    Future<void> device(String name) async {
-      final dir = await Directory.systemTemp.createTemp('sbm-themes-$name-');
-      addTearDown(() => dir.delete(recursive: true));
-      SyncThemes.root = dir.path;
-      await _device();
-      initThemeHost();
-    }
-
-    final bytes = fsbtOf('example.piggy', 'Piggy');
-    final digest = sha256.convert(bytes).toString();
-    final listing = 'id = "example.piggy"\nname = "Piggy"\n[[version]]\nversion = "1.0.0"\n'
-        'schema_min = 1\nschema_max = 1\nurl = "https://example.org/piggy.fsbt"\n'
-        'sha256 = "$digest"\nsize = ${bytes.length}\n';
-    final tree = Archive()
-      ..add(ArchiveFile.string('repo.toml', 'schema = 1\nname = "Official"\n'))
-      ..add(ArchiveFile.string('themes/example.piggy.toml', listing));
-    final store = {
-      Urls.themeCatalog: utf8.encode('schema = 1\nname = "Test"\n[[repo]]\nurl = "https://example.org/store.tar.gz"\n'),
-      'https://example.org/store.tar.gz': const GZipEncoder().encode(TarEncoder().encode(tree)),
-      'https://example.org/piggy.fsbt': bytes,
-    };
-    var reachable = false;
-    ThemePackages.debugFetch = (uri) async {
-      if (!reachable) throw HttpException('offline', uri: uri);
-      return Uint8List.fromList(store[uri.toString()] ?? (throw HttpException('404', uri: uri)));
-    };
-
-    // Installed from the store, which keeps no package; the store out of
-    // reach as it is sent, so it goes by name.
-    await device('a');
-    await ThemePackages.install(bytes, rootDirectory: SyncThemes.root);
-    await File('${SyncThemes.root}/.sources/$digest.fsbt').delete();
-    await _sync(log).sync();
-
-    await device('b');
-    await _sync(log).sync();
-    expect(ThemePackages.installed(digest, rootDirectory: SyncThemes.root), isNull);
-
-    // The log is read past it; the next read tries it again.
-    reachable = true;
-    SqliteDb.instance.execute(
-      "UPDATE sync_state SET v = json_set(v, '\$.t', 0) WHERE k = ?;",
-      ['retry:${SyncThemes.c}:$digest'],
-    );
-    await _sync(log).sync();
-    expect(ThemePackages.installed(digest, rootDirectory: SyncThemes.root)?.name, 'Piggy');
-    expect(SqliteDb.instance.select('SELECT k FROM sync_state WHERE k LIKE ?;', ['retry:%']), isEmpty);
-
-    // One the store never offers is given up after its tries, and a kept
-    // row nothing reads does not fail the read.
-    SqliteDb.instance.execute(
-      'INSERT INTO sync_state (k, v) VALUES (?, ?), (?, ?);',
-      [
-        'retry:${SyncThemes.c}:${'e' * 64}',
-        jsonEncode({'h': '0' * 32, 'd': {'id': 'example.gone', 'name': 'Gone'}, 't': 0, 'n': 10}),
-        'retry:${SyncThemes.c}:${'f' * 64}',
-        'not json',
-      ],
-    );
-    await _sync(log).sync();
-    expect(SqliteDb.instance.select('SELECT k FROM sync_state WHERE k LIKE ?;', ['retry:%']), isEmpty);
-  });
-
   test('a provider added on each device is on both, the list builds before kept included', () async {
     final log = _Log();
     LlmCustomProvider provider(String id) =>
@@ -828,50 +713,6 @@ void main() {
         for (final op in (await _plain(body))['ops'] as List) '${op['c']}/${op['id']}',
     ];
     expect(sent, contains('kv:setting/${Stores.setting.serverStatusUpdateInterval.key}'));
-  });
-
-  test('a picked file reaches the next device as its own copy, and its removal too', () async {
-    final log = _Log();
-    await _device();
-    await Directory(Paths.img).create(recursive: true);
-    final picked = File(Paths.img.joinPath('ssh_bg_1.png'))..writeAsBytesSync([1, 2, 3]);
-    Stores.setting.sshBgImage.put(picked.path);
-    await _sync(log).sync();
-
-    await _device();
-    await _sync(log).sync();
-    final copy = Stores.setting.sshBgImage.fetch();
-    expect(copy, isNot(picked.path));
-    expect(File(copy).readAsBytesSync(), [1, 2, 3]);
-    final batches = log.batches.length;
-    await _sync(log).sync();
-    expect(log.batches.length, batches, reason: 'what came in is not sent back');
-
-    Stores.setting.sshBgImage.put('');
-    await _sync(log).sync();
-
-    await _device();
-    await _sync(log).sync();
-    expect(Stores.setting.sshBgImage.fetch(), isEmpty);
-  });
-
-  test('a picked file missing here is not sent as removed', () async {
-    final log = _Log();
-    await _device();
-    await Directory(Paths.img).create(recursive: true);
-    final picked = File(Paths.img.joinPath('ssh_bg_2.png'))..writeAsBytesSync([4, 5]);
-    Stores.setting.sshBgImage.put(picked.path);
-    PickedFiles.stamp();
-    picked.deleteSync();
-    await _sync(log).sync();
-
-    final sent = [
-      for (final (_, body) in log.batches)
-        for (final op in (await _plain(body))['ops'] as List)
-          if (op['c'] == PickedFiles.c) op,
-    ];
-    expect(sent, isEmpty);
-    expect(Stores.setting.sshBgImage.fetch(), picked.path);
   });
 
   test('a skill installed on one device is installed on the next, and removed', () async {
@@ -935,50 +776,5 @@ void main() {
     Skills.remove('other');
   });
 
-  test('a theme here at another version is kept, and the selection points at it', () async {
-    final log = _Log();
-    addTearDown(() => SyncThemes.root = null);
-    Future<void> device(String name) async {
-      final dir = await Directory.systemTemp.createTemp('sbm-themes-$name-');
-      addTearDown(() => dir.delete(recursive: true));
-      SyncThemes.root = dir.path;
-      await _device();
-      initThemeHost();
-    }
 
-    await device('a');
-    final v2 = await ThemePackages.install(fsbtOf('example.amethyst', 'Amethyst 2'), rootDirectory: SyncThemes.root);
-    Stores.setting.appThemePreset.put(v2.preset);
-    await _sync(log).sync();
-
-    await device('b');
-    final v1 = await ThemePackages.install(fsbtOf('example.amethyst', 'Amethyst'), rootDirectory: SyncThemes.root);
-    await _sync(log).sync();
-    expect(ThemePackages.installed(v2.installationId, rootDirectory: SyncThemes.root), isNull);
-    expect(Stores.setting.appThemePreset.fetch(), v2.preset, reason: 'the choice is not rewritten');
-    expect(Stores.setting.appThemePackage.fetch(), v1.installationId);
-  });
-
-  test('themes that cannot be read now are sent later, not skipped', () async {
-    final log = _Log();
-    addTearDown(() => SyncThemes.readForTest = null);
-    await _device();
-    final sync = _sync(log);
-    Stores.setting.timeout.put(9);
-    await sync.sync();
-
-    SyncRecorder.record('theme', 'abc');
-    Stores.snippet.put(snippet);
-    SyncThemes.readForTest = () async => null;
-    await sync.sync();
-    expect(SyncRecorder.pending(''), hasLength(greaterThanOrEqualTo(2)));
-    final sentBefore = log.batches.length;
-
-    SyncThemes.readForTest = () async => {'abc': {'id': 'example.x', 'name': 'X', 'bundled': 'example.x'}};
-    await sync.sync();
-    expect(log.batches.length, sentBefore + 1);
-    await _device();
-    await _sync(log, settings: false).pull();
-    expect(Stores.snippet.fetchOneRaw(snippet.id), isNotNull, reason: 'what came after the unread theme went too');
-  });
 }

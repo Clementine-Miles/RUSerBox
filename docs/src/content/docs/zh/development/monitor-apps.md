@@ -3,7 +3,7 @@ title: 开发 Monitor 应用
 description: 为 Monitor 构建和测试 Web 应用
 ---
 
-Monitor 应用是位于 `store/apps/<publisher>.<name>/` 下的 Docker Compose 包。Monitor 会读取其中的
+Monitor 应用是位于 `monitor/catalog/apps/<publisher>.<name>/` 下的 Docker Compose 包。Monitor 会读取其中的
 `manifest.toml` 和 Compose 文件，并在桌面中以窗口显示已安装的应用。
 
 创建或修改应用时，请先阅读
@@ -22,8 +22,8 @@ local_apps = "/srv/sbm-apps"
 ```
 
 修改本地应用包后，请重启 Monitor。App Store 会读取本地目录条目，因此可以安装并测试部署流程，
-无需先将应用加入随 Monitor 附带的目录。若要校验 `store/apps/example.web`，请在仓库根目录运行：
+无需先将应用加入随 Monitor 附带的目录。若要校验 `monitor/catalog/apps/example.web`，请在仓库根目录运行：
 
 ```sh
-python3 .claude/skills/serverbox-webapp/scripts/validate.py store/apps/example.web --compose
+python3 .claude/skills/serverbox-webapp/scripts/validate.py monitor/catalog/apps/example.web --compose
 ```

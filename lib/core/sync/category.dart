@@ -2,17 +2,15 @@ import 'package:fl_lib/fl_lib.dart';
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores;
 import 'package:flutter/foundation.dart';
 import 'package:server_box/data/store/benchmark.dart';
-import 'package:server_box/data/store/picked_files.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/store/sync_skills.dart';
-import 'package:server_box/data/store/sync_themes.dart';
 
 /// What the person chose to sync beside the records every sync carries
 /// (servers, keys, snippets, …), each its own switch on this device. One
 /// mapping for both syncs: the operation log ([of]) and the whole backup
 /// ([BackupV2]'s sections, `ofSection`).
 enum SyncCategory {
-  /// The app's settings and the themes they select.
+  /// The app's settings.
   settings,
 
   /// The Agent's providers, tool switches, permissions and memory.
@@ -26,7 +24,7 @@ enum SyncCategory {
   /// neither sends nor takes them.
   passphrases,
 
-  /// Imported fonts, background images and the Agent's skills.
+  /// The Agent's skills.
   files,
 
   /// Benchmark results.
@@ -75,8 +73,6 @@ enum SyncCategory {
 
   static final _byCollection = <String, SyncCategory>{
     'kv:${Stores.setting.name}': settings,
-    SyncThemes.c: settings,
-    PickedFiles.c: files,
     SyncSkills.c: files,
     BenchmarkStore.c: benchmarks,
     for (final store in [LlmStores.llm, LlmStores.tool, LlmStores.memory]) 'kv:${store.name}': ai,

@@ -1,7 +1,7 @@
 //! Where the web apps this agent can deploy come from:
 //!
 //! - the ones it ships (`builtin`), so an agent with no network offers them;
-//! - the theme store's repositories (`assets/catalog/repos.toml`): each
+//! - configured external repositories: each
 //!   repository's `apps/<publisher>.<name>/` folders, fetched at start and
 //!   then hourly, and kept in `<stacks>/.catalog/` so an agent that cannot
 //!   reach them keeps what it last read;
@@ -23,7 +23,7 @@ use serde::Serialize;
 
 use super::builtin;
 use super::manifest::Package;
-use crate::api::desk_themes::{BUNDLED_CATALOG, CATALOG_URL, Fetch, HttpFetch};
+use crate::utils::fetch::Fetch;
 
 /// How long a read of the store is kept.
 const TTL: Duration = Duration::from_secs(3600);
@@ -62,7 +62,7 @@ pub struct Catalog {
     local: BTreeMap<String, Arc<Package>>,
     /// When the store was last read, successfully or not; one read at a time.
     read: tokio::sync::Mutex<Option<Instant>>,
-    source: RwLock<(String, Arc<dyn Fetch>)>,
+    source: RwLock<Option<(String, Arc<dyn Fetch>)>>,
     /// The same repositories' desk app packages (`desk/*.fsba`).
     pub desk: Arc<crate::apps::catalog::DeskCatalog>,
 }
@@ -84,13 +84,13 @@ impl Catalog {
             store: RwLock::new(store),
             local,
             read: tokio::sync::Mutex::new(None),
-            source: RwLock::new((CATALOG_URL.to_string(), Arc::new(HttpFetch::default()))),
+            source: RwLock::new(None),
         }
     }
 
     /// Where the store is read from, and how: for tests.
     pub fn set_source(&self, catalog_url: &str, fetch: Arc<dyn Fetch>) {
-        *self.source.write_locked() = (catalog_url.to_string(), fetch);
+        *self.source.write_locked() = Some((catalog_url.to_string(), fetch));
     }
 
     pub fn get(&self, id: &str) -> Option<Entry> {
@@ -129,16 +129,19 @@ impl Catalog {
             return false;
         }
         *read = Some(Instant::now());
-        let (catalog_url, fetch) = self.source.read_locked().clone();
+        let Some((catalog_url, fetch)) = self.source.read_locked().clone() else { return false };
         let base = url::Url::parse(&catalog_url).ok();
         let catalog = match fetch.get(&catalog_url, repo::MAX_CATALOG_BYTES).await {
             Ok(bytes) => repo::Catalog::parse(&bytes, base.as_ref()).map_err(|e| e.0),
             Err(e) => Err(e),
         };
-        let catalog = catalog.unwrap_or_else(|e| {
-            tracing::warn!("app catalog: reading the catalog: {e}");
-            repo::Catalog::parse(BUNDLED_CATALOG.as_bytes(), None).expect("the bundled catalog reads")
-        });
+        let catalog = match catalog {
+            Ok(catalog) => catalog,
+            Err(e) => {
+                tracing::warn!("app catalog: reading the catalog: {e}");
+                return false;
+            }
+        };
         let previous = self.store.read_locked().clone();
         let mut next: BTreeMap<String, Entry> = BTreeMap::new();
         let mut archives = Vec::new();

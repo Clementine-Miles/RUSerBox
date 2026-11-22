@@ -6,9 +6,9 @@
 /// nothing throws, the widget builds, and the output is simply wrong.
 library;
 
-import 'package:fl_lib/fl_lib.dart' show Pfs;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:server_box/data/model/terminal/typeface.dart';
 import 'package:server_box/data/store/setting.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/view/page/benchmark/log_view.dart';
@@ -42,10 +42,16 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('keeps custom fonts and adds current UI fallbacks', (tester) async {
-    Stores.setting.fontPath.put('fonts${Pfs.seperator}Chosen.ttf');
-    Stores.setting.termFontSize.put(18);
+  testWidgets('defaults to Hack and applies the chosen bundled font', (tester) async {
     const log = BenchmarkLogView(log: '中文 output');
+    await pump(tester, log);
+    expect(
+      tester.widget<TerminalView>(find.byType(TerminalView)).textStyle.fontFamily,
+      'Hack Nerd Font',
+    );
+
+    Stores.setting.terminalTypeface.put(TerminalTypeface.firaCode);
+    Stores.setting.termFontSize.put(18);
 
     Future<void> pumpFonts(List<String> fallback) async {
       await tester.pumpWidget(MaterialApp(
@@ -54,7 +60,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
       final style = tester.widget<TerminalView>(find.byType(TerminalView)).textStyle;
-      expect(style.fontFamily, 'Chosen.ttf');
+      expect(style.fontFamily, 'Fira Code');
       expect(style.fontSize, 18);
       expect(style.fontFamilyFallback, [
         ...const TerminalStyle().fontFamilyFallback,

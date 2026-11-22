@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart';
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmL10nX;
 import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/app_navigator.dart';
@@ -13,6 +11,7 @@ import 'package:server_box/core/motion.dart';
 import 'package:server_box/core/service/diagnostics_upload.dart';
 import 'package:server_box/core/service/ssh_discovery.dart';
 import 'package:server_box/core/service/ssh_discovery_sources.dart';
+import 'package:server_box/data/res/app_theme.dart';
 import 'package:server_box/data/res/build_data.dart';
 import 'package:server_box/data/res/chart_palette.dart';
 import 'package:server_box/data/res/url.dart';
@@ -28,18 +27,13 @@ import 'package:server_box/view/page/ssh/widget/session_keep_alive_notice.dart';
 import 'package:server_box/view/widget/column_inset.dart';
 import 'package:server_box/view/widget/diagnostics_level_picker.dart';
 import 'package:server_box/view/widget/ssh_discovery/view.dart';
+import 'package:server_box/view/widget/theme_mode_tile.dart';
 
 part 'intro.dart';
 
 Widget _buildHomeWithWindowFrame() {
   return VirtualWindowFrame(title: BuildData.name, child: const HomePage());
 }
-
-ThemeData _theme({Color? seed, Brightness? brightness}) => buildAppTheme(
-  AppThemeSource.current(),
-  seed: seed,
-  brightness: brightness,
-);
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -65,63 +59,21 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Stores.setting;
     return ListenableBuilder(
       listenable: Listenable.merge([
         RNodes.app,
-        ThemePackages.preview,
-        Stores.setting.locale.listenable(),
+        settings.appThemePreset.listenable(),
+        settings.themeMode.listenable(),
+        settings.locale.listenable(),
       ]),
       builder: (context, _) {
-        if (!(ThemePackages.preview.value?.systemColor ??
-            Stores.setting.useSystemPrimaryColor.fetch())) {
-          return _build(context);
-        }
-
-        return _buildDynamicColor(context);
-      },
-    );
-  }
-
-  Widget _build(BuildContext context) {
-    final colorSeed = Color(
-      ThemePackages.preview.value?.seed ?? Stores.setting.colorSeed.fetch(),
-    );
-
-    UIs.colorSeed = colorSeed;
-    UIs.primaryColor = colorSeed;
-
-    return _buildApp(
-      context,
-      light: _theme(seed: UIs.colorSeed),
-      dark: _theme(seed: UIs.colorSeed, brightness: Brightness.dark),
-    );
-  }
-
-  Widget _buildDynamicColor(BuildContext context) {
-    return DynamicColorBuilder(
-      builder: (light, dark) {
-        final lightSeed = light?.primary;
-        final darkSeed = dark?.primary;
-
-        final lightTheme = _theme(seed: lightSeed);
-        final darkTheme = _theme(seed: darkSeed, brightness: Brightness.dark);
-
-        if (context.isDark && dark != null) {
-          UIs.primaryColor = dark.primary;
-          UIs.colorSeed = dark.primary;
-        } else if (!context.isDark && light != null) {
-          UIs.primaryColor = light.primary;
-          UIs.colorSeed = light.primary;
-        } else {
-          final fallbackColor = Color(
-            ThemePackages.preview.value?.seed ??
-                Stores.setting.colorSeed.fetch(),
-          );
-          UIs.primaryColor = fallbackColor;
-          UIs.colorSeed = fallbackColor;
-        }
-
-        return _buildApp(context, light: lightTheme, dark: darkTheme);
+        final theme = settings.appThemePreset.fetch();
+        return _buildApp(
+          context,
+          light: buildAppTheme(theme, Brightness.light),
+          dark: buildAppTheme(theme, Brightness.dark),
+        );
       },
     );
   }
@@ -144,7 +96,7 @@ class _MyAppState extends State<MyApp> {
     required ThemeData light,
     required ThemeData dark,
   }) {
-    final themeMode = ThemePackages.effectiveMode;
+    final themeMode = appThemeMode(Stores.setting.themeMode.fetch());
     ServerFullScreenTheme.dark = dark;
     final locale = Stores.setting.locale.fetch().toLocale;
 
@@ -159,16 +111,11 @@ class _MyAppState extends State<MyApp> {
       // Outside the breakpoints builder: a toast is sized against the window,
       // not against the scaled layout the breakpoints hand to the pages.
       builder: (ctx, child) {
-        // Here rather than at launch: this `ctx` is below the theme, so it
-        // rebuilds when the seed color, the brightness or the system's dynamic
-        // color changes — each of which the native badge has to follow.
         _syncIslandBrandColors(ctx);
-        // The same three changes the chart colours are worked out from, and
-        // this runs before any page builds — see [ChartPalette.resolve].
-        // `UIs.colorSeed` rather than the scheme's primary: it is the colour
-        // that was picked, which the two builders above keep current whether
-        // it came from the setting or from the system.
-        ChartPalette.resolve(UIs.colorSeed, dark: ctx.isDark);
+        final accent = Theme.of(ctx).colorScheme.primary;
+        UIs.colorSeed = accent;
+        UIs.primaryColor = accent;
+        ChartPalette.resolve(accent, dark: ctx.isDark);
         // Above everything that reads the padding, toasts included — see
         // [WindowCornerInsets].
         final content = WindowCornerInsets(
@@ -180,21 +127,13 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         );
-        // The one background the whole app stands on. A page takes a copy of
-        // it while it moves, so that it covers the page below — see
-        // [AppPageTransitions].
-        //
-        // Under [MotionScope], which says for everything below whether the
-        // app moves less — see [AppMotion].
         // TODO: remove once the dependencies below that still import
         // package:flutter/material.dart migrate to material_ui (#1591). It
         // hands them the theme and localizations, which they look up by the
         // legacy types.
         // ignore: deprecated_member_use
         return MaterialUiCompatibilityBridge(
-          child: MotionScope(
-            child: ThemeSplashGate(child: AppBackground(child: content)),
-          ),
+          child: MotionScope(child: content),
         );
       },
       locale: locale,

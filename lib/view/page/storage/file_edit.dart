@@ -15,12 +15,8 @@ EditorPageArgs fileEditorArgs({
     closeAfterSave: Stores.setting.closeAfterSave.fetch(),
     softWrap: Stores.setting.editorSoftWrap.fetch(),
     enableHighlight: Stores.setting.editorHighlight.fetch(),
-    lightTheme: HighlightTheme.fromThemeMapKey(
-      Stores.setting.editorTheme.fetch(),
-    ),
-    darkTheme: HighlightTheme.fromThemeMapKey(
-      Stores.setting.editorDarkTheme.fetch(),
-    ),
+    lightTheme: HighlightTheme.gruvbox_light,
+    darkTheme: HighlightTheme.gruvbox_dark,
     fontFamily: font.isEmpty ? null : font,
   );
 }

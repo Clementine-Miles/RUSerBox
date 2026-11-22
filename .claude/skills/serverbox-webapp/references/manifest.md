@@ -1,13 +1,13 @@
 # Web app manifest reference
 
-`store/apps/<publisher>.<name>/manifest.toml`, schema 1. The JSON Schema is
+`monitor/catalog/apps/<publisher>.<name>/manifest.toml`, schema 1. The JSON Schema is
 `docs/schemas/monitor-app.schema.json`; the Monitor's reader is
 `monitor/src/stacks/manifest.rs`. Unknown tables and fields are errors.
 
 ## Folder
 
 ```
-store/apps/<publisher>.<name>/
+monitor/catalog/apps/<publisher>.<name>/
   manifest.toml        required
   compose.yaml         the compose files `[compose] files` names
   hwaccel.yml …        any other file a compose file uses (`extends`)
@@ -187,7 +187,7 @@ A sidecar joins the app's compose file:
   credential never changes under the app; or, for a server that speaks
   stdio only, built here (`build:`) from a package Dockerfile whose every
   `FROM` is pinned by digest, a bridge to HTTP beside it
-  (`store/apps/karakeep.karakeep/karakeep-mcp.Dockerfile`);
+  (`monitor/catalog/apps/karakeep.karakeep/karakeep-mcp.Dockerfile`);
 - the service by its compose name on the stack's network
   (`http://app:8080`), and the credential from the env file;
 - its own port setting, published on `127.0.0.1` alone
@@ -197,7 +197,7 @@ A sidecar joins the app's compose file:
   credential. A sidecar that checks a bearer token itself takes it from env
   (Jellyfin's `HTTP_TOKEN`); one that does not stays unpublished behind
   `mcp-gate`, nginx checking the header and proxying to it
-  (`store/apps/transmission.transmission/mcp-gate.conf.template`), and
+  (`monitor/catalog/apps/transmission.transmission/mcp-gate.conf.template`), and
   `service = "mcp-gate"`.
 
 Prefer a credential the Monitor knows at deploy (`secret`: a key the service
@@ -209,8 +209,8 @@ lets an account make one through its API: a one-shot job (`[compose] jobs`)
 signs in with the seeded password once the service is healthy, makes the
 key and writes it, mode 0600, into a folder of the data path only the
 sidecar or gate mounts; the gate reads it at start into the header it sends
-on (`store/apps/n8n.n8n`, `store/apps/triliumnext.trilium`), a sidecar into
-its own env (`store/apps/grafana.grafana`). The Monitor then never holds the
+on (`monitor/catalog/apps/n8n.n8n`, `monitor/catalog/apps/triliumnext.trilium`), a sidecar into
+its own env (`monitor/catalog/apps/grafana.grafana`). The Monitor then never holds the
 service's key, and an optional setting still overrides it. `asked` is for a
 token the service's own server takes.
 
@@ -226,7 +226,7 @@ name is set by exactly one of:
   (alphanumeric, with an upper-case letter, a lower-case letter and a
   digit), kept across updates, never shown in the panel. `bcrypt = "NAME"`
   also writes its bcrypt hash to `NAME`, for a service that takes its first
-  password hashed (`store/apps/filebrowser.filebrowser`); the secret is then
+  password hashed (`monitor/catalog/apps/filebrowser.filebrowser`); the secret is then
   72 characters at most. `hex = true` makes it lowercase hex (an even
   `length`), for a key a service takes as hex (`openssl rand -hex 32`).
 - `[[settings]]`: what the deploy dialog asks, below.

@@ -285,10 +285,6 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Dipulihkan, kecuali tema-tema ini. Instal ulang dari toko tema atau dari file asalnya.';
-
-  @override
   String get icloudBackupStateConflict => 'Terdeteksi konflik';
 
   @override
@@ -1168,7 +1164,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get keyPassphrases => 'Frasa sandi kunci';
 
   @override
-  String get syncFiles => 'Font, gambar, dan skill';
+  String get syncFiles => 'Keahlian agen';
 
   @override
   String get syncRemoteTooNew =>
@@ -5370,10 +5366,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'Ruang yang digunakan satu baris terminal, sebagai kelipatan ukuran font dari 1,0 hingga 2,0. Seperti ukuran font, pengaturan ini memengaruhi jumlah baris yang dapat ditampilkan.';
-
-  @override
-  String get termFontTip =>
-      'Jika tidak ada file font yang dipilih, terminal menggunakan font monospace sistem, lalu font dengan glif CJK dan emoji untuk karakter yang tidak tersedia.';
 
   @override
   String get netSpeed => 'Kecepatan jaringan';

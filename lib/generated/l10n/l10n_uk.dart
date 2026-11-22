@@ -285,10 +285,6 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Відновлено, крім цих тем. Встановіть їх знову з магазину тем або з вихідного файлу.';
-
-  @override
   String get icloudBackupStateConflict => 'Виявлено конфлікт';
 
   @override
@@ -1169,7 +1165,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get keyPassphrases => 'Парольні фрази ключів';
 
   @override
-  String get syncFiles => 'Шрифти, зображення та Skills';
+  String get syncFiles => 'Навички агента';
 
   @override
   String get syncRemoteTooNew =>
@@ -5412,10 +5408,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'Висота рядка термінала в межах від 1,0 до 2,0 розміру шрифту. Як і розмір шрифту, цей параметр впливає на кількість рядків, що вміщуються.';
-
-  @override
-  String get termFontTip =>
-      'Якщо файл шрифту не вибрано, термінал використовує системний моноширинний шрифт, а для відсутніх гліфів — шрифти з гліфами CJK та emoji.';
 
   @override
   String get netSpeed => 'Швидкість мережі';

@@ -30,10 +30,9 @@ WORKDIR /app
 # Copy manifests and shared parser crate
 COPY monitor/Cargo.toml Cargo.lock ./
 COPY crates/ ./crates/
-# fl_lib's theme reader (`fl_theme`), from the submodule: the build context
-# needs it checked out.
+# fl_lib's desktop catalog archive reader, from the submodule.
 COPY packages/fl_lib/rust/theme/ ./fl_theme/
-# And its LK Cloud client (`fl_lkc`).
+# fl_lib's LK Cloud client (`fl_lkc`).
 COPY packages/fl_lib/rust/lkc/ ./fl_lkc/
 # fl_pi_llm's runtime (Agent mode's pi), from its submodule likewise.
 COPY packages/fl_pi_llm/fl_pi_llm/rust/ ./fl_pi_llm/
@@ -46,14 +45,12 @@ COPY monitor/src/ ./src/
 # relative to `src/api/`: in the repository that is the root's `assets/`, and
 # with `src/` at `/app/src` here it is `/assets`.
 COPY assets/yabs.b64 /assets/yabs.b64
-# The theme store's catalog, embedded the same way (`api/desk_themes.rs`).
-COPY assets/catalog/repos.toml /assets/catalog/repos.toml
 # The built-in web apps (`stacks::builtin`), embedded the same way: from
-# `src/stacks/` that is `/store/apps`.
-COPY store/apps/ /store/apps/
+# `src/stacks/` that is `/app/catalog/apps`.
+COPY monitor/catalog/apps/ ./catalog/apps/
 # The shipped desk app packages (`apps::catalog`, Git LFS: the checkout must
-# have them), embedded from `src/apps/`: also `/store/desk`.
-COPY store/desk/ /store/desk/
+# have them), embedded from `src/apps/`: also `/app/catalog/desk`.
+COPY monitor/catalog/desk/ ./catalog/desk/
 # Local inference's engines (`stacks::builtin::parts`): from `src/stacks/`,
 # `../../inference` is `/app/inference`.
 COPY monitor/inference/ ./inference/

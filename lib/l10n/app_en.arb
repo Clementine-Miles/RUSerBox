@@ -335,10 +335,6 @@
       }
     }
   },
-  "backupThemesNotRestored": "Restored, except these themes. Install them again from the theme store or the file they came from.",
-  "@backupThemesNotRestored": {
-    "description": "Toast after a restore: the backup was restored, but the themes named below it could not be installed — not in the theme store or not carried by the backup (installed from a folder, or imported with an older version of the app)."
-  },
   "icloudBackupStateConflict": "Conflict detected",
   "@icloudBackupStateConflict": {
     "description": "User-facing label or message for iCloud backup state conflict."
@@ -1478,7 +1474,7 @@
   "@keyPassphrases": {
     "description": "Sync category label."
   },
-  "syncFiles": "Fonts, images and skills",
+  "syncFiles": "Agent skills",
   "@syncFiles": {
     "description": "Sync category label."
   },
@@ -6957,10 +6953,6 @@
   "termLineHeightTip": "The space a terminal row takes, as a multiple of the font size, from 1.0 to 2.0. Like the font size, it changes how many rows fit.",
   "@termLineHeightTip": {
     "description": "Explains the terminal line height setting."
-  },
-  "termFontTip": "Without a font file, the terminal uses the system's monospace font, then fonts with CJK and emoji glyphs for what it lacks.",
-  "@termFontTip": {
-    "description": "Explains which font the terminal uses when no font file is chosen."
   },
   "netSpeed": "Net speed",
   "@netSpeed": {

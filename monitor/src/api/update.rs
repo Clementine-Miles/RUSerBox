@@ -23,7 +23,7 @@ use tokio::sync::Mutex;
 use super::authz;
 use super::desk::{Level, Source, account};
 use super::ws::audit::{Action, Event, Kind, Outcome, peer_ip};
-use super::desk_themes::{Fetch, HttpFetch};
+use crate::utils::fetch::{Fetch, HttpFetch};
 use super::server::AppState;
 
 /// How often the releases are read.

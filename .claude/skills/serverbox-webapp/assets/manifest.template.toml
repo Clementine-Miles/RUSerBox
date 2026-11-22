@@ -1,6 +1,6 @@
 #:schema https://raw.githubusercontent.com/lollipopkit/flutter_server_box/main/docs/schemas/monitor-app.schema.json
 # <Name>, as a ServerBox Monitor web app. Put this file in
-# store/apps/<publisher>.<name>/
+# monitor/catalog/apps/<publisher>.<name>/
 # beside the compose files it names.
 
 schema = 1

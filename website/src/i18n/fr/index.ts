@@ -12,10 +12,8 @@ const fr: Translation = {
     capabilities: 'Capacités',
     download: 'Télécharger',
     docs: 'Docs',
-    themes: 'Thèmes',
     os: 'ServerBox OS',
     beta: 'Bêta',
-    plugins: 'Plugins',
     otherApps: 'Plus',
     signIn: 'Connexion',
     languageLabel: 'Langue',
@@ -93,11 +91,6 @@ const fr: Translation = {
       title: 'Virtualisation',
       description:
         'Pilotez vos VM et conteneurs sur Proxmox VE et libvirt : alimentation, vCPU, mémoire, disques et console directe.',
-    },
-    themes: {
-      title: 'Boutique de thèmes',
-      description:
-        'Appliquez des thèmes officiels (couleurs, icônes, fond et écran d’accueil) depuis l’app ou créez les vôtres.',
     },
   },
   capabilities: {
@@ -192,58 +185,6 @@ const fr: Translation = {
     docs: 'Docs Monitor',
     appAction: 'Obtenir l’app',
   },
-  themes: {
-    title: 'À votre image.',
-    subtitle:
-      'Prévisualisez les thèmes officiels en direct. Installez-les depuis Réglages → Apparence → Boutique de thèmes ou importez un fichier .fsbt.',
-    empty:
-      'Aucun thème officiel pour le moment. Consultez le guide pour créer et proposer le vôtre.',
-    note:
-      'Chaque paquet est vérifié par somme SHA-256 avant son installation.',
-    authoring: 'Guide de création',
-    download: 'Télécharger .fsbt',
-    source: 'Source',
-    light: 'Clair',
-    dark: 'Sombre',
-    search: 'Rechercher un thème ou pack',
-    modeLabel: 'Mode',
-    all: 'Tous',
-    sortLabel: 'Trier',
-    sortName: 'Nom',
-    sortUpdated: 'Récents',
-    noMatch: 'Aucun thème trouvé. Essayez un autre terme ou mode.',
-    storeTitle: 'Boutique de thèmes',
-    storeSubtitle:
-      'Explorez tous les thèmes et packs d’icônes officiels rendus en direct avec leurs vraies couleurs et composants.',
-    browse: 'Parcourir la boutique',
-    back: 'Tous les thèmes',
-    details: 'Détails',
-    icons: 'Icônes',
-    tabIcons: 'Onglets & état actif',
-    navIcons: 'Symboles de navigation',
-    palette: 'Palette de couleurs',
-    components: 'Composants',
-    splash: 'Écran de démarrage',
-    install: 'Installation',
-    installSteps:
-      'Dans l’app, ouvrez « Réglages → Apparence → Boutique de thèmes » et choisissez {name}, ou importez le fichier .fsbt.',
-    base: 'Normal',
-    hovered: 'Survolé',
-    pressed: 'Pressé',
-    disabled: 'Désactivé',
-    loadFailed: 'Impossible de charger l’aperçu du thème.',
-    retry: 'Réessayer',
-    iconPacks: 'Packs d’icônes',
-    iconPacksSubtitle:
-      'Combinez librement les packs d’icônes avec n’importe quel thème depuis « Réglages → Apparence → Boutique de thèmes → Packs d’icônes ».',
-  },
-  plugins: {
-    title: 'Étendez ServerBox',
-    subtitle:
-      'Ajoutez de nouvelles capacités avec les plugins officiels.',
-    empty: 'Aucun plugin officiel pour le moment.',
-    download: 'Télécharger',
-  },
   download: {
     title: 'Natif sur chaque plateforme.',
     subtitle:
@@ -259,15 +200,6 @@ const fr: Translation = {
       'Explorez le code sur GitHub ou téléchargez la dernière version pour votre appareil.',
     appStoreAction: 'App Store',
     githubAction: 'GitHub Releases',
-  },
-  pride: {
-    badge: 'LGBTQ+ Friendly',
-    title: 'Conçu avec Fierté.',
-    description:
-      'ServerBox soutient fièrement la communauté LGBTQ+. Le thème officiel Pride de la boutique inclut les variantes Rainbow, Trans et Nonbinary.',
-    rainbow: 'Rainbow',
-    trans: 'Trans',
-    nonbinary: 'Nonbinary',
   },
   otherApps: {
     title: 'Plus de services et d’apps.',

@@ -10,7 +10,7 @@ Report it privately through GitHub: **[Report a vulnerability](https://github.co
 
 Include:
 
-- the affected component: the app (and platform), the Monitor agent, or the theme store and website;
+- the affected component: the app (and platform), the Monitor agent, or the website;
 - the version, and how the server is reached (SSH, Monitor agent or both);
 - steps to reproduce, and what an attacker gains;
 - a proof of concept, if you have one.
@@ -19,7 +19,7 @@ The report stays private until a fix is released. Credit is given in the advisor
 
 ## Scope
 
-In scope: this repository's app, Monitor agent, Rust crates, theme store and website.
+In scope: this repository's app, Monitor agent, Rust crates and website.
 
 Out of scope:
 

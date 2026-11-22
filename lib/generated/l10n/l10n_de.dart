@@ -286,10 +286,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Wiederhergestellt, mit Ausnahme dieser Themes. Installiere sie erneut aus dem Theme-Store oder aus der ursprünglichen Datei.';
-
-  @override
   String get icloudBackupStateConflict => 'Konflikt erkannt';
 
   @override
@@ -1174,7 +1170,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get keyPassphrases => 'Schlüssel-Passphrasen';
 
   @override
-  String get syncFiles => 'Schriften, Bilder und Skills';
+  String get syncFiles => 'Agenten-Skills';
 
   @override
   String get syncRemoteTooNew =>
@@ -5444,10 +5440,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'Der Platz, den eine Terminalzeile einnimmt, als Vielfaches der Schriftgröße von 1,0 bis 2,0. Wie die Schriftgröße beeinflusst sie, wie viele Zeilen hineinpassen.';
-
-  @override
-  String get termFontTip =>
-      'Ohne ausgewählte Schriftdatei verwendet das Terminal die Monospace-Schrift des Systems und für fehlende Glyphen Schriftarten mit CJK- und Emoji-Glyphen.';
 
   @override
   String get netSpeed => 'Netzgeschwindigkeit';

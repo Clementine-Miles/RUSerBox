@@ -1,5 +1,5 @@
 //! Catalog apps' MCP servers on a real Docker: each app deployed (a copy of
-//! its `store/apps` folder under a name of its own, so a copy an agent on the
+//! its `monitor/catalog/apps` folder under a name of its own, so a copy an agent on the
 //! same machine deployed is never touched), connected to by Agent mode as
 //! deployed, a read-only tool called through it, refused without its token,
 //! and removed with its data.

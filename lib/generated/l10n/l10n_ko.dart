@@ -274,10 +274,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      '복원했지만 다음 테마는 복원되지 않았습니다. 테마 스토어나 원본 파일에서 다시 설치하세요.';
-
-  @override
   String get icloudBackupStateConflict => '충돌 감지됨';
 
   @override
@@ -1109,7 +1105,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get keyPassphrases => '키 암호';
 
   @override
-  String get syncFiles => '글꼴, 이미지 및 Skills';
+  String get syncFiles => '에이전트 스킬';
 
   @override
   String get syncRemoteTooNew =>
@@ -5126,10 +5122,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       '터미널 한 줄이 차지하는 공간을 글꼴 크기의 배수로 지정합니다(1.0~2.0). 글꼴 크기와 마찬가지로 표시할 수 있는 줄 수에 영향을 줍니다.';
-
-  @override
-  String get termFontTip =>
-      '글꼴 파일을 선택하지 않으면 터미널은 시스템 고정폭 글꼴을 사용하고, 없는 글리프는 CJK 및 emoji 글리프가 포함된 글꼴로 표시합니다.';
 
   @override
   String get netSpeed => '네트워크 속도';

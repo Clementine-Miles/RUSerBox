@@ -1,4 +1,5 @@
 pub mod error;
+pub mod fetch;
 #[cfg(windows)]
 pub mod job;
 pub mod lock;

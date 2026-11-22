@@ -45,7 +45,6 @@ export function takeAskedApp(): string | null {
 import { registerStackApps } from './stacks/register'
 import { DeskNotifications } from './notifications.svelte'
 import { DeskPrefs } from './prefs.svelte'
-import { DeskThemes } from './themes.svelte'
 import { SessionSync } from './session.svelte'
 import { AgentStorage, BrowserStorage, deviceId, type DeskStorage } from './storage'
 import type { AppIconChrome, WindowChrome } from './window/chrome.svelte'
@@ -84,8 +83,6 @@ export class Desk {
   storage = $state<DeskStorage | null>(null)
   session = $state<SessionSync | null>(null)
   prefs = $state<DeskPrefs | null>(null)
-  /// Installed themes, where the agent keeps them (`/desk/themes`).
-  themes = $state<DeskThemes | null>(null)
   notifications = $state<DeskNotifications | null>(null)
   appData = $state.raw<AppData | null>(null)
 
@@ -239,7 +236,6 @@ export class Desk {
       : new BrowserStorage(this.entry.id)
     this.storage = storage
     this.prefs = new DeskPrefs(storage)
-    this.themes = storage.keepsThemes ? new DeskThemes(this.entry, this.prefs) : null
     this.notifications = new DeskNotifications(storage)
     this.appData = new AppData(storage)
     this.session = new SessionSync(this.windows, storage, deviceId(), this.entry.id)
@@ -250,7 +246,6 @@ export class Desk {
       this.prefs.load(),
       this.session.load(system.restoreWindows),
       this.notifications.load(),
-      this.themes?.load(),
     ])
     if (this.#abort.signal.aborted) return
     // The app the page was opened for, else, when nothing came back, the
@@ -383,7 +378,6 @@ export class Desk {
     this.#offStackApps?.()
     this.#offStackApps = null
     this.prefs?.close()
-    this.themes?.close()
     this.notifications?.close()
     await this.session?.close()
   }
@@ -422,9 +416,7 @@ export class Desk {
         void this.session?.remoteChanged(String(e.device), Number(e.revision))
         break
       case 'preferences':
-        // A theme installed or removed elsewhere says so this way too.
         void this.prefs?.load()
-        void this.themes?.load()
         break
       case 'apps':
         // Installed, updated or removed here, elsewhere or by the agent.
@@ -432,7 +424,6 @@ export class Desk {
         break
       case 'resync':
         void this.prefs?.load()
-        void this.themes?.load()
         void this.notifications?.load()
         void this.reloadWebApps()
         break
@@ -555,8 +546,6 @@ export function provideAppSettings(desk: Desk, appId: string, settings: WindowHa
 /// only — no other app touches them. Null until they have loaded.
 export function useDeskPrefs(): {
   readonly prefs: DeskPrefs | null
-  /// Installed themes; null where the agent keeps none.
-  readonly themes: DeskThemes | null
   readonly notifications: DeskNotifications | null
   readonly apps: AppSpec[]
   reloadApps(): Promise<void>
@@ -565,9 +554,6 @@ export function useDeskPrefs(): {
   return {
     get prefs() {
       return desk?.prefs ?? null
-    },
-    get themes() {
-      return desk?.themes ?? null
     },
     /// Do Not Disturb lives here.
     get notifications() {

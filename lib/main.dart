@@ -4,7 +4,6 @@ import 'package:computer/computer.dart';
 import 'package:dartssh2/dartssh2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart';
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show StoreCredentials;
 import 'package:fl_tty/fl_tty.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -21,14 +20,12 @@ import 'package:server_box/core/motion.dart';
 import 'package:server_box/core/service/crash_report.dart';
 import 'package:server_box/core/service/diagnostics_upload.dart';
 import 'package:server_box/core/service/native_exit.dart';
-import 'package:server_box/core/service/theme_host.dart';
 import 'package:server_box/core/service/watch_sync.dart';
 import 'package:server_box/core/service/widget_sync.dart';
 import 'package:server_box/core/ssh/key_passphrase.dart';
 import 'package:server_box/core/ssh/native_crypto.dart';
 import 'package:server_box/core/sync/category.dart';
 import 'package:server_box/core/sync/file_log.dart';
-import 'package:server_box/core/sync/lkc.dart';
 import 'package:server_box/core/sync/lkc_log.dart';
 import 'package:server_box/core/sync/remotes.dart';
 import 'package:server_box/core/sync/sync.dart';
@@ -37,10 +34,10 @@ import 'package:server_box/core/utils/sandbox_import.dart';
 import 'package:server_box/core/utils/store_recovery.dart';
 import 'package:server_box/core/utils/sudo_password.dart';
 import 'package:server_box/data/model/server/dist_license.dart';
+import 'package:server_box/data/model/terminal/typeface.dart';
 import 'package:server_box/data/provider/store_reload.dart';
 import 'package:server_box/data/res/build_data.dart';
 import 'package:server_box/data/res/misc.dart';
-import 'package:server_box/data/res/terminal.dart';
 import 'package:server_box/data/store/migrations/all.dart';
 import 'package:server_box/data/store/migrations/build_features.dart';
 import 'package:server_box/data/store/schema.dart';
@@ -48,7 +45,6 @@ import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/store/sync_recorder.dart';
 import 'package:server_box/data/store/sync_records.dart';
 import 'package:server_box/data/store/sync_skills.dart';
-import 'package:server_box/data/store/sync_themes.dart';
 import 'package:server_box/data/store/tables.dart';
 import 'package:server_box/data/terminal/session_manager.dart';
 import 'package:server_box/hive/legacy_adapters.dart';
@@ -182,11 +178,8 @@ Future<void> _initApp(ProviderContainer container) async {
   MethodChans.watchWindowControls();
   // Before anything connects: a host key question with no dialog is refused.
   installHostKeyDialog();
-  // Before anything restores or syncs, the two things a restore asks of the
-  // layers above it: providers reload what it rewrote, and theme packages kept
-  // on LK Cloud are fetched from there.
+  // Before anything restores or syncs so providers can reload changed data.
   installStoreReload();
-  installThemeBlobs();
 
   // Before anything that can fail, so that a failure during startup is at
   // least recorded — the errors worth catching most are the ones that stop the
@@ -209,10 +202,6 @@ Future<void> _initApp(ProviderContainer container) async {
   // likely to take the process down, and precisely the ones whose failure went
   // unrecorded. Nothing here needs Rust: both are platform channels.
   //
-  // `img` holds the SSH background, `font` the terminal font. The rest of
-  // `PathDir` belongs to other apps on fl_lib, and creating them here would
-  // only leave empty directories beside the boxes.
-  //
   // `iosFilesApp`: the device's files are what the Files app lists under On My
   // iPhone (`UIFileSharingEnabled`), so the app's own data is not there.
   //
@@ -229,7 +218,7 @@ Future<void> _initApp(ProviderContainer container) async {
   await Paths.init(
     BuildData.name,
     bakName: Miscs.bakFileName,
-    dirs: const {PathDir.img, PathDir.font},
+    dirs: const {},
     fileInUserDocuments: false,
     iosFilesApp: true,
   );
@@ -249,6 +238,7 @@ Future<void> _initApp(ProviderContainer container) async {
   // Before anything can open the licence page. Cheap: the callback only runs
   // when that page asks for it.
   registerDistMarkLicenses();
+  TerminalTypeface.registerLicenses();
   await _initData();
   // After the stores and their migrations, before the first frame: a chat the
   // Agent tab opens at once needs the runtime already there.
@@ -361,19 +351,6 @@ Future<void> _initData() async {
 
   if (Stores.setting.betaTest.fetch()) AppUpdate.chan = AppUpdateChan.beta;
 
-  // Before anything below reads a theme.
-  initThemeHost();
-
-  // Before the fonts and the theme read the paths it fixes.
-  StoredPaths.repair(
-    alsoRepair: [Stores.setting.fontPath, Stores.setting.sshBgImage],
-  );
-
-  // Not awaited: only the terminal uses it, and a broken font file is the
-  // user's, not a defect to report — the settings page says it failed.
-  unawaited(TerminalFont.load(Stores.setting.fontPath.fetch()));
-  await ThemePackages.prepareSelectedTheme();
-  await AppFont.loadStored();
 }
 
 void _setupDebug() {
@@ -527,7 +504,6 @@ Future<void> _startBackgroundServices() async {
   BakSyncer.watchEdits(() => bakSync.syncSoon());
   fileLog.init();
   SyncSkills.follow();
-  SyncThemes.follow();
   unawaited(KeyPassphrases.init());
   unawaited(SudoPassword.adoptKeychain());
 

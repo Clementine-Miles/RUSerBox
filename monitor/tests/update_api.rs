@@ -14,7 +14,7 @@ use ntex::web::test::{self as web_test, TestServer};
 use ntex::web::{self, App};
 use sbm_parser::monitor_agent::{InstallKind, UPDATE_LOG, releases_url};
 use server_box_monitor::api::auth::generate_token;
-use server_box_monitor::api::desk_themes::Fetch;
+use server_box_monitor::utils::fetch::Fetch;
 use server_box_monitor::api::server::{Agent, AppState};
 use server_box_monitor::api::update;
 use server_box_monitor::core::config::Config;

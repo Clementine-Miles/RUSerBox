@@ -11,7 +11,6 @@ export interface DeskStorage {
   /// Whether this is the agent's (shared by every browser) or this browser's.
   readonly remote: boolean
   /// Whether installed themes and `theme` are kept: only on the agent.
-  readonly keepsThemes: boolean
   /// What an app keeps for itself (`sys.storage`), all of it.
   appItems(app: string): Promise<Record<string, unknown>>
   appPut(app: string, key: string, value: unknown): Promise<void>
@@ -52,7 +51,6 @@ function writeBrowserOnboarded(serverId: string, done: boolean) {
 
 export class AgentStorage implements DeskStorage {
   readonly remote = true
-  readonly keepsThemes = true
   #entry: ServerEntry
 
   constructor(entry: ServerEntry) {
@@ -123,7 +121,6 @@ function bytes(text: string): number {
 
 export class BrowserStorage implements DeskStorage {
   readonly remote = false
-  readonly keepsThemes = false
   #key: string
 
   #serverId: string

@@ -12,10 +12,8 @@ const kr: Translation = {
     capabilities: '도구',
     download: '다운로드',
     docs: '문서',
-    themes: '테마',
     os: 'ServerBox OS',
     beta: '베타',
-    plugins: '플러그인',
     otherApps: '더보기',
     signIn: '로그인',
     languageLabel: '언어',
@@ -93,11 +91,6 @@ const kr: Translation = {
       title: '가상화 제어',
       description:
         'Proxmox VE와 libvirt의 VM 및 컨테이너를 제어하세요. 전원 관리, vCPU·메모리·디스크 조정, 콘솔 연결을 지원합니다.',
-    },
-    themes: {
-      title: '테마 스토어',
-      description:
-        '공식 테마의 색상, 배경, 아이콘, 스플래시 화면을 앱 안에서 바로 적용하거나 나만의 테마를 직접 제작하세요.',
     },
   },
   capabilities: {
@@ -192,56 +185,6 @@ const kr: Translation = {
     docs: 'Monitor 문서',
     appAction: '앱 다운로드',
   },
-  themes: {
-    title: '나만의 스타일로.',
-    subtitle:
-      '공식 테마를 아래에서 실시간으로 미리 보세요. 앱의 설정 → 모양 → 테마 스토어에서 바로 설치하거나 .fsbt 파일을 가져올 수 있습니다.',
-    empty:
-      '아직 공식 테마가 없습니다. 가이드를 참고해 테마를 제작하고 스토어에 등록해 보세요.',
-    note: '모든 스토어 패키지는 설치 전 SHA-256 체크섬을 검증합니다.',
-    authoring: '테마 제작 가이드',
-    download: '.fsbt 다운로드',
-    source: '소스 코드',
-    light: '라이트',
-    dark: '다크',
-    search: '테마 및 아이콘 팩 검색',
-    modeLabel: '모드',
-    all: '전체',
-    sortLabel: '정렬',
-    sortName: '이름순',
-    sortUpdated: '최신순',
-    noMatch: '일치하는 테마가 없습니다. 다른 검색어나 모드를 선택해 보세요.',
-    storeTitle: '테마 스토어',
-    storeSubtitle:
-      '공식 테마와 아이콘 팩의 실제 색상, 컴포넌트, 아이콘, 스플래시 화면을 웹에서 그대로 미리 보세요.',
-    browse: '테마 스토어 열기',
-    back: '모든 테마',
-    details: '상세 보기',
-    icons: '아이콘',
-    tabIcons: '탭 바 및 활성 상태',
-    navIcons: '내비게이션 기호',
-    palette: '컬러 팔레트',
-    components: '컴포넌트',
-    splash: '스플래시 화면',
-    install: '설치 방법',
-    installSteps:
-      '앱의 “설정 → 모양 → 테마 스토어”에서 {name}을(를) 선택하거나, .fsbt 파일을 받아 “테마 설치 → 파일”로 불러오세요.',
-    base: '기본',
-    hovered: '호버',
-    pressed: '누름',
-    disabled: '비활성',
-    loadFailed: '테마 미리보기를 불러오지 못했습니다.',
-    retry: '다시 시도',
-    iconPacks: '아이콘 팩',
-    iconPacksSubtitle:
-      '아이콘 팩은 어떤 테마와도 자유롭게 조합할 수 있습니다. “설정 → 모양 → 테마 스토어 → 아이콘 팩”에서 적용하세요.',
-  },
-  plugins: {
-    title: 'ServerBox 확장',
-    subtitle: '공식 플러그인으로 필요한 기능을 더하세요.',
-    empty: '아직 공식 플러그인이 없습니다.',
-    download: '다운로드',
-  },
   download: {
     title: '모든 플랫폼 네이티브 지원.',
     subtitle:
@@ -257,15 +200,6 @@ const kr: Translation = {
       'GitHub에서 코드를 확인하고 기여하거나 지금 바로 최신 버전을 다운로드하세요.',
     appStoreAction: 'App Store',
     githubAction: 'GitHub Releases',
-  },
-  pride: {
-    badge: 'LGBTQ+ 프렌들리',
-    title: '다양성과 자긍심을 담아.',
-    description:
-      'ServerBox는 LGBTQ+ 커뮤니티를 자랑스럽게 지지합니다. 테마 스토어에서 Rainbow, Trans, Nonbinary 3가지 변형을 담은 공식 Pride 테마를 만나보세요.',
-    rainbow: 'Rainbow',
-    trans: 'Trans',
-    nonbinary: 'Nonbinary',
   },
   otherApps: {
     title: '더 많은 서비스와 앱.',

@@ -286,10 +286,6 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'بازیابی شد، به‌جز این پوسته‌ها. آن‌ها را مجدداً از فروشگاه پوسته یا فایل مبدأ نصب کنید.';
-
-  @override
   String get icloudBackupStateConflict => 'تداخل شناسایی شد';
 
   @override
@@ -1164,7 +1160,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get keyPassphrases => 'عبارت‌های عبور کلید';
 
   @override
-  String get syncFiles => 'فونت‌ها، تصاویر و Skills';
+  String get syncFiles => 'مهارت‌های عامل';
 
   @override
   String get syncRemoteTooNew =>
@@ -5416,10 +5412,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'فضایی که یک سطر ترمینال اشغال می‌کند، به‌صورت مضربی از اندازه فونت، از ۱.۰ تا ۲.۰. مانند اندازه فونت، تعداد سطرهایی را که جا می‌شوند تغییر می‌دهد.';
-
-  @override
-  String get termFontTip =>
-      'بدون فایل فونت، ترمینال از فونت monospace سیستم و سپس برای موارد ناموجود از فونت‌های دارای نویسه‌های CJK و ایموجی استفاده می‌کند.';
 
   @override
   String get netSpeed => 'سرعت شبکه';

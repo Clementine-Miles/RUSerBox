@@ -4,8 +4,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart'
-    show ThemeBackup, ThemeBlobStore, ThemeRestoreReport;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
 import 'package:server_box/core/ssh/identities.dart';
@@ -39,23 +37,6 @@ part 'backup2.g.dart';
 part 'backup_restore.dart';
 
 final _loggerV2 = Logger('BackupV2');
-
-/// Where a restore fetches the theme packages a backup keeps apart, from the
-/// sync that keeps them, which installs [source] at start
-/// (`installThemeBlobs`).
-abstract final class BackupThemeBlobs {
-  static ThemeBlobStore? Function()? source;
-
-  /// None while signed out of where they are kept.
-  static ThemeBlobStore? get available {
-    final source = BackupThemeBlobs.source;
-    if (source == null) {
-      Loggers.app.warning('Themes restored before installThemeBlobs');
-      return null;
-    }
-    return source();
-  }
-}
 
 @freezed
 abstract class BackupV2 with _$BackupV2 implements Mergeable {
@@ -102,12 +83,6 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     /// `_pveToRestore`.
     @Default(<String, Object?>{}) Map<String, Object?> pve,
 
-    /// The installed theme packages, by installation id — see
-    /// [ThemeBackup]. Only beside [settings]: they are what the theme
-    /// settings point at. Absent from files written before themes were
-    /// carried (#1637), whose theme settings restore onto the default.
-    @Default(<String, Object?>{}) Map<String, Object?> themes,
-
     /// The synced kv stores beside [settings], by name
     /// (`SyncRecorder.syncedStores`): the Agent's. Absent from files written
     /// before they synced.
@@ -138,12 +113,8 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
   static const formatVer = SchemaVersion.current;
 
   /// [only]: the categories carried beside the records every backup holds;
-  /// all when null. [blobs]: where theme packages are kept apart, when the
-  /// backup goes where they can be (LK Cloud).
-  static Future<BackupV2> loadFromStore({
-    Set<SyncCategory>? only,
-    ThemeBlobStore? blobs,
-  }) async {
+  /// all when null.
+  static Future<BackupV2> loadFromStore({Set<SyncCategory>? only}) async {
     final categories = only ?? SyncCategory.values.toSet();
     final includeSettings = categories.contains(SyncCategory.settings);
     return BackupV2(
@@ -158,10 +129,7 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
       container: Stores.container.getAllMap(),
       pve: Stores.pve.getAllMap(),
       history: _backupStore(Stores.history),
-      settings: includeSettings
-          ? _backupStore(Stores.setting)
-          : const {},
-      themes: includeSettings ? await _themes(blobs) : const {},
+      settings: includeSettings ? _backupStore(Stores.setting) : const {},
       stores: {
         for (final MapEntry(key: name, value: store) in _syncedStores.entries)
           if (_covers(categories, name)) name: _backupStore(store),
@@ -197,7 +165,6 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     final withSettings = categories.contains(SyncCategory.settings);
     return copyWith(
       settings: withSettings ? settings : from?.settings ?? const {},
-      themes: withSettings ? themes : from?.themes ?? const {},
       stores: {
         for (final e in stores.entries)
           if (_covers(categories, e.key)) e.key: e.value,
@@ -213,15 +180,17 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
   BackupV2 withoutSecrets() => copyWith(
     stores: {
       for (final e in stores.entries)
-        if (!const {SyncCategory.secrets, SyncCategory.passphrases}.contains(SyncCategory.of('kv:${e.key}')))
+        if (!const {
+          SyncCategory.secrets,
+          SyncCategory.passphrases,
+        }.contains(SyncCategory.of('kv:${e.key}')))
           e.key: e.value,
     },
   );
 
   /// Whether this file lacks a record this device holds, or holds one older
   /// than this device's, a delete included — see `SyncIface.lacks`. Records
-  /// and their stamps only: those converge. The themes do not (they are what
-  /// each device could install), so they are left out.
+  /// and their stamps converge across devices.
   bool lacksLocal({required Set<SyncCategory> categories}) => [
     (Stores.server.getAllMap(), spis),
     (Stores.snippet.getAllMap(), snippets),
@@ -233,8 +202,7 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     if (categories.contains(SyncCategory.settings))
       (_backupStore(Stores.setting), settings),
     for (final MapEntry(key: name, value: store) in _syncedStores.entries)
-      if (_covers(categories, name))
-        (_backupStore(store), _storeRows(name)),
+      if (_covers(categories, name)) (_backupStore(store), _storeRows(name)),
   ].any((pair) => _lacks(pair.$1, pair.$2));
 
   /// The rows of the store [name] this file holds.
@@ -246,10 +214,8 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
 
   static bool _lacks(Map<String, Object?> local, Map<String, Object?> remote) {
     const tsKey = StoreDefaults.defaultLastUpdateTsKey;
-    Map<String, int> stamps(Map<String, Object?> rows) => _kvTimestamps(
-      rows[tsKey],
-      rows.keys.where((key) => key != tsKey),
-    );
+    Map<String, int> stamps(Map<String, Object?> rows) =>
+        _kvTimestamps(rows[tsKey], rows.keys.where((key) => key != tsKey));
     final remoteStamps = stamps(remote);
     for (final MapEntry(:key, value: at) in stamps(local).entries) {
       if (at > (remoteStamps[key] ?? 0)) return true;
@@ -259,16 +225,7 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     );
   }
 
-  static Future<Map<String, Object?>> _themes(ThemeBlobStore? blobs) async {
-    final export = await ThemeBackup.export(blobs: blobs);
-    if (export.skipped.isNotEmpty) {
-      // Listed with nothing to install them from; the restore names them.
-      _loggerV2.warning('Themes without a package to carry: ${export.skipped}');
-    }
-    return export.entries;
-  }
-
-  /// [only] and [blobs] as [loadFromStore]; what [only] leaves out is
+  /// [only] as in [loadFromStore]; what [only] leaves out is
   /// taken from [carry] when given ([carrying]). Sealed to [key] (the sync's,
   /// `Miscs.bakFileName`), else with [password] (an export `age -d` opens,
   /// `Miscs.exportBakFileName`); with neither, the secrets are left out: the
@@ -278,7 +235,6 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     String? password, {
     SyncKeyHandle? key,
     Set<SyncCategory>? only,
-    ThemeBlobStore? blobs,
     BackupV2? carry,
   }) async {
     final encrypted = key != null || (password != null && password.isNotEmpty);
@@ -287,7 +243,7 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
         ..remove(SyncCategory.secrets)
         ..remove(SyncCategory.passphrases);
     }
-    var bak = await BackupV2.loadFromStore(only: only, blobs: blobs);
+    var bak = await BackupV2.loadFromStore(only: only);
     if (carry != null && only != null) bak = bak.carrying(carry, only);
     // What was carried too: another device's secrets are no more this
     // file's to hold in the clear than this one's.
@@ -456,7 +412,9 @@ Map<String, Object?> _backupStore(SqliteStore store) {
   // hold a key device-local reads one with no row as deleted there, and
   // deletes its own), and as the map: a string holding it made two devices'
   // backups differ in shape.
-  if (store.lastUpdateTs case final stamps?) rows[store.lastUpdateTsKey] = stamps;
+  if (store.lastUpdateTs case final stamps?) {
+    rows[store.lastUpdateTsKey] = stamps;
+  }
   return rows;
 }
 

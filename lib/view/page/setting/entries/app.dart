@@ -30,24 +30,60 @@ extension _App on _AppSettingsPageState {
     ];
   }
 
-  /// What the app looks like, in two groups.
-  ///
-  /// Theme and font were two pages, each holding a group the other's name
-  /// would have covered: the theme page opened on a group called "Appearance"
-  /// and the font page was one group called "Font". The page is the appearance
-  /// and the groups are the two halves of it — which is also what puts the
-  /// font beside the theme it is part of, rather than a tap away.
   List<SettingsGroup> _buildAppearance() {
-    // The rows themselves are shared with the other apps on fl_lib; which page
-    // they are on, and the groups they are read in, are this app's.
-    final appearance = ThemeAppearance(context, setStateSafe);
-    SettingsRow row(ThemeSettingRow r) =>
-        SettingsRow(r.label, r.build, keywords: r.keywords);
+    final palette = _setting.appThemePreset;
+    final iconStyle = _setting.appIconStyle;
     return [
-      SettingsGroup(libL10n.theme, appearance.themeRows().map(row).toList()),
-      SettingsGroup(libL10n.font, appearance.fontRows().map(row).toList()),
+      SettingsGroup(libL10n.theme, [
+        SettingsRow(libL10n.themeMode, () => const ThemeModeTile()),
+        SettingsRow(
+          libL10n.appearancePreset,
+          () => ValBuilder(
+            listenable: palette.listenable(),
+            builder: (value) => ListTile(
+              leading: const Icon(Icons.palette_outlined),
+              title: Text(libL10n.appearancePreset),
+              trailing: Text(value.label, style: UIs.text15),
+              onTap: () async {
+                final picked = await context.showPickSingleSheet(
+                  title: libL10n.appearancePreset,
+                  items: Gruvbox.values,
+                  display: (theme) => theme.label,
+                  initial: value,
+                );
+                if (picked != null) palette.put(picked);
+              },
+            ),
+          ),
+        ),
+        SettingsRow(
+          libL10n.appearanceIcons,
+          () => ValBuilder(
+            listenable: iconStyle.listenable(),
+            builder: (value) => ListTile(
+              leading: const Icon(Icons.category_outlined),
+              title: Text(libL10n.appearanceIcons),
+              trailing: Text(_iconStyleLabel(value), style: UIs.text15),
+              onTap: () async {
+                final picked = await context.showPickSingleSheet(
+                  title: libL10n.appearanceIcons,
+                  items: IconStyle.values,
+                  display: _iconStyleLabel,
+                  initial: value,
+                );
+                if (picked != null) iconStyle.put(picked);
+              },
+            ),
+          ),
+        ),
+      ]),
     ];
   }
+
+  String _iconStyleLabel(IconStyle style) => switch (style) {
+    IconStyle.classic => libL10n.defaultLabel,
+    IconStyle.mingcute => 'MingCute',
+  };
 
   SettingsRow _buildBioAuth() {
     return SettingsRow(libL10n.bioAuth, PlatformPublicSettings.buildBioAuth);
@@ -154,7 +190,6 @@ extension _App on _AppSettingsPageState {
     () => const MotionPrefTile(),
     keywords: 'animation',
   );
-
 
   /// Its own page rather than two rows under the app's own settings, because
   /// what it decides is not the same kind of thing as the rows it sat among.
@@ -539,15 +574,10 @@ extension _App on _AppSettingsPageState {
         closeAfterSave: _setting.closeAfterSave.fetch(),
         softWrap: _setting.editorSoftWrap.fetch(),
         enableHighlight: _setting.editorHighlight.fetch(),
-        lightTheme: HighlightTheme.fromThemeMapKey(
-          _setting.editorTheme.fetch(),
-        ),
-        darkTheme: HighlightTheme.fromThemeMapKey(
-          _setting.editorDarkTheme.fetch(),
-        ),
+        lightTheme: HighlightTheme.gruvbox_light,
+        darkTheme: HighlightTheme.gruvbox_dark,
         fontFamily: editorFont.isEmpty ? null : editorFont,
       ),
     );
   }
 }
-

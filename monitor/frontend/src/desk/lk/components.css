@@ -3,9 +3,7 @@
    only set these classes plus a few runtime inline values. In the components
    layer, so a utility on the same element still wins. Kept in the design
    system's compact form so it can be compared with the source line by line;
-   change it there first. Added here: the hooks an installed app theme draws
-   through (`--shape-*`, `--lk-<component>-*`, `desk/themeComponents.ts`),
-   each read with the design system's own value as its fallback. */
+   change it there first. */
 @layer components {
 
 /* ---------- Icon ---------- */

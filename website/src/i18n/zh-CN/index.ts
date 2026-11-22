@@ -12,10 +12,8 @@ const zhCN: Translation = {
     capabilities: '能力',
     download: '下载',
     docs: '文档',
-    themes: '主题',
     os: 'ServerBox OS',
     beta: 'Beta',
-    plugins: '插件',
     otherApps: '更多',
     signIn: '登录',
     languageLabel: '语言',
@@ -92,11 +90,6 @@ const zhCN: Translation = {
       title: '虚拟化管控',
       description:
         '集中管理 Proxmox VE 与 libvirt 上的虚拟机和容器，随时启停实例、弹性调整 vCPU/内存/磁盘或打开控制台。',
-    },
-    themes: {
-      title: '个性化主题商店',
-      description:
-        '在应用内一键换装官方精调配色、图标、背景与启动画面，亦可通过 TOML 规范自由创作专属主题。',
     },
   },
   capabilities: {
@@ -180,55 +173,6 @@ const zhCN: Translation = {
     docs: 'Monitor 文档',
     appAction: '下载客户端',
   },
-  themes: {
-    title: '换一身你喜欢的风格。',
-    subtitle:
-      '下方可直接实时预览官方主题。在 App 内打开“设置 → 外观 → 主题商店”即可一键应用，也支持导入 .fsbt 主题包。',
-    empty:
-      '暂无官方主题。参考主题制作指南即可快速打造并提交你的专属主题。',
-    note: 'App 在安装任何商店主题包前，均会自动校验 SHA-256 签名。',
-    authoring: '制作指南',
-    download: '下载 .fsbt',
-    source: '源码',
-    light: '浅色',
-    dark: '深色',
-    search: '搜索主题或图标包',
-    modeLabel: '模式',
-    all: '全部',
-    sortLabel: '排序',
-    sortName: '按名称',
-    sortUpdated: '最近更新',
-    noMatch: '没有找到匹配的主题，换个关键词或模式试试。',
-    storeTitle: '主题商店',
-    storeSubtitle:
-      '实时还原全部官方主题与图标包在 App 内的真实渲染效果，涵盖配色方案、组件状态、图标与启动画面。',
-    browse: '浏览主题商店',
-    back: '返回全部主题',
-    details: '查看详情',
-    icons: '图标',
-    tabIcons: '底部标签页与选中态',
-    navIcons: '导航与功能图标',
-    palette: '色彩方案',
-    components: '组件状态',
-    splash: '启动画面',
-    install: '安装方式',
-    installSteps: '在 App 中打开“设置 → 外观 → 主题商店”选择 {name} 即可安装；也可下载 .fsbt 文件后通过“安装主题 → 文件”导入。',
-    base: '默认',
-    hovered: '悬停',
-    pressed: '按下',
-    disabled: '禁用',
-    loadFailed: '无法加载该主题的预览数据。',
-    retry: '重试',
-    iconPacks: '图标包',
-    iconPacksSubtitle:
-      '图标包独立于主题，可与任意配色自由混搭。在“设置 → 外观 → 主题商店 → 图标包”中即可一键启用。',
-  },
-  plugins: {
-    title: '扩展 ServerBox',
-    subtitle: '安装官方插件，按需解锁更多运维能力。',
-    empty: '暂无官方插件。',
-    download: '下载',
-  },
   download: {
     title: '全平台原生支持。',
     subtitle:
@@ -244,15 +188,6 @@ const zhCN: Translation = {
       '代码完全透明，欢迎在 GitHub 参与共建，或立即下载体验。',
     appStoreAction: 'App Store 下载',
     githubAction: 'GitHub Releases',
-  },
-  pride: {
-    badge: '支持 LGBTQ+',
-    title: '多元与包容，与骄傲同行。',
-    description:
-      'ServerBox 坚定支持 LGBTQ+ 群体。内置主题商店官方提供 Pride 主题，包含六色彩虹（Rainbow）、跨性别（Trans）与非二元（Nonbinary）三款旗帜变体。',
-    rainbow: '六色彩虹',
-    trans: '跨性别',
-    nonbinary: '非二元',
   },
   otherApps: {
     title: '更多服务与应用。',

@@ -46,7 +46,6 @@ Thanks to <a href="https://openai.com">OpenAI</a> for providing six months of Ch
     <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/agent.jpg" alt="Agent"></td>
     <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/bench.jpg" alt="Benchmark"></td>
     <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/virt.jpg" alt="Virtualization"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/themes.jpg" alt="Theme store"></td>
   </tr>
 </table>
 </details>
@@ -88,7 +87,7 @@ Download packages only from sources you trust.
 
 **Making it yours**
 
-- Install [themes and icon packs](https://serverbox.lollipopkit.com/docs/advanced/theme-packages/) from the built-in store, or make your own.
+- Gruvbox Material and Gruvbox, each in light and dark, with built-in icon styles.
 - Biometric app lock, and backups to iCloud or WebDAV, encrypted with a password you choose.
 - iOS, Android, macOS, Linux and Windows, in 17 languages.
 
@@ -103,7 +102,6 @@ Download packages only from sources you trust.
 
   - [`serverbox-help`](.claude/skills/serverbox-help): using the app and deploying and configuring the Monitor — adding servers, why a feature is missing for a server, permissions, alerts, widgets, backups. The app's own Agent ships with it.
   - [`serverbox-onboarding`](.claude/skills/serverbox-onboarding): working on the code — setting up the Flutter + Rust + Node environment, building and testing, and how the project works.
-  - [`serverbox-theme`](.claude/skills/serverbox-theme): making a theme package (`.fsbt`), validating it and publishing it to the theme store.
 
   Their source is in this repository, so you can read what they will tell your Monitor before installing them.
 

@@ -285,10 +285,6 @@ class AppLocalizationsAz extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Bərpa edildi, bu mövzular istisna olmaqla. Onları mövzu mağazasından və ya gəldikləri fayldan yenidən quraşdırın.';
-
-  @override
   String get icloudBackupStateConflict => 'Ziddiyyət aşkarlandı';
 
   @override
@@ -1164,7 +1160,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get keyPassphrases => 'Açar parol ifadələri';
 
   @override
-  String get syncFiles => 'Şriftlər, şəkillər və Skills';
+  String get syncFiles => 'Agent bacarıqları';
 
   @override
   String get syncRemoteTooNew =>
@@ -5367,10 +5363,6 @@ class AppLocalizationsAz extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'Terminal sətirinin tutduğu yer şrift ölçüsünün 1,0–2,0 misli arasındadır. Şrift ölçüsü kimi, ekrana neçə sətir yerləşəcəyinə təsir edir.';
-
-  @override
-  String get termFontTip =>
-      'Şrift faylı seçilmədikdə terminal əvvəlcə sistemin sabit enli şriftindən, onda olmayan qliflər üçün isə CJK və emoji qliflərini dəstəkləyən şriftlərdən istifadə edir.';
 
   @override
   String get netSpeed => 'Şəbəkə sürəti';

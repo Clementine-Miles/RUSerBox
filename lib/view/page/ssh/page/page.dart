@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:dartssh2/dartssh2.dart';
 import 'package:fl_lib/fl_lib.dart';
@@ -704,9 +702,6 @@ class SSHPageState extends ConsumerState<SSHPage>
     );
     if (floating) return _buildFloatedAway();
 
-    final bgFile = _bgFileFor(Stores.setting.sshBgImage.fetch());
-    final hasBg = bgFile != null;
-
     Widget child = PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -714,11 +709,7 @@ class SSHPageState extends ConsumerState<SSHPage>
         _handleEscKeyOrBackButton();
       },
       child: Scaffold(
-        // One background for the whole page. Transparent over a picture, and
-        // otherwise the `Scaffold`'s own colour — which is what the terminal
-        // is drawn on either way, since [TerminalView] is given
-        // `backgroundOpacity: 0` and paints none of its own.
-        backgroundColor: hasBg ? Colors.transparent : null,
+        backgroundColor: _terminalTheme.background,
         appBar: widget.args.notFromTab
             ? CustomAppBar(
                 leading: BackButton(onPressed: context.pop),
@@ -727,20 +718,10 @@ class SSHPageState extends ConsumerState<SSHPage>
                 actions: _buildAppBarActions(),
               )
             : null,
-        body: _buildBody(hasBg),
+        body: _buildBody(),
         bottomNavigationBar: isDesktop ? null : _buildBottom(),
       ),
     );
-
-    // Behind the `Scaffold` and not inside the body: the virtual keys are a bar
-    // under it, and a picture that stops where the terminal does leaves them on
-    // a colour of their own.
-    if (hasBg) {
-      child = Stack(
-        fit: StackFit.expand,
-        children: [..._buildBackground(bgFile), child],
-      );
-    }
 
     if (isIOS) {
       child = AnnotatedRegion(
@@ -799,63 +780,8 @@ class SSHPageState extends ConsumerState<SSHPage>
     );
   }
 
-  /// The picture the page is drawn on, bottom layer first.
-  ///
-  /// Only called when there is one — see [build], which is also where it is
-  /// put in the tree.
-  List<Widget> _buildBackground(File file) {
-    final opacity = Stores.setting.sshBgOpacity.fetch();
-    final blur = Stores.setting.sshBlurRadius.fetch();
-    return [
-      Positioned.fill(
-        child: Image.file(
-          file,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => const SizedBox(),
-        ),
-      ),
-      if (blur > 0)
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-            child: const SizedBox(),
-          ),
-        ),
-      Positioned.fill(
-        child: ColoredBox(
-          color: _terminalTheme.background.withValues(alpha: opacity),
-        ),
-      ),
-    ];
-  }
-
-  /// The background image at [path], or null while there is none: looked up
-  /// once per path (each picture gets a path of its own), off the UI isolate,
-  /// the page drawn again when it is found.
-  File? _bgFileFor(String path) {
-    if (path != _bgPath) {
-      _bgPath = path;
-      _bgFile = null;
-      if (path.isNotEmpty) {
-        final file = File(path);
-        unawaited(
-          file.exists().then((found) {
-            if (found && mounted && _bgPath == path) setState(() => _bgFile = file);
-          }),
-        );
-      }
-    }
-    return _bgFile;
-  }
-
-  String? _bgPath;
-  File? _bgFile;
-
-  Widget _buildBody(bool hasBg) {
+  Widget _buildBody() {
     final letterCache = Stores.setting.letterCache.fetch();
-    final theme = hasBg
-        ? _terminalTheme.copyWith(background: Colors.transparent)
-        : _terminalTheme;
     final terminal = SizedBox(
       height: double.infinity,
       child: Padding(
@@ -874,7 +800,7 @@ class SSHPageState extends ConsumerState<SSHPage>
           enableSuggestions: letterCache,
           textStyle: _terminalStyle,
           backgroundOpacity: 0,
-          theme: theme,
+          theme: _terminalTheme,
           deleteDetection: isMobile,
           autofocus: false,
           keyboardAppearance: _isDark ? Brightness.dark : Brightness.light,

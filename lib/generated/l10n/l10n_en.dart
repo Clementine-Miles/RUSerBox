@@ -284,10 +284,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Restored, except these themes. Install them again from the theme store or the file they came from.';
-
-  @override
   String get icloudBackupStateConflict => 'Conflict detected';
 
   @override
@@ -1158,7 +1154,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keyPassphrases => 'Key passphrases';
 
   @override
-  String get syncFiles => 'Fonts, images and skills';
+  String get syncFiles => 'Agent skills';
 
   @override
   String get syncRemoteTooNew =>
@@ -5377,10 +5373,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'The space a terminal row takes, as a multiple of the font size, from 1.0 to 2.0. Like the font size, it changes how many rows fit.';
-
-  @override
-  String get termFontTip =>
-      'Without a font file, the terminal uses the system\'s monospace font, then fonts with CJK and emoji glyphs for what it lacks.';
 
   @override
   String get netSpeed => 'Net speed';

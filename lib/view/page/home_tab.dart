@@ -1,10 +1,10 @@
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_lib/theme.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/extension/context/locale.dart';
 import 'package:server_box/data/model/app/feature.dart';
 import 'package:server_box/data/model/app/tab.dart';
+import 'package:server_box/data/res/icon_style.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/view/page/server/widget/conn_count_badge.dart';
 import 'package:server_box/view/widget/marked_title.dart';
@@ -111,15 +111,10 @@ class _AppTabIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([
-        Stores.setting.appIconStyle.listenable(),
-        ThemePackages.preview,
-      ]),
+      listenable: Stores.setting.appIconStyle.listenable(),
       builder: (context, _) {
         final mingcute =
-            (ThemePackages.preview.value?.iconStyle ??
-                Stores.setting.appIconStyle.fetch()) ==
-            IconStyle.mingcute;
+            Stores.setting.appIconStyle.fetch() == IconStyle.mingcute;
         final icon = mingcute
             ? switch (tab) {
                 AppTab.server =>
@@ -169,10 +164,7 @@ class _AppTabIcon extends StatelessWidget {
                 AppTab.monitor =>
                   selected ? Icons.monitor_heart : Icons.monitor_heart_outlined,
               };
-        return ThemeIconAsset(
-          keyName: ThemeIcons.tabKey(tab.name, selected: selected),
-          fallback: Icon(icon),
-        );
+        return Icon(icon);
       },
     );
   }

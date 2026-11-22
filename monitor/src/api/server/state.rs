@@ -138,8 +138,6 @@ pub struct AppState {
     /// The desk's events and which monitoring rules are firing — see
     /// `api::desk`.
     pub desk: Arc<crate::api::desk::DeskHub>,
-    /// The theme store as last read — see `api::desk_themes`.
-    pub themes: Arc<crate::api::desk_themes::ThemeStore>,
     /// Files kept beside the database — see `core::blobs`.
     pub blobs: Arc<crate::core::blobs::Blobs>,
     /// The database's credentials key — see `db::sealed`.
@@ -279,7 +277,6 @@ impl AppState {
             mcp_token_limiter: RateLimiter::new(120, 60),
             password_changed: broadcast::channel(16).0,
             desk: Arc::new(crate::api::desk::DeskHub::default()),
-            themes: Arc::new(crate::api::desk_themes::ThemeStore::default()),
             // Beside the database actually open, which a test's in-memory
             // one is not, whatever its configuration names.
             blobs: Arc::new(match sqlite_file_of(&db) {

@@ -283,10 +283,6 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Bu temalar dışında geri yüklendi. Temaları tema mağazasından veya geldikleri dosyadan yeniden yükleyin.';
-
-  @override
   String get icloudBackupStateConflict => 'Çakışma algılandı';
 
   @override
@@ -1164,7 +1160,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get keyPassphrases => 'Anahtar parolaları';
 
   @override
-  String get syncFiles => 'Yazı tipleri, görseller ve Skills';
+  String get syncFiles => 'Ajan becerileri';
 
   @override
   String get syncRemoteTooNew =>
@@ -5358,10 +5354,6 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'Bir terminal satırının kapladığı alanı, yazı tipi boyutunun 1,0 ile 2,0 katı arasında belirler. Yazı tipi boyutu gibi, ekrana sığan satır sayısını etkiler.';
-
-  @override
-  String get termFontTip =>
-      'Bir yazı tipi dosyası seçilmediğinde terminal, sistemin eş aralıklı yazı tipini kullanır; eksik glifler için CJK ve emoji glifleri içeren yazı tiplerine başvurur.';
 
   @override
   String get netSpeed => 'Ağ hızı';

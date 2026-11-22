@@ -12,10 +12,8 @@ const ja: Translation = {
     capabilities: 'ツール',
     download: 'ダウンロード',
     docs: 'ドキュメント',
-    themes: 'テーマ',
     os: 'ServerBox OS',
     beta: 'ベータ',
-    plugins: 'プラグイン',
     otherApps: 'その他',
     signIn: 'ログイン',
     languageLabel: '言語',
@@ -93,11 +91,6 @@ const ja: Translation = {
       title: '仮想化基盤の管理',
       description:
         'Proxmox VE や libvirt 上の VM・コンテナを操作。電源制御、vCPU・メモリ・ディスクの調整、コンソール接続に対応。',
-    },
-    themes: {
-      title: 'テーマストア',
-      description:
-        '配色・背景・アイコン・起動画面をアプリ内ストアからワンタップで着せ替え。自作テーマの作成も可能。',
     },
   },
   capabilities: {
@@ -192,56 +185,6 @@ const ja: Translation = {
     docs: 'Monitor ドキュメント',
     appAction: 'アプリを入手',
   },
-  themes: {
-    title: '自分好みのスタイルに。',
-    subtitle:
-      '公式テーマをその場でライブプレビュー。「設定 → 外観 → テーマストア」からワンタップで適用、または .fsbt パッケージを読み込めます。',
-    empty:
-      '公式テーマはまだありません。ガイドを参考に自作テーマを作成・投稿できます。',
-    note: 'ストアの全パッケージはインストール前に SHA-256 チェックサムが検証されます。',
-    authoring: 'テーマ作成ガイド',
-    download: '.fsbt をダウンロード',
-    source: 'ソース',
-    light: 'ライト',
-    dark: 'ダーク',
-    search: 'テーマ・アイコンパックを検索',
-    modeLabel: 'モード',
-    all: 'すべて',
-    sortLabel: '並び替え',
-    sortName: '名前順',
-    sortUpdated: '更新順',
-    noMatch: '一致するテーマがありません。別のキーワードやモードをお試しください。',
-    storeTitle: 'テーマストア',
-    storeSubtitle:
-      '公式テーマとアイコンパックを、アプリ内とまったく同じ配色・コンポーネント・アイコンでライブプレビュー。',
-    browse: 'テーマストアを見る',
-    back: 'すべてのテーマ',
-    details: '詳細',
-    icons: 'アイコン',
-    tabIcons: 'タブと選択状態',
-    navIcons: 'ナビゲーション記号',
-    palette: 'カラーパレット',
-    components: 'コンポーネント',
-    splash: 'スプラッシュ画面',
-    install: 'インストール',
-    installSteps:
-      'アプリの「設定 → 外観 → テーマストア」で {name} を選ぶか、.fsbt ファイルをダウンロードして「テーマをインストール → ファイル」から読み込みます。',
-    base: '通常',
-    hovered: 'ホバー',
-    pressed: '押下',
-    disabled: '無効',
-    loadFailed: 'プレビューを読み込めませんでした。',
-    retry: '再試行',
-    iconPacks: 'アイコンパック',
-    iconPacksSubtitle:
-      'アイコンパックはどのテーマとも自由に組み合わせ可能。「設定 → 外観 → テーマストア → アイコンパック」から適用できます。',
-  },
-  plugins: {
-    title: 'ServerBox を拡張',
-    subtitle: '公式プラグインでさらに機能を追加。',
-    empty: '公式プラグインはまだありません。',
-    download: 'ダウンロード',
-  },
   download: {
     title: 'あらゆるプラットフォームにネイティブ対応。',
     subtitle:
@@ -257,15 +200,6 @@ const ja: Translation = {
       'コードの閲覧やコントリビュートは GitHub から。今すぐ最新リリースをお試しください。',
     appStoreAction: 'App Store',
     githubAction: 'GitHub Releases',
-  },
-  pride: {
-    badge: 'LGBTQ+ フレンドリー',
-    title: '誇りと多様性とともに。',
-    description:
-      'ServerBox は LGBTQ+ コミュニティを誇りをもって支持します。テーマストアでは Rainbow・Trans・Nonbinary の 3 バリアントを備えた公式 Pride テーマを配布しています。',
-    rainbow: 'Rainbow',
-    trans: 'Trans',
-    nonbinary: 'Nonbinary',
   },
   otherApps: {
     title: 'その他のサービスとアプリ。',

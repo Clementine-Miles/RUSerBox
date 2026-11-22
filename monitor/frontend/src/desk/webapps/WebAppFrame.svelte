@@ -34,7 +34,7 @@
 
   /// The desk's mode and its installed theme's tokens (none for the design
   /// system's own), which `serverbox-desk` sets on the app's page.
-  const appTheme = () => ({ dark: theme.dark, tokens: desk.themes?.vars(theme.dark) ?? {} })
+  const appTheme = () => ({ dark: theme.dark })
 
   /// The sudo dialog shown now: what the app said, what runs once
   /// confirmed, and how the frame's call ends.

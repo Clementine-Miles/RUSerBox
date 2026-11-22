@@ -284,10 +284,6 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      'Hersteld, behalve deze thema’s. Installeer ze opnieuw vanuit de themastore of het oorspronkelijke bestand.';
-
-  @override
   String get icloudBackupStateConflict => 'Conflict gevonden';
 
   @override
@@ -1168,7 +1164,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get keyPassphrases => 'Wachtwoordzinnen van sleutels';
 
   @override
-  String get syncFiles => 'Lettertypen, afbeeldingen en skills';
+  String get syncFiles => 'Agentvaardigheden';
 
   @override
   String get syncRemoteTooNew =>
@@ -5421,10 +5417,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       'De ruimte die een terminalregel inneemt, als veelvoud van de tekengrootte van 1,0 tot 2,0. Net als de tekengrootte bepaalt dit hoeveel regels er passen.';
-
-  @override
-  String get termFontTip =>
-      'Zonder geselecteerd lettertypebestand gebruikt de terminal het monospace-lettertype van het systeem en daarna lettertypen met CJK- en emoji-glyphs voor wat daarin ontbreekt.';
 
   @override
   String get netSpeed => 'Netwerksnelheid';

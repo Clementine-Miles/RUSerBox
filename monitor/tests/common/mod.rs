@@ -177,7 +177,7 @@ pub mod machine {
     }
 }
 
-/// A first-party package the agent ships (`store/desk/<id>.fsba`), installed
+/// A first-party package the agent ships (`monitor/catalog/desk/<id>.fsba`), installed
 /// from its catalog and approved on a [`machine`] server, its backend called
 /// as the desk calls it. Root's work gets an empty sudo password: these run
 /// as root on a throwaway machine.
@@ -264,7 +264,7 @@ pub mod package {
     }
 }
 
-/// Catalog apps (`store/apps`) on a real Docker, for the e2e tests that
+/// Catalog apps (`monitor/catalog/apps`) on a real Docker, for the e2e tests that
 /// deploy them: each a copy under a name of its own (`<name>_e2e`, its built
 /// images too), so a copy an agent on the same machine deployed is never
 /// touched.
@@ -277,9 +277,9 @@ pub mod catalog {
 
     use super::machine::call;
 
-    /// `store/apps/<id>` copied as `<id>_e2e` into [dir]; the copy's id.
+    /// `monitor/catalog/apps/<id>` copied as `<id>_e2e` into [dir]; the copy's id.
     pub fn copy_app(id: &str, dir: &std::path::Path) -> String {
-        let from = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../store/apps").join(id);
+        let from = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("catalog/apps").join(id);
         let (publisher, name) = id.split_once('.').unwrap();
         let copy = format!("{publisher}.{name}_e2e");
         let to = dir.join(&copy);

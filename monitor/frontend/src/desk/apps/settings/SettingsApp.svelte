@@ -20,7 +20,6 @@
   import AppPage from './AppPage.svelte'
   import StackPage from './StackPage.svelte'
   import AppsSection from './AppsSection.svelte'
-  import ThemeStorePage from './ThemeStorePage.svelte'
   import { useDeskPrefs } from '../../deskState.svelte'
   import GeneralSection from './GeneralSection.svelte'
   import ServerSection from './ServerSection.svelte'
@@ -116,19 +115,6 @@
     win.setAppState(file === null ? { section: 'agent', page: 'memory' } : { section: 'agent', page: 'memory', file })
   }
 
-  /// The theme store, a page over Appearance (`{ section: 'appearance', page: 'store' }`).
-  const storePage = $derived(
-    current === 'appearance' && (win.appState as { page?: unknown } | null)?.page === 'store' && deskPrefs.themes !== null,
-  )
-  let leftStore = $state(false)
-  function openStore() {
-    win.setAppState({ section: 'appearance', page: 'store' })
-  }
-  function leaveStore() {
-    leftStore = true
-    show('appearance')
-  }
-
   /// The app page last gone back from: a swipe forward on Apps reopens it.
   let leftApp = $state<string | null>(null)
   function leaveApp() {
@@ -199,16 +185,13 @@
     </SidebarSection>
   {/snippet}
 
-  <!-- An app's page is a page over Apps, the theme store one over
-       Appearance; the sections are peers. -->
+  <!-- An app's page is a page over Apps. -->
   <PageStack
     key={stackPage
       ? `apps/stack/${stackPage}`
       : appPage
       ? `apps/${appPage.id}`
-      : storePage
-        ? 'appearance/store'
-        : agentPermissions
+      : agentPermissions
           ? 'agent/permissions'
           : agentExtra
           ? `agent/${agentExtra}`
@@ -219,14 +202,12 @@
           : agentProvider
             ? `agent/${agentProvider}`
             : current}
-    depth={stackPage || appPage || storePage || agentPermissions || agentExtra ? 1 : agentMemory ? (agentMemory.file === null ? 1 : 2) : agentProvider ? (agentProvider === 'new' ? 1 : 2) : 0}
+    depth={stackPage || appPage || agentPermissions || agentExtra ? 1 : agentMemory ? (agentMemory.file === null ? 1 : 2) : agentProvider ? (agentProvider === 'new' ? 1 : 2) : 0}
     back={stackPage
       ? { key: 'apps', go: () => show('apps') }
       : appPage
       ? { key: 'apps', go: leaveApp }
-      : storePage
-        ? { key: 'appearance', go: leaveStore }
-        : agentPermissions || agentExtra
+      : agentPermissions || agentExtra
           ? { key: 'agent', go: () => show('agent') }
           : agentMemory
           ? agentMemory.file === null
@@ -237,16 +218,12 @@
             : null}
     forward={current === 'apps' && !appPage && !stackPage && leftApp
       ? { key: `apps/${leftApp}`, go: () => openApp(leftApp!) }
-      : current === 'appearance' && !storePage && leftStore
-        ? { key: 'appearance/store', go: openStore }
-        : null}
+      : null}
   >
   {#if current === 'general'}
     <GeneralSection />
-  {:else if current === 'appearance' && storePage}
-    <ThemeStorePage onback={leaveStore} />
   {:else if current === 'appearance'}
-    <AppearanceSection onstore={openStore} />
+    <AppearanceSection />
   {:else if current === 'apps' && stackPage}
     <StackPage stackId={stackPage} onback={() => show('apps')} />
   {:else if current === 'apps' && appPage}

@@ -203,9 +203,9 @@
   </section>
 
   <section class="page-section">
-    <div class="store-footer">
+    <div class="download-footer">
       <p class="download-note">{$LL.os.note()}</p>
-      <div class="store-actions">
+      <div class="download-links">
         <a class="download-icon-btn" href={docsHref(locale, 'advanced/monitor-agent/')}>
           <span>{$LL.os.docs()}</span>
           <ExternalLink size={14} strokeWidth={1.8} aria-hidden="true" />

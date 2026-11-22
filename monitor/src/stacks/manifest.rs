@@ -1,4 +1,4 @@
-//! The web app manifest: `store/apps/<id>/manifest.toml` (`<id>` is
+//! The web app manifest: `monitor/catalog/apps/<id>/manifest.toml` (`<id>` is
 //! `<publisher>.<name>`, `core::app_id`), a web service the
 //! agent deploys with Docker Compose and the desk shows in a window.
 //!
@@ -1418,7 +1418,7 @@ mod tests {
     }
 
     fn store() -> PathBuf {
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("../store/apps")
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("catalog/apps")
     }
 
     fn immich() -> Package {
@@ -1428,7 +1428,7 @@ mod tests {
     #[test]
     fn every_store_app_reads() {
         let mut seen = 0;
-        for entry in std::fs::read_dir(store()).expect("store/apps") {
+        for entry in std::fs::read_dir(store()).expect("monitor/catalog/apps") {
             let dir = entry.expect("entry").path();
             if dir.is_dir() {
                 if let Err(p) = Package::read_dir(&dir) {

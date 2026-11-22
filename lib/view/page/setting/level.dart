@@ -194,7 +194,7 @@ final class _TabButton extends StatelessWidget {
                   color: selected ? scheme.secondaryContainer : null,
                   borderRadius: BorderRadius.circular(_indicator.height / 2),
                 ),
-                child: ThemedIcon(icon, size: 20, color: color),
+                child: AppIcon(icon, size: 20, color: color),
               ),
               if (label != null) ...[
                 const SizedBox(height: 3),

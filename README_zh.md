@@ -48,7 +48,6 @@
     <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/agent.jpg" alt="Agent"></td>
     <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/bench.jpg" alt="基准测试"></td>
     <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/virt.jpg" alt="虚拟化"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/themes.jpg" alt="主题商店"></td>
   </tr>
 </table>
 </details>
@@ -90,7 +89,7 @@
 
 **个性化**
 
-- 内置商店里的[主题和图标包](https://serverbox.lollipopkit.com/docs/zh/advanced/theme-packages/)，也可以自己制作。
+- Gruvbox Material 和 Gruvbox 提供浅色和深色外观，并保留内置图标样式。
 - 生物识别应用锁；可将备份保存到 iCloud 或 WebDAV，并使用你设置的密码加密。
 - 支持 iOS、Android、macOS、Linux 和 Windows，16 种语言。
 
@@ -105,7 +104,6 @@
 
   - [`serverbox-help`](.claude/skills/serverbox-help)：使用 App，以及部署和配置 Monitor，例如添加服务器、某台服务器缺少某个功能的原因、权限、告警、小部件和备份。App 内置的 Agent 自带这份 skill。
   - [`serverbox-onboarding`](.claude/skills/serverbox-onboarding)：参与开发，包括搭建 Flutter + Rust + Node 开发环境、构建与测试，以及项目的工作原理。
-  - [`serverbox-theme`](.claude/skills/serverbox-theme)：制作主题包（`.fsbt`），校验后发布到主题商店。
 
   它们的源文件都在本仓库中，安装前可以先读一读它们会告诉你的 Monitor 什么。
 

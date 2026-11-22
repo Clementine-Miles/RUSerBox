@@ -22,7 +22,7 @@ use ntex::web::test::{self as web_test, TestServer};
 use ntex::web::{self, App};
 use serde_json::json;
 use server_box_monitor::api::auth::generate_token;
-use server_box_monitor::api::desk_themes::Fetch;
+use server_box_monitor::utils::fetch::Fetch;
 use server_box_monitor::api::server::{Agent, AppState};
 use server_box_monitor::api::stacks;
 use server_box_monitor::core::config::{Config, StacksConfig};

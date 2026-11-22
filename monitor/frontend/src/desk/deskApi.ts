@@ -2,8 +2,7 @@
 /// explicit server: a desk saves to the server it was opened for, even while
 /// the panel is switching to another.
 
-import { ApiError, errorFrom, errorFromBody, fetchFor, readEventStream, requestFor } from '../lib/api'
-import type { ErrorBody } from '../lib/api'
+import { ApiError, errorFrom, fetchFor, readEventStream, requestFor } from '../lib/api'
 import type { InstalledApp } from '../types'
 import type { JobView as AppJobView } from '../../../sdk/serverbox-desk/src/protocol'
 import type { ServerEntry } from '../lib/servers.svelte'
@@ -29,7 +28,7 @@ export interface DeskIcon {
 
 export interface DeskPreferences {
   accent: string | null
-  /// `preset:<id>`, `custom`, or `theme` (the selected theme's background).
+  /// `preset:<id>` or `custom`.
   wallpaper: string
   wallpaper_fit: 'cover' | 'contain' | 'fill'
   dock: string[]
@@ -38,84 +37,6 @@ export interface DeskPreferences {
   background: boolean
   /// Apps suspended when hidden even while [background] is on.
   background_denied: string[]
-  /// The installed theme the desk is drawn with: `<installation>` or
-  /// `<installation>#<variant>`; null for the design system's own
-  /// (`/desk/themes`).
-  theme?: string | null
-}
-
-/// A color as a theme writes one: ARGB, or a palette role.
-export type ThemeColor = number | string
-
-/// One theme of an installed package (`fl_theme::Theme`): the package, or
-/// one of its variants.
-export interface PackageTheme {
-  variant: { key: string; name: string } | null
-  modes: ('light' | 'dark')[]
-  /// The initial preference: 0 system, 1 light, 2 dark.
-  mode: 0 | 1 | 2
-  seed: number
-  schemeLight: Record<string, number>
-  schemeDark: Record<string, number>
-  /// The accent and neutral palettes by tone.
-  accentTones: Record<string, number>
-  neutralTones: Record<string, number>
-  background: { style: 'none' | 'gradient' | 'image'; opacity: number; blur: number; tile: number }
-  shapes: { card: number; tile: number; button: number }
-  /// `[components]` as the app reads them (`themeComponents`).
-  components: Record<string, unknown>
-  density: string | null
-}
-
-export interface ThemePackage {
-  installationId: string
-  id: string
-  name: string
-  schemaMin: number
-  schemaMax: number
-  themes: PackageTheme[]
-}
-
-export interface InstalledTheme {
-  installationId: string
-  id: string
-  name: string
-  installedAt: string
-  package: ThemePackage
-}
-
-export interface StoreRelease {
-  version: string
-  schemaMin: number
-  schemaMax: number
-  url: string | null
-  path: string | null
-  sha256: string | null
-  size: number | null
-  notes: string | null
-}
-
-export interface StoreItem {
-  repo: string
-  repoUrl: string
-  listing: {
-    id: string
-    name: string
-    /// One string, or one per language tag (`zh-tw`, `zh`, `en`).
-    description: string | Record<string, string>
-    homepage: string | null
-    license: string | null
-    releases: StoreRelease[]
-  }
-  /// The newest version the agent installs; null when all need newer.
-  release: StoreRelease | null
-}
-
-export interface ThemeStoreView {
-  catalog: string | null
-  repos: string[]
-  items: StoreItem[]
-  fetchedAt: string
 }
 
 export interface DeskView {
@@ -292,62 +213,9 @@ export const deskApi = {
     const res = await raw(entry, '/desk/wallpaper', { method: 'DELETE' })
     if (!res.ok) throw await errorFrom(res)
   },
-
-  themes: (entry: ServerEntry) => requestFor<InstalledTheme[]>(entry, '/desk/themes', {}),
-
-  /// Installs a `.fsbt`; a refused package throws with the reason the app's
-  /// installer would give (`code` `invalidTheme`).
-  async installTheme(entry: ServerEntry, file: Blob): Promise<InstalledTheme> {
-    const res = await raw(entry, '/desk/themes', { method: 'POST', body: file })
-    return themeAnswer(res)
-  },
-
-  async removeTheme(entry: ServerEntry, installation: string): Promise<void> {
-    const res = await raw(entry, `/desk/themes/${encodeURIComponent(installation)}`, { method: 'DELETE' })
-    if (!res.ok && res.status !== 404) throw await errorFrom(res)
-  },
-
-  /// A theme's background as an object URL; null when it has none.
-  async themeBackgroundUrl(entry: ServerEntry, installation: string, variant: string | null): Promise<string | null> {
-    const query = variant ? `?variant=${encodeURIComponent(variant)}` : ''
-    const res = await raw(entry, `/desk/themes/${encodeURIComponent(installation)}/background${query}`, { method: 'GET' })
-    if (res.status === 404) return null
-    if (!res.ok) throw await errorFrom(res)
-    return URL.createObjectURL(await res.blob())
-  },
-
-  themeStore: (entry: ServerEntry, refresh = false) =>
-    requestFor<ThemeStoreView>(
-      entry,
-      `/desk/themes/store${refresh ? '?refresh=1' : ''}`,
-      {},
-      undefined,
-      120_000,
-    ),
-
-  async installFromStore(entry: ServerEntry, item: StoreItem, version: string): Promise<InstalledTheme> {
-    const res = await raw(entry, '/desk/themes/store/install', {
-      method: 'POST',
-      body: JSON.stringify({ repo: item.repoUrl, id: item.listing.id, version }),
-      headers: { 'content-type': 'application/json' },
-    })
-    return themeAnswer(res)
-  },
 }
 
-/// An install's answer, or its refusal: `reason` (the package's or the
-/// store's own words) as the message.
-async function themeAnswer(res: Response): Promise<InstalledTheme> {
-  const body = (await res.json().catch(() => ({}))) as ErrorBody & { reason?: string } & Partial<InstalledTheme>
-  if (!res.ok) {
-    if (body.reason) throw new ApiError(body.reason, res.status, body.error, body)
-    const e = errorFromBody(res.status, body)
-    throw new ApiError(e.message, e.status, body.error, body)
-  }
-  return body as InstalledTheme
-}
-
-/// A request whose answer the caller reads itself (bytes, a theme's refusal):
+/// A request whose answer the caller reads itself:
 /// [fetchFor], with a session that has expired ending as anywhere else.
 function raw(entry: ServerEntry, path: string, init: RequestInit): Promise<Response> {
   return fetchFor(entry, path, init, AbortSignal.timeout(120_000))

@@ -127,7 +127,7 @@ final class _SettingsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return CardX(
       child: ListTile(
-        leading: node.leading?.call(32) ?? ThemedIcon(node.icon, size: 20),
+        leading: node.leading?.call(32) ?? AppIcon(node.icon, size: 20),
         title: node.titleWidget(
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),

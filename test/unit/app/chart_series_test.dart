@@ -14,8 +14,7 @@ import 'package:server_box/data/res/chart_series.dart';
 /// example, and the rules the arithmetic exists to satisfy, checked against
 /// every seed the app offers rather than against the one it ships with.
 void main() {
-  /// The app's own default — `SettingStore.colorSeed`, and the design's
-  /// "ServerBox 默认 · Pink 900".
+  /// The original worked example uses "ServerBox 默认 · Pink 900".
   const seed = Color(0xFF880E4F);
 
   /// The seeds the design checked its rules against, which are the ones a

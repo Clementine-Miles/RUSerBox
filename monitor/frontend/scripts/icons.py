@@ -8,7 +8,7 @@ devDependency) with only the axes the kit draws, twice.
   at run time (a catalog app's glyph, an installed app's), so the panel loads
   it once it is up, and installed apps get it with `desk.css`.
 - `material-symbols-rounded-core.woff2`: the glyphs this source names (every
-  string literal in `src/` and `../../store/apps` that is a glyph's name), so
+  string literal in `src/` and `../catalog/apps` that is a glyph's name), so
   the first screen draws its icons without waiting for the whole font. Their
   names go to `core-icons.txt`, every glyph's to `all-icons.txt`;
   `tests/iconFonts.test.ts` holds the source to the core list: run this again
@@ -51,7 +51,7 @@ glyphs = set(font.getGlyphOrder())
 names = sorted(n for n in glyphs if re.fullmatch(r"[a-z][a-z0-9_]*", n) and len(n) > 1)
 (fonts / "all-icons.txt").write_text("\n".join(names) + "\n")
 used = set()
-for folder in (root / "src", root / "../../store/apps"):
+for folder in (root / "src", root / "../catalog/apps"):
     for path in folder.rglob("*"):
         if path.suffix in {".svelte", ".ts", ".toml"} and "i18n" not in path.parts and "tests" not in path.parts:
             for m in LITERAL.finditer(path.read_text(errors="ignore")):

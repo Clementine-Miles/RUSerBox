@@ -6,21 +6,9 @@ part of 'backup2.dart';
 /// A part of `backup2.dart` rather than a library of its own, so the helpers
 /// it shares with encoding stay private and nothing imports back.
 extension BackupV2Restore on BackupV2 {
-  /// [BackupV2.merge], answering what became of [themes]: which came back,
-  /// and which could not — for a restore the user started to say so.
-  Future<ThemeRestoreReport?> restoreStores({bool force = false}) async {
+  Future<void> restoreStores({bool force = false}) async {
     _validateRestorableTypedStores();
     _loggerV2.info('Merging...');
-
-    // Before the settings that select one: the network is not something to
-    // hold the transaction open for, and a selection is only restored onto a
-    // theme that is there.
-    final themeReport = themes.isEmpty
-        ? null
-        : await ThemeBackup.restore(themes, blobs: BackupThemeBlobs.available);
-    if (themeReport != null && themeReport.failed.isNotEmpty) {
-      _loggerV2.warning('Themes not restored: ${themeReport.failed}');
-    }
 
     // Every store shares this SQLite connection. Keep the reference order, but
     // commit the whole restore as one unit so a later failure cannot leave the
@@ -156,7 +144,6 @@ extension BackupV2Restore on BackupV2 {
 
     // Notifications and provider reloads happen only after the outer
     // transaction commits, so a failed restore leaves every store as it was.
-    // The themes installed before it stay installed, selected by nothing.
     if (changed.keys) {
       Stores.key.invalidate();
       PrivateKeyUnlock.forgetAll();
@@ -194,12 +181,7 @@ extension BackupV2Restore on BackupV2 {
       if (changed.container) ReloadedStore.containers,
     });
 
-    // After the settings: it points what they restored at this device's
-    // installations, and falls back where a theme did not come back.
-    if (themeReport != null) ThemeBackup.reselect(themeReport);
-
     _loggerV2.info('Merge completed');
-    return themeReport;
   }
 
   /// A pre-table backup identifies a private key by its name. When that name

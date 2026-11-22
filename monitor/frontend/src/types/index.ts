@@ -2838,7 +2838,7 @@ export type StackNotice =
   | 'hostNetwork'
   | 'dockerSocket'
 
-/// A web app of the agent's catalog (`store/apps/<id>/manifest.toml`).
+/// A web app of the agent's catalog (`monitor/catalog/apps/<id>/manifest.toml`).
 export interface StackManifest {
   /// `<publisher>.<name>` (`futo.immich`), made by the agent.
   id: string

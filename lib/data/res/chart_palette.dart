@@ -3,17 +3,8 @@ import 'package:server_box/data/res/chart_series.dart';
 
 /// The colours a reading is drawn in, wherever it is drawn.
 ///
-/// Derived from the colour the user picked rather than fixed. The app's accent
-/// is a setting, and a chart drawn in six hues chosen at build time was six
-/// colours beside it that had nothing to do with it — the theme colour ended
-/// up being the one colour on the page that no chart used. [SeriesPalette] is
-/// the arithmetic; this is which reading gets which of its six.
-///
-/// **A reading's colour is not its identity, and never was.** Nothing is
-/// learned from "the purple one": every series has its name or its number
-/// beside it, on the card and on the page, which is what makes a palette that
-/// moves with the seed safe at all. What the colour does is tell two lines of
-/// *one* chart apart, and two stretches of one bar.
+/// The active theme's accent provides the seed for [SeriesPalette]. Each
+/// chart series also has a label or number beside its color.
 ///
 /// **Nine kinds share six series**, the way they already shared the fixed
 /// palette's hues: swap, the network total and the battery were one teal,
@@ -25,8 +16,8 @@ import 'package:server_box/data/res/chart_series.dart';
 /// [resolve] is what keeps this current — see its own note.
 abstract final class ChartPalette {
   /// What the app opens with, and what it falls back to if the theme has not
-  /// been read yet: `SettingStore.colorSeed`'s own default.
-  static const _fallbackSeed = Color(0xFF880E4F);
+  /// been read yet: the default app theme.
+  static const _fallbackSeed = Color(0xFF7DAEA3);
 
   static SeriesPalette _series = SeriesPalette.fan(_fallbackSeed, dark: true);
   static Color? _seed;
@@ -35,17 +26,8 @@ abstract final class ChartPalette {
   /// Works the six out again, if either of the two things they depend on has
   /// changed.
   ///
-  /// Called from the app's own `MaterialApp.builder`, which is below the theme
-  /// — so it runs again when the seed changes, when the brightness changes,
-  /// and when the system hands over a dynamic colour, which are the three
-  /// things that move this palette. It runs before any page builds, which is
-  /// what lets the readings themselves be read as plain statics: threading a
-  /// palette through `serverCardReadings` would put a `BuildContext` into a
-  /// pure function that has no other use for one.
-  ///
-  /// [seed] is the colour picked, not `ColorScheme.primary` — Material has
-  /// already moved that one to suit its own surfaces, and the first series is
-  /// supposed to *be* the theme colour.
+  /// The app resolves the palette from the active color scheme before building
+  /// pages that display readings.
   static void resolve(Color seed, {required bool dark}) {
     if (_seed == seed && _dark == dark) return;
     _seed = seed;

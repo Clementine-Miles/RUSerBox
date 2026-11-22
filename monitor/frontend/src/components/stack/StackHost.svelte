@@ -22,7 +22,7 @@
   import { untrack } from 'svelte'
 
   interface Props {
-    /// The catalog entry (`store/apps/<id>`).
+    /// The catalog entry (`monitor/catalog/apps/<id>`).
     stackId: string
   }
 

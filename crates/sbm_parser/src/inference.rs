@@ -33,7 +33,7 @@ pub enum Engine {
 impl Engine {
     pub const ALL: [Engine; 5] = [Engine::Ollama, Engine::LlamaCpp, Engine::Vllm, Engine::Sglang, Engine::Mlx];
 
-    /// The catalog app that runs it (`store/apps/<id>`); MLX runs natively.
+    /// The catalog app that runs it (`monitor/catalog/apps/<id>`); MLX runs natively.
     pub fn app(self) -> Option<&'static str> {
         match self {
             Engine::Ollama => Some("ollama.ollama"),

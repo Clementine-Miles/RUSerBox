@@ -8,7 +8,6 @@ import 'package:server_box/core/lkc.dart';
 import 'package:server_box/core/service/report_filter.dart';
 import 'package:server_box/core/sync/category.dart';
 import 'package:server_box/core/sync/file_log.dart';
-import 'package:server_box/core/sync/lkc.dart';
 import 'package:server_box/core/sync/lkc_log.dart';
 import 'package:server_box/core/sync/lkc_prefs.dart';
 import 'package:server_box/core/sync/remotes.dart';
@@ -43,10 +42,6 @@ final class BakSyncer extends SyncIface {
   /// Shown on the backup page: this device stops syncing until updated.
   static final remoteTooNew = ValueNotifier<SchemaTooNewException?>(null);
 
-  /// Set by [backup] while it writes for LK Cloud, where theme packages are
-  /// kept apart.
-  LkcThemeBlobs? _themeBlobs;
-
   /// The sections of the remote backup [fromFile] last read that a category
   /// covers: what this device leaves out of its own is carried on from them.
   BackupV2? _remote;
@@ -72,12 +67,8 @@ final class BakSyncer extends SyncIface {
   Future<void> saveToFile() async {
     final remote = _remote;
     final only = SyncCategory.onNow;
-    if (remote != null && !only.contains(SyncCategory.settings)) {
-      // Carried as they are: the packages they name stay.
-      _themeBlobs?.keep(LkcThemeBlobs.namedBy(remote));
-    }
     final key = _key ?? (throw StateError('Written outside a sync'));
-    await BackupV2.backup(null, null, key: key, only: only, blobs: _themeBlobs, carry: remote);
+    await BackupV2.backup(null, null, key: key, only: only, carry: remote);
   }
 
   /// The sync an edit starts, which nobody waits for.
@@ -302,22 +293,11 @@ final class BakSyncer extends SyncIface {
     // The cycle's own remote: a password that does not open its key stops
     // the upload here.
     _key = await keyOf(target);
-    if (target is! LkcRemoteStorage) {
-      try {
-        return await super.backup(target);
-      } finally {
-        _key = null;
-      }
-    }
-    final blobs = _themeBlobs = LkcThemeBlobs.shared..begin();
     try {
       await super.backup(target);
     } finally {
-      _themeBlobs = null;
       _key = null;
     }
-    // Only once the backup naming them is written.
-    await blobs.sweep();
   }
 
   /// The inherit in flight, awaited by [backup] so an upload cannot overtake

@@ -619,12 +619,6 @@ abstract class AppLocalizations {
   /// **'Read this server\'s status from the **Monitor**\'s HTTP API instead of running commands over SSH.\n\nThe Monitor has to be installed on the server first, and it is what makes trends, the watch app and the home-screen widgets possible.\n\n[Setting up the Monitor]({url})'**
   String monitorHttpTip(String url);
 
-  /// Toast after a restore: the backup was restored, but the themes named below it could not be installed — not in the theme store or not carried by the backup (installed from a folder, or imported with an older version of the app).
-  ///
-  /// In en, this message translates to:
-  /// **'Restored, except these themes. Install them again from the theme store or the file they came from.'**
-  String get backupThemesNotRestored;
-
   /// User-facing label or message for iCloud backup state conflict.
   ///
   /// In en, this message translates to:
@@ -2115,7 +2109,7 @@ abstract class AppLocalizations {
   /// Sync category label.
   ///
   /// In en, this message translates to:
-  /// **'Fonts, images and skills'**
+  /// **'Agent skills'**
   String get syncFiles;
 
   /// Shown on the backup page when this build stops syncing at data a newer build wrote.
@@ -9220,12 +9214,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The space a terminal row takes, as a multiple of the font size, from 1.0 to 2.0. Like the font size, it changes how many rows fit.'**
   String get termLineHeightTip;
-
-  /// Explains which font the terminal uses when no font file is chosen.
-  ///
-  /// In en, this message translates to:
-  /// **'Without a font file, the terminal uses the system\'s monospace font, then fonts with CJK and emoji glyphs for what it lacks.'**
-  String get termFontTip;
 
   /// Label of the server detail row for network throughput per second.
   ///

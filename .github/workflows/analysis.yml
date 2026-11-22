@@ -121,31 +121,19 @@ jobs:
           # test and runs here — the `macOS build` job below says exactly that
           # and then relies on it.
           #
-          # `docs/schemas/` because `test/unit/theme_schema_test.dart` reads the
-          # manifest schema and holds it against the parser; a schema-only
-          # change is exactly what that test is for.
-          #
-          # `store/` because `test/unit/theme_store_tree_test.dart` reads the
-          # official theme repository the way the store does.
-          #
           # The rest are files a plain test reads straight from the checkout,
           # so a change to any of them alone is what that test guards:
           # `assets/` (rootfs manifest, geo, distro icons, yabs),
-          # `docs/examples/` (`theme_app_test.dart`), the doc pages and the
+          # the doc pages and the
           # bundled `serverbox-help` skill whose links `builtin_skill_test.dart`
           # holds against each other, the iOS plists and privacy manifests
           # (`ios_multitasking_test.dart`, `privacy_manifest_test.dart`), the
           # Android backup policy (`android_backup_policy_test.dart`) and the
           # DMG release script (`macos_entitlements_test.dart`).
-          emit dart "$shared|^lib/|^test/|^integration_test/|^crates/|^macos/|^Cargo\.(toml|lock)$|^analysis_options\.yaml$|^docs/(schemas|examples|src/content/docs)/|^store/|^assets/|^\.claude/skills/serverbox-help/|^ios/[^/]+/(Info-[A-Za-z]+\.plist|PrivacyInfo\.xcprivacy)$|^ios/Runner\.xcodeproj/project\.pbxproj$|^android/app/src/main/(AndroidManifest\.xml|res/xml/)|^scripts/release/release-macos-dmg\.sh$"
+          emit dart "$shared|^lib/|^test/|^integration_test/|^crates/|^macos/|^Cargo\.(toml|lock)$|^analysis_options\.yaml$|^docs/(schemas|examples|src/content/docs)/|^assets/|^\.claude/skills/serverbox-help/|^ios/[^/]+/(Info-[A-Za-z]+\.plist|PrivacyInfo\.xcprivacy)$|^ios/Runner\.xcodeproj/project\.pbxproj$|^android/app/src/main/(AndroidManifest\.xml|res/xml/)|^scripts/release/release-macos-dmg\.sh$"
           emit frontend "$shared|^monitor/frontend/|^monitor/sdk/|^packages/webui/"
-          # `store/` (and fl_lib, under `$shared`) for the theme manifests the
-          # docs job validates against that same schema; `assets/catalog/` for
-          # the catalog the docs describe.
-          emit docs "$shared|^docs/|^assets/catalog/|^store/"
-          # `store/` because the website build packs it into the store's
-          # tarball (scripts/store-tarball.sh).
-          emit website "$shared|^website/|^packages/webui/|^store/|^scripts/store-tarball\.sh$"
+          emit docs "$shared|^docs/"
+          emit website "$shared|^website/|^packages/webui/"
           emit android "$shared|^android/|^scripts/release/patch-jni-build-id\.sh$"
           # Rendered and checked here: `build.yml` uses them only on a release.
           emit winget '^\.github/(workflows/(analysis|build)\.yml$|winget/)|^scripts/release/winget\.sh$'
@@ -366,27 +354,6 @@ jobs:
         run: |
           npm ci
           npm run build
-      # Held against the schema that is meant to describe them. Nothing loads
-      # that file at runtime — it exists for editors — so a field renamed in the
-      # parser and not in the schema would otherwise be found by an author, in
-      # an editor, and not by anything here. The one rule the schema cannot
-      # state (a color whose key has no image) is a Dart test's, on the other
-      # side of this same file.
-      # The themes built into the app are fl_lib's, and only that submodule is
-      # needed for them.
-      - name: Check out fl_lib
-        run: git submodule update --init --depth 1 packages/fl_lib
-      - name: Check the theme manifests against the schema
-        run: |
-          # `store/` may hold no theme; an unmatched glob is then dropped
-          # rather than passed on as a file name.
-          shopt -s nullglob
-          pipx run --spec check-jsonschema==0.38.2 check-jsonschema \
-            --schemafile docs/schemas/fsbt-manifest.schema.json \
-            docs/examples/aurora/manifest.toml \
-            packages/fl_lib/assets/themes/*/manifest.toml \
-            store/themes/*/manifest.toml
-
   # The manifests submitted by hand after a release
   # (scripts/release/winget.sh), rendered with placeholder values.
   winget:

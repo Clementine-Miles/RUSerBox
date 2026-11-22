@@ -3,7 +3,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:server_box/data/provider/server/metric.dart';
 import 'package:server_box/data/provider/server/reading_fmt.dart';
 import 'package:server_box/data/provider/server/single.dart';
+import 'package:server_box/data/res/app_theme.dart';
 import 'package:server_box/data/res/chart_palette.dart';
+import 'package:server_box/data/res/gruvbox.dart';
 import 'package:server_box/view/page/server/card/title.dart';
 import 'package:server_box/view/page/server/chart.dart';
 import 'package:server_box/view/page/server/metric_row.dart';
@@ -13,19 +15,18 @@ import 'package:server_box/view/page/server/metric_row.dart';
 abstract final class ServerFullScreenTheme {
   static ThemeData? dark;
 
-  /// [child] on black in the dark theme when [on]; as it is otherwise, with
-  /// the same widgets around it either way.
+  /// Draws [child] in the dark palette while [on].
   static Widget burnIn(
     BuildContext context, {
     required bool on,
     required Widget child,
   }) {
     final current = Theme.of(context);
-    final theme = on ? _dark(current).toAmoled : current;
+    final theme = on ? _dark(current) : current;
     return Theme(
       data: theme,
       child: ColoredBox(
-        color: on ? Colors.black : Colors.transparent,
+        color: on ? theme.colorScheme.surface : Colors.transparent,
         child: DefaultTextStyle.merge(
           style: TextStyle(color: on ? theme.colorScheme.onSurface : null),
           child: IconTheme.merge(
@@ -40,12 +41,7 @@ abstract final class ServerFullScreenTheme {
   static ThemeData _dark(ThemeData current) {
     if (dark case final dark?) return dark;
     if (current.brightness == Brightness.dark) return current;
-    return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: current.colorScheme.primary,
-        brightness: Brightness.dark,
-      ),
-    );
+    return buildAppTheme(Gruvbox.material, Brightness.dark);
   }
 }
 

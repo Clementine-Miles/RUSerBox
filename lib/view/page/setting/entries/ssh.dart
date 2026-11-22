@@ -1,13 +1,6 @@
 part of '../entry.dart';
 
 extension _SSH on _AppSettingsPageState {
-  void _refreshApp({bool closeDialog = false}) {
-    if (closeDialog && mounted) {
-      context.popSheet();
-    }
-    RNodes.app.notify();
-  }
-
   List<SettingsGroup> _buildSSH() {
     return [
       SettingsGroup(libL10n.general, [
@@ -25,13 +18,6 @@ extension _SSH on _AppSettingsPageState {
         _buildFont(),
         _buildTermFontSize(),
         _buildTermLineHeight(),
-      ]),
-      // Three rows about one picture, which is what the tile they were folded
-      // into was for.
-      SettingsGroup(libL10n.background, [
-        _buildSshBgImage(),
-        _buildSshBgOpacity(),
-        _buildSshBlurRadius(),
       ]),
       SettingsGroup(l10n.tmuxAutoAttach, [
         _buildTmuxAutoToggle(),
@@ -79,99 +65,29 @@ extension _SSH on _AppSettingsPageState {
 
   SettingsRow _buildFont() {
     final label = libL10n.font;
+    final prop = _setting.terminalTypeface;
     return SettingsRow(
       label,
       () => ListTile(
         leading: const Icon(MingCute.font_fill),
-        title: TipText(label, l10n.termFontTip),
-        // Which font is in use: the system's when none is chosen, and a chosen
-        // one that did not load says so instead of looking as if it applied.
-        trailing: ListenableBuilder(
-          listenable: Listenable.merge([
-            _setting.fontPath.listenable(),
-            TerminalFont.failed,
-          ]),
-          builder: (_, _) {
-            final fontName = _setting.fontPath.fetch().getFileName(
-              withoutExtension: true,
-            );
-            if (fontName == null) {
-              return Text(libL10n.system, style: UIs.text15);
-            }
-            if (TerminalFont.failed.value) {
-              return Text(
-                '$fontName · ${libL10n.fail}',
-                style: UIs.text15.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              );
-            }
-            return Text(fontName, style: UIs.text15);
-          },
+        title: Text(label),
+        trailing: prop.listenable().listenVal(
+          (font) => Text(font.family, style: UIs.text15),
         ),
-        onTap: () {
-          context.showSheet(
+        onTap: () async {
+          final font = await context.showPickSingleSheet(
             title: label,
-            actions: [
-              TextButton(
-                onPressed: () async => await _pickFontFile(),
-                child: Text(libL10n.file),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await _clearCachedFont();
-                  _setting.fontPath.delete();
-                  await TerminalFont.load('');
-                  _refreshApp(closeDialog: true);
-                },
-                child: Text(libL10n.clear),
-              ),
-            ],
+            items: TerminalTypeface.values,
+            display: (font) => font.family,
+            initial: prop.fetch(),
           );
+          if (font == null || font == prop.fetch()) return;
+          prop.put(font);
+          unawaited(RNodes.app.notify());
         },
       ),
+      keywords: TerminalTypeface.values.map((font) => font.family).join(' '),
     );
-  }
-
-  Future<void> _clearCachedFont() async {
-    final oldFontPath = _setting.fontPath.fetch();
-    if (oldFontPath.isEmpty || !oldFontPath.startsWith(Paths.font)) return;
-    final oldFile = File(oldFontPath);
-    if (await oldFile.exists()) {
-      await oldFile.delete();
-    }
-  }
-
-  Future<void> _pickFontFile() async {
-    final path = await Pfs.pickFilePath();
-    if (path == null) return;
-
-    // The iOS file picker grants access to the selected file in place, so keep
-    // its original path instead of copying it into the app directory.
-    if (isIOS) {
-      _setting.fontPath.put(path);
-      await TerminalFont.load(path);
-    } else {
-      final fontName = path.getFileName();
-      final fontPath = Paths.font.joinPath(fontName ?? 'font.ttf');
-      // Copied beside the target and renamed over it only once whole: a file
-      // that cannot be read now leaves the font that was working — even one
-      // of the same name — and says why.
-      final part = File('$fontPath.part');
-      try {
-        await File(path).copy(part.path);
-        await part.rename(fontPath);
-      } catch (e, s) {
-        if (await part.exists()) await part.delete();
-        if (mounted) context.showErrSheet(e, s, libL10n.font);
-        return;
-      }
-      if (_setting.fontPath.fetch() != fontPath) await _clearCachedFont();
-      _setting.fontPath.put(fontPath);
-      await TerminalFont.load(fontPath);
-    }
-
-    _refreshApp(closeDialog: true);
   }
 
   SettingsRow _buildTermFontSize() {
@@ -236,32 +152,6 @@ extension _SSH on _AppSettingsPageState {
       ),
       keywords: l10n.termLineHeightTip,
     );
-  }
-
-  Future<void> _pickBgImage() async {
-    final path = await Pfs.pickFilePath();
-    if (path == null) return;
-
-    final file = File(path);
-    final extIndex = path.lastIndexOf('.');
-    final ext = extIndex != -1 ? path.substring(extIndex) : '';
-    // A new name for each picture: one path for every picture leaves the
-    // terminal page and Flutter's image cache drawing the one before.
-    final newPath = Paths.img.joinPath('ssh_bg_${DateTime.now().millisecondsSinceEpoch}$ext');
-    await file.copy(newPath);
-    final old = _setting.sshBgImage.fetch();
-    _setting.sshBgImage.put(newPath);
-    await _deleteBgImage(old);
-
-    _refreshApp(closeDialog: true);
-  }
-
-  /// The copy [_pickBgImage] made at [path]; never a file of the user's own.
-  Future<void> _deleteBgImage(String path) async {
-    if (path.isEmpty || !path.startsWith(Paths.img)) return;
-    try {
-      await File(path).delete();
-    } catch (_) {}
   }
 
   SettingsRow _buildTermTheme() {
@@ -371,121 +261,6 @@ extension _SSH on _AppSettingsPageState {
         trailing: StoreSwitch(prop: _setting.letterCache),
       ),
       keywords: l10n.letterCacheTip,
-    );
-  }
-
-  SettingsRow _buildSshBgImage() {
-    final label = libL10n.image;
-    return SettingsRow(
-      label,
-      () => ListTile(
-        leading: const Icon(Icons.image),
-        title: Text(label),
-        trailing: _setting.sshBgImage.listenable().listenVal((val) {
-          final name = val.getFileName();
-          return Text(name ?? libL10n.empty, style: UIs.text15);
-        }),
-        onTap: () {
-          context.showSheet(
-            title: label,
-            actions: [
-              TextButton(
-                onPressed: () async => await _pickBgImage(),
-                child: Text(libL10n.file),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final old = _setting.sshBgImage.fetch();
-                  _setting.sshBgImage.delete();
-                  await _deleteBgImage(old);
-                  _refreshApp(closeDialog: true);
-                },
-                child: Text(libL10n.clear),
-              ),
-            ],
-          );
-        },
-      ),
-      keywords: libL10n.background,
-    );
-  }
-
-  SettingsRow _buildSshBgOpacity() {
-    void onSave(String s) {
-      final val = double.tryParse(s);
-      if (val == null) {
-        Toast.error(libL10n.fail);
-        return;
-      }
-      _setting.sshBgOpacity.put(val.clamp(0.0, 1.0));
-      context.popSheet();
-    }
-
-    return SettingsRow(
-      libL10n.opacity,
-      () => ListTile(
-        leading: const Icon(Icons.opacity),
-        title: Text(libL10n.opacity),
-        trailing: ValBuilder(
-          listenable: _setting.sshBgOpacity.listenable(),
-          builder: (val) => Text(val.toString(), style: UIs.text15),
-        ),
-        onTap: () => context.showSheet(
-          title: libL10n.opacity,
-          child: Input(
-            controller: _sshOpacityCtrl,
-            autoFocus: true,
-            type: TextInputType.number,
-            hint: '0.3',
-            icon: Icons.opacity,
-            suggestion: false,
-            onSubmitted: onSave,
-          ),
-          actions: Btn.ok(onTap: () => onSave(_sshOpacityCtrl.text)).toList,
-        ),
-      ),
-      keywords: libL10n.background,
-    );
-  }
-
-  SettingsRow _buildSshBlurRadius() {
-    void onSave(String s) {
-      final val = double.tryParse(s);
-      if (val == null) {
-        Toast.error(libL10n.fail);
-        return;
-      }
-      const minRadius = 0.0;
-      const maxBlur = 50.0;
-      final clampedVal = val.clamp(minRadius, maxBlur);
-      _setting.sshBlurRadius.put(clampedVal);
-      context.popSheet();
-    }
-
-    return SettingsRow(
-      libL10n.blurRadius,
-      () => ListTile(
-        leading: const Icon(Icons.blur_on),
-        title: Text(libL10n.blurRadius),
-        trailing: ValBuilder(
-          listenable: _setting.sshBlurRadius.listenable(),
-          builder: (val) => Text(val.toString(), style: UIs.text15),
-        ),
-        onTap: () => context.showSheet(
-          title: libL10n.blurRadius,
-          child: Input(
-            controller: _sshBlurCtrl,
-            autoFocus: true,
-            type: TextInputType.number,
-            hint: '0',
-            icon: Icons.blur_on,
-            suggestion: false,
-            onSubmitted: onSave,
-          ),
-          actions: Btn.ok(onTap: () => onSave(_sshBlurCtrl.text)).toList,
-        ),
-      ),
-      keywords: libL10n.background,
     );
   }
 

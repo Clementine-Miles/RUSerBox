@@ -112,7 +112,7 @@ abstract final class SchemaVersion {
   /// v27: `server.ssh_allow_legacy_algorithms`
   /// v28: the retired SSH recent-server history removed from `kv`
   /// v29: `server.is_local`, and the "reached somehow" CHECK relaxed for it
-  /// v30: the theme catalog address dropped, now that the catalog is compiled in
+  /// v30: the legacy catalog address was dropped
   /// v31: PVE moved out of `server` into `server_pve` (API tokens, pinned
   ///      certificate), and the Virtualization tab added for installs with PVE
   /// v32: the Agent's conversations dropped, its chats being fl_pi_llm's now

@@ -6,7 +6,7 @@ part of 'entry.dart';
 /// controllers on it — survives moving between them.
 enum SettingsSection {
   app,
-  /// What the app looks like: the theme in all of its parts, and the font.
+  /// Theme and icon settings.
   appearance,
   privacy,
   ai,
@@ -168,15 +168,7 @@ final class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
   /// platform has answered, which is not a row and not a group.
   bool? _bioAuthAvail;
 
-  late final _sshOpacityCtrl = TextEditingController(
-    text: _setting.sshBgOpacity.fetch().toString(),
-  );
-  late final _sshBlurCtrl = TextEditingController(
-    text: _setting.sshBlurRadius.fetch().toString(),
-  );
   late final _textScalerCtrl = TextEditingController(
-    // `.fetch()`, as the three above: without it the field opened showing
-    // `Instance of 'SqlitePropDefault<double>'` and handed that to be parsed.
     text: _setting.textFactor.fetch().toString(),
   );
   late final _serverLogoCtrl = TextEditingController(
@@ -221,8 +213,6 @@ final class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
 
   @override
   void dispose() {
-    _sshOpacityCtrl.dispose();
-    _sshBlurCtrl.dispose();
     _textScalerCtrl.dispose();
     _serverLogoCtrl.dispose();
     _serverMarkCtrl.dispose();
@@ -282,7 +272,7 @@ final class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
               SettingsRow(
                 hit.leaf.title,
                 () => ListTile(
-                  leading: ThemedIcon(hit.leaf.icon),
+                  leading: AppIcon(hit.leaf.icon),
                   title: hit.leaf.titleWidget(),
                   subtitle: hit.parent == null
                       ? null

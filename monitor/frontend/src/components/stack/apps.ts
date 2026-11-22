@@ -1,5 +1,5 @@
 /// The panel's apps that show a web app the agent deploys, by catalog id
-/// (`store/apps/<publisher>.<name>`). Such an app is offered once its web app
+/// (`monitor/catalog/apps/<publisher>.<name>`). Such an app is offered once its web app
 /// is deployed; it is installed from the App Store.
 
 import { canAct } from '../../lib/access'

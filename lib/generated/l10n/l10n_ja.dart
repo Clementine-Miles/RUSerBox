@@ -272,10 +272,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get backupThemesNotRestored =>
-      '復元しましたが、これらのテーマは復元されませんでした。テーマストアまたは元のファイルから再インストールしてください。';
-
-  @override
   String get icloudBackupStateConflict => '競合を検出';
 
   @override
@@ -1106,7 +1102,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get keyPassphrases => '鍵のパスフレーズ';
 
   @override
-  String get syncFiles => 'フォント、画像、Skills';
+  String get syncFiles => 'エージェントのスキル';
 
   @override
   String get syncRemoteTooNew =>
@@ -5120,10 +5116,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get termLineHeightTip =>
       '端末の1行が占める高さを、フォントサイズの倍率（1.0～2.0）で指定します。フォントサイズと同様に、表示できる行数に影響します。';
-
-  @override
-  String get termFontTip =>
-      'フォントファイルを選択していない場合、端末はシステムの等幅フォントを使用し、不足する文字には CJK と emoji のグリフを含むフォントを使用します。';
 
   @override
   String get netSpeed => '通信速度';
