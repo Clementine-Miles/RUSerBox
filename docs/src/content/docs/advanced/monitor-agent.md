@@ -4,8 +4,8 @@ description: Reach a server through the Monitor
 ---
 
 Server Box Monitor runs on a server and sends its status to the App. You can
-monitor a host without exposing SSH, and keep push alerts, home-screen widgets,
-and the Watch app up to date while the App is closed.
+monitor a host without exposing SSH and keep push alerts and home-screen
+widgets up to date while the app is closed.
 
 ## Prompts for an AI agent
 
@@ -145,7 +145,7 @@ changing anything.
 | History from before the App connected | No | Yes |
 | Terminal, commands, file browsing and transfers | Yes | Yes, as the account the Monitor runs as |
 | Port forwarding (local, dynamic, remote) and remote desktop | Yes | Yes |
-| Push alerts, home-screen widgets, and Watch app | No | Yes |
+| Push alerts, home-screen widgets | No | Yes |
 
 SSH is usually the simplest way to connect. Use the Monitor if SSH is
 unreachable from your current network, if you need charts to include data
@@ -153,7 +153,7 @@ collected before the App connected, or if you want server alerts on your
 phone.
 
 You can use both methods for one server. Configure SSH in the App and run
-the Monitor on the host to provide widgets, Watch app data, and alerts.
+the Monitor on the host to provide widgets and alerts.
 
 ## Install the Monitor
 
@@ -341,7 +341,7 @@ updated.
 Reset the password on the
 server with the command above.
 
-Login attempts are rate-limited. Each sign-in gives the App or the browser a
+Login attempts are rate-limited. Each sign-in gives the Android app a
 device token, sent with every later sign-in. A device that has signed in
 before is limited by its source address and on its own, so failed attempts
 from anywhere else cannot lock it out; any other client is limited by its
@@ -471,13 +471,12 @@ is dialled from the server.
 A Monitor older than the relay or the listener offers no remote desktop or
 port forwarding; update it.
 
-## Widgets, push, and the Watch app
+## Widgets and push alerts
 
-Widgets, push notifications, and the Watch app read from the Monitor, so the
+Widgets and push alerts read from the Monitor, so the
 App does not need to stay in the foreground:
 
 - **Home-screen widgets**: Configure the server in the App after installing the Monitor. The widget selects from the server list published by the App; you do not enter a URL manually.
-- **Watch app**: It can show only servers with the Monitor configured. These servers sync by default, and you can exclude individual servers in the iOS settings.
 - **Push alerts**: A rule decides when to alert and a channel decides where it goes — `[[monitoring.rules]]` and `[[push]]` in `config.toml`, or the same two lists in the app, where a channel also has a **Send a test** button. See [Alert rules](#alert-rules) for how a rule is written.
 
 ## Notification channels

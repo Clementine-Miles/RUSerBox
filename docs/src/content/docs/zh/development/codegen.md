@@ -90,7 +90,7 @@ class MyNotifier extends _$MyNotifier {
 flutter_rust_bridge_codegen generate
 ```
 
-生成器会读取 `flutter_rust_bridge.yaml` 并将绑定代码写入 `lib/src/rust/`。请勿手动编辑生成的文件，也不要运行 `flutter_rust_bridge_codegen integrate`（其默认脚手架模板不适用于本仓库结构）。
+生成器读取 `flutter_rust_bridge.yaml`，并将绑定代码写入 `lib/src/rust/`。配置已关闭 Web 绑定。如果生成的入口仍引用 `frb_generated.web.dart`，请保留直接导入的 `frb_generated.io.dart`。使用现有配置运行 `generate`，以保留项目的构建钩子。
 
 ## 多语言本地化代码
 

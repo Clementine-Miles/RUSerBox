@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
-          submodules: recursive
+          submodules: true
           persist-credentials: false
           fetch-depth: 0
       - name: Install Flutter
@@ -270,7 +270,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
-          submodules: recursive
+          submodules: true
           persist-credentials: false
       - name: Build (Linux)
         if: matrix.platform == 'linux'
@@ -322,7 +322,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
-          submodules: recursive
+          submodules: true
           persist-credentials: false
           fetch-depth: 0
       - name: Install Flutter

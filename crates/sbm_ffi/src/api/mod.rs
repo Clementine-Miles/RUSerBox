@@ -2,7 +2,6 @@ pub mod agent_pipe;
 pub mod backup;
 pub mod bench;
 pub mod bmc;
-pub mod control_master;
 pub mod container;
 pub mod create;
 pub mod cron;

@@ -23,8 +23,7 @@ import 'package:server_box/data/model/server/shell_backend.dart';
 /// # Wire format
 ///
 /// Frame type is the channel selector: Binary is PTY bytes both ways, Text is
-/// control JSON. Mirrors the panel's client (`monitor/frontend/src/lib/
-/// terminal.svelte.ts`), and `monitor/src/api/ws/terminal.rs` is the spec.
+/// control JSON defined in `monitor/src/api/ws/terminal.rs`.
 ///
 /// # Reconnecting
 ///

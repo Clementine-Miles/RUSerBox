@@ -150,7 +150,7 @@ type RootTranslation = {
 			 */
 			title: string
 			/**
-			 * B​u​i​l​t​ ​f​o​r​ ​t​o​u​c​h​ ​w​i​t​h​ ​c​u​s​t​o​m​ ​v​i​r​t​u​a​l​ ​k​e​y​s​ ​f​o​r​ ​v​i​m​,​ ​t​m​u​x​,​ ​a​n​d​ ​h​t​o​p​.​ ​S​u​p​p​o​r​t​s​ ​j​u​m​p​ ​h​o​s​t​s​,​ ​A​g​e​n​t​ ​f​o​r​w​a​r​d​i​n​g​,​ ​a​n​d​ ​P​r​o​x​y​C​o​m​m​a​n​d​.
+			 * B​u​i​l​t​ ​f​o​r​ ​t​o​u​c​h​ ​w​i​t​h​ ​c​u​s​t​o​m​ ​v​i​r​t​u​a​l​ ​k​e​y​s​ ​f​o​r​ ​v​i​m​,​ ​Z​e​l​l​i​j​,​ ​a​n​d​ ​h​t​o​p​.​ ​S​u​p​p​o​r​t​s​ ​j​u​m​p​ ​h​o​s​t​s​,​ ​A​g​e​n​t​ ​f​o​r​w​a​r​d​i​n​g​,​ ​a​n​d​ ​P​r​o​x​y​C​o​m​m​a​n​d​.
 			 */
 			description: string
 		}

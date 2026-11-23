@@ -31,7 +31,6 @@ Try these steps:
    ```
 
 2. On Android, enable **Background running**, allow notifications, and exempt Server Box from battery optimization. MIUI/HyperOS may also require the battery policy **No restrictions**.
-3. iOS may suspend background connections. Return to Server Box and wait for it to reconnect.
 
 ## Input issues
 
@@ -49,7 +48,6 @@ An invalid value in the JSON settings editor can stop the App from starting.
 
 1. Restore a backup made before the setting was changed.
 2. Android: open **System Settings → Apps → Server Box → Storage** and clear the App data.
-3. iOS: delete and reinstall the App, then restore the backup.
 
 Clearing app data or reinstalling removes anything that was not backed up. Use these steps only if you cannot recover another way.
 
@@ -74,15 +72,13 @@ Clearing app data or reinstalling removes anything that was not backed up. Use t
 - Keep ServerBox updated on all synced devices.
 - If the backup page reports that synced data is encrypted with a different backup password, enter the password used on your other devices. Sync remains paused on this device until the password matches. All synced devices share the same password—after changing it on one device, update it on the others.
 
-## Widget and Watch App issues
+## Widget issues
 
-### Widgets or the Watch App do not update
+### Widgets do not update
 
 - Confirm that the Monitor is running and reachable at the configured URL.
 - Check the Monitor password, certificate, and `allowInsecure` setting in the App.
-- iOS decides when to refresh widgets. Wait for its next refresh, or remove and add the widget again.
 - On Android, tap the widget to refresh it. Open its configuration to confirm the selected server and metric.
-- The Watch App must be paired with an iPhone. After changing a server, open Server Box on the iPhone and wait for it to sync.
 
 ### A widget shows an error or no servers
 

@@ -70,7 +70,6 @@ late final settingName = propertyDefault('settingKey', defaultValue);
 
 1. 优先从修改前的备份恢复。
 2. Android：在系统设置中清除 Server Box 的应用数据。
-3. iOS：删除并重新安装 App。
 4. 重新打开 App 后，再导入备份。
 
 清除应用数据或重新安装会删除所有尚未备份的数据。只有其他恢复方式都不可用时才使用这些操作。

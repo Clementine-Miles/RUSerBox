@@ -148,7 +148,7 @@ echo
 if [ -f "$ROOT/.gitmodules" ]; then
     uninit=$(git -C "$ROOT" submodule status 2>/dev/null | grep -c '^-' || true)
     if [ "${uninit:-0}" -gt 0 ]; then
-        bad "$uninit submodule(s) not initialised — run: git submodule update --init --recursive"
+        bad "$uninit submodule(s) not initialised — run: git submodule update --init"
         git -C "$ROOT" submodule status 2>/dev/null | grep '^-' | awk '{print "        " $2}'
     else
         ok "submodules initialised"

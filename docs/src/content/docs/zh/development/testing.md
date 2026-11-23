@@ -20,7 +20,7 @@ flutter test --coverage
 
 Dart 测试位于 `test/`，按 `unit/`、`widget/`、`platform/` 和 `migration/` 分类。共享 helper 和 release fixture 分别位于 `helpers/` 和 `fixtures/`。测试应验证行为和输入输出，不依赖外部网络或真实服务器。
 
-`unit/` 按功能域划分为 `ssh/`、`terminal/`、`file/`、`server/`、`store/`、`ai/`、`geo/`、`rootfs/`、`monitor/`、`benchmark/`、`remote_desktop/`、`virt/`、`workspace/`、`view/` 和 `app/`；主题测试（`theme_*_test.dart`）直接放在 `unit/` 下。同一功能的 store、provider 和 model 测试放在一起。`store/` 存放共用的存储设施（数据库、schema、备份恢复和设置）；`app/` 存放版本、本地化、崩溃上报、诊断和构建检查。
+`unit/` 按功能域划分为 `ssh/`、`terminal/`、`file/`、`server/`、`store/`、`ai/`、`geo/`、`rootfs/`、`monitor/`、`benchmark/`、`remote_desktop/`、`virt/`、`workspace/`、`view/` 和 `app/`。同一功能的 store、provider 和 model 测试放在一起。`store/` 存放共用的存储设施（数据库、schema、备份恢复和设置）；`app/` 存放版本、本地化、崩溃上报、诊断和构建检查。
 
 ## Rust 测试
 
@@ -133,10 +133,6 @@ Fixture 一旦纳入回归测试，绝不能为了绕过测试失败而重新生
 | `rootfs_shell_test.dart` | 内置 Alpine 环境能否通过应用接口正常执行命令 |
 | `android_exec_test.dart` | Android 应用私有目录下的二进制执行权限 |
 | `android_rootfs_test.dart` | Android 端 `proot` 引导机制 |
-| `ios_rootfs_test.dart` | iOS 端内置 Linux 运行环境 |
-| `ios_bench_test.dart` | 真实硬件上的内置环境性能开销 |
-| `ios_load_test.dart` | 内置环境高负载运行时对宿主应用的影响 |
-| `sandbox_import_test.dart` | App Store 沙盒构建版本的数据迁移接管 |
 
 ```bash
 # 需连接真机或启动模拟器
@@ -144,18 +140,6 @@ flutter test integration_test/local_shell_test.dart
 ```
 
 运行 `make analyze` 时同样会检查 `integration_test/` 目录。
-
-### iOS 17+ 无线调试设备
-
-当 Xcode 通过局域网无线连接 iOS 17+ 真机时，需显式发布驱动端口：
-
-```bash
-flutter drive --publish-port \
-  --driver=integration_test/driver.dart \
-  --target=integration_test/ios_rootfs_test.dart
-```
-
-首次运行时系统会弹窗请求本地网络权限，请点击允许。
 
 ## 测试编写准则
 

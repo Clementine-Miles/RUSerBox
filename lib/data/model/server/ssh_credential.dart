@@ -82,11 +82,7 @@ final class SshCredential {
   /// while connected, so off unless asked for.
   final bool forwardAgent;
 
-  /// Where an OpenSSH master connection to this server listens, as
-  /// `ControlPath` names it (tokens expanded when connecting). A server
-  /// reached through this one as a jump asks that master for its stream, as
-  /// `ssh -W` does, when one is running; otherwise this connects as usual.
-  /// Linux and macOS.
+  /// Legacy OpenSSH control path retained for backup and sync compatibility.
   final String? controlPath;
 
   /// Fallback `user@host:port` tried when [ip] is unreachable

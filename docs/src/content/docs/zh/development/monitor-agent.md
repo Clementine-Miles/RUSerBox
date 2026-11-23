@@ -44,7 +44,7 @@ GET /api/v1/metrics/history?from=<epoch-seconds>&to=<epoch-seconds>
 
 ## 访问模型
 
-Monitor 只有一个账号，只用密码登录；它可以做 Monitor 运行所用的系统账户能做的一切。没有角色、权限或文件 roots。Monitor、Web 面板和 App 共用下面的约定。
+Monitor 只有一个账号，只用密码登录；它可以做 Monitor 运行所用的系统账户能做的一切。没有角色、权限或文件 roots。Monitor 和 Android 应用共用下面的约定。
 
 读取状态、指标、历史、velocity、capabilities 和卡片顺序，需要登录或 watch token。watch token 不能做其他任何事；其他 endpoint 对它返回 `401`。
 
@@ -55,7 +55,7 @@ Monitor 只有一个账号，只用密码登录；它可以做 Monitor 运行所
 | `POST /api/v1/login` | `password`、`device`（可选）、`name`（可选）；`username` 字段会被忽略。返回 `token`；如果 Monitor 不认识该设备，还会返回新的 `device` token |
 | `PUT /api/v1/me/password` | `current_password`、`new_password`（至少 8 个字符）；返回 `204` |
 
-客户端会按 Monitor 保存 `device` token（App 保存在 Keychain 或 Keystore，面板保存在 `localStorage`），并在之后每次登录时发送。`name` 是设备在 `GET /live` 中显示的名称；未提供时使用 User-Agent，最多 80 个字符，并会丢弃控制字符。每次登录，无论成功或被拒绝，都会写入 audit（`login`、地址，以及 `device known`、`new device`、`wrong password` 或 `throttled`）；其中不保存密码或 token。
+Android 应用会将各 Monitor 的 `device` token 保存在安全存储中，并在之后每次登录时发送。`name` 是设备在 `GET /live` 中显示的名称；未提供时使用 User-Agent，最多 80 个字符，并会丢弃控制字符。每次登录，无论成功或被拒绝，都会写入 audit（`login`、地址，以及 `device known`、`new device`、`wrong password` 或 `throttled`）；其中不保存密码或 token。
 
 登录会按来源地址和调用方限流：已知设备（其 token 以 SHA-256 形式保存，自上次使用起保留 180 天，最多保留最近使用的 64 个设备）使用独立计数器；其他客户端共用一个计数器；已登录调用方再次输入密码时，使用这些调用方共用的另一个计数器。因此，未知客户端的失败不会锁定之前登录过的设备。每个地址和设备可有 3 次失败，共享计数器可有 20 次；超过后延迟从 1 秒开始逐次翻倍，最高 5 分钟。修改密码会清除所有设备。
 
@@ -99,4 +99,4 @@ Monitor 只有一个账号，只用密码登录；它可以做 Monitor 运行所
 
 ### Terminal endpoint
 
-App 和网页面板的终端都是以 Monitor 进程用户身份在 PTY 上运行的本地 shell。Monitor 不登录 sshd：携带 SSH 凭据的 `open` 会被拒绝。
+Android 应用的 Monitor 终端是以 Monitor 进程用户身份在 PTY 上运行的本地 shell。Monitor 不登录 sshd：携带 SSH 凭据的 `open` 会被拒绝。

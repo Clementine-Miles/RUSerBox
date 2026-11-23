@@ -1,5 +1,6 @@
 gradle-wrapper.jar
 /.gradle
+/.kotlin/
 # Gradle's output. The root .gitignore only has `/build/`, which is anchored
 # there and does not reach this one.
 /build/

@@ -8,13 +8,13 @@ Flutter App 使用仓库提供的 `fl_build` 工具构建。Monitor 是独立的
 ## 前置条件
 
 - stable channel 的 Flutter SDK
-- Android SDK、NDK 和 JDK
+- Android SDK、NDK、JDK 21 和 GNU awk（`gawk`，用于构建 PRoot）
 - Rust toolchain：App 通过 Dart build hook、`flutter_rust_bridge_hooks` 和 native assets 构建 `crates/sbm_ffi`
 
 获取 Dart packages 前先初始化 Git submodule：
 
 ```bash
-git submodule update --init --recursive
+git submodule update --init
 ```
 
 ## 运行开发版
@@ -50,7 +50,7 @@ release 产物由 `monitor-release.yml` workflow 构建，目前只能通过 `wo
 
 ## 构建前后处理
 
-每次构建时，`fl_build` 都会重新生成 `lib/data/res/build_data.dart`，根据 Git 历史计算 build number。App 名称在 `pubspec.yaml` 的 `fl_build:` 段中设置。
+每次构建时，`fl_build` 都会根据 Git 历史生成 `lib/data/res/build_data.dart` 中的构建版本号。App 名称在 `pubspec.yaml` 的 `fl_build:` 段中设置。
 
 ## 故障排除
 

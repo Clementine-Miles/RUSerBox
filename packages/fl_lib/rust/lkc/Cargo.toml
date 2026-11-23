@@ -1,0 +1,33 @@
+[package]
+name = "fl_lkc"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-only"
+description = "LK Cloud: the IdP, the session an app or agent keeps, and homebase's sync"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.53", default-features = false, features = ["sync", "time", "macros", "fs", "io-util", "rt"] }
+bytes = "1"
+base64 = "0.23"
+blake3 = "1"
+# `rustls-no-provider`: the ring provider is passed where the client is built,
+# so a tree that depends on this keeps one crypto implementation.
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls-no-provider", "http2", "stream"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+webpki-roots = "1"
+url = "2"
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+# Teams' keys: age wraps and seals, Ed25519 signatures.
+age = { version = "0.11", default-features = false, features = ["armor"] }
+# age embeds its translations with rust-embed, which otherwise records each
+# file's mtime (the registry's unpack time): a reproducible build needs it fixed.
+rust-embed = { version = "8.13", default-features = false, features = ["deterministic-timestamps"] }
+bech32 = "0.9"
+ed25519-dalek = { version = "2", default-features = false, features = ["std", "zeroize"] }
+getrandom = "0.3"
+zeroize = { version = "1", features = ["zeroize_derive"] }
+
+[dev-dependencies]
+tokio = { version = "1.53", features = ["full"] }

@@ -1,0 +1,1547 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'lib_l10n.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Persian (`fa`).
+class LibLocalizationsFa extends LibLocalizations {
+  LibLocalizationsFa([String locale = 'fa']) : super(locale);
+
+  @override
+  String get about => 'درباره';
+
+  @override
+  String actionAndAction(Object action1, Object action2) {
+    return '$action1 و سپس $action2؟';
+  }
+
+  @override
+  String get active => 'فعال';
+
+  @override
+  String get add => 'افزودن';
+
+  @override
+  String get addr => 'نشانی';
+
+  @override
+  String agoFmt(String time) {
+    return '$time پیش';
+  }
+
+  @override
+  String get ai => 'هوش مصنوعی';
+
+  @override
+  String get all => 'همه';
+
+  @override
+  String get anonLoseDataTip =>
+      'در حال حاضر به‌صورت ناشناس وارد شده‌اید؛ ادامه دادن باعث از دست رفتن داده‌ها می‌شود.';
+
+  @override
+  String get apiEndpoint => 'نقطه پایانی API';
+
+  @override
+  String get apiKey => 'کلید API';
+
+  @override
+  String get apiProtocol => 'پروتکل API';
+
+  @override
+  String get app => 'برنامه';
+
+  @override
+  String get ascending => 'صعودی';
+
+  @override
+  String get askAiModel => 'مدل';
+
+  @override
+  String askContinue(Object msg) {
+    return '$msg. ادامه می‌دهید؟';
+  }
+
+  @override
+  String get attention => 'توجه';
+
+  @override
+  String get authRequired => 'احراز هویت الزامی است';
+
+  @override
+  String get auto => 'خودکار';
+
+  @override
+  String get available => 'در دسترس';
+
+  @override
+  String get background => 'پس‌زمینه';
+
+  @override
+  String get backup => 'پشتیبان‌گیری';
+
+  @override
+  String get battery => 'باتری';
+
+  @override
+  String get bioAuth => 'احراز هویت بیومتریک';
+
+  @override
+  String get blurRadius => 'شعاع تاری';
+
+  @override
+  String get bright => 'روشن';
+
+  @override
+  String get browsing => 'مرور';
+
+  @override
+  String get cancel => 'لغو';
+
+  @override
+  String get cancelled => 'لغو شد';
+
+  @override
+  String get capacity => 'ظرفیت';
+
+  @override
+  String get checkUpdate => 'بررسی به‌روزرسانی';
+
+  @override
+  String get clear => 'پاک کردن';
+
+  @override
+  String get clearHistory => 'پاک کردن تاریخچه';
+
+  @override
+  String get click => 'کلیک';
+
+  @override
+  String get clipboard => 'کلیپ‌بورد';
+
+  @override
+  String get clone => 'کلون';
+
+  @override
+  String get close => 'بستن';
+
+  @override
+  String get cmd => 'دستور';
+
+  @override
+  String get configured => 'پیکربندی‌شده';
+
+  @override
+  String get confirm => 'تأیید';
+
+  @override
+  String get conn => 'اتصال';
+
+  @override
+  String get container => 'کانتینر';
+
+  @override
+  String get content => 'محتوا';
+
+  @override
+  String get convert => 'تبدیل';
+
+  @override
+  String get copy => 'کپی';
+
+  @override
+  String get create => 'ایجاد';
+
+  @override
+  String get current => 'فعلی';
+
+  @override
+  String get custom => 'سفارشی';
+
+  @override
+  String get defaultLabel => 'پیش‌فرض';
+
+  @override
+  String get customCmdDocUrl =>
+      'https://github.com/lollipopkit/flutter_server_box/wiki#custom-commands';
+
+  @override
+  String get cut => 'برش';
+
+  @override
+  String get dark => 'تیره';
+
+  @override
+  String get day => 'روز';
+
+  @override
+  String get decode => 'رمزگشایی';
+
+  @override
+  String get decompress => 'استخراج';
+
+  @override
+  String delFmt(Object id, Object type) {
+    return '$type($id) حذف شود؟';
+  }
+
+  @override
+  String get delay => 'تأخیر';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get descending => 'نزولی';
+
+  @override
+  String get description => 'توضیحات';
+
+  @override
+  String get device => 'دستگاه';
+
+  @override
+  String get disabled => 'غیرفعال';
+
+  @override
+  String get enabled => 'فعال';
+
+  @override
+  String get disconnected => 'قطع‌شده';
+
+  @override
+  String get disk => 'دیسک';
+
+  @override
+  String get doc => 'مستندات';
+
+  @override
+  String get done => 'انجام شد';
+
+  @override
+  String get dontShowAgain => 'دیگر نشان داده نشود';
+
+  @override
+  String get download => 'دانلود';
+
+  @override
+  String get duration => 'مدت';
+
+  @override
+  String get edit => 'ویرایش';
+
+  @override
+  String get editor => 'ویرایشگر';
+
+  @override
+  String get empty => 'خالی';
+
+  @override
+  String get emulator => 'شبیه‌ساز';
+
+  @override
+  String get encode => 'رمزگذاری';
+
+  @override
+  String get error => 'خطا';
+
+  @override
+  String get example => 'مثال';
+
+  @override
+  String get execute => 'اجرا';
+
+  @override
+  String get exit => 'خروج';
+
+  @override
+  String get exitConfirmTip => 'برای خروج، دوباره دکمه بازگشت را بزنید';
+
+  @override
+  String get exitDirectly => 'خروج مستقیم';
+
+  @override
+  String get experimentalFeature => 'قابلیت آزمایشی';
+
+  @override
+  String get export => 'خروجی گرفتن';
+
+  @override
+  String get fail => 'شکست';
+
+  @override
+  String get feedback => 'بازخورد';
+
+  @override
+  String get file => 'فایل';
+
+  @override
+  String get fold => 'جمع کردن';
+
+  @override
+  String get folder => 'پوشه';
+
+  @override
+  String get followSystem => 'پیروی از سیستم';
+
+  @override
+  String get font => 'فونت';
+
+  @override
+  String get fontSize => 'اندازه فونت';
+
+  @override
+  String get force => 'اجباری';
+
+  @override
+  String get foregroundService => 'سرویس پیش‌زمینه';
+
+  @override
+  String get format => 'قالب';
+
+  @override
+  String get found => 'یافت شد';
+
+  @override
+  String get gateway => 'دروازه';
+
+  @override
+  String get general => 'عمومی';
+
+  @override
+  String get goBackQ => 'بازگشت؟';
+
+  @override
+  String get goto => 'رفتن به';
+
+  @override
+  String get hideTitleBar => 'پنهان کردن نوار عنوان';
+
+  @override
+  String get highlight => 'برجسته‌سازی کد';
+
+  @override
+  String get host => 'میزبان';
+
+  @override
+  String get hour => 'ساعت';
+
+  @override
+  String get image => 'تصویر';
+
+  @override
+  String get import => 'وارد کردن';
+
+  @override
+  String get inactive => 'غیرفعال';
+
+  @override
+  String get init => 'مقداردهی اولیه';
+
+  @override
+  String get inner => 'داخلی';
+
+  @override
+  String get install => 'نصب';
+
+  @override
+  String get invalid => 'نامعتبر';
+
+  @override
+  String get invalidUrl => 'نشانی URL نامعتبر';
+
+  @override
+  String get justNow => 'همین الان';
+
+  @override
+  String get key => 'کلید';
+
+  @override
+  String get language => 'زبان';
+
+  @override
+  String get license => 'مجوز';
+
+  @override
+  String get lkcAccount => 'حساب کاربری';
+
+  @override
+  String lkcCancelsOn(String date) {
+    return 'لغو در $date';
+  }
+
+  @override
+  String get lkcDeleteAccount => 'حذف حساب کاربری';
+
+  @override
+  String lkcDeleteAccountConfirm(String name) {
+    return '$name و اشتراک‌های آن حذف می‌شوند. این عمل غیرقابل بازگشت است.';
+  }
+
+  @override
+  String lkcEndsOn(String date) {
+    return 'پایان در $date';
+  }
+
+  @override
+  String lkcFileCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فایل',
+      one: '1 فایل',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get lkcFiles => 'فایل‌ها';
+
+  @override
+  String get lkcFreeTier => 'رایگان';
+
+  @override
+  String get lkcManageSubscriptions => 'مدیریت اشتراک‌ها';
+
+  @override
+  String get lkcNoEndDate => 'بدون تاریخ پایان';
+
+  @override
+  String get lkcNotSignedIn => 'وارد نشده‌اید';
+
+  @override
+  String get lkcPastDue => 'پرداخت معوق';
+
+  @override
+  String get lkcPaused => 'متوقف‌شده';
+
+  @override
+  String lkcPerMonth(String price) {
+    return '$price / ماه';
+  }
+
+  @override
+  String lkcPerYear(String price) {
+    return '$price / سال';
+  }
+
+  @override
+  String get lkcReasonAlreadySubscribed => 'از قبل مشترک هستید';
+
+  @override
+  String get lkcReasonBadPurchaseToken => 'توکن خرید نامعتبر است';
+
+  @override
+  String get lkcReasonBadPushToken => 'توکن Push نامعتبر است';
+
+  @override
+  String get lkcReasonBadQuery => 'پرس‌وجوی نامعتبر';
+
+  @override
+  String get lkcReasonBadSignature => 'امضای نامعتبر';
+
+  @override
+  String get lkcReasonBadTransaction => 'تراکنش نامعتبر';
+
+  @override
+  String get lkcReasonBenefitInvalid =>
+      'یک مزیت دو بار فهرست شده، متعلق به سطحی است که آن را ندارد، یا مالکی ندارد';
+
+  @override
+  String get lkcReasonCodeCheckout => 'این کد در این پرداخت قابل استفاده نیست';
+
+  @override
+  String get lkcReasonCodeCurrency => 'واحد پول کد با قیمت مطابقت ندارد';
+
+  @override
+  String get lkcReasonCodeCurrencyNeeded =>
+      'مبلغ ثابت باید واحد پول داشته باشد';
+
+  @override
+  String get lkcReasonCodeDiscountPeriods => 'تخفیف هیچ دوره‌ای اعطا نمی‌کند';
+
+  @override
+  String get lkcReasonCodeDuration =>
+      'مشخص کنید تخفیف شامل کدام پرداخت‌ها می‌شود';
+
+  @override
+  String get lkcReasonCodeExpired => 'این کد منقضی شده است';
+
+  @override
+  String get lkcReasonCodeFormat => 'کد شامل 4 تا 32 حرف، رقم یا خط تیره است';
+
+  @override
+  String get lkcReasonCodeGrantOff => 'کد اعطایی تخفیف ندارد';
+
+  @override
+  String get lkcReasonCodeGrantPeriods => 'کد اعطایی 1 تا 120 دوره اعتبار دارد';
+
+  @override
+  String get lkcReasonCodeGrantPlan => 'کد اعطایی فقط برای یک طرح است';
+
+  @override
+  String get lkcReasonCodeInactive => 'این کد دیگر معتبر نیست';
+
+  @override
+  String get lkcReasonCodeIsDiscount =>
+      'این کد تخفیف است؛ آن را هنگام اشتراک وارد کنید';
+
+  @override
+  String get lkcReasonCodeIsGrant =>
+      'این کد یک طرح اعطا می‌کند؛ به‌جای آن، کد را فعال کنید';
+
+  @override
+  String get lkcReasonCodeKind => 'نوع کد قابل تغییر نیست';
+
+  @override
+  String get lkcReasonCodeLimit => 'سقف استفاده باید مثبت باشد';
+
+  @override
+  String get lkcReasonCodeLineHeld =>
+      'شما از قبل اشتراکی در این خط محصول دارید';
+
+  @override
+  String get lkcReasonCodeMonths => 'تخفیف تکرارشونده 1 تا 36 ماه اعتبار دارد';
+
+  @override
+  String get lkcReasonCodeNewOnly => 'این کد فقط برای مشترکان جدید است';
+
+  @override
+  String get lkcReasonCodeNotStarted => 'این کد هنوز معتبر نیست';
+
+  @override
+  String get lkcReasonCodeOff => 'تخفیف یک درصد (1 تا 100) یا یک مبلغ ثابت است';
+
+  @override
+  String get lkcReasonCodePlan => 'این کد برای این طرح اعمال نمی‌شود';
+
+  @override
+  String get lkcReasonCodePlans =>
+      'طرح‌هایی را که کد برای آن‌ها اعمال می‌شود انتخاب کنید';
+
+  @override
+  String get lkcReasonCodeRedeemed =>
+      'این کد استفاده شده است؛ به‌جای آن، کد را غیرفعال کنید';
+
+  @override
+  String get lkcReasonCodeTaken => 'این کد از قبل وجود دارد';
+
+  @override
+  String get lkcReasonCodeTries =>
+      'تعداد تلاش‌ها بیش از حد است؛ بعداً دوباره امتحان کنید';
+
+  @override
+  String get lkcReasonCodeUnknown => 'چنین کدی وجود ندارد';
+
+  @override
+  String get lkcReasonCodeUsed => 'شما از این کد استفاده کرده‌اید';
+
+  @override
+  String get lkcReasonCodeUsedUp => 'ظرفیت استفاده از این کد تمام شده است';
+
+  @override
+  String get lkcReasonCodeWindow => 'زمان شروع کد باید پیش از انقضای آن باشد';
+
+  @override
+  String get lkcReasonDeleteAdmin =>
+      'پیش از حذف مدیر، نقش مدیر را در IdP حذف کنید';
+
+  @override
+  String get lkcReasonDeleteSelf => 'حساب کاربری خود را از صفحه حساب حذف کنید';
+
+  @override
+  String get lkcReasonFileExists => 'فایلی با این نام وجود دارد';
+
+  @override
+  String get lkcReasonFileName => 'نام فایل یا پوشه معتبر نیست';
+
+  @override
+  String get lkcReasonFileQuota =>
+      'این فایل‌ها از سهمیه فضای ذخیره‌سازی فراتر می‌روند';
+
+  @override
+  String get lkcReasonSyncUnavailable => 'این طرح همگام‌سازی ندارد';
+
+  @override
+  String get lkcReasonSyncQuota =>
+      'فایل‌های همگام‌شده از فضای طرح فراتر می‌روند';
+
+  @override
+  String get lkcReasonSyncDailyLimit =>
+      'سهمیه همگام‌سازی امروز تمام شده است؛ فردا بازنشانی می‌شود';
+
+  @override
+  String get lkcReasonFileTooLarge => 'فایل بیش از حد بزرگ است';
+
+  @override
+  String get lkcReasonForeignTransaction =>
+      'تراکنش متعلق به برنامه یا محیط دیگری است';
+
+  @override
+  String get lkcReasonGrantGone => 'چنین اشتراک دستی فعالی وجود ندارد';
+
+  @override
+  String get lkcReasonGrantHeld =>
+      'کاربر در این خط محصول یک اشتراک دستی دارد؛ به‌جای آن، همان را تغییر دهید';
+
+  @override
+  String get lkcReasonGrantInPast => 'پایان اعطا باید در آینده باشد';
+
+  @override
+  String get lkcReasonManualProvider => '«دستی» یک ارائه‌دهنده نیست';
+
+  @override
+  String get lkcReasonNoCustomer => 'اشتراکی برای مدیریت وجود ندارد';
+
+  @override
+  String get lkcReasonNoSwitch =>
+      'در این خط محصول اشتراک وبی برای تغییر وجود ندارد';
+
+  @override
+  String get lkcReasonNoUser => 'چنین کاربری وجود ندارد';
+
+  @override
+  String get lkcReasonPriceArchived =>
+      'یک قیمت فروش نزد ارائه‌دهنده‌اش بایگانی شده است';
+
+  @override
+  String get lkcReasonPriceMissing =>
+      'یک قیمت فروش نزد ارائه‌دهنده‌اش وجود ندارد';
+
+  @override
+  String get lkcReasonPriceNotFixed => 'یک قیمت فروش مبلغ ثابت ندارد';
+
+  @override
+  String get lkcReasonPricePeriod =>
+      'دوره صورت‌حساب یک قیمت فروش با دوره طرح آن مطابقت ندارد';
+
+  @override
+  String get lkcReasonProductId => 'شناسه محصول خالی است یا فاصله اضافی دارد';
+
+  @override
+  String get lkcReasonProductInUse =>
+      'طرح محصولی که اشتراک فعال دارد قابل تغییر نیست';
+
+  @override
+  String get lkcReasonProductPlans => 'هر محصول فقط به یک طرح نگاشت می‌شود';
+
+  @override
+  String get lkcReasonPurchaseAccount => 'خرید متعلق به حساب دیگری است';
+
+  @override
+  String get lkcReasonPushAccount => 'حساب Push غیرمنتظره';
+
+  @override
+  String get lkcReasonSamePlan => 'از قبل روی همین طرح هستید';
+
+  @override
+  String get lkcReasonSoldTwice =>
+      'برای هر طرح و ارائه‌دهنده فقط یک قیمت فروش مجاز است';
+
+  @override
+  String get lkcReasonSwitchSync =>
+      'ذخیره شد، اما تغییر طرح در Stripe به‌روزرسانی نشد؛ دوباره ذخیره کنید';
+
+  @override
+  String get lkcReasonTestPurchase => 'خریدهای آزمایشی پذیرفته نمی‌شوند';
+
+  @override
+  String get lkcReasonTransactionAccount => 'تراکنش متعلق به حساب دیگری است';
+
+  @override
+  String get lkcReasonUnavailable => 'در دسترس نیست';
+
+  @override
+  String get lkcReasonUnknownPackage => 'بسته ناشناخته';
+
+  @override
+  String get lkcReasonUploadSize =>
+      'فایل بارگذاری‌شده وجود ندارد یا اندازه آن با اندازه اعلام‌شده مطابقت ندارد';
+
+  @override
+  String get lkcReasonUploadUnknown =>
+      'چنین بارگذاری‌ای وجود ندارد یا منقضی شده است';
+
+  @override
+  String get lkcReasonUserGone => 'این کاربر دیگر وجود ندارد';
+
+  @override
+  String lkcRenewsOn(String date) {
+    return 'تمدید در $date';
+  }
+
+  @override
+  String get lkcStoreSubscriptionTip =>
+      'شما اشتراکی دارید که از طریق App Store یا Google Play پرداخت می‌شود. ابتدا آن را در فروشگاه لغو کنید: حذف حساب کاربری آن را متوقف نمی‌کند.';
+
+  @override
+  String get lkcSubscribe => 'اشتراک';
+
+  @override
+  String lkcUsageOf(String used, String quota) {
+    return '$used از $quota';
+  }
+
+  @override
+  String get loadingEllipsis => '...';
+
+  @override
+  String get local => 'محلی';
+
+  @override
+  String get location => 'موقعیت مکانی';
+
+  @override
+  String get log => 'لاگ';
+
+  @override
+  String get login => 'ورود';
+
+  @override
+  String get loginTip => 'نیازی به ثبت‌نام نیست، استفاده رایگان است.';
+
+  @override
+  String get logout => 'خروج از حساب';
+
+  @override
+  String get logs => 'لاگ‌ها';
+
+  @override
+  String get loss => 'اتلاف';
+
+  @override
+  String get manage => 'مدیریت';
+
+  @override
+  String get manual => 'دستی';
+
+  @override
+  String get max => 'حداکثر';
+
+  @override
+  String get memory => 'حافظه';
+
+  @override
+  String get menuHelp => 'راهنما';
+
+  @override
+  String get menuInfo => 'اطلاعات';
+
+  @override
+  String get menuNavigate => 'پیمایش';
+
+  @override
+  String get menuQuit => 'خروج';
+
+  @override
+  String get menuSettings => 'تنظیمات';
+
+  @override
+  String get menuWiki => 'ویکی';
+
+  @override
+  String get migrateCfg => 'انتقال پیکربندی';
+
+  @override
+  String get migrateCfgTip => 'برای سازگاری با پیکربندی جدید موردنیاز';
+
+  @override
+  String get milliseconds => 'میلی‌ثانیه';
+
+  @override
+  String get min => 'حداقل';
+
+  @override
+  String get minute => 'دقیقه';
+
+  @override
+  String get mission => 'وظیفه';
+
+  @override
+  String get mode => 'حالت';
+
+  @override
+  String get more => 'بیشتر';
+
+  @override
+  String get moveDown => 'انتقال به پایین';
+
+  @override
+  String get moveUp => 'انتقال به بالا';
+
+  @override
+  String get ms => 'ms';
+
+  @override
+  String get name => 'نام';
+
+  @override
+  String get net => 'شبکه';
+
+  @override
+  String get network => 'شبکه';
+
+  @override
+  String get next => 'بعدی';
+
+  @override
+  String get node => 'گره';
+
+  @override
+  String get none => 'هیچ‌کدام';
+
+  @override
+  String get notAvailable => 'در دسترس نیست';
+
+  @override
+  String notExistFmt(Object file) {
+    return '$file وجود ندارد';
+  }
+
+  @override
+  String get note => 'یادداشت';
+
+  @override
+  String get ok => 'تأیید';
+
+  @override
+  String get opacity => 'شفافیت';
+
+  @override
+  String get open => 'باز کردن';
+
+  @override
+  String get optional => 'اختیاری';
+
+  @override
+  String get paste => 'جای‌گذاری';
+
+  @override
+  String get path => 'مسیر';
+
+  @override
+  String get permission => 'دسترسی';
+
+  @override
+  String get permissionDenied => 'دسترسی رد شد.';
+
+  @override
+  String get pingAvg => 'میانگین:';
+
+  @override
+  String get pkg => 'بسته';
+
+  @override
+  String get port => 'پورت';
+
+  @override
+  String get portForward => 'انتقال پورت';
+
+  @override
+  String get preview => 'پیش‌نمایش';
+
+  @override
+  String get previous => 'قبلی';
+
+  @override
+  String get primaryColorSeed => 'رنگ پایه اصلی';
+
+  @override
+  String get process => 'فرایند';
+
+  @override
+  String get prune => 'پاک‌سازی';
+
+  @override
+  String get pwd => 'گذرواژه';
+
+  @override
+  String get pwdTip =>
+      'طول 6 تا 32 نویسه، شامل حروف انگلیسی، اعداد و علائم نگارشی';
+
+  @override
+  String get read => 'خواندن';
+
+  @override
+  String get ready => 'آماده';
+
+  @override
+  String get reboot => 'راه‌اندازی مجدد';
+
+  @override
+  String get reconnecting => 'در حال اتصال مجدد...';
+
+  @override
+  String get redo => 'انجام دوباره';
+
+  @override
+  String get refresh => 'تازه‌سازی';
+
+  @override
+  String get register => 'ثبت‌نام';
+
+  @override
+  String get remote => 'دوردست';
+
+  @override
+  String get rename => 'تغییر نام';
+
+  @override
+  String get replace => 'جایگزینی';
+
+  @override
+  String get replaceAll => 'جایگزینی همه';
+
+  @override
+  String get reset => 'بازنشانی';
+
+  @override
+  String get restart => 'راه‌اندازی مجدد';
+
+  @override
+  String get restore => 'بازیابی';
+
+  @override
+  String get result => 'نتیجه';
+
+  @override
+  String get retry => 'تلاش مجدد';
+
+  @override
+  String get route => 'مسیریابی';
+
+  @override
+  String get run => 'اجرا';
+
+  @override
+  String get running => 'در حال اجرا';
+
+  @override
+  String get save => 'ذخیره';
+
+  @override
+  String get saveFailed => 'ذخیره ناموفق بود';
+
+  @override
+  String get saved => 'ذخیره شد';
+
+  @override
+  String get search => 'جستجو';
+
+  @override
+  String get second => 'ثانیه';
+
+  @override
+  String get select => 'انتخاب';
+
+  @override
+  String get sensors => 'حسگر';
+
+  @override
+  String get sequence => 'ترتیب';
+
+  @override
+  String get server => 'سرور';
+
+  @override
+  String get servers => 'سرورها';
+
+  @override
+  String get setting => 'تنظیمات';
+
+  @override
+  String get share => 'اشتراک‌گذاری';
+
+  @override
+  String get shutdown => 'خاموش کردن';
+
+  @override
+  String get size => 'اندازه';
+
+  @override
+  String sizeTooLargeOnlyPrefix(Object bytes) {
+    return 'محتوا بیش از حد بزرگ است، فقط $bytes ابتدایی نمایش داده می‌شود';
+  }
+
+  @override
+  String get snippet => 'قطعه‌کد';
+
+  @override
+  String get softWrap => 'شکستن خودکار خط';
+
+  @override
+  String get sort => 'مرتب‌سازی';
+
+  @override
+  String get sortByName => 'بر اساس نام';
+
+  @override
+  String get source => 'منبع';
+
+  @override
+  String get speed => 'سرعت';
+
+  @override
+  String get start => 'شروع';
+
+  @override
+  String get stat => 'آمار';
+
+  @override
+  String get stats => 'آمار';
+
+  @override
+  String get stop => 'توقف';
+
+  @override
+  String get stopped => 'متوقف‌شده';
+
+  @override
+  String get storage => 'فضای ذخیره‌سازی';
+
+  @override
+  String get success => 'موفقیت';
+
+  @override
+  String get sudoPassword => 'گذرواژه sudo';
+
+  @override
+  String sudoPwdTitle(Object pwd) {
+    return '$pwd sudo';
+  }
+
+  @override
+  String get suspend => 'تعلیق';
+
+  @override
+  String get switch_ => 'جابه‌جایی';
+
+  @override
+  String get switcher => 'جابه‌جاگر';
+
+  @override
+  String get sync => 'همگام‌سازی';
+
+  @override
+  String get system => 'سیستم';
+
+  @override
+  String get tag => 'برچسب';
+
+  @override
+  String get tapToAuth => 'برای تأیید ضربه بزنید';
+
+  @override
+  String get temperature => 'دما';
+
+  @override
+  String get terminal => 'ترمینال';
+
+  @override
+  String get test => 'آزمایش';
+
+  @override
+  String get textScaler => 'مقیاس متن';
+
+  @override
+  String get theme => 'تم';
+
+  @override
+  String get themeMode => 'حالت تم';
+
+  @override
+  String get thinking => 'در حال فکر کردن';
+
+  @override
+  String get time => 'زمان';
+
+  @override
+  String get timedOut => 'مهلت زمانی به پایان رسید';
+
+  @override
+  String get timeout => 'مهلت زمانی';
+
+  @override
+  String get times => 'دفعات';
+
+  @override
+  String get total => 'مجموع';
+
+  @override
+  String get totalAttempts => 'مجموع';
+
+  @override
+  String get traffic => 'ترافیک';
+
+  @override
+  String get ttl => 'TTL';
+
+  @override
+  String get type => 'نوع';
+
+  @override
+  String get undo => 'واگرد';
+
+  @override
+  String get unknown => 'ناشناخته';
+
+  @override
+  String get unsupported => 'پشتیبانی نمی‌شود';
+
+  @override
+  String get update => 'به‌روزرسانی';
+
+  @override
+  String get upload => 'بارگذاری';
+
+  @override
+  String get uptime => 'زمان فعالیت';
+
+  @override
+  String get used => 'مصرف‌شده';
+
+  @override
+  String get user => 'کاربر';
+
+  @override
+  String get valid => 'معتبر';
+
+  @override
+  String get value => 'مقدار';
+
+  @override
+  String versionHasUpdate(Object build) {
+    return 'یافت شد: v1.0.$build، برای به‌روزرسانی کلیک کنید';
+  }
+
+  @override
+  String versionUnknownUpdate(Object build) {
+    return 'فعلی: v1.0.$build، برای بررسی به‌روزرسانی کلیک کنید';
+  }
+
+  @override
+  String versionUpdated(Object build) {
+    return 'فعلی: v1.0.$build، به‌روز است';
+  }
+
+  @override
+  String get view => 'مشاهده';
+
+  @override
+  String get viewErr => 'مشاهده خطا';
+
+  @override
+  String get write => 'نوشتن';
+
+  @override
+  String get yesterday => 'دیروز';
+
+  @override
+  String durationDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count روز',
+      one: '1 روز',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ساعت',
+      one: '1 ساعت',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count دقیقه',
+      one: '1 دقیقه',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String durationSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ثانیه',
+      one: '1 ثانیه',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get appearanceSettings => 'ظاهر';
+
+  @override
+  String get appearancePreset => 'پیش‌تنظیم تم';
+
+  @override
+  String get appearanceIcons => 'آیکون‌های درون برنامه';
+
+  @override
+  String get caseSensitive => 'حساس به حروف کوچک و بزرگ';
+
+  @override
+  String get flashlight => 'چراغ‌قوه';
+
+  @override
+  String get regex => 'عبارت باقاعده';
+
+  @override
+  String get showPwd => 'نمایش گذرواژه';
+
+  @override
+  String existsFmt(String name) {
+    return '$name از قبل وجود دارد';
+  }
+
+  @override
+  String tooLargeFmt(String size) {
+    return 'بزرگ‌تر از $size';
+  }
+
+  @override
+  String get lkcTeams => 'Teams';
+
+  @override
+  String get lkcTeamNew => 'New team';
+
+  @override
+  String get lkcTeamName => 'Team name';
+
+  @override
+  String get lkcTeamNone => 'No teams yet';
+
+  @override
+  String lkcTeamEpoch(int epoch) {
+    return 'Epoch $epoch';
+  }
+
+  @override
+  String lkcTeamMemberCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lkcTeamKeyedCount(int count) {
+    return '$count hold the key';
+  }
+
+  @override
+  String get lkcTeamRotationNeeded => 'Needs a new key';
+
+  @override
+  String get lkcTeamAwaitingKey => 'Waiting for the key';
+
+  @override
+  String get lkcTeamMembersAwaitingKey => 'Members waiting for the key';
+
+  @override
+  String get lkcTeamKeyChanged => 'Signing key changed';
+
+  @override
+  String get lkcTeamKeyChanges => 'Key changes to confirm';
+
+  @override
+  String get lkcTeamHoldsKey => 'Holds the key';
+
+  @override
+  String get lkcTeamMigrating => 'Re-encrypting';
+
+  @override
+  String get lkcTeamMigrated => 'All on the current epoch';
+
+  @override
+  String get lkcTeamFirstKeyDue => 'No key yet';
+
+  @override
+  String get lkcTeamStopped => 'Stopped';
+
+  @override
+  String get lkcTeamWaitingApproval => 'Waiting for approval';
+
+  @override
+  String get lkcTeamKeyPassword => 'LK Cloud key password';
+
+  @override
+  String get lkcTeamSetKeyPassword => 'Set the LK Cloud key password';
+
+  @override
+  String get lkcTeamSetKeyPasswordTip =>
+      'Every app of this account opens its teams with it. A lost password can\'t be recovered.';
+
+  @override
+  String get lkcTeamUnlockTitle => 'Unlock the account key';
+
+  @override
+  String get lkcTeamUnlock => 'Unlock';
+
+  @override
+  String get lkcTeamRepeat => 'Repeat';
+
+  @override
+  String get lkcTeamWrongPassword => 'Wrong password';
+
+  @override
+  String get lkcTeamPasswordMismatch => 'The two don\'t match';
+
+  @override
+  String get lkcTeamPasswordShort => 'At least 8 characters';
+
+  @override
+  String get lkcTeamLock => 'Lock';
+
+  @override
+  String get lkcTeamInvite => 'Invite';
+
+  @override
+  String get lkcTeamRotate => 'New key';
+
+  @override
+  String get lkcTeamGrant => 'Give the key';
+
+  @override
+  String get lkcTeamPromote => 'Make admin';
+
+  @override
+  String get lkcTeamDemote => 'Make member';
+
+  @override
+  String get lkcTeamTransfer => 'Hand over the team';
+
+  @override
+  String get lkcTeamRemove => 'Remove from team';
+
+  @override
+  String get lkcTeamLeave => 'Leave team';
+
+  @override
+  String get lkcTeamApprove => 'Approve';
+
+  @override
+  String get lkcTeamCompare => 'Compare fingerprint';
+
+  @override
+  String get lkcTeamFingerprint => 'Fingerprint';
+
+  @override
+  String lkcTeamComparedCheck(String name) {
+    return 'Matches what $name sees, compared in person or another trusted way';
+  }
+
+  @override
+  String get lkcTeamCompared => 'Compared';
+
+  @override
+  String get lkcTeamNotCompared => 'Not compared';
+
+  @override
+  String get lkcTeamMe => 'me';
+
+  @override
+  String get lkcTeamRoleOwner => 'owner';
+
+  @override
+  String get lkcTeamRoleAdmin => 'admin';
+
+  @override
+  String get lkcTeamRoleMember => 'member';
+
+  @override
+  String lkcTeamKeyChangedTitle(String name) {
+    return '$name\'s signing key changed';
+  }
+
+  @override
+  String get lkcTeamKeyChangedTip =>
+      'They may have a new device or key, or the server may be impersonating them.';
+
+  @override
+  String get lkcTeamPrevious => 'Compared before';
+
+  @override
+  String get lkcTeamCurrent => 'Now';
+
+  @override
+  String get lkcTeamTrustNew => 'It\'s their new key';
+
+  @override
+  String get lkcTeamDontTrust => 'Not now';
+
+  @override
+  String get lkcTeamInviteDays => 'Valid for';
+
+  @override
+  String get lkcTeamInviteUses => 'Uses';
+
+  @override
+  String lkcTeamDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get lkcTeamInviteWithKey => 'Link carries the key';
+
+  @override
+  String get lkcTeamInviteWithoutKey => 'Without the key';
+
+  @override
+  String get lkcTeamCreateLink => 'Create link';
+
+  @override
+  String get lkcTeamInviteLink => 'Invite link';
+
+  @override
+  String get lkcTeamInviteSecretTip =>
+      'What follows # never reaches the server: send the link only over a channel you trust.';
+
+  @override
+  String lkcTeamInviteTerms(String date, int uses) {
+    String _temp0 = intl.Intl.pluralLogic(
+      uses,
+      locale: localeName,
+      other: '$uses uses',
+      one: '1 use',
+    );
+    return 'Until $date · $_temp0';
+  }
+
+  @override
+  String get lkcTeamRotating => 'Making a new key';
+
+  @override
+  String get lkcTeamReencrypting => 'Re-encrypting';
+
+  @override
+  String lkcTeamRotated(int epoch) {
+    return 'On epoch $epoch';
+  }
+
+  @override
+  String get lkcTeamSnapshotNeeded =>
+      'The log is re-encrypted at the next sync';
+
+  @override
+  String lkcTeamUnreadable(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files are',
+      one: '1 file is',
+    );
+    return '$_temp0 left to another admin\'s device';
+  }
+
+  @override
+  String get lkcTeamPromotionNeeded =>
+      'The owner promotes you before you can make a new key';
+
+  @override
+  String get lkcTeamUntrusted =>
+      'The server\'s data doesn\'t check out (an epoch going back, or a bad signature), so this team is stopped';
+
+  @override
+  String get lkcTeamRefetch => 'Fetch again';
+
+  @override
+  String lkcTeamUnconfirmed(String names) {
+    return 'Compare the fingerprints of $names first';
+  }
+
+  @override
+  String lkcTeamNoRecipient(String names) {
+    return '$names haven\'t opened their account key yet';
+  }
+
+  @override
+  String get lkcTeamKeyReplaced =>
+      'Another device replaced the account key: unlock again';
+
+  @override
+  String get lkcTeamFirstKey =>
+      'Compare every member\'s fingerprint, then make the first key';
+
+  @override
+  String get lkcTeamMakeFirstKey => 'Make the first key';
+
+  @override
+  String get lkcTeamAllMatch => 'All match';
+
+  @override
+  String lkcTeamRemoveConfirm(String name) {
+    return 'Remove $name? The team then needs a new key.';
+  }
+
+  @override
+  String lkcTeamLeaveConfirm(String name) {
+    return 'Leave $name?';
+  }
+
+  @override
+  String lkcTeamTransferConfirm(String name) {
+    return '$name becomes the owner and you an admin.';
+  }
+
+  @override
+  String get lkcTeamRotateConfirm =>
+      'Every member gets a new key, and the team\'s files are re-encrypted.';
+
+  @override
+  String get lkcTeamJoin => 'Join a team';
+
+  @override
+  String get lkcTeamJoinLink => 'Invite link';
+
+  @override
+  String lkcTeamJoined(String name) {
+    return 'Joined $name';
+  }
+
+  @override
+  String lkcTeamSkippedEpochs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count earlier epochs',
+      one: '1 earlier epoch',
+    );
+    return 'Data from $_temp0 can\'t be read here';
+  }
+
+  @override
+  String lkcTeamRecoveryTitle(String name) {
+    return '$name started the team\'s keys anew';
+  }
+
+  @override
+  String get lkcTeamRecoveryTip =>
+      'An owner does this only after losing every key. Accept only once they confirmed it with you.';
+
+  @override
+  String get lkcTeamAcceptRecovery => 'Accept';
+}

@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
-import 'package:crypto/crypto.dart' show sha1;
 import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:server_box/data/model/server/server_private_info.dart';
@@ -71,46 +69,8 @@ abstract final class SSHConfig {
     );
   }
 
-  /// The socket an OpenSSH master for this host listens on, as a
-  /// `ControlPath` names it; null for one naming a variable that is not set,
-  /// or a token this does not know.
-  ///
-  /// The host is lowercased first, as OpenSSH does before expanding either
-  /// `%h` or `%C`. `%C` is its connection hash: SHA-1 of the local host name,
-  /// the host, the port, the remote user and the `ProxyJump` value, which a
-  /// host with a jump of its own would need and this does not have, so that
-  /// one's master is not found.
-  static String? expandControlPath(
-    String value, {
-    required String hostname,
-    required String remoteUser,
-    String? originalHost,
-    int port = 22,
-    @visibleForTesting Map<String, String>? environment,
-    @visibleForTesting String? localHost,
-  }) {
-    final env = environment ?? Platform.environment;
-    final thisHost = localHost ?? Platform.localHostname;
-    final host = hostname.toLowerCase();
-    return _expandSocketPath(
-      value,
-      env: env,
-      hostname: host,
-      remoteUser: remoteUser,
-      originalHost: originalHost,
-      port: port,
-      localHost: thisHost,
-      extra: {
-        'C': sha1
-            .convert(utf8.encode('$thisHost$host$port$remoteUser'))
-            .toString(),
-        'j': '',
-      },
-    );
-  }
-
   /// [value] with `~`, `${NAME}` and the tokens `%%`, `%d`, `%u`, `%i`, `%h`,
-  /// `%n`, `%k`, `%p`, `%r`, `%l` and `%L` (and [extra]'s) expanded in one
+  /// `%n`, `%k`, `%p`, `%r`, `%l` and `%L` expanded in one
   /// pass, so a value never has its own text read for tokens again.
   static String? _expandSocketPath(
     String value, {
@@ -119,10 +79,8 @@ abstract final class SSHConfig {
     required String remoteUser,
     required String? originalHost,
     required int port,
-    String? localHost,
-    Map<String, String> extra = const {},
   }) {
-    final thisHost = localHost ?? Platform.localHostname;
+    final thisHost = Platform.localHostname;
     final tokens = {
       '%': '%',
       'd': _homePath ?? '',
@@ -135,7 +93,6 @@ abstract final class SSHConfig {
       'r': remoteUser,
       'l': thisHost,
       'L': thisHost.split('.').first,
-      ...extra,
     };
     var unresolved = false;
     final expanded = value.replaceAllMapped(_pathReference, (m) {

@@ -4888,7 +4888,6 @@ dependencies = [
  "ironrdp",
  "ironrdp-tls",
  "jpeg-decoder",
- "libc",
  "md-5 0.11.0",
  "p256",
  "p384",

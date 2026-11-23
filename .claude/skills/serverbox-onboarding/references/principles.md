@@ -115,18 +115,12 @@ let it answer: `await context.showSheet<bool>(...)` with `Btnx.cancelOk`.
 Passing an `onTap` to `Btn.ok` is what breaks it, because that replaces the
 button's own correct navigator resolution.
 
-## Cross-platform
+## Android build
 
-Five platforms from one codebase, with two pieces of native machinery worth
-knowing about:
-
-- **`packages/fl_tty`** is the shell on this device, shared with LLMBox: the
-  pty, proot on Android and iul (at
-  `packages/fl_tty/third_party/iul`) on iOS. Its build hook builds all of
-  it; the engine's libraries are fetched for the submodule's revision.
-- **CocoaPods is gone from iOS and macOS.** `hook/build.dart` and fl_tty's hook
-  replaced the per-platform build integrations with Dart build hooks, so there
-  is no `Podfile` and nothing to add one back to.
+The app builds native code through Dart build hooks. `hook/build.dart` builds
+the shared Rust bridge. `packages/fl_tty` builds the local PTY library and
+packages proot for arm64 Linux userlands. The PTY also builds on Linux for
+host-side tests.
 
 Localization is ARB files in `lib/l10n/`, reached through `l10n` for this
 project and `libL10n` for the strings `fl_lib` already has. Prefer an existing

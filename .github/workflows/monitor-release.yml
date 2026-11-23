@@ -110,10 +110,6 @@ jobs:
       - name: Check out IronRDP
         run: git submodule update --init --depth 1 third_party/ironrdp
 
-      # The agent uses fl_lib's LK Cloud client.
-      - name: Check out fl_lib
-        run: git submodule update --init --depth 1 packages/fl_lib
-
       # Agent mode runs pi through `fl_pi_llm`'s Rust host
       # (`packages/fl_pi_llm/fl_pi_llm/rust`), a path dependency into this submodule.
       - name: Check out fl_pi_llm

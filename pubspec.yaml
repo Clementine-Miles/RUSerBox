@@ -49,9 +49,7 @@ dependencies:
   riverpod_annotation: ^4.0.2
   # Direct, though `SqliteStore` lives in fl_lib: `hooks.user_defines` below is
   # only honoured for this package's own dependencies, and the Hive migration
-  # opens the database from here too. 3.7.1 or later: SQLite 3.54.0, which
-  # opens a WAL database on Windows while another process maps its `-shm`
-  # (#1860).
+  # opens the database from here too.
   sqlite3: ^3.8.0
   # Storage layer over the same encrypted connection: `NativeDatabase.opened`
   # takes the `sqlite3` Database this app already opens and keys itself, so
@@ -101,14 +99,13 @@ dependencies:
     path: packages/fl_pi_llm/fl_pi_llm_ui
   # Imported by the app itself, not only through the packages that bring them
   # in: a transitive dependency can drop or change one under it.
-  ffi: ^2.2.0
   path_provider: ^2.1.6
   path: ^1.9.1
   cross_file: ^0.3.5+4
   collection: ^1.19.1
   flutter_local_notifications: ^22.3.1
 dependency_overrides:
-  # fl_pi_llm_ui asks for fl_lib from git; the submodule is the one.
+  # fl_pi_llm_ui shares the vendored fl_lib used by the app.
   fl_lib:
     path: packages/fl_lib
   # TODO: remove once freezed releases the fix (rrousselGit/freezed#1376).
@@ -160,14 +157,8 @@ dev_dependencies:
       path: flutter_secure_storage
   flutter_secure_storage_platform_interface: ^2.0.1
 
-# Which SQLite gets compiled into the app. Only the root package can set this —
-# a dependency cannot supply its own defaults — so it lives here even though
-# every caller is in fl_lib.
-#
-# `sqlite3mc` rather than `sqlcipher`: both encrypt the whole file, keys and
-# indexes included, but SQLCipher links OpenSSL on Windows, Linux and Android,
-# where SQLite3MultipleCiphers carries its cipher implementations in its own
-# source and needs nothing installed on any of the five platforms.
+# SQLite3MultipleCiphers encrypts the full database, including indexes.
+# The root package passes this setting to the SQLite build hook.
 hooks:
   user_defines:
     sqlite3:

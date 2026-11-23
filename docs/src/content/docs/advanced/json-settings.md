@@ -80,7 +80,6 @@ order:
 
 1. Restore the backup created before the change if possible.
 2. Android: clear Server Box app data in system settings.
-3. iOS: delete and reinstall the App.
 4. Open the App and restore the backup.
 
 Clearing app data or reinstalling removes anything that has not been backed

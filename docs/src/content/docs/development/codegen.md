@@ -105,9 +105,10 @@ flutter_rust_bridge_codegen generate
 ```
 
 The generator reads `flutter_rust_bridge.yaml` and writes files to
-`lib/src/rust/`. Do not edit those generated files. Do not run
-`flutter_rust_bridge_codegen integrate`; its template scaffolding does not
-match this repository.
+`lib/src/rust/`. The config disables the web bridge. If the generator leaves
+a reference to `frb_generated.web.dart` in the entrypoint, keep the direct
+`frb_generated.io.dart` import. Use the `generate` command with the existing
+configuration to preserve the project's build hooks.
 
 ## Localization generation
 

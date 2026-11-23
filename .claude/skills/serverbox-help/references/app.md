@@ -5,17 +5,7 @@ the top: tell the user what to search for rather than guessing a path.
 
 ## Getting it
 
-| Platform | Where |
-|---|---|
-| iOS | App Store, or the unsigned `.ipa` from GitHub Releases to sign yourself |
-| macOS | App Store, `brew install --cask server-box`, or the `.dmg` from GitHub Releases |
-| Android | GitHub Releases, F-Droid (`tech.lolli.toolbox`) |
-| Linux | AppImage from GitHub Releases |
-| Windows | zip from GitHub Releases |
-| watchOS | Comes with the iOS app |
-
-Releases: <https://github.com/lollipopkit/flutter_server_box/releases>.
-<https://serverbox.lollipopkit.com/docs/installation/> has the rest.
+Download the APK for your device from <https://github.com/Clementine-Miles/ru_serbox/releases>.
 
 ## Adding a server
 
@@ -53,15 +43,15 @@ reaches every server. More: <https://serverbox.lollipopkit.com/docs/advanced/age
 
 ## Other things people ask about
 
-- **Unlocking with Face ID, Touch ID or a fingerprint**, and on Android
+- **Biometric unlock** and
   **Run in background** (keeps connections alive; also allow notifications and
   exempt the app from battery optimisation): **Settings → App → General**.
-- **Backups**: the Backup page — a file, WebDAV or iCloud. A backup includes servers with their SSH passwords, private keys,
+- **Backups**: the Backup page — a file or WebDAV. A backup includes servers with their SSH passwords, private keys,
   snippets, remote desktop profiles with their passwords, app settings and Agent settings (encrypted or
   not); sudo passwords, API keys, MCP headers, WebDAV settings and key passphrases are included only when
   encrypted. Chats are not included. **Synced
   data** on that page lets you toggle each category on or off; fonts,
-  images, skills and benchmarks sync only through iCloud, WebDAV and LK Cloud.
+  images, skills and benchmarks sync only through WebDAV.
   Versions from before the current sync format continue syncing to the legacy
   backup file and do not exchange changes with newer versions. If an older version cannot read a
   newer device's format, it stops importing remote changes and prompts you to update while still uploading local
@@ -77,7 +67,7 @@ reaches every server. More: <https://serverbox.lollipopkit.com/docs/advanced/age
   it themselves (OSC 7501, OSC 9;4, OSC 133); the notification switch is
   **Settings → SSH → Notify when a program needs you**:
   <https://serverbox.lollipopkit.com/docs/advanced/program-status/>.
-- **A shell on this phone or computer** without a server:
+- **A shell on this Android device** without a server:
   <https://serverbox.lollipopkit.com/docs/advanced/local-terminal/>.
 - **Extra status commands** shown on a server's page:
   <https://serverbox.lollipopkit.com/docs/advanced/custom-commands/>.
@@ -87,9 +77,9 @@ reaches every server. More: <https://serverbox.lollipopkit.com/docs/advanced/age
 | Symptom | Try |
 |---|---|
 | SSH will not connect | Is sshd running? Does `ssh user@host -p port` work from elsewhere? Firewall, then the user and key or password. With a jump server, test that hop alone |
-| Disconnects when idle or in the background | `ClientAliveInterval 60` and `ClientAliveCountMax 3` in the server's `sshd_config`; on Android, **Run in background**, notifications allowed, no battery optimisation (MIUI/HyperOS: **No restrictions**); iOS suspends background connections, and the app reconnects on return |
+| Disconnects when idle or in the background | `ClientAliveInterval 60` and `ClientAliveCountMax 3` in the server's `sshd_config`; on Android, **Run in background**, notifications allowed, no battery optimisation (MIUI/HyperOS: **No restrictions**) |
 | A server page is missing a feature | See "The button is missing" in the skill, and `monitor.md` |
 | Firewall says unsupported or asks for a password | The Firewall page manages **ufw** or **firewalld** on Linux, whichever the server has (both installed: a switch in the bar, and a warning when both are on). Neither installed: install one (`apt install ufw`, `dnf install firewalld`). Their rules are readable by root only, so an account that is not root needs sudo and its password. Every change is checked against how the app reaches the server — the SSH port and address as the server sees them, the Monitor's port: one that would refuse it says so, offers to keep the port open first, and makes OK count down. firewalld shows what is in force and what is saved, and warns when a reload or reboot would change what gets through |
-| Widgets or the watch do not update | They need the Monitor, reachable from the phone's network; <https://serverbox.lollipopkit.com/docs/advanced/widgets/> |
+| Widgets do not update | They need the Monitor, reachable from the phone's network; <https://serverbox.lollipopkit.com/docs/advanced/widgets/> |
 | The app will not start after editing hidden settings | Restore a backup; clearing the app's data or reinstalling loses what was not backed up. <https://serverbox.lollipopkit.com/docs/advanced/json-settings/> |
 | Slow, or heavy on the battery | A longer status refresh interval; servers or status cards not needed turned off; fewer terminals and transfers at once; background running off when not needed. <https://serverbox.lollipopkit.com/docs/advanced/troubleshooting/> |

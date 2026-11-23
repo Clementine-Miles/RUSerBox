@@ -73,12 +73,8 @@ The following fields belong inside `ssh`:
 | `pwd` | No | Password; not recommended, use an SSH key instead |
 | `fileTransport` | No | Which protocol carries files: `sftp` or `scp`. Defaults to `sftp`; use `scp` for a host with no SFTP subsystem |
 | `pubKeyId` | No | ID of a private key stored in the App, not a PEM file path |
-| `keyPath` | No | Desktop-only private-key path produced by a `~/.ssh/config` import; read from disk when connecting |
-| `identityAgent` | No | The ssh-agent whose keys are offered, as `IdentityAgent` names one: `SSH_AUTH_SOCK` or a socket path; on Windows a named pipe, and `SSH_AUTH_SOCK` with the variable unset is `\\.\pipe\openssh-ssh-agent`. Omitted, no agent is used. Linux, Windows and macOS |
-| `forwardAgent` | No | Forward `identityAgent` to the server's sessions, as `ForwardAgent yes`; whoever is root there can sign with its keys while connected. Defaults to `false` |
 | `alterUrl` | No | Fallback address in the form `user@ip:port` |
 | `jumpIds` | No | Jump-server chain specified by server ID |
-| `controlPath` | No | Where an OpenSSH master connection to this server listens, as `ControlPath` names it. A server using this one as a jump is reached through that master when it is running. Linux and macOS |
 | `proxyCommand` | No | ProxyCommand; on a phone it runs in the built-in Linux environment. Mutually exclusive with `jumpIds` |
 
 The following fields belong inside `pve`:

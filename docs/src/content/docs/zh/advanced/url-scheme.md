@@ -3,7 +3,7 @@ title: URL 链接（serverbox://）
 description: 通过自定义 URL 链接直接打开服务器、功能页、标签页或代码片段
 ---
 
-在 iOS、macOS 和 Android 上，你可以使用 `serverbox://` 链接直接调起 Server Box 并跳转到指定页面，方便配合系统快捷指令、启动器、笔记应用或内部网页使用。
+在 Android 上，你可以使用 `serverbox://` 链接直接调起 Server Box 并跳转到指定页面，方便配合系统快捷指令、启动器、笔记应用或内部网页使用。
 
 Windows 与 Linux 端暂不支持 `serverbox://` 链接。
 

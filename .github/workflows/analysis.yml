@@ -130,7 +130,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 1
-          submodules: recursive
+          submodules: true
           persist-credentials: false
 
       - uses: ./.github/actions/setup-flutter
@@ -177,7 +177,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 1
-          submodules: recursive
+          submodules: true
           persist-credentials: false
 
       - uses: ./.github/actions/setup-rust-pinned
@@ -208,8 +208,7 @@ jobs:
 
       # Only the crates with code of their own for Windows: the native sampler,
       # the agent (ConPTY, paths, services) and the script's PowerShell side.
-      # The rest is platform-neutral and tested above; that `sbm_ffi` builds
-      # for Windows is the manual `Windows build` job's to show.
+      # The remaining crates are tested on Linux.
       - name: Test Windows-specific crates
         if: matrix.os == 'windows-latest'
         run: cargo test -p sbm_parser -p sbm_native -p server_box_monitor --no-fail-fast
@@ -260,7 +259,7 @@ jobs:
         with:
           lfs: true
           persist-credentials: false
-          submodules: recursive
+          submodules: true
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24
@@ -289,7 +288,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 1
-          submodules: recursive
+          submodules: true
           persist-credentials: false
 
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
@@ -324,7 +323,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 1
-          submodules: recursive
+          submodules: true
           persist-credentials: false
       
       # Restored only: `tests` saves the same SDK and pub cache.
@@ -371,7 +370,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 1
-          submodules: recursive
+          submodules: true
           persist-credentials: false
 
       - uses: ./.github/actions/setup-flutter

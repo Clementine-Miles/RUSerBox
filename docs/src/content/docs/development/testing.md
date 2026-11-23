@@ -20,7 +20,7 @@ flutter test --coverage
 
 Dart tests live in `test/` and are grouped into `unit/`, `widget/`, `platform/`, and `migration/`. Shared helpers and release fixtures live in `helpers/` and `fixtures/`. Tests should verify behavior and input/output without depending on an external network or a real server.
 
-`unit/` is divided by feature: `ssh/`, `terminal/`, `file/`, `server/`, `store/`, `ai/`, `geo/`, `rootfs/`, `monitor/`, `benchmark/`, `remote_desktop/`, `virt/`, `workspace/`, `view/`, and `app/`; the theme tests (`theme_*_test.dart`) sit at its top level. Keep a feature's store, provider, and model tests together. `store/` contains shared storage infrastructure (database, schema, backup and restore, settings); `app/` contains version, localization, crash reporting, diagnostics, and build checks.
+`unit/` is divided by feature: `ssh/`, `terminal/`, `file/`, `server/`, `store/`, `ai/`, `geo/`, `rootfs/`, `monitor/`, `benchmark/`, `remote_desktop/`, `virt/`, `workspace/`, `view/`, and `app/`. Keep a feature's store, provider, and model tests together. `store/` contains shared storage infrastructure (database, schema, backup and restore, settings); `app/` contains version, localization, crash reporting, diagnostics, and build checks.
 
 ## Rust tests
 
@@ -45,14 +45,6 @@ The following suites need a real host. They are skipped silently when the requir
 # Set this in the workspace-root .env:
 # SBM_E2E_SSH_HOST=<SSH destination or ~/.ssh/config alias>
 cargo test -p sbm_parser --test ssh_e2e
-
-# A server reached through a jump's OpenSSH master (ControlMaster):
-# a master running for the jump, a target only the jump reaches.
-# See the file's header for each variable.
-SBM_E2E_MUX_JUMP=127.0.0.1:2222 SBM_E2E_MUX_USER=e2e \
-SBM_E2E_MUX_CONTROL_PATH='/tmp/cm-%C' SBM_E2E_MUX_TARGET=target \
-SBM_E2E_MUX_AGENT=/tmp/agent.sock \
-flutter test test/e2e/control_master_test.dart
 ```
 
 ## Unit tests
@@ -142,10 +134,6 @@ The generator is checked in as `.txt` because it targets an old release's API an
 | `rootfs_shell_test.dart` | Whether the Alpine userland works through the App's API |
 | `android_exec_test.dart` | What Android permits the App to execute from its own directory |
 | `android_rootfs_test.dart` | Whether the Android guest mechanism works |
-| `ios_rootfs_test.dart` | The Linux userland on iOS |
-| `ios_bench_test.dart` | Linux guest overhead on real hardware |
-| `ios_load_test.dart` | App overhead while the guest is running |
-| `sandbox_import_test.dart` | Taking over data from the App Store sandbox build |
 
 ```bash
 # Requires a connected device or simulator
@@ -153,18 +141,6 @@ flutter test integration_test/local_shell_test.dart
 ```
 
 `make analyze` also analyzes `integration_test/`.
-
-### Wireless iOS 17+ devices
-
-When Xcode connects to an iOS 17+ device over the network, publish the driver port:
-
-```bash
-flutter drive --publish-port \
-  --driver=integration_test/driver.dart \
-  --target=integration_test/ios_rootfs_test.dart
-```
-
-The device may request local-network permission on the first run. Allow it for the test to connect.
 
 ## Testing recommendations
 

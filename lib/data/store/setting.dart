@@ -745,9 +745,8 @@ class SettingStore extends SqliteStore {
   /// the raw settings editor could only show it as one escaped line instead of
   /// a value with fields.
   ///
-  /// No migration: `WindowStateListener` writes on every move and resize, so
-  /// the row rewrites itself the first time the window is touched. The string
-  /// branch below is what reads it until then.
+  /// Retained so existing desktop data can still be read. The string branch
+  /// handles geometry stored by older builds.
   late final windowState = property<WindowState>(
     'windowState',
     fromObj: (raw) => switch (raw) {

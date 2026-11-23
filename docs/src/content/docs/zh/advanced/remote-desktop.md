@@ -3,7 +3,7 @@ title: 远程桌面（RDP 和 VNC）
 description: 通过 SSH 或 Monitor 连接图形桌面
 ---
 
-Server Box 在 Android、iOS、Linux、macOS 和 Windows 上提供 RDP 与 VNC 客户端。客户端
+Server Box 在 Android 上提供 RDP 与 VNC 客户端。客户端
 通过已有的服务器连接访问桌面：使用 SSH，或使用 Monitor。这样无需将桌面端口暴露到
 运行 Server Box 的网络。
 
@@ -86,8 +86,7 @@ Server Box 会拒绝发送，避免字符损坏。RDP 可以根据查看器调�
 3. 重启 xrdp：`sudo systemctl restart xrdp`。如果 `/var/log/xrdp.log` 中有
    `Cannot read private key file` 之类的行，说明第 2 步仍未完成。
 
-桌面平台和 Android 会在操作系统允许时使用应用现有的后台行为。iOS 可能暂停后台网络
-活动；返回应用后，Server Box 会检查会话，并在需要时重新连接。
+Android 系统允许后台连接时，Server Box 会保持远程桌面会话。
 
 ## 协议支持范围
 

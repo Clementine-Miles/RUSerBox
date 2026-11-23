@@ -7,7 +7,6 @@ import 'package:server_box/core/extension/context/locale.dart';
 import 'package:server_box/core/ssh/agent.dart';
 import 'package:server_box/core/ssh/algorithms.dart';
 import 'package:server_box/core/ssh/auth.dart';
-import 'package:server_box/core/ssh/control_master.dart';
 import 'package:server_box/core/ssh/host_keys.dart';
 import 'package:server_box/core/ssh/identities.dart';
 import 'package:server_box/core/ssh/key_unlock.dart';
@@ -164,16 +163,6 @@ Future<SSHClient> genClient(
           for (final jumpSpi_ in jumpSpis) {
             SSHClient? jumpClient;
             try {
-              // A master already connected to the jump opens the stream, as
-              // `ssh -W` through it would: no session of this app's own there.
-              final viaMaster = await openThroughMaster(
-                jumpSpi_,
-                host: ssh.ip,
-                port: ssh.port,
-                timeout: timeout,
-              );
-              if (viaMaster != null) return viaMaster;
-
               String? nextJumpPrivateKey;
               final jumpSpiKeyRef = jumpSpi_.ssh?.keyRef;
               if (jumpSpi != null &&

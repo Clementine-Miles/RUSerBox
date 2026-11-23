@@ -1,12 +1,6 @@
 /// How the app opens the agent's terminal WebSocket.
 ///
-/// One half of a contract whose other half is in another language: the agent
-/// reads the ticket in `monitor/src/api/ws/terminal.rs`, and the panel sends it
-/// from `monitor/frontend/src/lib/terminal.svelte.ts`. The panel has had
-/// `carries the ticket only in the websocket subprotocol` under test all along;
-/// this side had the same code inline and untested, and went on sending
-/// `?ticket=` for a release after the agent stopped reading it — every terminal
-/// and every snippet on a monitor server answered 401.
+/// The agent reads the ticket in `monitor/src/api/ws/terminal.rs`.
 library;
 
 import 'package:flutter_test/flutter_test.dart';
@@ -15,8 +9,6 @@ import 'package:server_box/core/monitor/http.dart';
 void main() {
   group('the terminal upgrade', () {
     test('carries the ticket only in the subprotocol', () {
-      // The panel asserts exactly this pair, in
-      // `frontend/src/tests/terminal.test.ts`.
       expect(
         MonitorHttpClient.terminalWsUrl('https://a.example:3770').toString(),
         isNot(contains('ticket')),

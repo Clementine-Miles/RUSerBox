@@ -3,8 +3,7 @@ title: Remote Desktop (RDP and VNC)
 description: Connect to graphical desktops through SSH or Monitor
 ---
 
-Server Box includes RDP and VNC clients for Android, iOS, Linux, macOS, and
-Windows. It reaches desktops through an existing server connection: SSH or a
+Server Box includes RDP and VNC clients for Android. It reaches desktops through an existing server connection: SSH or a
 Monitor. The desktop port does not need to be exposed to the network
 running Server Box.
 
@@ -112,10 +111,7 @@ Windows client, can still connect. On the server:
 3. Restart xrdp: `sudo systemctl restart xrdp`. In `/var/log/xrdp.log`, a line
    such as `Cannot read private key file` means step 2 is still needed.
 
-Desktop platforms and Android use the app's existing background behavior when
-the operating system allows it. iOS may suspend network activity in the
-background; Server Box checks the session and reconnects if needed when you
-return to the app.
+Android keeps the remote desktop session active when the operating system allows background connections.
 
 ## Supported protocols and limits
 

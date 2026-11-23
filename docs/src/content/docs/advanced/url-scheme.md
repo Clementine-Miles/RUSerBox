@@ -3,7 +3,7 @@ title: Links (serverbox://)
 description: Open a server, a function, a tab or a snippet from a link
 ---
 
-On iOS, macOS, and Android, `serverbox://` links open Server Box. You can use
+On Android, `serverbox://` links open Server Box. You can use
 them in Shortcuts, launchers, notes, or web pages.
 
 Windows and Linux do not handle these links.

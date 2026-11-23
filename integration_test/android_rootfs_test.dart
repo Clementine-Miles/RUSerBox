@@ -17,11 +17,9 @@ import 'package:path_provider/path_provider.dart';
 /// So: does a musl binary in the app's directory run under proot, on a device
 /// where it cannot run any other way?
 ///
-/// The harness stages two things this test cannot fetch for itself:
-///   * `libproot.so` in `jniLibs/arm64-v8a` — the one place an app may execute
-///     from, and where the real thing would ship;
-///   * an Alpine aarch64 minirootfs at `/data/local/tmp/alpine.tar.gz`.
-/// Absent either, the test skips rather than pretending to have measured.
+/// The Android arm64 build packages proot and its loader through the fl_tty
+/// build hook. The harness stages an Alpine aarch64 minirootfs at
+/// `/data/local/tmp/alpine.tar.gz`.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -74,7 +72,7 @@ void main() {
 
     final proot = '$nativeLibDir/libproot.so';
     if (!await File(proot).exists()) {
-      markTestSkipped('libproot.so was not staged into jniLibs');
+      markTestSkipped('libproot.so was not packaged for this ABI');
       return;
     }
     if (!await File(staged).exists()) {

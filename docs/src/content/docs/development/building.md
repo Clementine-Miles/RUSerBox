@@ -9,13 +9,13 @@ is a separate Rust service and has its own build steps.
 ## Prerequisites
 
 - Flutter SDK on the stable channel
-- Android SDK, NDK, and JDK
+- Android SDK, NDK, JDK 21, and GNU awk (`gawk`) for building PRoot
 - Rust toolchain: the App builds `crates/sbm_ffi` using a Dart build hook, `flutter_rust_bridge_hooks`, and native assets
 
 Initialize the Git submodules before fetching Dart packages:
 
 ```bash
-git submodule update --init --recursive
+git submodule update --init
 ```
 
 ## Run a development build
@@ -61,8 +61,8 @@ from App releases. For a Docker build, see `monitor/Dockerfile`.
 
 ## Build hooks
 
-On every build, `fl_build` regenerates `lib/data/res/build_data.dart`, derives
-the build number from Git history. Set the App name in the `fl_build:` section of `pubspec.yaml`.
+On every build, `fl_build` derives the build number from Git history and
+regenerates `lib/data/res/build_data.dart`. Set the App name in the `fl_build:` section of `pubspec.yaml`.
 
 ## Troubleshooting
 

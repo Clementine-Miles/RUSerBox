@@ -11,7 +11,6 @@ import 'package:server_box/core/extension/bmc.dart';
 import 'package:server_box/core/extension/context/locale.dart';
 import 'package:server_box/core/route.dart';
 import 'package:server_box/core/ssh/agent.dart';
-import 'package:server_box/core/ssh/control_master.dart';
 import 'package:server_box/core/ssh/jump_chain.dart';
 import 'package:server_box/core/utils/app_auth.dart';
 import 'package:server_box/core/utils/cert_fingerprint.dart';
@@ -96,7 +95,6 @@ class _ServerEditPageState extends ConsumerState<ServerEditPage>
   final _ipController = TextEditingController();
   final _altUrlController = TextEditingController();
   final _proxyCommandCtrl = TextEditingController();
-  final _controlPathCtrl = TextEditingController();
   final _portController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -279,7 +277,6 @@ class _ServerEditPageState extends ConsumerState<ServerEditPage>
     _ipController.dispose();
     _altUrlController.dispose();
     _proxyCommandCtrl.dispose();
-    _controlPathCtrl.dispose();
     _portController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();

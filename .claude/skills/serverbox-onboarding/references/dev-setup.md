@@ -15,7 +15,7 @@ written here whenever the checkout is available.
 | Flutter (stable) >= 3.50.0 | Everything in the app | `environment:` in `pubspec.yaml` |
 | Dart SDK >= 3.11.0 | Ships with Flutter | same |
 | Rust 1.98.1 via rustup | `crates/sbm_ffi` is compiled into **every** app build | `crates/sbm_ffi/rust-toolchain.toml` |
-| Xcode / Android Studio / Visual Studio | Only the platform you build for | — |
+| Android SDK, NDK, JDK 21, GNU awk (`gawk`) | Android builds and the PRoot loader | `flutter doctor -v` |
 
 Rust is the one people skip because the project looks like a pure Flutter app.
 It is not: `hook/build.dart` builds the FFI crate through
@@ -36,7 +36,7 @@ cargo install flutter_rust_bridge_codegen --version 2.13.0-beta.6
 ```sh
 git clone https://github.com/lollipopkit/flutter_server_box
 cd flutter_server_box
-git submodule update --init --recursive   # packages/* are path dependencies
+git submodule update --init   # packages/* are path dependencies
 make deps                                 # flutter pub get
 make run                                  # flutter run
 ```
@@ -115,13 +115,8 @@ recipe for adding one.
 make monitor-dev     # Monitor API on :3770
 ```
 
-
 - Config is `monitor/config.toml`, every key documented in
   `config.example.toml`; `cargo run -- config` prints the resolved values.
-- `npm run build` runs a `prebuild` that installs `packages/webui`'s own
-  dependencies. `@serverbox/webui` is a `file:` dependency, so an ordinary
-  install only symlinks it and `svelte-check` then cannot resolve anything
-  under its `src/`. Run the npm script rather than calling vite directly.
 - sqlx verifies queries at compile time: set `DATABASE_URL`, or refresh the
   offline cache with `cargo sqlx prepare`.
 - `monitor/CLAUDE.md` holds that side's rules;
@@ -130,7 +125,7 @@ make monitor-dev     # Monitor API on :3770
 ## Building releases
 
 ```sh
-make build PLATFORM=<android|ios|macos|linux|windows>   # dart run fl_build -p ...
+make build-android
 ```
 
 - **Android release builds take the key from 1Password** through
@@ -140,9 +135,6 @@ make build PLATFORM=<android|ios|macos|linux|windows>   # dart run fl_build -p .
   artifact.
 - CI splits Android releases per ABI, so a local fat APK is not a fair size
   comparison. `dart run fl_build -p android` reproduces the CI shape.
-- macOS DMG, notarisation and the Homebrew cask are `make release-macos-dmg`,
-  `make package-dmg`, `make sync-homebrew-cask`; secrets come from
-  `.env.release` (see `.env.release.example`).
 - The monitor is released separately by the `workflow_dispatch`-only
   `monitor-release.yml`, under `monitor-v*` tags.
 
@@ -150,10 +142,9 @@ make build PLATFORM=<android|ios|macos|linux|windows>   # dart run fl_build -p .
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `flutter pub get` fails on a missing path under `packages/` | Submodules not initialised | `git submodule update --init --recursive` |
+| `flutter pub get` fails on a missing path under `packages/` | Submodules not initialised | `git submodule update --init` |
 | App throws in `RustLib.init` at startup | `flutter_rust_bridge` versions differ between `pubspec.yaml` and `crates/sbm_ffi/Cargo.toml` | Make them equal; both are pinned deliberately |
 | `test/frb_parser_test.dart` cannot load the dylib | The FFI crate was never built | `cargo build -p sbm_ffi` |
-| iOS build fails in fl_tty's hook on `ensure-iul-libs.sh` | `packages/fl_tty/third_party/iul` names a revision iul has not published | Point it at a published one, or `rustup component add llvm-tools` and `rustup target add aarch64-apple-ios aarch64-apple-ios-sim aarch64-unknown-linux-musl` to build it |
 | A Rust target silently builds for the host | That target is missing from `crates/sbm_ffi/rust-toolchain.toml` — not an error, a fallback | Add it to `targets` |
 | sqlx macros fail to compile | No `DATABASE_URL` and a stale offline cache | Set it, or `cargo sqlx prepare` |
 | `flutter test` hangs with no output naming a file | A widget test wrote to a real on-disk database inside the fake-async zone | Use `openTestDb()` and `forTest()` |

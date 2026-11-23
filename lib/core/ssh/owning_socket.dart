@@ -3,12 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dartssh2/dartssh2.dart';
 
-/// [inner], and what carries it, released together: the jump client a
-/// forwarded channel came through, the OpenSSH master's control connection.
-///
-/// `forwardLocal` and a master hand back a stream and nothing else, so what
-/// carries it had no owner: on success nobody held it, and closing the stream
-/// left it running until the far end timed it out.
+/// Releases a forwarded channel and the jump SSH client carrying it together.
 class OwningSocket implements SSHSocket {
   OwningSocket(this._inner, this._release);
 

@@ -5,7 +5,7 @@ import 'dart:math' as math;
 
 import 'package:dartssh2/dartssh2.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_tty/fl_tty.dart' hide ShellBackend, ShellSession;
+import 'package:fl_tty/fl_tty.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:server_box/core/app_navigator.dart';
@@ -319,9 +319,8 @@ class TerminalSession {
   }
 
   /// Opens a PTY in the Android userland or on the device.
-  ShellBackend _localBackend(LocalSource local) => LocalTerminalBackend(
-    LocalShellBackend(inRootfs: local.rootfs, profileId: local.profileId),
-  );
+  ShellBackend _localBackend(LocalSource local) =>
+      LocalShellBackend(inRootfs: local.rootfs, profileId: local.profileId);
 
   /// The agent's own shell, when [serverShellUsesAgent] says it is the one.
   ShellBackend? _grantedBackend(MonitorAccess? granted) {

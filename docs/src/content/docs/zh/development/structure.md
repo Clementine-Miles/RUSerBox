@@ -8,13 +8,13 @@ description: 了解 Server Box 的代码库组织结构
 ## Monorepo 目录结构
 
 ```text
-flutter_server_box/
+ru_serbox/
 ├── lib/               # Flutter 客户端源码
 ├── crates/
 │   ├── sbm_parser/    # 客户端与 Monitor 共用的状态解析库
 │   ├── sbm_ffi/       # flutter_rust_bridge 绑定 crate
 │   └── sbm_native/    # Monitor 使用的原生系统指标采样器
-├── monitor/           # Monitor（Rust 服务端 + Svelte 前端面板）
+├── monitor/           # Monitor（无界面的 Rust 服务端）
 ├── packages/          # 本地路径依赖的 Dart 分支包与共享 webui 组件库
 ├── docs/              # Astro Starlight 文档站
 ├── website/           # 项目官网

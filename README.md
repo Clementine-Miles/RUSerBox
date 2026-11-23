@@ -87,10 +87,10 @@ Download an Android APK from [GitHub Releases](https://github.com/Clementine-Mil
 ## Help
 
 - [ServerBox Monitor](https://github.com/Clementine-Miles/ru_serbox/tree/main/monitor) is a component you install on your servers. It is required for features that need to work while the app is closed — **push notifications** and **home-screen widgets**. It also offers another way to add a server: the app can connect to it over HTTP instead of SSH, which suits hosts whose SSH port you prefer not to expose, and gives charts historical data from before the app's first connection.
-- **Agent skills:** This repository includes three skills for AI agents. Add them with
+- **Agent skills:** This repository includes two skills for AI agents. Add them with
 
   ```sh
-  npx skills add lollipopkit/flutter_server_box
+  npx skills add Clementine-Miles/ru_serbox
   ```
 
   - [`serverbox-help`](.claude/skills/serverbox-help): using the app and deploying and configuring the Monitor — adding servers, why a feature is missing for a server, permissions, alerts, widgets, backups. The app's own Agent ships with it.
@@ -108,7 +108,7 @@ Before opening an issue, please:
 
 [CONTRIBUTING.md](CONTRIBUTING.md) covers the development setup, the commit convention, the checks to run, and how translations work.
 
-Contributors sign the [CLA](CLA.md) once by leaving a comment on their first pull request. It grants the right to ship your work in App Store builds alongside the AGPLv3 source. You retain the copyright to your work.
+Contributors sign the [CLA](CLA.md) once by leaving a comment on their first pull request. It grants the distribution rights described in the CLA alongside the AGPLv3 source. You retain the copyright to your work.
 
 If I forgot to add your name to the contributors list, please add a comment in the issue or PR you opened to let me know, I will add it as soon as possible.
 

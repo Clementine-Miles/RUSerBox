@@ -2,76 +2,9 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:dartssh2/dartssh2.dart';
-import 'package:fl_tty/fl_tty.dart' as tty show ShellBackend;
-import 'package:fl_tty/fl_tty.dart' show ShellSession;
+import 'package:fl_tty/fl_tty.dart' show ShellBackend, ShellSession;
 
-export 'package:fl_tty/fl_tty.dart' show ShellSession;
-
-/// A source of terminal channels. The streams, input and resize contract are
-/// shared with the native PTY package.
-abstract interface class ShellBackend {
-  bool get isClosed;
-  bool get supportsExec;
-
-  Future<ShellSession> openShell({
-    required int width,
-    required int height,
-    Map<String, String>? environment,
-  });
-
-  Future<ShellSession> execute(
-    String command, {
-    required int width,
-    required int height,
-    Map<String, String>? environment,
-  });
-
-  Future<void> ping();
-  void close();
-}
-
-/// Adapts the native PTY and guest-shell backends to the terminal's contract.
-final class LocalTerminalBackend implements ShellBackend {
-  LocalTerminalBackend(this._backend);
-
-  final tty.ShellBackend _backend;
-
-  @override
-  bool get isClosed => _backend.isClosed;
-
-  @override
-  bool get supportsExec => _backend.supportsExec;
-
-  @override
-  Future<ShellSession> openShell({
-    required int width,
-    required int height,
-    Map<String, String>? environment,
-  }) => _backend.openShell(
-    width: width,
-    height: height,
-    environment: environment,
-  );
-
-  @override
-  Future<ShellSession> execute(
-    String command, {
-    required int width,
-    required int height,
-    Map<String, String>? environment,
-  }) => _backend.execute(
-    command,
-    width: width,
-    height: height,
-    environment: environment,
-  );
-
-  @override
-  Future<void> ping() => _backend.ping();
-
-  @override
-  void close() => _backend.close();
-}
+export 'package:fl_tty/fl_tty.dart' show ShellBackend, ShellSession;
 
 /// [ShellBackend] over a real SSH connection.
 class SshShellBackend implements ShellBackend {

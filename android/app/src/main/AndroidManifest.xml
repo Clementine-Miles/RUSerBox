@@ -2,17 +2,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- File transfers use app-specific storage and Android's document picker.
+         QR scanning uses the camera with audio disabled. -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <!-- `tools:replace` because camera_android_camerax declares this same
-         permission with maxSdkVersion 28 and the merger refuses to pick. 32 is
-         this app's own answer: it writes downloads and SFTP transfers, which
-         scoped storage only takes over at 33. -->
+        tools:node="remove" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"
-        tools:replace="android:maxSdkVersion" />
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.RECORD_AUDIO"
+        tools:node="remove" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />

@@ -1,0 +1,13 @@
+# `native_toolchain_rust` wants an exact channel, so a release is built by a
+# toolchain version control names. Same as Server Box's sbm_ffi and
+# fl_pi_llm, so an app builds all its Rust with one toolchain.
+[toolchain]
+channel = "1.98.1"
+components = ["clippy", "rustfmt"]
+targets = [
+  "aarch64-linux-android",
+  "armv7-linux-androideabi",
+  "x86_64-linux-android",
+  # Flutter tests run the native asset on the Linux CI host.
+  "x86_64-unknown-linux-gnu",
+]

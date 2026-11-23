@@ -57,8 +57,7 @@ as a model it may not list. `OPENAI_API_KEY` is then that endpoint's alone —
 the built-in OpenAI provider does not send it to api.openai.com — unless the
 address is OpenAI's own. Nothing of it is stored; it is whatever the App was
 started with. A plain `http://` address on another machine is refused, as for
-any provider. This is for a desktop App started from a shell: on macOS, an App
-opened from Finder or the Dock does not see what your shell profile exports.
+any provider.
 
 Settings from an earlier version — endpoint, model, protocol and key — were
 moved to a custom provider when you updated.
@@ -180,15 +179,9 @@ your other server credentials.
 and is off by default. Once on, local commands go by the permission mode like
 any other: **Allow all** runs them unasked.
 
-The command target depends on the platform:
-
-- **Desktop:** the computer running Server Box, including its files.
-- **Android and iOS:** the Alpine Linux environment provided by the App. It
-  cannot access the phone's own filesystem, App data, or user files. See
-  [Terminal on This Device](/docs/advanced/local-terminal/).
-
-The option is hidden on platforms that cannot run local commands, such as an
-iOS build without the Linux engine.
+Commands run in the app's installed Linux userland, which has its own
+filesystem. The setting appears when the Android build can run that
+userland. See [Terminal on This Device](/docs/advanced/local-terminal/).
 
 ## Conversation history
 

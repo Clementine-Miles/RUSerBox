@@ -5,7 +5,7 @@ description: Orientation for working on ServerBox from source — bootstrapping 
 
 # ServerBox onboarding
 
-ServerBox is a Flutter app (iOS, Android, macOS, Linux, Windows, watchOS) for
+ServerBox is an Android Flutter app for
 managing Linux, BSD and Windows servers: status charts, SSH terminal, SFTP,
 containers, processes, systemd. The repository is a monorepo:
 
@@ -16,7 +16,7 @@ containers, processes, systemd. The repository is a monorepo:
 | `crates/sbm_ffi` | flutter_rust_bridge binding crate, built into the app by `hook/build.dart` |
 | `crates/sbm_native` | Native per-platform sampler, monitor only |
 | `monitor/` | ServerBox Monitor: a headless Rust program installed on a server |
-| `packages/` | Vendored Dart forks, each a submodule, referenced by path from `pubspec.yaml` |
+| `packages/` | Shared Dart packages referenced by path from `pubspec.yaml` |
 | `docs/` | The documentation site (Astro Starlight), English with a `zh/` mirror |
 
 A server can use **SSH, a Monitor's HTTP API, or both**. Each configured
@@ -75,7 +75,7 @@ make analyze     # flutter analyze lib test integration_test
 make test        # flutter test
 cargo test --workspace          # parser, native sampler, FFI, monitor
 make monitor-dev                # Monitor API on :3770
-make build PLATFORM=<android|ios|macos|linux|windows>
+make build-android
 ```
 
 Values as of writing: Flutter >= 3.50.0, Dart SDK >= 3.11.0, Rust pinned to
@@ -89,7 +89,7 @@ the symptom rarely names the cause.
 - **Initialise submodules before fetching Dart dependencies.** `packages/*` are
   path dependencies, so `flutter pub get` fails on a missing directory rather
   than on anything that mentions submodules:
-  `git submodule update --init --recursive`.
+  `git submodule update --init`.
 - **Rust is not optional, even for `flutter run`.** `hook/build.dart` compiles
   `crates/sbm_ffi` into every app build as a code asset. No Rust toolchain, no
   app.

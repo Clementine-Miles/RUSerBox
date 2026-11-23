@@ -9,13 +9,13 @@ Rust workspace, Monitor, documentation site, and project website.
 ## Monorepo layout
 
 ```text
-flutter_server_box/
+ru_serbox/
 ├── lib/               # Flutter App
 ├── crates/
 │   ├── sbm_parser/    # Shared status parser for App and Monitor
 │   ├── sbm_ffi/       # flutter_rust_bridge binding crate
 │   └── sbm_native/    # Native sampler used by the Monitor
-├── monitor/           # Monitor (Rust service + Svelte panel)
+├── monitor/           # Monitor (headless Rust service)
 ├── packages/          # Path-dependent Dart forks and shared webui package
 ├── docs/              # Astro Starlight documentation site
 ├── website/           # Project website

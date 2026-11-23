@@ -1,8 +1,7 @@
 # The ServerBox Monitor
 
 A small service installed on a server. The app reaches it over HTTP, as a
-second way into that machine besides SSH, and it is what keeps alerts, widgets
-and the watch app working while the app is closed. The full page, with
+second way into that machine besides SSH, and it is what keeps alerts and widgets working while the app is closed. The full page, with
 ready-made prompts for each task below:
 <https://serverbox.lollipopkit.com/docs/advanced/monitor-agent/>.
 
@@ -61,7 +60,7 @@ Run it there and as the service's account, or it creates a second, empty
 database the service never reads. The command prompts (8 characters at
 least), or reads it from `--password-env VAR`; it takes no password argument on
 purpose. The Android app can change the password too. A change signs out everything else:
-older logins stop working, paired widgets and watches are unpaired, and open
+older logins stop working, widgets need new credentials, and open
 terminals and forwards close (after a command-line reset, only once the Monitor
 restarts). Repeated wrong passwords are throttled up to five
 minutes, which can look like a Monitor that does not answer.
@@ -84,7 +83,7 @@ Monitors: **Overview** (version against the newest release, rules firing now,
 shortcuts), **Web apps**, **Notifications**, and per server the **Audit log**
 (sign-ins with their address, commands, file writes, deployments; HTTPS or
 loopback only) and **Sessions & devices** (end a terminal session or a relayed
-connection, revoke a watch or widget token, forget a signed-in device).
+connection, revoke a widget token, forget a signed-in device).
 Forgetting a device does not sign it out: one that keeps the password signs in
 again, so changing the password is what keeps a lost device out. A section an
 older Monitor lacks says to update the Monitor.
@@ -112,7 +111,7 @@ Before opening the Monitor to another machine, tell the user what it allows and
 wait for their answer: its password is equivalent to a shell as the Monitor's
 account, with none of SSH's authentication in between.
 
-## Alerts, widgets, the watch
+## Alerts and widgets
 
 - **Push alerts**: a rule says when, a channel says where — `[[monitoring.rules]]`
   and `[[push]]` in `config.toml`, or the same lists in the app (the settings
@@ -134,7 +133,6 @@ account, with none of SSH's authentication in between.
 - **Home-screen widgets**: add the server with Monitor HTTP in the app, then
   pick it in the widget; no URL is typed into the widget.
   <https://serverbox.lollipopkit.com/docs/advanced/widgets/>
-- **Watch app**: shows only servers that have the Monitor configured.
 
 ## When something is wrong
 

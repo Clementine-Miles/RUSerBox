@@ -1,8 +1,7 @@
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_tty/fl_tty.dart' hide ShellBackend;
+import 'package:fl_tty/fl_tty.dart';
 import 'package:server_box/core/local/device.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
-import 'package:server_box/data/model/server/shell_backend.dart';
 import 'package:server_box/data/terminal/ssh_terminal_environment.dart';
 
 /// Where a terminal's shell comes from.

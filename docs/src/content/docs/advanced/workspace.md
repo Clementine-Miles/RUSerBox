@@ -22,7 +22,7 @@ The tab is hidden by default. Open it from **More**, or add it under
   files, Agent, containers, processes, services or snippets.
 
 Drag a tab to another pane's edge to split that pane, or to its middle to add
-it there. On iOS and Android, press and hold a tab before dragging. If the
+it there. On Android, press and hold a tab before dragging. If the
 pane is on a phone or too narrow to show its tabs, drag the pane bar instead.
 
 A narrow window shows the focused pane and the one you focused just before it.
@@ -75,21 +75,21 @@ a workspace, shortcuts assigned to workspace, Settings, or server-tab actions
 are sent to the shell because those actions are unavailable there. The
 terminal's copy, paste, and select-all controls are not configurable shortcuts.
 
-| Command | Windows / Linux | macOS |
-| --- | --- | --- |
-| Quick open | `Ctrl+Alt+P` | `⌃⌘P` |
-| Split right | `Ctrl+Alt+\` | `⌃⌘\` |
-| Split down | `Ctrl+Alt+-` | `⌃⌘-` |
-| Move focus between panes | `Ctrl+Alt+←↑→↓` | `⌃⌘←↑→↓` |
-| New tab | `Ctrl+Alt+N` | `⌃⌘N` |
-| Close tab | `Ctrl+Alt+W` | `⌃⌘W` |
-| Next / previous tab | `Ctrl+Alt+]` / `Ctrl+Alt+[` | `⌃⌘]` / `⌃⌘[` |
-| Tabs of the focused pane | `Ctrl+Alt+O` | `⌃⌘O` |
-| Reopen closed tab | `Ctrl+Alt+Shift+T` | `⌃⌘⇧T` |
-| Maximize or restore pane | `Ctrl+Alt+M` | `⌃⌘M` |
-| Sync input | `Ctrl+Alt+I` | `⌃⌘I` |
-| Switch workspace | `Ctrl+Alt+S` | `⌃⌘S` |
+| Command | Android |
+| --- | --- |
+| Quick open | `Ctrl+Alt+P` |
+| Split right | `Ctrl+Alt+\` |
+| Split down | `Ctrl+Alt+-` |
+| Move focus between panes | `Ctrl+Alt+←↑→↓` |
+| New tab | `Ctrl+Alt+N` |
+| Close tab | `Ctrl+Alt+W` |
+| Next / previous tab | `Ctrl+Alt+]` / `Ctrl+Alt+[` |
+| Tabs of the focused pane | `Ctrl+Alt+O` |
+| Reopen closed tab | `Ctrl+Alt+Shift+T` |
+| Maximize or restore pane | `Ctrl+Alt+M` |
+| Sync input | `Ctrl+Alt+I` |
+| Switch workspace | `Ctrl+Alt+S` |
 
-On Windows and Linux, combinations with Control and Alt are taken from the left
+On Android, combinations with Control and Alt are taken from the left
 Alt key only. The right Alt key (AltGr) types characters such as `\` and `[`
 on many keyboard layouts, so it is left to the shell.

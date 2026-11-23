@@ -43,7 +43,7 @@ settings, encrypted or not. Only an encrypted backup also holds saved sudo
 passwords, API keys, MCP headers, the WebDAV settings, and key
 passphrases. Agent conversations, sign-ins to AI providers and MCP
 servers, and device-local state are not included. Fonts, images, skills and
-benchmarks are synced through iCloud, WebDAV and LK Cloud, not in a backup
+benchmarks are synced through WebDAV, not in a backup
 file.
 
 A local backup may be unencrypted when no backup password is set. When you set a
@@ -56,7 +56,7 @@ with a sync key, while the sync key itself is stored alongside it as
 (`age -d` with the backup password decrypts the key, and `age -d -i` with the
 key decrypts the remaining files). If a device's backup password cannot unlock
 that key, sync pauses on that device until you enter the password used by your
-other devices. After data is uploaded to iCloud, WebDAV or LK Cloud, that
+other devices. After data is uploaded to WebDAV, that
 provider's storage, access and retention policies also apply.
 
 ## Automatic diagnostic data
@@ -237,7 +237,7 @@ automatic diagnostic payload described above.
 | Request | Destination | When and what it carries |
 |---|---|---|
 | AI request | The endpoint configured by you | When you send an Agent message; see [AI requests](#ai-requests) |
-| Backup or sync | iCloud or your WebDAV server | When you upload, download or sync a backup; an uploaded backup file, which may be encrypted. Sync sends the backup and each device's changes, encrypted to a sync key, and that key, encrypted with the backup password |
+| Backup or sync | Your WebDAV server | When you upload, download or sync a backup; an uploaded backup file, which may be encrypted. Sync sends the backup and each device's changes, encrypted to a sync key, and that key, encrypted with the backup password |
 | Update check | `api.github.com` | On launch when automatic update checks are enabled |
 | Linux userland manifest | `github.com` | When the app checks for a newer local Linux release; it contains release metadata and signatures |
 | Linux userland image | The distribution mirror or source URL selected by the verified manifest | When you install or update a local Linux environment; the image is checked against the manifest's digest |
@@ -263,36 +263,18 @@ Diagnostic data is not used for advertising, shared with other companies, or
 used to track you across apps or websites. The services may retain reports for as
 long as they are useful for fixing the problems they describe. To request
 removal of a report, open an issue at
-[github.com/lollipopkit/flutter_server_box](https://github.com/lollipopkit/flutter_server_box/issues)
+[github.com/Clementine-Miles/ru_serbox](https://github.com/Clementine-Miles/ru_serbox/issues)
 with the approximate time, app version and a short description of the problem.
 Do not include passwords, keys or other sensitive content in a public issue.
 
-## Watch app and home-screen widgets
+## Home-screen widgets
 
-The watch app, its complication, and the iOS and Android home-screen widgets
-read a Monitor you deployed directly. They use a read-only credential that
-Server Box mints for each surface. The credential can reach only the Monitor
-metrics endpoints (`/api/v1/status`, `/api/v1/metrics` and
-`/api/v1/metrics/history`); it cannot open a shell, execute commands or browse
-files.
-
-The credential is kept in the watch's own keychain, in a shared keychain group
-on iOS, and encrypted under an AndroidKeyStore key on Android. A widget's
-configuration list contains server names and Monitor addresses so you can pick a
-server; its credential is kept separately in the platform credential store.
-Servers are included automatically when they have a Monitor configuration. On
-the watch, you can exclude individual servers in **Settings**; widgets publish
-the Monitor-configured servers without a separate exclusion list. Excluding or
-deleting a server revokes the watch or widget credential as soon as the app can
-contact the Monitor.
-
-## Platform stores
-
-App Store and Google Play builds may also be subject to platform reporting.
-Apple and Google collect that information under their own policies, not through
-Server Box. See [Apple's privacy policy](https://www.apple.com/legal/privacy/)
-and [Google's privacy policy](https://policies.google.com/privacy). The F-Droid
-build has no store-provided crash-reporting channel.
+Android widgets request metrics directly from your Monitor. Each server has a
+read-only credential for `/api/v1/status`, `/api/v1/metrics`, and
+`/api/v1/metrics/history`. The widget credential is encrypted with an Android
+Keystore key. The widget's configuration list separately stores server names
+and Monitor addresses. Deleting a server revokes its widget credential when
+the app can reach the Monitor.
 
 ## Children
 
@@ -308,4 +290,4 @@ different arrangement.
 ## Contact
 
 Open an issue at
-[github.com/lollipopkit/flutter_server_box](https://github.com/lollipopkit/flutter_server_box/issues).
+[github.com/Clementine-Miles/ru_serbox](https://github.com/Clementine-Miles/ru_serbox/issues).

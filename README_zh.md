@@ -96,7 +96,7 @@
 - **Agent skills：** 本仓库包含三份供 AI agent 使用的 skill。使用下面的命令添加：
 
   ```sh
-  npx skills add lollipopkit/flutter_server_box
+  npx skills add Clementine-Miles/ru_serbox
   ```
 
   - [`serverbox-help`](.claude/skills/serverbox-help)：使用 App，以及部署和配置 Monitor，例如添加服务器、某台服务器缺少某个功能的原因、权限、告警、小部件和备份。App 内置的 Agent 自带这份 skill。
@@ -114,7 +114,7 @@
 
 [CONTRIBUTING.md](CONTRIBUTING.md) 说明了开发环境、commit 规范、提交前要跑的检查，以及翻译流程。
 
-贡献者需要签署一次 [CLA](CLA_zh.md)（[英文原文](CLA.md)，以英文为准）：在你的第一个 PR 下留一条评论即可。它授予的权利使你的工作可以随 App Store 版本一起发布，同时源码保持 AGPLv3——你自己的版权仍然属于你。
+贡献者需要签署一次 [CLA](CLA_zh.md)（[英文原文](CLA.md)，以英文为准）：在你的第一个 PR 下留一条评论即可。CLA 规定了贡献内容的分发授权。源码仍采用 AGPLv3，你保留自己贡献的版权。
 
 如果我忘记在贡献者列表中添加你的名字，请在你打开的 issue 或 PR 中添加评论让我知道，我会尽快添加。
 

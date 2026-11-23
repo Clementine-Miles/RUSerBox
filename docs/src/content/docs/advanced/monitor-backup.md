@@ -3,36 +3,33 @@ title: Monitor Settings Backup
 description: Back up the Monitor's settings to a WebDAV folder, encrypted with your passphrase, and restore them
 ---
 
-The Monitor can back up its own settings to a WebDAV folder: the account
-password, snippets, remote desktop profiles, BMC and PVE connections
-and themes, Agent mode settings, push channels and monitoring rules. Metrics
-history, the audit log, sessions, installed packages and deployed web apps are
-left out.
-
-Configure the backup destination with the authenticated `/api/v1/monitor-backup` endpoint.
+The Monitor can back up its account password, snippets, remote desktop
+profiles, BMC and PVE connections, Agent settings, push channels, and
+monitoring rules to a WebDAV folder. Metrics history, audit logs, and
+sessions stay on the server.
 
 ## Set it up
 
-1. Enter the folder's address (one folder per server, for example
-   `https://dav.example.com/serverbox/web-1/`), the user name and the password,
-   and press **Test**. The folder is made on the first backup.
-2. Press **Save** and enter the Monitor password.
-3. Press **Set passphrase**. The first backup is made right after.
+Use the authenticated `/api/v1/monitor-backup` API:
 
-The address must be HTTPS. Plain HTTP works to the same machine, or to another
-one after you turn on **Allow plain HTTP**; the backups stay encrypted, but the
-WebDAV password is sent unencrypted.
+1. Test the destination with `POST /api/v1/monitor-backup/test`.
+2. Save the destination with `PUT /api/v1/monitor-backup`. Include the current
+   Monitor password.
+3. Set the backup passphrase with `PUT /api/v1/monitor-backup/key`.
+
+Use HTTPS for non-loopback WebDAV destinations. If you enable plain HTTP,
+the backup remains encrypted and the WebDAV password travels unencrypted.
 
 ## How backups are made
 
 - The settings are checked every 10 minutes. A backup is made when they
   changed, and once a day when only values that change on their own did (the
   last run of a schedule, refreshed sign-in tokens).
-- The newest 10 are kept (change it under **Backups kept**). A backup can be at
+- The newest 10 are kept by default. The API accepts a `keep` setting. A backup can be at
   most 100 MB. Each server's files carry its own id (`<server>`), so servers
   sharing a folder never remove each other's backups.
-- When a backup fails, the desk and the push channels say so once; the desk
-  says so again when backups work again.
+- The Monitor records backup failures and sends an alert through the
+  configured push channels.
 
 ## Encryption
 

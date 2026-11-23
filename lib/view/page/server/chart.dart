@@ -132,7 +132,7 @@ class MetricChartSpec {
 }
 
 /// One chart plus the legend line carrying each series' latest value —
-/// mirrors `monitor/frontend/src/components/LineChart.svelte`.
+/// follows the same metric units as the server cards.
 ///
 /// The same widget on a card in the list and on the page that card grows into:
 /// what changes between them is the height and how much of the chrome is

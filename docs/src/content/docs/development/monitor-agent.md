@@ -138,8 +138,8 @@ endpoint answers it `401`.
 | `POST /api/v1/login` | `password`, `device` (optional), `name` (optional); a `username` field is ignored. Answers `token` and, for a device the Monitor does not know, a new `device` token |
 | `PUT /api/v1/me/password` | `current_password`, `new_password` (at least 8 characters); answers `204` |
 
-A client keeps the `device` token per Monitor (the App in the Keychain or
-Keystore) and sends it with every later sign-in.
+The Android app keeps each Monitor’s `device` token in secure storage and
+sends it on later sign-ins.
 `name` is what the device is listed as under `GET /live`, else its User-Agent:
 at most 80 characters, control characters dropped. Every sign-in, accepted or
 refused, is an audit row (`login`, the address, and `device known`,
