@@ -5,8 +5,6 @@
 /// without a word: the strip drew them, they took a tap, and nothing happened.
 library;
 
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/data/model/server/monitor/monitor_http_credential.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
@@ -33,17 +31,14 @@ void main() {
   group('a shell on this device', () {
     test('is offered nothing that needs a server', () {
       // The report this exists for: on a Linux system installed in the app,
-      // the file, sudo and tmux keys were all dead buttons.
+      // the file, sudo and zellij keys were all dead buttons.
       expect(VirtualKey.sftp.worksOn(_local), isFalse);
       expect(VirtualKey.sudo.worksOn(_local), isFalse);
     });
 
-    test('drives tmux, except where a command is cmd', () {
-      // The guest and the host shell both run a POSIX `sh` beside the
-      // terminal, which is all tmux needs; Windows runs `cmd /C`. iOS is off
-      // for now, and this suite does not run there.
+    test('offers the Zellij session manager only over SSH', () {
       for (final source in [_local, const LocalSource(rootfs: true)]) {
-        expect(VirtualKey.tmux.worksOn(source), !Platform.isWindows);
+        expect(VirtualKey.zellij.worksOn(source), isFalse);
       }
     });
 
@@ -84,11 +79,11 @@ void main() {
   });
 
   group('a server reached through its monitor agent', () {
-    test('has files and a shell, but nothing to drive tmux with', () {
+    test('has files and a shell, but nothing to drive zellij with', () {
       final spi = _monitor();
-      // tmux needs a channel that does not echo what is written into it, and
+      // zellij needs a channel that does not echo what is written into it, and
       // the agent carries no exec channel at all.
-      expect(VirtualKey.tmux.worksOn(ServerSource(spi)), isFalse);
+      expect(VirtualKey.zellij.worksOn(ServerSource(spi)), isFalse);
       // The file key opens `ServerFilePage`, which serves a monitor server
       // from the agent's own file API.
       expect(VirtualKey.sftp.worksOn(ServerSource(spi)), isTrue);

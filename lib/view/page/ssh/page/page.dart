@@ -33,30 +33,26 @@ import 'package:server_box/data/provider/snippet.dart';
 import 'package:server_box/data/provider/virtual_keyboard.dart';
 import 'package:server_box/data/res/terminal.dart';
 import 'package:server_box/data/store/stores.dart';
-import 'package:server_box/data/terminal/persistent_shell.dart';
 import 'package:server_box/data/terminal/session_manager.dart';
 import 'package:server_box/data/terminal/terminal_a11y.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
 import 'package:server_box/data/terminal/terminal_status.dart';
 import 'package:server_box/data/terminal/terminal_status_alerts.dart';
-import 'package:server_box/data/terminal/tmux/tmux_export.dart';
-import 'package:server_box/data/terminal/tmux/tmux_ids.dart';
 import 'package:server_box/data/terminal/virtual_key_support.dart';
+import 'package:server_box/data/terminal/zellij.dart';
 import 'package:server_box/src/rust/api/files.dart';
 import 'package:server_box/view/page/agent/activity.dart';
 import 'package:server_box/view/page/agent/view.dart';
 import 'package:server_box/view/page/ssh/ask_ai_layout.dart';
 import 'package:server_box/view/page/ssh/metrics_bar.dart';
-import 'package:server_box/view/page/ssh/page/tmux_page_controller.dart';
 import 'package:server_box/view/page/ssh/page/virt_key_intro.dart';
 import 'package:server_box/view/page/ssh/present_server.dart';
 import 'package:server_box/view/page/ssh/text_view.dart';
 import 'package:server_box/view/page/ssh/widget/terminal_connection_progress.dart';
 import 'package:server_box/view/page/ssh/widget/terminal_status_dot.dart';
-import 'package:server_box/view/page/ssh/widget/tmux_session_picker_sheet.dart';
-import 'package:server_box/view/page/ssh/widget/tmux_window_bar.dart';
 import 'package:server_box/view/page/ssh/widget/virtual_key_semantics.dart';
+import 'package:server_box/view/page/ssh/widget/zellij_session_picker_sheet.dart';
 import 'package:server_box/view/page/storage/server_file.dart';
 import 'package:server_box/view/page/storage/sftp.dart';
 import 'package:xterm/core.dart';
@@ -224,14 +220,6 @@ class SSHPageState extends ConsumerState<SSHPage>
         ..reenter = widget.args.reenter ? widget.args.initCmd : null
         ..answersSudo = widget.args.initCmdSudo);
 
-  late final TmuxPageController _tmuxPageController = TmuxPageController(
-    onPhaseChanged: (_) => redrawTmuxWindowBar(),
-  );
-
-  TmuxControlClient? get _tmuxControl => _tmuxPageController.client;
-  String? get _tmuxCurrentSession => _tmuxPageController.currentSessionName;
-  int? get _tmuxCurrentWindow => _tmuxPageController.currentWindowIndex;
-
   /// Whether the session arrived already running, and so must not be started
   /// a second time.
   bool get _adopted => widget.args.session != null;
@@ -252,21 +240,6 @@ class SSHPageState extends ConsumerState<SSHPage>
   TerminalSession handOff() {
     _handedOff = true;
     return _sess;
-  }
-
-  /// A tmux pane by its window and its own name, for a heading over what it
-  /// reports. Null once the pane is not in the attached session.
-  String? tmuxPaneLabel(TmuxPaneId pane) {
-    final snapshot = _tmuxControl?.snapshot;
-    final windowId = snapshot?.paneWindows[pane];
-    if (snapshot == null || windowId == null) return null;
-    final window = snapshot.windows.where((w) => w.id == windowId).firstOrNull;
-    if (window == null) return null;
-    final label = '${window.index}:${window.name}';
-    final shown = window.panes.where((p) => p.id == pane).firstOrNull;
-    return shown == null || window.panes.length < 2
-        ? label
-        : '$label · ${shown.index}:${shown.displayName}';
   }
 
   /// Held from `initState` rather than read where it is used, because
@@ -334,15 +307,6 @@ class SSHPageState extends ConsumerState<SSHPage>
     });
   }
 
-  /// Redraws after the native tmux window bar appears or disappears.
-  ///
-  /// The same protected-`setState` rule as [setIntroStep]: the tmux lifecycle
-  /// lives in an extension, but only this class can ask Flutter to redraw it.
-  void redrawTmuxWindowBar() {
-    if (!mounted) return;
-    setState(() {});
-  }
-
   bool _isDark = false;
   Timer? _virtKeyLongPressTimer;
 
@@ -398,9 +362,9 @@ class SSHPageState extends ConsumerState<SSHPage>
   String? _connectionFailureDetail;
   bool _openingTerminal = false;
 
-  /// Whether the tmux key's switcher is running. Two overlapping ones would
+  /// Whether the Zellij session picker is running. Two overlapping ones would
   /// each open a client, and the slower would replace the faster's foreground.
-  bool _switchingTmux = false;
+  bool _switchingZellij = false;
   bool _retryInitialConnectionOnResume = false;
   bool _keyboardHandlerReady = false;
   bool _keyboardHandlerAttached = false;
@@ -522,7 +486,6 @@ class SSHPageState extends ConsumerState<SSHPage>
       widget.args.visibleListenable?.removeListener(introListener);
     }
     _stopAiCommands();
-    unawaited(_tmuxPageController.dispose());
     _terminalController.dispose();
     _terminalScroll.dispose();
     _virtKeyPage.dispose();
@@ -533,7 +496,6 @@ class SSHPageState extends ConsumerState<SSHPage>
     // a page that no longer exists is one nothing else can close.
     _reconnectCancelled = true;
     _dismissReconnectingDialog(deferred: true);
-    if (session.onSwitched == _followBottom) session.onSwitched = null;
     // A page opened on its own made its session, and nothing else can reach
     // it once the page is gone: its shell goes with it, and so does its
     // connection when the session opened that — a console's websocket, or an
@@ -619,7 +581,6 @@ class SSHPageState extends ConsumerState<SSHPage>
         : ref.readPresentServer(serverId);
     _sess.adopt(serverState?.client, granted: serverState?.agentAccess);
     _sess.onForegroundDone = _onForegroundSessionDone;
-    _sess.onSwitched = _followBottom;
 
     WakeLock.instance.terminalOpened();
 
@@ -846,8 +807,7 @@ class SSHPageState extends ConsumerState<SSHPage>
     final steps = _introSteps;
     if (step != null && steps != null && step < steps.length) {
       // Over the terminal and no further: the keys the walkthrough is pointing
-      // at are the `Scaffold`'s bottom bar, outside this body, and so stay lit
-      // while everything it says is below the tmux window bar.
+      // at are the `Scaffold`'s bottom bar, outside this body.
       terminalContent = Stack(
         children: [
           terminalWithProgress,
@@ -865,16 +825,6 @@ class SSHPageState extends ConsumerState<SSHPage>
 
     return Column(
       children: [
-        TmuxWindowBar(
-          client: _tmuxControl,
-          status: _sess.status,
-          onSelectWindow: (window) => unawaited(_selectTmuxWindow(window.id)),
-          onSelectPane: (pane) => unawaited(_selectTmuxPane(pane.id)),
-          onNewWindow: _createTmuxWindow,
-          onCloseWindow: (window) => unawaited(_closeTmuxWindow(window.id)),
-          onClosePane: (pane) => unawaited(_closeTmuxPane(pane.id)),
-          onToggleZoom: _toggleTmuxZoom,
-        ),
         Expanded(child: terminalContent),
         // Under the terminal and above the keys, which are the `Scaffold`'s
         // bottom bar. With no keys under it — a desktop, or a phone with the
@@ -936,12 +886,14 @@ class SSHPageState extends ConsumerState<SSHPage>
     if (widget.args.detachInput case final detach?) _session?.write(detach);
   }
 
+  Future<void> showZellijFromToolbar() => _showZellijSwitcher();
+
   List<Widget> _buildAppBarActions() {
     final actions = <Widget>[
       // A link that dropped is noticed by the terminal, but a link that is
       // alive-looking and dead — a half-open socket, a NAT that gave up, a
       // server that stopped answering — is not. This is the reconnect the
-      // health check runs, asked for by hand: it re-attaches tmux when there
+      // health check runs, asked for by hand: it reattaches Zellij when there
       // is a session to re-attach, and says so plainly if it cannot.
       // Not this device's shell: there is no link to re-establish, and a
       // "reconnect" would only end the shell. Always enabled: a reconnect in
@@ -951,6 +903,12 @@ class SSHPageState extends ConsumerState<SSHPage>
           onPressed: reconnect,
           tooltip: l10n.reconnect,
           icon: const Icon(Icons.refresh),
+        ),
+      if (widget.args.spi?.sshOn != null)
+        IconButton(
+          onPressed: showZellijFromToolbar,
+          tooltip: l10n.zellijSessions,
+          icon: const Icon(Icons.window_outlined),
         ),
       if (widget.args.detachInput != null)
         IconButton(
@@ -1263,7 +1221,7 @@ class SSHPageState extends ConsumerState<SSHPage>
   /// with it — the terminal's input connection is opened by the focus, so a
   /// bare `requestFocus` shows it just as surely as asking for it does.
   ///
-  /// Which is why nothing focuses the terminal directly. A reconnect, a tmux
+  /// Which is why nothing focuses the terminal directly. A reconnect, a Zellij
   /// switch and a snippet all end by restoring focus, and every one of them
   /// can finish while the user is on another tab or in another shell; the
   /// keyboard then came up over whatever they were reading.
@@ -1325,7 +1283,7 @@ class SSHPageState extends ConsumerState<SSHPage>
     if (spi == null) return;
 
     // The shell the key was pressed for, taken before anything is awaited. A
-    // reconnect or a tmux switch while this waits — on the unlock, the
+    // reconnect or a Zellij switch while this waits — on the unlock, the
     // password dialog, the prompt — puts another in front, and its prompt is
     // not the one asked about.
     final shell = _session;
@@ -1409,7 +1367,7 @@ class SSHPageState extends ConsumerState<SSHPage>
     final password = SudoPassword.typed(spi.id);
     if (password == null) return;
     // Only the prompt of the shell the command was typed into: one that
-    // replaced it meanwhile — a reconnect, a tmux switch — asked nothing.
+    // replaced it meanwhile — a reconnect, a Zellij switch — asked nothing.
     final shell = _session;
     if (shell == null) return;
     for (final ms in const [100, 200, 400, 800, 1600, 3200]) {

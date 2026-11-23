@@ -151,8 +151,8 @@ extension _VirtualKey on SSHPageState {
       case VirtualKeyFunc.sudoPassword:
         await _insertSudoPassword();
         break;
-      case VirtualKeyFunc.tmuxSwitch:
-        await _showTmuxSwitcher();
+      case VirtualKeyFunc.zellijSwitch:
+        await _showZellijSwitcher();
         break;
     }
   }

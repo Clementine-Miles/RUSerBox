@@ -1,4 +1,3 @@
-import 'package:fl_lib/fl_lib.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/model/terminal/virtual_key.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
@@ -28,31 +27,8 @@ extension VirtualKeySupport on VirtualKey {
       // `SshCredential`. `isRoot` alone answered false for those, so the key was
       // drawn on a terminal where tapping it could only show an empty result.
       VirtualKey.sudo => spi?.ssh != null && !spi!.isRoot,
-      // Needs `ShellBackend.supportsTmux`: a POSIX `sh` run beside the
-      // terminal. SSH has one, and so does this device — its own shell, or a
-      // Linux system installed in the app — except on Windows, where a command
-      // is `cmd /C`, and on iOS for now. A monitor agent carries no exec
-      // channel at all, and a guest console is the guest's, not a shell to
-      // start tmux from.
-      //
-      // [shellUsesAgent] is `serverShellUsesAgent` — the same answer
-      // `TerminalSession.connect` acts on — so this says whether *this* shell
-      // has an exec channel rather than guessing from which transport leads.
-      // Read off `Spi.transport` it was wrong for the one server that is both:
-      // an agent that leads but refuses access falls back to SSH,
-      // which carries tmux perfectly well, and the key was hidden anyway.
-      //
-      // The grant is read before the first key is drawn, from the same provider
-      // the connect reads it from, so this is settled once — not a strip that
-      // rearranges itself under the user's thumb once something connects.
-      VirtualKey.tmux => switch (source) {
-        // TODO: iOS once the guest's realfs reports its files as root's; see
-        // `IulShellBackend.supportsTmux`.
-        LocalSource() => !isWindows && !isIOS,
-        ServerSource(:final spi) when spi.local => !isWindows,
-        ServerSource(:final spi) => spi.sshOn != null && !shellUsesAgent,
-        ConsoleSource() => false,
-      },
+      // The session manager uses SSH exec beside the interactive SSH PTY.
+      VirtualKey.zellij => spi?.sshOn != null && !shellUsesAgent,
       // Everything else is the terminal's own — keys, modifiers,
       // the IME, and snippets, which are a script typed into whatever is there.
       _ => true,

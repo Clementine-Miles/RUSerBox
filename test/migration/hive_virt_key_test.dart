@@ -30,7 +30,7 @@ void main() {
     // through the frozen table would only prove the table agrees with itself.
     Hive.registerAdapter(_ByteWriter(), override: true);
     final written = await Hive.openBox<Object>('setting');
-    const bytes = {'esc': 0, 'clipboard': 12, 'ime': 13, 'shift': 44, 'tmux': 46};
+    const bytes = {'esc': 0, 'clipboard': 12, 'ime': 13, 'shift': 44, 'zellij': 46};
     for (final MapEntry(:key, :value) in bytes.entries) {
       await written.put(key, _Byte(value));
     }

@@ -1087,7 +1087,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get virtKeyHelpSnippet => '스니펫을 골라 이 터미널에서 실행합니다.';
 
   @override
-  String get virtKeyHelpTmux => 'tmux 세션과 창을 전환합니다.';
+  String get virtKeyHelpZellij => 'Manage Zellij sessions on the SSH host.';
 
   @override
   String get virtKeyIntroActions => '바로가기';
@@ -1185,53 +1185,48 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sortByJoinTime => '가입 시간순';
 
   @override
-  String get tmuxAutoAttach => 'tmux 자동 연결';
+  String get zellijInvalidName => 'Enter a valid Zellij session name.';
 
   @override
-  String get tmuxAuto => '자동 tmux';
+  String get zellijSessions => 'Zellij sessions';
 
   @override
-  String get tmuxAutoTip => 'SSH로 접속할 때 tmux를 자동으로 시작하거나 연결합니다';
+  String get zellijDetach => 'Detach';
 
   @override
-  String get tmuxSessionSelector => '세션 선택기';
+  String get zellijTerminate => 'Terminate session';
 
   @override
-  String get tmuxSessionSelectorTip => '접속할 때 세션 선택기를 표시합니다';
-
-  @override
-  String get tmuxDefaultSessionName => '기본 세션 이름';
-
-  @override
-  String get tmuxSessionName => '세션 이름';
-
-  @override
-  String get tmuxNewSession => '새 세션';
-
-  @override
-  String get tmuxNewWindow => '새 창';
-
-  @override
-  String get tmuxNoWindowsFound => '창을 찾을 수 없습니다';
-
-  @override
-  String tmuxWindowCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '창 $count개',
-    );
-    return '$_temp0';
+  String zellijTerminateConfirm(String name) {
+    return 'Terminate Zellij session “$name” and its running programs?';
   }
 
   @override
-  String get tmuxAttached => '연결됨';
+  String get zellijAutoAttach => 'Zellij 자동 연결';
 
   @override
-  String get tmuxSkip => '건너뛰기';
+  String get zellijAuto => '자동 Zellij';
 
   @override
-  String get tmuxNotAvailable => 'tmux를 사용할 수 없습니다';
+  String get zellijAutoTip => 'SSH로 접속할 때 Zellij를 자동으로 시작하거나 연결합니다';
+
+  @override
+  String get zellijSessionSelector => '세션 선택기';
+
+  @override
+  String get zellijSessionSelectorTip => '접속할 때 세션 선택기를 표시합니다';
+
+  @override
+  String get zellijDefaultSessionName => '기본 세션 이름';
+
+  @override
+  String get zellijSessionName => '세션 이름';
+
+  @override
+  String get zellijNewSession => '새 세션';
+
+  @override
+  String get zellijNotAvailable => 'Zellij를 사용할 수 없습니다';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -4994,9 +4989,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get programIdle => '유휴';
 
   @override
-  String get programThisShell => '이 shell';
-
-  @override
   String get programProgress => '진행률';
 
   @override
@@ -6533,7 +6525,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get reconnectEndsShell =>
-      '다시 연결할 tmux 세션이 없으므로, 다시 연결하면 이 셸과 그 안에서 아직 실행 중인 작업이 종료되고 화면의 출력도 지워집니다.';
+      '다시 연결할 Zellij 세션이 없으므로, 다시 연결하면 이 셸과 그 안에서 아직 실행 중인 작업이 종료되고 화면의 출력도 지워집니다.';
 
   @override
   String get handedness => '주로 쓰는 손';

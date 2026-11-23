@@ -21,7 +21,7 @@
 
 use sbm_parser::commands;
 use sbm_parser::output::CommandOutput;
-use sbm_parser::{bench, container, cron, files, service, tmux};
+use sbm_parser::{bench, container, cron, files, service, zellij};
 use sbm_parser::script::{self, ScriptOptions, ShellFunc};
 use sbm_parser::SystemType;
 use std::io::{Read, Write};
@@ -885,25 +885,23 @@ fn ssh_e2e_unix_file_listing() {
     assert!(home.is_some_and(|h| h.starts_with('/')));
 }
 
-/// tmux discovery on a real machine; skipped where tmux is not installed.
+/// Zellij discovery on a real machine, when installed on the test host.
 #[test]
 #[ignore = "requires SBM_E2E_SSH_HOST and a reachable SSH server"]
-fn ssh_e2e_unix_tmux_discovery() {
-    let host =
-        ssh_host().expect("SBM_E2E_SSH_HOST must be set in the environment or workspace-root .env");
-    let out = run_ssh(&host, tmux::FIND_COMMAND, None).expect("ssh");
-    let Some(bin) = tmux::parse_find(&String::from_utf8_lossy(&out.stdout), out.status.success()) else {
-        eprintln!("skipped: no tmux on {host}");
+fn ssh_e2e_unix_zellij_discovery() {
+    let host = ssh_host().expect("SBM_E2E_SSH_HOST must name a reachable server");
+    let out = run_ssh(&host, zellij::FIND_COMMAND, None).expect("ssh");
+    let Some(bin) = zellij::parse_find(&String::from_utf8_lossy(&out.stdout)) else {
+        eprintln!("skipped: no Zellij on {host}");
         return;
     };
-    let out = run_ssh(&host, &tmux::list_sessions_command(&bin), None).expect("ssh");
-    let listing = tmux::parse_sessions(&String::from_utf8_lossy(&out.stdout));
-    assert_eq!(listing.unreadable, 0, "{}", String::from_utf8_lossy(&out.stdout));
-    eprintln!("tmux at {bin}: {} sessions", listing.sessions.len());
-    if let Some(session) = listing.sessions.first() {
-        let out = run_ssh(&host, &tmux::list_windows_command(&bin, &session.id), None).expect("ssh");
-        assert!(!tmux::parse_windows(&String::from_utf8_lossy(&out.stdout)).is_empty());
-    }
+    let out = run_ssh(&host, &zellij::list_sessions_command(&bin), None).expect("ssh");
+    let sessions = zellij::read_sessions(
+        &String::from_utf8_lossy(&out.stdout),
+        &String::from_utf8_lossy(&out.stderr),
+        out.status.code().expect("remote exit status"),
+    );
+    assert!(sessions.is_some(), "{}", String::from_utf8_lossy(&out.stderr));
 }
 
 /// Windows full chain: EncodedCommand install (works from cmd.exe default

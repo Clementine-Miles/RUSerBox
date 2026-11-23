@@ -40,10 +40,10 @@ void main() {
     getIt.registerSingleton<SettingStore>(SettingStore('setting_test'));
     getIt.registerSingleton<ServerStore>(ServerStore());
     getIt.registerSingleton<SnippetStore>(SnippetStore());
-    // The first-run help dialog would sit over the bar, and tmux discovery
+    // The first-run help dialog would sit over the bar, and Zellij discovery
     // has nothing to discover on a fake shell.
     Stores.setting.sshTermHelpShown.put(true);
-    Stores.setting.tmuxAuto.put(false);
+    Stores.setting.zellijAuto.put(false);
   });
 
   tearDown(() async {
@@ -130,7 +130,7 @@ void main() {
     await leave(tester, session);
   });
 
-  testWidgets('without tmux it asks, and cancelling keeps the shell', (
+  testWidgets('without Zellij it asks, and cancelling keeps the shell', (
     tester,
   ) async {
     final opened = <FakeShellSession>[];

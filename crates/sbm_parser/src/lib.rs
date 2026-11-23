@@ -41,10 +41,10 @@ pub mod snippet;
 pub mod storage;
 pub mod sudo;
 pub mod system;
-pub mod tmux;
 pub mod types;
 pub mod users;
 pub mod windows;
+pub mod zellij;
 
 use std::collections::HashMap;
 use types::*;

@@ -22,7 +22,7 @@ const _tab = 7;
 const _ctrl = 8;
 const _ime = 13;
 const _sudo = 45;
-const _tmux = 46;
+const _zellij = 46;
 
 void main() {
   late SettingStore store;
@@ -62,13 +62,13 @@ void main() {
   });
 
   test('an index past the removed clipboard key is still its own key', () async {
-    store.set(VirtKeyNamesMigration.orderKey, [_ime, 12, _tmux]);
+    store.set(VirtKeyNamesMigration.orderKey, [_ime, 12, _zellij]);
 
     await migration.apply();
 
     // `clipboard` comes across by name, and is dropped where every name this
     // build has no case for is: by [SettingStore.virtualKeys].
-    expect(store.sshVirtKeys.fetch(), ['ime', 'clipboard', 'tmux']);
+    expect(store.sshVirtKeys.fetch(), ['ime', 'clipboard', 'zellij']);
   });
 
   test('a name among the indices is kept, even one this build lacks', () async {

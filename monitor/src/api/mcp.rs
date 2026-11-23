@@ -34,7 +34,6 @@ use super::server::{self, AppState};
 use super::service::{self, ServicePart};
 use super::storage;
 use super::system_users::{self, UserPart};
-use super::tmux;
 use super::virt;
 use super::ws::audit::{Action, Event, Kind, Outcome};
 use super::ws::origin_allowed;
@@ -123,7 +122,6 @@ impl TokenHost {
                 }),
             ),
             no_args("cron", "Crontab jobs and preserved lines of the account the Monitor runs as."),
-            no_args("tmux", "Active tmux sessions on this machine."),
             tool(
                 "firewall",
                 "Firewall state and rules (ufw or firewalld) and how this Monitor and SSH reach the machine.",
@@ -495,7 +493,6 @@ impl Host for TokenHost {
             "cron" => structured(
                 serde_json::to_value(cron::read_crontab(&state.remote_access.exec).await).unwrap_or(Value::Null),
             ),
-            "tmux" => structured(tmux::sessions(state).await),
             "firewall" => {
                 let kind = match arguments.get("kind") {
                     None => None,

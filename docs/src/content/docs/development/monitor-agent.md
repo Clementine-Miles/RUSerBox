@@ -39,7 +39,7 @@ supports and whether the signed-in caller may use them. The response includes:
   `{"ok": false}`.
 - `features`: the machine-management endpoints the Monitor serves, such as
   `power`. A client offers a page when its name is listed and `access.ok`.
-  `container_exec`, `iperf`, and `tmux` are terminal targets rather than
+  `container_exec` and `iperf` are terminal targets rather than
   pages; each is offered only where it is listed. `alerts`, `audit`, and
   `live` are the Monitor tab's sections (`GET /alerts`, `GET /audit`,
   `/live*`), and `desk` its notifications. `update` is `GET /update`: the
@@ -160,9 +160,8 @@ command line (`--password-env VAR` reads it from the environment), creating
 the account if there is none.
 
 Some changes ask for the current password again in the body
-(`current_password`): changing the password, deploying a web app, changing its
-settings or removing it, revealing its first login, restoring or deleting a
-container backup, and approving or removing a desk app. It goes through the
+(`current_password`), including password changes and restoring or deleting a
+container backup. It goes through the
 login throttle described above. A wrong or missing one answers `403 reauth`; a run of wrong ones
 answers `429 throttled` with `Retry-After`.
 
@@ -215,7 +214,7 @@ rows.
 
 | Scope | Tools |
 |---|---|
-| `read` | `machine_status`, `machine_metrics`, `machine_capabilities`, `processes`, `services`, `containers`, `cron`, `tmux`, `firewall`, `storage`, `virt`, `stacks`, `system_users` |
+| `read` | `machine_status`, `machine_metrics`, `machine_capabilities`, `processes`, `services`, `containers`, `cron`, `firewall`, `storage`, `virt`, `system_users` |
 | `fs_read` | `fs_roots`, `fs_list`, `fs_stat`, `fs_read` |
 | `fs_write` | `fs_write`, `fs_mkdir`, `fs_rename`, `fs_chmod`, `fs_remove` |
 | `exec` | `run_command` |
@@ -224,7 +223,6 @@ rows.
 | `container` | `container_action` |
 | `cron` | `cron_edit` |
 | `virt` | `virt_power` |
-| `stacks` | `stack_action` |
 | `power` | `power` |
 
 #### Command rules and `config.toml` ceiling
@@ -254,12 +252,11 @@ A `sudo` password has no way in through MCP: an action that needs root answers
 
 ### Password change
 
-A password change signs out everything else. Panel tokens issued before it
+A password change signs out everything else. Account tokens issued before it
 answer `401` everywhere (a token from the same second still counts, so
 signing in again right after works), watch tokens and the LK Cloud session are
 deleted, and in a running Monitor
-terminal sessions, outstanding tickets, running Agent mode tasks, web app
-windows, relays, and listeners receive
+terminal sessions, outstanding tickets, running Agent mode tasks, relays and listeners receive
 `{"type":"error","code":"password_changed"}` and are closed. A reset from the
 command line cannot reach a running Monitor's open connections; they end when
 the Monitor restarts.

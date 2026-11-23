@@ -50,7 +50,7 @@ const ja: Translation = {
     terminal: {
       title: 'SSH ターミナル',
       description:
-        'vim、tmux、htop も快適に扱える仮想キーを搭載。踏み台サーバーや ProxyCommand にもネイティブ対応。',
+        'vim、Zellij、htop も快適に扱える仮想キーを搭載。踏み台サーバーや ProxyCommand にもネイティブ対応。',
     },
     files: {
       title: 'SFTP ファイル管理',

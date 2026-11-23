@@ -37,12 +37,12 @@ import 'package:server_box/src/rust/api/snippet.dart';
 import 'package:server_box/src/rust/api/ssh_asym.dart';
 import 'package:server_box/src/rust/api/ssh_crypto.dart';
 import 'package:server_box/src/rust/api/storage.dart';
-import 'package:server_box/src/rust/api/tmux.dart';
 import 'package:server_box/src/rust/api/users.dart';
 import 'package:server_box/src/rust/api/virt.dart';
 import 'package:server_box/src/rust/api/virt_libvirt.dart';
 import 'package:server_box/src/rust/api/virt_model.dart';
 import 'package:server_box/src/rust/api/virt_view.dart';
+import 'package:server_box/src/rust/api/zellij.dart';
 import 'package:server_box/src/rust/frb_generated.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
@@ -651,11 +651,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SystemUser dco_decode_box_autoadd_system_user(dynamic raw);
-
-  @protected
-  TmuxSessionListingItem dco_decode_box_autoadd_tmux_session_listing_item(
-    dynamic raw,
-  );
 
   @protected
   int dco_decode_box_autoadd_u_16(dynamic raw);
@@ -1358,12 +1353,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<SystemUser> dco_decode_list_system_user(dynamic raw);
 
   @protected
-  List<TmuxSessionItem> dco_decode_list_tmux_session_item(dynamic raw);
-
-  @protected
-  List<TmuxWindowItem> dco_decode_list_tmux_window_item(dynamic raw);
-
-  @protected
   List<UfwApp> dco_decode_list_ufw_app(dynamic raw);
 
   @protected
@@ -1672,11 +1661,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SystemType? dco_decode_opt_box_autoadd_system_type(dynamic raw);
-
-  @protected
-  TmuxSessionListingItem? dco_decode_opt_box_autoadd_tmux_session_listing_item(
-    dynamic raw,
-  );
 
   @protected
   int? dco_decode_opt_box_autoadd_u_16(dynamic raw);
@@ -2080,15 +2064,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SystemUser dco_decode_system_user(dynamic raw);
-
-  @protected
-  TmuxSessionItem dco_decode_tmux_session_item(dynamic raw);
-
-  @protected
-  TmuxSessionListingItem dco_decode_tmux_session_listing_item(dynamic raw);
-
-  @protected
-  TmuxWindowItem dco_decode_tmux_window_item(dynamic raw);
 
   @protected
   int dco_decode_u_16(dynamic raw);
@@ -2988,11 +2963,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   SystemUser sse_decode_box_autoadd_system_user(SseDeserializer deserializer);
 
   @protected
-  TmuxSessionListingItem sse_decode_box_autoadd_tmux_session_listing_item(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   int sse_decode_box_autoadd_u_16(SseDeserializer deserializer);
 
   @protected
@@ -3823,16 +3793,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<SystemUser> sse_decode_list_system_user(SseDeserializer deserializer);
 
   @protected
-  List<TmuxSessionItem> sse_decode_list_tmux_session_item(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  List<TmuxWindowItem> sse_decode_list_tmux_window_item(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   List<UfwApp> sse_decode_list_ufw_app(SseDeserializer deserializer);
 
   @protected
@@ -4211,11 +4171,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SystemType? sse_decode_opt_box_autoadd_system_type(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  TmuxSessionListingItem? sse_decode_opt_box_autoadd_tmux_session_listing_item(
     SseDeserializer deserializer,
   );
 
@@ -4683,17 +4638,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SystemUser sse_decode_system_user(SseDeserializer deserializer);
-
-  @protected
-  TmuxSessionItem sse_decode_tmux_session_item(SseDeserializer deserializer);
-
-  @protected
-  TmuxSessionListingItem sse_decode_tmux_session_listing_item(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  TmuxWindowItem sse_decode_tmux_window_item(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_16(SseDeserializer deserializer);
@@ -5766,12 +5710,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_box_autoadd_tmux_session_listing_item(
-    TmuxSessionListingItem self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_box_autoadd_u_16(int self, SseSerializer serializer);
 
   @protected
@@ -6828,18 +6766,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_list_tmux_session_item(
-    List<TmuxSessionItem> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_tmux_window_item(
-    List<TmuxWindowItem> self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_list_ufw_app(List<UfwApp> self, SseSerializer serializer);
 
   @protected
@@ -7328,12 +7254,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_system_type(
     SystemType? self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_opt_box_autoadd_tmux_session_listing_item(
-    TmuxSessionListingItem? self,
     SseSerializer serializer,
   );
 
@@ -7918,24 +7838,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_system_user(SystemUser self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_tmux_session_item(
-    TmuxSessionItem self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_tmux_session_listing_item(
-    TmuxSessionListingItem self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_tmux_window_item(
-    TmuxWindowItem self,
-    SseSerializer serializer,
-  );
 
   @protected
   void sse_encode_u_16(int self, SseSerializer serializer);

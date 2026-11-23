@@ -5,73 +5,43 @@ import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/extension/context/locale.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_status.dart';
-import 'package:server_box/data/terminal/tmux/tmux_ids.dart';
 import 'package:server_box/view/page/ssh/widget/terminal_status_dot.dart';
 import 'package:xterm/core.dart';
 
-/// Every record the programs of a terminal report, by the terminal they belong
-/// to: the shell, then each tmux pane. Follows the records while it is open.
-///
-/// [paneLabel] names a pane for its heading, such as its window and title;
-/// its id is used without one.
+/// Shows the terminal's program status reports, with live updates.
 Future<void> showTerminalStatusSheet(
   BuildContext context,
-  TerminalStatus status, {
-  String? Function(TmuxPaneId pane)? paneLabel,
-}) {
+  TerminalStatus status,
+) {
   return showRowsSheet<void>(
     context,
     rows: (_) => [
       ListenableBuilder(
         listenable: status,
-        builder: (context, _) => Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ..._terminal(
-              status.shell,
-              heading: status.panes.isEmpty ? null : l10n.programThisShell,
-              onDismiss: (id) => status.dismiss(id),
-            ),
-            for (final pane in status.panes.toList())
-              ..._terminal(
-                status.pane(pane)!,
-                heading: paneLabel?.call(pane) ?? pane.value,
-                onDismiss: (id) => status.dismiss(id, pane: pane),
-              ),
-          ],
-        ),
+        builder: (context, _) {
+          final records = status.shell;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final record in records.records)
+                _RecordRow(
+                  record: record,
+                  app: records.appOf(record),
+                  onDismiss: record.state.persists
+                      ? () => status.dismiss(record.id)
+                      : null,
+                ),
+              if (records.progress case final progress?) _ProgressRow(progress),
+              if (records.command case final command?
+                  when command.running || command.exitCode != null)
+                _CommandRow(command),
+            ],
+          );
+        },
       ),
     ],
   );
-}
-
-List<Widget> _terminal(
-  ProgramStatusRecords records, {
-  required String? heading,
-  required void Function(List<String> id) onDismiss,
-}) {
-  final rows = [
-    for (final record in records.records)
-      _RecordRow(
-        record: record,
-        app: records.appOf(record),
-        onDismiss: record.state.persists ? () => onDismiss(record.id) : null,
-      ),
-    if (records.progress case final progress?) _ProgressRow(progress),
-    if (records.command case final command?
-        when command.running || command.exitCode != null)
-      _CommandRow(command),
-  ];
-  if (rows.isEmpty) return const [];
-  return [
-    if (heading != null)
-      Padding(
-        padding: const EdgeInsets.fromLTRB(17, 11, 17, 3),
-        child: Text(heading, style: UIs.textGrey),
-      ),
-    ...rows,
-  ];
 }
 
 final class _RecordRow extends StatelessWidget {
@@ -103,11 +73,7 @@ final class _RecordRow extends StatelessWidget {
       ),
       leading: _Mark(color),
       minLeadingWidth: 9,
-      title: Text(
-        name ?? state,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      title: Text(name ?? state, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text(
         [
           if (name != null) state,
@@ -198,7 +164,6 @@ final class _Mark extends StatelessWidget {
 /// urgent state. Nothing while no program reports anything.
 BarAction terminalStatusAction({
   required ValueListenable<TerminalSession?> session,
-  String? Function(TmuxPaneId pane)? paneLabel,
 }) => BarAction.listen(
   listenable: session,
   build: (_) {
@@ -212,8 +177,7 @@ BarAction terminalStatusAction({
           icon: MingCute.task_line,
           label: l10n.programStatus,
           color: status.headline?.colorIn(Theme.of(context).colorScheme),
-          onTap: () =>
-              showTerminalStatusSheet(context, status, paneLabel: paneLabel),
+          onTap: () => showTerminalStatusSheet(context, status),
         );
       },
     );
@@ -222,12 +186,11 @@ BarAction terminalStatusAction({
 
 /// [terminalStatusAction] on its own.
 final class TerminalStatusButton extends StatelessWidget {
-  const TerminalStatusButton({super.key, required this.session, this.paneLabel});
+  const TerminalStatusButton({super.key, required this.session});
 
   final ValueListenable<TerminalSession?> session;
-  final String? Function(TmuxPaneId pane)? paneLabel;
 
   @override
   Widget build(BuildContext context) =>
-      terminalStatusAction(session: session, paneLabel: paneLabel).button();
+      terminalStatusAction(session: session).button();
 }

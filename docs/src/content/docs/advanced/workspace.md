@@ -48,7 +48,7 @@ that has been deleted is removed.
 ## Sync input
 
 **Sync input** sends each key you type to every other terminal in the
-workspace, like tmux `synchronize-panes`. A bar above each terminal shows when
+workspace. A bar above each terminal shows when
 it is enabled. Terminal-generated replies, such as cursor-position reports,
 are not copied.
 

@@ -34,6 +34,7 @@ import 'package:server_box/data/res/terminal.dart';
 import 'package:server_box/data/res/url.dart';
 import 'package:server_box/data/store/setting.dart';
 import 'package:server_box/data/store/stores.dart';
+import 'package:server_box/data/terminal/zellij.dart';
 import 'package:server_box/generated/l10n/l10n.dart';
 import 'package:server_box/view/page/agent/permissions.dart';
 import 'package:server_box/view/page/agent/settings.dart';

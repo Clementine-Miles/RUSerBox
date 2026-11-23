@@ -955,14 +955,14 @@ class SettingStore extends SqliteStore {
   );
   late final serverPageSortAsc = propertyDefault('serverPageSortAsc', true);
 
-  /// Whether to automatically start/attach tmux on SSH connect.
-  late final tmuxAuto = propertyDefault('tmuxAuto', false);
+  /// Whether to automatically start/attach zellij on SSH connect.
+  late final zellijAuto = propertyDefault('zellijAuto', false);
 
-  /// Whether to show the tmux session selector dialog on connect.
-  late final tmuxShowSelector = propertyDefault('tmuxShowSelector', true);
+  /// Whether to show the zellij session selector dialog on connect.
+  late final zellijShowSelector = propertyDefault('zellijShowSelector', true);
 
-  /// Default tmux session name. Empty string means use 'server_box'.
-  late final tmuxSessionName = propertyDefault('tmuxSessionName', '');
+  /// Default zellij session name. Empty string means use 'server_box'.
+  late final zellijSessionName = propertyDefault('zellijSessionName', '');
 
   /// Which reading each server's card draws in full, by server id.
   ///

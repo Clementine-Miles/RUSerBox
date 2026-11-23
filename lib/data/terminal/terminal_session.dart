@@ -5,7 +5,7 @@ import 'dart:math' as math;
 
 import 'package:dartssh2/dartssh2.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_tty/fl_tty.dart';
+import 'package:fl_tty/fl_tty.dart' hide ShellBackend, ShellSession;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:server_box/core/app_navigator.dart';
@@ -18,12 +18,10 @@ import 'package:server_box/data/model/app/error.dart';
 import 'package:server_box/data/model/server/monitor/monitor_access.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/model/server/shell_backend.dart';
-import 'package:server_box/data/terminal/redrawing_shell.dart';
 import 'package:server_box/data/terminal/terminal_output_buffer.dart';
 import 'package:server_box/data/terminal/terminal_platform.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
 import 'package:server_box/data/terminal/terminal_status.dart';
-import 'package:server_box/data/terminal/tmux/tmux_control_shell_session.dart';
 import 'package:xterm/core.dart';
 
 /// Whether a server's shell comes from its agent rather than over SSH.
@@ -97,7 +95,7 @@ bool isRetryableTerminalConnectionError(Object error) {
 /// not exist at the moment the connection is made.
 ///
 /// What lives here is what a shell *is*: a terminal, a source of bytes for it,
-/// and the plumbing between them. What a particular *view* of one needs — tmux,
+/// and the plumbing between them. What a particular *view* of one needs — session controls,
 /// keep-alive, the virtual keyboard, state restoration — stays on the page.
 class TerminalSession {
   TerminalSession({required this.source, ShellBackend? backend})
@@ -129,8 +127,7 @@ class TerminalSession {
 
   final terminal = Terminal(platform: hostTerminalPlatform);
 
-  /// What the programs in this terminal report about themselves. Outlives a
-  /// reconnect: a tmux pane's programs are still running behind it.
+  /// What the programs in this terminal report about themselves.
   final status = TerminalStatus();
 
   /// Typed into every shell a reconnect opens for this session: what makes a
@@ -157,6 +154,11 @@ class TerminalSession {
 
   ShellSession? _foreground;
 
+  /// The current remote session name also survives a lost transport so the
+  /// terminal can reattach after reconnecting.
+  String? get zellijSessionName => _zellijSessionName;
+  String? _zellijSessionName;
+
   /// Moves on with every [close], so a [connect] that was on its way does not
   /// install what it made into a session that has ended.
   int _closes = 0;
@@ -172,15 +174,11 @@ class TerminalSession {
   ShellSession? get foreground => _foreground;
 
   /// Called when the foreground shell ends for good, and only for the shell
-  /// that is still current — a session replaced by tmux or by a reconnect
+  /// that is still current — a session replaced during a switch or a reconnect
   /// finishes too, and that is not the terminal ending.
   void Function(ShellSession session)? onForegroundDone;
 
-  /// Before a redraw of another tmux pane is written: the view follows its
-  /// live screen rather than keeping its place in the pane it left.
-  VoidCallback? onSwitched;
-
-  /// The SSH connection behind [backend], when there is one: tmux discovery
+  /// The SSH connection behind [backend], when there is one: Zellij discovery
   /// and the AI helper's probe run on its exec channels, which, unlike a
   /// pseudo-terminal, carry their bytes as is.
   SSHClient? get client => switch (_backend) {
@@ -321,9 +319,8 @@ class TerminalSession {
   }
 
   /// Opens a PTY in the Android userland or on the device.
-  ShellBackend _localBackend(LocalSource local) => LocalShellBackend(
-    inRootfs: local.rootfs,
-    profileId: local.profileId,
+  ShellBackend _localBackend(LocalSource local) => LocalTerminalBackend(
+    LocalShellBackend(inRootfs: local.rootfs, profileId: local.profileId),
   );
 
   /// The agent's own shell, when [serverShellUsesAgent] says it is the one.
@@ -379,13 +376,8 @@ class TerminalSession {
   /// is rejected before `base64.decode` allocates another copy of the payload.
   static final int _maxOsc52EncodedChars = ((_maxOsc52Bytes + 2) ~/ 3) * 4;
 
-  void _handleTerminalStatus(TerminalStatusEvent event) {
-    // Under tmux the local terminal shows one pane after another, and every
-    // switch replays the pane after a full reset: the panes' own status comes
-    // from [TmuxControlShellSession.onPaneStatus] instead.
-    if (_foreground is TmuxControlShellSession) return;
-    status.shell.apply(event);
-  }
+  void _handleTerminalStatus(TerminalStatusEvent event) =>
+      status.shell.apply(event);
 
   /// The shell's working directory, as its last OSC 7 said (`file://host/path`,
   /// what fish, zsh and VTE's bash hook send on each prompt). Null until one
@@ -403,11 +395,10 @@ class TerminalSession {
 
   /// How long ago [openShell] opened the shell on screen: how the system's
   /// list of the account's shells is matched to it
-  /// (`sbm_parser::files::terminal_shell_cwd`). Null without one, and under
-  /// tmux, whose panes are its server's shells.
+  /// (`sbm_parser::files::terminal_shell_cwd`). Zellij owns its pane shells.
   Duration? get shellAge {
     final opened = _shellOpenedAt;
-    if (opened == null || _foreground is TmuxControlShellSession) return null;
+    if (opened == null || zellijSessionName != null) return null;
     return DateTime.now().difference(opened);
   }
 
@@ -479,9 +470,12 @@ class TerminalSession {
 
   /// Puts [session] on the screen: its bytes into the terminal, the terminal's
   /// keystrokes and size into it.
-  void bindForeground(ShellSession session) {
+  void bindForeground(ShellSession session, {String? zellijSessionName}) {
+    _zellijSessionName = zellijSessionName;
+    _workingDirectory = null;
+    _osc7Host = null;
     // The new shell starts on a clear main screen, in the terminal's default
-    // colors and modes: the last one's, a tmux pane's included, are not its.
+    // colors and modes.
     terminal.write('\x1b[?1049l');
     terminal.altBuffer.clear();
     terminal.buffer.clear();
@@ -496,15 +490,7 @@ class TerminalSession {
     _buffer.clear();
     _tail = '';
 
-    // Whatever ran in the terminal before has exited; a tmux pane has not.
     status.shell.processExited();
-    if (session is TmuxControlShellSession) {
-      session
-        ..onPaneStatus = status.applyPane
-        ..onPanes = status.retainPanes;
-    } else {
-      status.clearPanes();
-    }
 
     terminal.onOutput = (data) {
       session.write(utf8.encode(data));
@@ -530,12 +516,8 @@ class TerminalSession {
       }
     };
 
-    if (session case final RedrawingShell shell) {
-      _listen(shell.output);
-    } else {
-      _listen(session.stdout?.map(ShellOutput.new));
-      _listen(session.stderr?.map(ShellOutput.new));
-    }
+    _listen(session.stdout);
+    _listen(session.stderr);
 
     _foreground = session;
     unawaited(_awaitDone(session));
@@ -547,14 +529,11 @@ class TerminalSession {
     _foreground = null;
     drainOutput();
     status.shell.processExited();
-    // Not the panes': a tmux client ends with the link too, and the reconnect
-    // that follows finds them running. The next shell bound decides — a tmux
-    // refresh keeps the live ones, a plain shell clears them.
     onForegroundDone?.call(session);
   }
 
   /// Drops the foreground shell without touching the source behind it, which
-  /// is what a reconnect and a tmux switch both want.
+  /// is needed when reconnecting or switching sessions.
   void unbindForeground() {
     _foreground = null;
     _cancelOutputSubscriptions();
@@ -644,7 +623,7 @@ class TerminalSession {
 
   final _buffer = TerminalOutputBuffer();
   Timer? _flushTimer;
-  final List<StreamSubscription<ShellOutput>> _subscriptions = [];
+  final List<StreamSubscription<String>> _subscriptions = [];
   String _tail = '';
 
   /// The last of what the shell printed, as text.
@@ -715,45 +694,17 @@ class TerminalSession {
     }
   }
 
-  void _listen(Stream<ShellOutput>? stream) {
+  void _listen(Stream<List<int>>? stream) {
     if (stream == null) return;
-    final decoded = StringBuffer();
-    ByteConversionSink decoder() => const Utf8Decoder(
-      allowMalformed: true,
-    ).startChunkedConversion(StringConversionSink.fromStringSink(decoded));
-    var utf8Sink = decoder();
-    String take() {
-      final text = decoded.toString();
-      decoded.clear();
-      return text;
-    }
-
-    final subscription = stream.listen(
-      (chunk) {
-        // A character left unfinished before a redraw is one it erases.
-        if (chunk.redraw) utf8Sink = decoder();
-        utf8Sink.add(chunk.data);
-        final text = take();
-        if (chunk.redraw) {
-          if (chunk.switched) onSwitched?.call();
-          _buffer.addRedraw(text);
-          _appendTail(text);
-          _scheduleFlush();
-        } else if (text.isNotEmpty) {
-          _queue(text);
-        }
-      },
-      onError: (Object error, StackTrace stack) {
-        Loggers.root.warning('Error in shell stream', error, stack);
-      },
-      onDone: () {
-        utf8Sink.close();
-        final text = take();
-        if (text.isNotEmpty) _queue(text);
-      },
-      cancelOnError: false,
+    final decoded = const Utf8Decoder(allowMalformed: true).bind(stream);
+    _subscriptions.add(
+      decoded.listen(
+        _queue,
+        onError: (Object error, StackTrace stack) {
+          Loggers.root.warning('Error in shell stream', error, stack);
+        },
+      ),
     );
-    _subscriptions.add(subscription);
   }
 
   void _cancelOutputSubscriptions() {

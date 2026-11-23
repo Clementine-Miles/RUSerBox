@@ -12,7 +12,6 @@ import 'package:server_box/data/model/server/monitor/monitor_http_credential.dar
 import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/model/server/shell_backend.dart';
 import 'package:server_box/data/model/server/ssh_credential.dart';
-import 'package:server_box/data/terminal/redrawing_shell.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
 
@@ -59,26 +58,6 @@ class _FakeShell implements ShellSession {
   void finish() {
     if (!_done.isCompleted) _done.complete();
   }
-}
-
-/// A shell that marks some of its output as redraws, as tmux's replays are.
-class _RedrawingShell extends _FakeShell implements RedrawingShell {
-  final _output = StreamController<ShellOutput>();
-
-  @override
-  Stream<ShellOutput> get output => _output.stream;
-
-  @override
-  void emitBytes(List<int> data) =>
-      _output.add(ShellOutput(Uint8List.fromList(data)));
-
-  void emitRedraw(String data, {bool switched = false}) => _output.add(
-    ShellOutput(
-      Uint8List.fromList(utf8.encode(data)),
-      redraw: true,
-      switched: switched,
-    ),
-  );
 }
 
 /// Long enough for the session's own output flush, which batches a frame's
@@ -207,44 +186,19 @@ void main() {
       session.dispose();
     });
 
-    test('a redraw reaches the terminal whole, after a character cut off', () async {
+    test('retains the Zellij name after loss and clears it for a raw shell', () async {
       final session = TerminalSession(source: ServerSource(ssh));
-      final shell = _RedrawingShell();
-      session.bindForeground(shell);
-
-      // The first two bytes of 中, then a replay longer than the output cap.
-      shell.emitBytes([0xe4, 0xb8]);
-      final rows = [for (var i = 0; i < 600; i++) '${'$i'.padLeft(4)}${'x' * 60}'];
-      shell.emitRedraw('\x1bcfirst\r\n${rows.join('\r\n')}\r\nlast');
+      final attached = _FakeShell();
+      session.bindForeground(attached, zellijSessionName: 'work');
+      expect(session.zellijSessionName, 'work');
+      expect(session.shellAge, isNull);
+      attached.finish();
       await flushed();
+      expect(session.foreground, isNull);
+      expect(session.zellijSessionName, 'work');
 
-      final lines = [
-        for (var i = 0; i < session.terminal.buffer.lines.length; i++)
-          session.terminal.buffer.lines[i].toString().trim(),
-      ].where((line) => line.isNotEmpty).toList();
-      expect(lines.first, 'first');
-      expect(lines.last, 'last');
-      expect(lines, hasLength(602));
-      expect(lines.join(), isNot(contains('\uFFFD')));
-      session.dispose();
-    });
-
-    test('only a redraw of another pane says the view switched', () async {
-      final session = TerminalSession(source: ServerSource(ssh));
-      final shell = _RedrawingShell();
-      var switches = 0;
-      session.onSwitched = () => switches++;
-      session.bindForeground(shell);
-
-      shell
-        ..emitRedraw('\x1bcsame pane')
-        ..emitBytes(utf8.encode('output'));
-      await flushed();
-      expect(switches, 0);
-
-      shell.emitRedraw('\x1bcother pane', switched: true);
-      await flushed();
-      expect(switches, 1);
+      session.bindForeground(_FakeShell());
+      expect(session.zellijSessionName, isNull);
       session.dispose();
     });
 
@@ -320,7 +274,7 @@ void main() {
       session.onForegroundDone = (_) => ends++;
 
       session.bindForeground(first);
-      // What a tmux attach and a reconnect both do: the old channel closes
+      // What a session switch and a reconnect both do: the old channel closes
       // once the new one has the terminal, and that is not the terminal ending.
       session.bindForeground(second);
       first.finish();
@@ -338,8 +292,8 @@ void main() {
       session.onForegroundDone = (_) => ends++;
 
       session.bindForeground(shell);
-      // What the tmux-to-raw-shell fallback does: detach before the old
-      // channel reports done, so tmux ending does not end the terminal tab.
+      // What detaching to a raw shell does: detach before the old
+      // channel reports done, so the remote session ending does not end the terminal tab.
       session.unbindForeground();
       shell.finish();
       await flushed();
@@ -478,7 +432,7 @@ void main() {
       session.adopt(null);
 
       expect(session.backend, isNotNull);
-      // A local process can start another, so tmux and the AI probe are on the
+      // A local process can start another, so the AI probe is on the
       // table here in a way they are not over a monitor agent's single PTY.
       expect(session.canExec, isTrue);
       expect(session.client, isNull);
@@ -573,7 +527,7 @@ void main() {
       );
 
       expect(session.backend, isNotNull);
-      // One PTY, so nothing that needs a second channel — tmux, the AI helper's
+      // One PTY, so nothing that needs a second channel — the AI helper's
       // probe — may be offered.
       expect(session.canExec, isFalse);
     });
@@ -817,9 +771,6 @@ class _ConsoleBackend implements ShellBackend {
 
   @override
   bool get supportsExec => false;
-
-  @override
-  bool get supportsTmux => false;
 
   @override
   Future<ShellSession> openShell({

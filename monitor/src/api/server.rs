@@ -145,7 +145,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
                     .route(web::get().to(crate::api::containers::list))
                     .route(web::post().to(crate::api::containers::act)),
             )
-            .service(web::resource("/tmux").route(web::get().to(crate::api::tmux::list)))
             .service(
                 web::resource("/benchmark")
                     .route(web::get().to(crate::api::benchmark::get))

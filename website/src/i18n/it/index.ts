@@ -50,7 +50,7 @@ const it: Translation = {
     terminal: {
       title: 'Terminale SSH touch',
       description:
-        'Tasti virtuali dedicati per usare vim, tmux e htop comodamente dal telefono. Supporto nativo per jump host e ProxyCommand.',
+        'Tasti virtuali dedicati per usare vim, Zellij e htop comodamente dal telefono. Supporto nativo per jump host e ProxyCommand.',
     },
     files: {
       title: 'File manager SFTP',

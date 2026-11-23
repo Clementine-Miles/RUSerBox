@@ -15,9 +15,6 @@ class FakeShellBackend implements ShellBackend {
   @override
   final bool supportsExec;
 
-  @override
-  bool get supportsTmux => supportsExec;
-
   bool _closed = false;
 
   @override

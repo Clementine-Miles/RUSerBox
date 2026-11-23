@@ -277,19 +277,19 @@ void main() {
   testWidgets('a session is ended and a device forgotten after asking', (tester) async {
     Stores.server.put(_agent('a', 'box-a'));
     _lives['a'] = const MonitorLive(
-      sessions: [MonitorLiveSession(id: 's1', what: 'tmux main', attached: false, remoteIp: '192.0.2.4')],
+      sessions: [MonitorLiveSession(id: 's1', what: 'shell', attached: false, remoteIp: '192.0.2.4')],
       devices: [MonitorLoginDevice(id: 3, label: 'ServerBox on ios (phone)')],
     );
     await pump(tester);
     await section(tester, MonitorSection.live);
-    expect(find.text('tmux main'), findsOneWidget);
+    expect(find.text('shell'), findsOneWidget);
     expect(find.text('ServerBox on ios (phone)'), findsOneWidget);
     expect(find.text(app_locale.l10n.monitorLiveDevicesTip), findsOneWidget);
 
     await tester.tap(find.byTooltip(app_locale.l10n.monitorLiveEnd));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text(app_locale.l10n.monitorLiveEndSessionConfirm('tmux main')), findsOneWidget);
+    expect(find.text(app_locale.l10n.monitorLiveEndSessionConfirm('shell')), findsOneWidget);
     await tester.tap(find.text(libL10n.ok));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));

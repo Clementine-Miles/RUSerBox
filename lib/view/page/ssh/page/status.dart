@@ -75,19 +75,13 @@ extension _ProgramStatus on SSHPageState {
     );
   }
 
-  String _describeAlert(TerminalStatusAlert alert) {
-    final (text, pane) = switch (alert) {
-      RecordAlert(:final headline, :final pane) => (headline.describe(), pane),
-      CommandAlert(:final exitCode, :final pane) => (
-        exitCode == null || exitCode == 0
-            ? l10n.programCommandSucceeded
-            : l10n.programCommandFailed(exitCode),
-        pane,
-      ),
-    };
-    final where = pane == null ? null : tmuxPaneLabel(pane) ?? pane.value;
-    return where == null ? text : '$where · $text';
-  }
+  String _describeAlert(TerminalStatusAlert alert) => switch (alert) {
+    RecordAlert(:final headline) => headline.describe(),
+    CommandAlert(:final exitCode) =>
+      exitCode == null || exitCode == 0
+          ? l10n.programCommandSucceeded
+          : l10n.programCommandFailed(exitCode),
+  };
 
   /// The terminal is being looked at: its notification has said its piece.
   void _programStatusSeen() => ProgramStatusAlerts.cancel(_sessionId);

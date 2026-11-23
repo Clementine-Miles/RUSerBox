@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/data/terminal/terminal_status.dart';
 import 'package:server_box/data/terminal/terminal_status_alerts.dart';
-import 'package:server_box/data/terminal/tmux/tmux_ids.dart';
 import 'package:xterm/core.dart';
 
 ProgramStatusReport report(String payload) =>
@@ -16,16 +15,15 @@ void main() {
     expect(alerts.take(status), isEmpty);
 
     status.shell.apply(report('state=done:id=a'));
-    status.applyPane(TmuxPaneId('%1'), report('state=blocked'));
+    status.shell.apply(report('state=blocked'));
     final taken = alerts.take(status);
     expect(taken.map((a) => a.state), [ProgramState.blocked, ProgramState.done]);
-    expect((taken.first as RecordAlert).pane, TmuxPaneId('%1'));
 
     // Nothing new.
     expect(alerts.take(status), isEmpty);
 
     // The same record saying something else is news.
-    status.applyPane(TmuxPaneId('%1'), report('state=blocked:msg=aGk'));
+    status.shell.apply(report('state=blocked:msg=aGk'));
     expect(alerts.take(status).single.state, ProgramState.blocked);
   });
 

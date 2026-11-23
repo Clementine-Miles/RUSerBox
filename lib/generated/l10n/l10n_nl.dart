@@ -1145,7 +1145,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Kies een snippet en voer het uit in deze terminal.';
 
   @override
-  String get virtKeyHelpTmux => 'Wissel tussen tmux-sessies en -vensters.';
+  String get virtKeyHelpZellij => 'Manage Zellij sessions on the SSH host.';
 
   @override
   String get virtKeyIntroActions => 'Snelkoppelingen';
@@ -1250,56 +1250,50 @@ class AppLocalizationsNl extends AppLocalizations {
   String get sortByJoinTime => 'Op moment van toevoegen';
 
   @override
-  String get tmuxAutoAttach => 'tmux automatisch koppelen';
+  String get zellijInvalidName => 'Enter a valid Zellij session name.';
 
   @override
-  String get tmuxAuto => 'tmux automatisch';
+  String get zellijSessions => 'Zellij sessions';
 
   @override
-  String get tmuxAutoTip =>
-      'tmux automatisch starten of koppelen bij verbinden via SSH';
+  String get zellijDetach => 'Detach';
 
   @override
-  String get tmuxSessionSelector => 'Sessiekiezer';
+  String get zellijTerminate => 'Terminate session';
 
   @override
-  String get tmuxSessionSelectorTip =>
-      'De sessiekiezer tonen bij het verbinden';
-
-  @override
-  String get tmuxDefaultSessionName => 'Standaard sessienaam';
-
-  @override
-  String get tmuxSessionName => 'Sessienaam';
-
-  @override
-  String get tmuxNewSession => 'Nieuwe sessie';
-
-  @override
-  String get tmuxNewWindow => 'Nieuw venster';
-
-  @override
-  String get tmuxNoWindowsFound => 'Geen vensters gevonden';
-
-  @override
-  String tmuxWindowCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count vensters',
-      one: '1 venster',
-    );
-    return '$_temp0';
+  String zellijTerminateConfirm(String name) {
+    return 'Terminate Zellij session “$name” and its running programs?';
   }
 
   @override
-  String get tmuxAttached => 'Gekoppeld';
+  String get zellijAutoAttach => 'Zellij automatisch koppelen';
 
   @override
-  String get tmuxSkip => 'Overslaan';
+  String get zellijAuto => 'Zellij automatisch';
 
   @override
-  String get tmuxNotAvailable => 'tmux is niet beschikbaar';
+  String get zellijAutoTip =>
+      'Zellij automatisch starten of koppelen bij verbinden via SSH';
+
+  @override
+  String get zellijSessionSelector => 'Sessiekiezer';
+
+  @override
+  String get zellijSessionSelectorTip =>
+      'De sessiekiezer tonen bij het verbinden';
+
+  @override
+  String get zellijDefaultSessionName => 'Standaard sessienaam';
+
+  @override
+  String get zellijSessionName => 'Sessienaam';
+
+  @override
+  String get zellijNewSession => 'Nieuwe sessie';
+
+  @override
+  String get zellijNotAvailable => 'Zellij is niet beschikbaar';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -5285,9 +5279,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get programIdle => 'Inactief';
 
   @override
-  String get programThisShell => 'Deze shell';
-
-  @override
   String get programProgress => 'Voortgang';
 
   @override
@@ -6876,7 +6867,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get reconnectEndsShell =>
-      'Er is geen tmux-sessie om opnieuw aan te koppelen, dus opnieuw verbinden beëindigt deze shell en alles wat er nog in draait, en wist de uitvoer van het scherm.';
+      'Er is geen Zellij-sessie om opnieuw aan te koppelen, dus opnieuw verbinden beëindigt deze shell en alles wat er nog in draait, en wist de uitvoer van het scherm.';
 
   @override
   String get handedness => 'Voorkeurshand';

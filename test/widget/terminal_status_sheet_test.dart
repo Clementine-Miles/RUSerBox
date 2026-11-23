@@ -9,7 +9,6 @@ import 'package:server_box/data/model/server/ssh_credential.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
 import 'package:server_box/data/terminal/terminal_status.dart';
-import 'package:server_box/data/terminal/tmux/tmux_ids.dart';
 import 'package:server_box/view/page/ssh/widget/terminal_status_dot.dart';
 import 'package:server_box/view/page/ssh/widget/terminal_status_sheet.dart';
 import 'package:xterm/core.dart';
@@ -22,7 +21,11 @@ void main() {
   setUp(() {
     session = TerminalSession(
       source: ServerSource(
-        Spi(name: 'ssh', id: 'ssh', ssh: const SshCredential(ip: '10.0.0.1')),
+        Spi(
+          name: 'ssh',
+          id: 'ssh',
+          ssh: const SshCredential(ip: '10.0.0.1'),
+        ),
       ),
     );
   });
@@ -54,15 +57,12 @@ void main() {
     expect(find.byTooltip(l10n.programStatus), findsOneWidget);
   });
 
-  testWidgets('the sheet lists the shell and each pane, and clears', (
-    tester,
-  ) async {
+  testWidgets('the sheet lists and clears the shell reports', (tester) async {
     final status = session.status;
     status.shell
       ..apply(ProgramStatusReport.parse(['state=done:app=cargo'])!)
       ..apply(const ShellMark(ShellMarkKind.commandFinished, exitCode: 2));
-    status.applyPane(
-      TmuxPaneId('%3'),
+    status.shell.apply(
       ProgramStatusReport.parse([
         'state=working:id=eu:progress=40:title=${b64('EU')}',
       ])!,
@@ -73,21 +73,15 @@ void main() {
       Builder(
         builder: (context) => IconButton(
           icon: const Icon(Icons.list),
-          onPressed: () => showTerminalStatusSheet(
-            context,
-            status,
-            paneLabel: (pane) => '1:logs',
-          ),
+          onPressed: () => showTerminalStatusSheet(context, status),
         ),
       ),
     );
     await tester.tap(find.byIcon(Icons.list));
     await tester.pumpAndSettle();
 
-    expect(find.text(l10n.programThisShell), findsOneWidget);
     expect(find.text('cargo'), findsOneWidget);
     expect(find.text(l10n.programCommandFailed(2)), findsOneWidget);
-    expect(find.text('1:logs'), findsOneWidget);
     expect(find.text('EU'), findsOneWidget);
     expect(
       find.text(
@@ -103,6 +97,6 @@ void main() {
     await tester.tap(clear);
     await tester.pump();
     expect(find.text('cargo'), findsNothing);
-    expect(status.shell.records, isEmpty);
+    expect(status.shell.records.single.key, 'eu');
   });
 }

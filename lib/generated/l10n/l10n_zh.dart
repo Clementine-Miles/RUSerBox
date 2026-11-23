@@ -1065,7 +1065,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get virtKeyHelpSnippet => '选择一个代码片段并在当前终端执行。';
 
   @override
-  String get virtKeyHelpTmux => '在 tmux 的 session 和 window 之间切换。';
+  String get virtKeyHelpZellij => 'Manage Zellij sessions on the SSH host.';
 
   @override
   String get virtKeyIntroActions => '快捷操作';
@@ -1160,48 +1160,48 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sortByJoinTime => '按加入时间';
 
   @override
-  String get tmuxAutoAttach => 'tmux 自动附加';
+  String get zellijInvalidName => 'Enter a valid Zellij session name.';
 
   @override
-  String get tmuxAuto => '自动使用 tmux';
+  String get zellijSessions => 'Zellij 会话';
 
   @override
-  String get tmuxAutoTip => '通过 SSH 连接时自动启动或附加 tmux';
+  String get zellijDetach => '分离';
 
   @override
-  String get tmuxSessionSelector => '会话选择器';
+  String get zellijTerminate => '终止会话';
 
   @override
-  String get tmuxSessionSelectorTip => '连接时显示会话选择器';
-
-  @override
-  String get tmuxDefaultSessionName => '默认会话名称';
-
-  @override
-  String get tmuxSessionName => '会话名称';
-
-  @override
-  String get tmuxNewSession => '新建会话';
-
-  @override
-  String get tmuxNewWindow => '新建窗口';
-
-  @override
-  String get tmuxNoWindowsFound => '未找到窗口';
-
-  @override
-  String tmuxWindowCount(int count) {
-    return '$count 个窗口';
+  String zellijTerminateConfirm(String name) {
+    return '终止 Zellij 会话“$name”及其正在运行的程序？';
   }
 
   @override
-  String get tmuxAttached => '已附加';
+  String get zellijAutoAttach => 'Zellij 自动附加';
 
   @override
-  String get tmuxSkip => '跳过';
+  String get zellijAuto => '自动使用 Zellij';
 
   @override
-  String get tmuxNotAvailable => 'tmux 不可用';
+  String get zellijAutoTip => '通过 SSH 连接时自动启动或附加 Zellij';
+
+  @override
+  String get zellijSessionSelector => '会话选择器';
+
+  @override
+  String get zellijSessionSelectorTip => '连接时显示会话选择器';
+
+  @override
+  String get zellijDefaultSessionName => '默认会话名称';
+
+  @override
+  String get zellijSessionName => '会话名称';
+
+  @override
+  String get zellijNewSession => '新建会话';
+
+  @override
+  String get zellijNotAvailable => 'Zellij 不可用';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -4906,9 +4906,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get programIdle => '空闲';
 
   @override
-  String get programThisShell => '此 shell';
-
-  @override
   String get programProgress => '进度';
 
   @override
@@ -6428,7 +6425,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reconnectEndsShell =>
-      '未检测到可恢复的 tmux 会话，重新连接将终止当前 Shell 及其中的运行程序，并清空屏幕输出。';
+      '未检测到可恢复的 Zellij 会话，重新连接将终止当前 Shell 及其中的运行程序，并清空屏幕输出。';
 
   @override
   String get handedness => '惯用手';
@@ -7810,9 +7807,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get virtKeyHelpSnippet => '選擇一個程式碼片段並在目前終端機執行。';
 
   @override
-  String get virtKeyHelpTmux => '在 tmux 的 session 和 window 之間切換。';
-
-  @override
   String get virtKeyIntroActions => '快捷操作';
 
   @override
@@ -7905,48 +7899,45 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get sortByJoinTime => '依加入時間';
 
   @override
-  String get tmuxAutoAttach => 'tmux 自動附加';
+  String get zellijSessions => 'Zellij 工作階段';
 
   @override
-  String get tmuxAuto => '自動使用 tmux';
+  String get zellijDetach => '中斷連結';
 
   @override
-  String get tmuxAutoTip => '透過 SSH 連線時自動啟動或附加 tmux';
+  String get zellijTerminate => '終止工作階段';
 
   @override
-  String get tmuxSessionSelector => '工作階段選擇器';
-
-  @override
-  String get tmuxSessionSelectorTip => '連線時顯示工作階段選擇器';
-
-  @override
-  String get tmuxDefaultSessionName => '預設工作階段名稱';
-
-  @override
-  String get tmuxSessionName => '工作階段名稱';
-
-  @override
-  String get tmuxNewSession => '新增工作階段';
-
-  @override
-  String get tmuxNewWindow => '新增視窗';
-
-  @override
-  String get tmuxNoWindowsFound => '找不到視窗';
-
-  @override
-  String tmuxWindowCount(int count) {
-    return '$count 個視窗';
+  String zellijTerminateConfirm(String name) {
+    return '終止 Zellij 工作階段「$name」及其執行中的程式？';
   }
 
   @override
-  String get tmuxAttached => '已附加';
+  String get zellijAutoAttach => 'Zellij 自動附加';
 
   @override
-  String get tmuxSkip => '略過';
+  String get zellijAuto => '自動使用 Zellij';
 
   @override
-  String get tmuxNotAvailable => 'tmux 無法使用';
+  String get zellijAutoTip => '透過 SSH 連線時自動啟動或附加 Zellij';
+
+  @override
+  String get zellijSessionSelector => '工作階段選擇器';
+
+  @override
+  String get zellijSessionSelectorTip => '連線時顯示工作階段選擇器';
+
+  @override
+  String get zellijDefaultSessionName => '預設工作階段名稱';
+
+  @override
+  String get zellijSessionName => '工作階段名稱';
+
+  @override
+  String get zellijNewSession => '新增工作階段';
+
+  @override
+  String get zellijNotAvailable => 'Zellij 無法使用';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -11650,9 +11641,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get programIdle => '閒置';
 
   @override
-  String get programThisShell => '此 shell';
-
-  @override
   String get programProgress => '進度';
 
   @override
@@ -13177,7 +13165,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get reconnectEndsShell =>
-      '沒有可以重新接入的 tmux 工作階段，重新連線會結束目前的 shell 及其中仍在執行的程式，並清除畫面上的輸出。';
+      '沒有可以重新接入的 Zellij 工作階段，重新連線會結束目前的 shell 及其中仍在執行的程式，並清除畫面上的輸出。';
 
   @override
   String get handedness => '慣用手';

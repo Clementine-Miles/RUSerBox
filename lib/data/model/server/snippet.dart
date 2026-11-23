@@ -73,7 +73,7 @@ extension SnippetX on Snippet {
   /// Types this snippet into [terminal]. A placeholder can wait (`${sleep N}`);
   /// after each wait the rest is typed only while [alive] says the shell it
   /// began in is still the one [terminal] writes to — a reconnect or a switch
-  /// to tmux replaces it, and the rest was not written for that one.
+  /// to another shell replaces it, and the rest was not written for that one.
   ///
   /// Throws a [SnippetException], before typing anything, for a placeholder
   /// [spi] cannot answer — a password on a key-authenticated server, say.

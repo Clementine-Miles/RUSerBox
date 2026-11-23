@@ -1,18 +1,6 @@
 part of 'page.dart';
 
 extension _Init on SSHPageState {
-  void _logTmuxInfo(String message) {
-    Loggers.app.info('[TMUX] $message');
-  }
-
-  /// Whether tmux can be driven here. See [ShellBackend.supportsTmux].
-  ///
-  /// Asked before anything tmux is attempted rather than discovered by the
-  /// control session throwing: a decision belongs where it can be read, and
-  /// what used to happen instead was a null client, an exception, and a
-  /// warning in the log that said tmux was unavailable without saying why.
-  bool get _canTmux => _sess.backend?.supportsTmux ?? false;
-
   /// Connects a new source of shells. The provider's grant is a fallback hint;
   /// [TerminalSession.connect] asks the agent directly before opening a PTY.
   ///
@@ -42,10 +30,8 @@ extension _Init on SSHPageState {
     return awaitServerClientOf(ref, id);
   }
 
-  Map<String, String>? get _sshEnvironment => _sess.environment;
-
-  void _bindForegroundSession(ShellSession session) {
-    _sess.bindForeground(session);
+  void _bindForegroundSession(ShellSession session, {String? zellijName}) {
+    _sess.bindForeground(session, zellijSessionName: zellijName);
     TermSessionManager.updateStatus(_sessionId, TermSessionStatus.connected);
   }
 
@@ -55,15 +41,14 @@ extension _Init on SSHPageState {
     // down. Normal session end (shell exit) and user-initiated disconnect
     // leave the transport open, so they still take the path below.
     //
-    // This used to require a tmux session, back when reconnecting only knew
-    // how to re-attach one. It no longer does: a raw shell reconnects to a
-    // fresh shell, which is the ordinary case for a link that dropped while
-    // the app was in someone's pocket.
-    //
-    // Not after Stop All, which may close a client shared with the poller.
     final transportClosed = _backend != null && _backend!.isClosed;
     if (mounted && transportClosed && !_endRequested) {
       unawaited(_onConnectionLossSuspected());
+      return;
+    }
+
+    if (mounted && !_endRequested && _sess.zellijSessionName != null) {
+      unawaited(_returnToShell());
       return;
     }
 
@@ -72,265 +57,6 @@ extension _Init on SSHPageState {
     }
     widget.args.onSessionEnd?.call();
     TermSessionManager.remove(_sessionId);
-  }
-
-  Future<bool> _replaceForegroundWithLaunchPlan(TmuxLaunchPlan plan) async {
-    if (!_canTmux || !plan.shouldLaunchTmux) return false;
-
-    final oldSession = _session;
-    TmuxControlShellSession? session;
-    try {
-      session = await _openTmuxControlSession(plan.command!);
-    } catch (e, st) {
-      Loggers.app.warning(
-        'Failed to replace foreground session with tmux',
-        e,
-        st,
-      );
-      return false;
-    }
-
-    if (session == null) {
-      Loggers.app.warning('Failed to replace foreground session with tmux');
-      return false;
-    }
-    // Something else took the terminal while this was opening — a reconnect,
-    // or the page going away. It is not this client's to replace.
-    if (!mounted || !identical(_session, oldSession)) {
-      _discardTmuxControlSession(session);
-      return false;
-    }
-
-    _sess.unbindForeground();
-    try {
-      oldSession?.close();
-    } catch (e, st) {
-      Loggers.app.warning('Failed to close old foreground session', e, st);
-    }
-
-    _saveTmuxState(
-      sessionName: plan.sessionName!,
-      windowIndex: plan.windowIndex,
-    );
-    _bindForegroundSession(session);
-    _focusTerminal(keyboard: false);
-    return true;
-  }
-
-  /// Returns to a raw shell after the attached tmux session exits cleanly.
-  ///
-  /// Closing the last window of a session destroys that session and this CC
-  /// client. The terminal itself should stay alive so the user can keep working
-  /// and use the tmux key again to attach to another session.
-  Future<void> _fallbackToRawShellAfterTmuxExit() async {
-    if (!mounted) return;
-
-    final oldSession = _session;
-    _clearTmuxState();
-
-    // Unbind before the old channel reports done, or the page would treat
-    // tmux's exit as the terminal ending and close the tab.
-    _sess.unbindForeground();
-    try {
-      oldSession?.close();
-    } catch (e, st) {
-      Loggers.app.warning('Failed to close ended tmux session', e, st);
-    }
-
-    ShellSession? shell;
-    try {
-      shell = await _sess.openShell();
-    } catch (e, st) {
-      Loggers.app.warning(
-        'Failed to fall back to raw shell after tmux exit',
-        e,
-        st,
-      );
-    }
-    if (!mounted) {
-      shell?.close();
-      return;
-    }
-
-    // The user may have attached another tmux session while this raw shell was
-    // opening. The foreground identity is the arbiter: never replace whatever
-    // now owns the terminal with the stale fallback shell. An attach that is
-    // still initializing has not claimed the foreground yet, so a successful
-    // attach will safely replace this temporary raw shell.
-    if (_session != null) {
-      shell?.close();
-      return;
-    }
-    if (shell == null) {
-      _setConnectionStep(TerminalConnectionStep.shellFailed);
-      TermSessionManager.updateStatus(
-        _sessionId,
-        TermSessionStatus.disconnected,
-      );
-      return;
-    }
-
-    _bindForegroundSession(shell);
-    _focusTerminal(keyboard: false);
-  }
-
-  /// Starts the foreground `tmux -CC` client and initializes its first state.
-  ///
-  /// The underlying SSH session must have a PTY: without one tmux exits before
-  /// speaking control mode. `_sess.execute` is the path that allocates one.
-  Future<TmuxControlShellSession?> _openTmuxControlSession(
-    String command,
-  ) async {
-    final sshSession = await _sess.execute(command);
-    if (sshSession == null) return null;
-
-    final client = TmuxControlClient(
-      sshSession,
-      maxScrollbackLines: _terminal.maxLines,
-    );
-    client.onCommandError = (failedCommand, error) {
-      Loggers.app.warning('tmux control command failed: $failedCommand', error);
-    };
-    client.onStateError = (error) {
-      Loggers.app.warning('tmux control state refresh failed', error);
-    };
-    final session = TmuxControlShellSession(client, sshSession);
-    client.onClosed = (cleanExit) {
-      // A dropped transport is reconnect's decision to make. tmux exiting is
-      // not: the session is gone or deliberately detached, so restoration and
-      // the native bar must not keep pointing at that client.
-      //
-      // Only while this client owns the terminal. One that exits during
-      // [initialize] has not been bound yet, and falling back then would close
-      // whatever shell is still in front.
-      if (mounted &&
-          cleanExit &&
-          identical(_tmuxControl, client) &&
-          identical(_session, session)) {
-        unawaited(_fallbackToRawShellAfterTmuxExit());
-      }
-    };
-    _attachTmuxControl(client);
-    try {
-      await client.initialize(captureActivePane: false);
-      // An existing session can already have a larger desktop client attached.
-      // Size this CC client's active window before capture, so 129-column pane
-      // rows are not replayed into a 44-column phone screen.
-      session.resizeTerminal(_terminal.viewWidth, _terminal.viewHeight);
-      await client.refreshState(captureActivePane: true);
-    } catch (_) {
-      _discardTmuxControlSession(session);
-      rethrow;
-    }
-    return session;
-  }
-
-  /// Closes a tmux client that will not be the foreground, and lets go of it
-  /// only if the page still points at it — a newer client may have replaced it.
-  void _discardTmuxControlSession(TmuxControlShellSession session) {
-    if (identical(_tmuxControl, session.client)) _detachTmuxControl();
-    session.close();
-  }
-
-  void _attachTmuxControl(TmuxControlClient client) {
-    _tmuxPageController.attach(client);
-  }
-
-  void _detachTmuxControl() {
-    _tmuxPageController.detach();
-  }
-
-  Future<void> _selectTmuxWindow(TmuxWindowId windowId) async {
-    final control = _tmuxControl;
-    if (control == null) return;
-    try {
-      await control.selectWindow(windowId);
-    } catch (e, st) {
-      Loggers.app.warning('Failed to select tmux window', e, st);
-      if (mounted) Toast.error(libL10n.fail);
-    }
-  }
-
-  Future<void> _selectTmuxPane(TmuxPaneId paneId) async {
-    final control = _tmuxControl;
-    if (control == null) return;
-    try {
-      await control.selectPane(paneId);
-    } catch (e, st) {
-      Loggers.app.warning('Failed to select tmux pane', e, st);
-      if (mounted) Toast.error(libL10n.fail);
-    }
-  }
-
-  Future<void> _closeTmuxPane(TmuxPaneId paneId) async {
-    final control = _tmuxControl;
-    if (control == null) return;
-    try {
-      await control.closePane(paneId);
-    } catch (e, st) {
-      Loggers.app.warning('Failed to close tmux pane', e, st);
-      if (mounted) Toast.error(libL10n.fail);
-    }
-  }
-
-  Future<void> _createTmuxWindow() async {
-    final control = _tmuxControl;
-    if (control == null) return;
-    try {
-      await control.newWindow();
-    } catch (e, st) {
-      Loggers.app.warning('Failed to create tmux window', e, st);
-      if (mounted) Toast.error(libL10n.fail);
-    }
-  }
-
-  Future<void> _closeTmuxWindow(TmuxWindowId windowId) async {
-    final control = _tmuxControl;
-    if (control == null) return;
-    try {
-      await control.closeWindow(windowId);
-    } catch (e, st) {
-      Loggers.app.warning('Failed to close tmux window', e, st);
-      if (mounted) Toast.error(libL10n.fail);
-    }
-  }
-
-  Future<void> _toggleTmuxZoom() async {
-    final control = _tmuxControl;
-    if (control == null) return;
-    try {
-      await control.toggleZoom();
-    } catch (e, st) {
-      Loggers.app.warning('Failed to toggle tmux zoom', e, st);
-      if (mounted) Toast.error(libL10n.fail);
-    }
-  }
-
-  Future<ShellSession?> _openForegroundSession() async {
-    final plan = await _resolveForegroundLaunchPlan();
-
-    if (plan.shouldLaunchTmux) {
-      ShellSession? session;
-      try {
-        session = await _openTmuxControlSession(plan.command!);
-      } catch (e, st) {
-        Loggers.app.warning('Failed to open foreground tmux session', e, st);
-        _clearTmuxState();
-        rethrow;
-      }
-      if (session != null) {
-        _saveTmuxState(
-          sessionName: plan.sessionName!,
-          windowIndex: plan.windowIndex,
-        );
-      } else {
-        _clearTmuxState();
-      }
-      return session;
-    }
-
-    _clearTmuxState();
-    return _sess.openShell();
   }
 
   void _initStoredCfg() {
@@ -414,7 +140,7 @@ extension _Init on SSHPageState {
           }
 
           _setConnectionStep(TerminalConnectionStep.openingShell);
-          final session = await _openForegroundSession();
+          final (session, zellijName) = await _openForegroundSession();
           if (!mounted) {
             session?.close();
             _sess.close();
@@ -434,7 +160,7 @@ extension _Init on SSHPageState {
             return;
           }
 
-          _bindForegroundSession(session);
+          _bindForegroundSession(session, zellijName: zellijName);
           _setConnectionStep(TerminalConnectionStep.ready);
           break;
         } catch (error, stackTrace) {
@@ -471,7 +197,7 @@ extension _Init on SSHPageState {
 
     // Not awaited: a snippet can `${sleep N}`, and the page must not wait for
     // it before taking keyboard input.
-    if (_tmuxCurrentSession == null) unawaited(_runStartupInput());
+    if (_sess.zellijSessionName == null) unawaited(_runStartupInput());
 
     _focusTerminal(keyboard: false);
   }
@@ -481,7 +207,7 @@ extension _Init on SSHPageState {
   /// concurrently would interleave their input.
   ///
   /// All of it is for the shell that was in front when startup began. A
-  /// snippet can wait (`${sleep N}`) through a reconnect or a switch to tmux,
+  /// snippet can wait (`${sleep N}`) through a reconnect or a switch to Zellij,
   /// and what is left must not be typed into the shell that replaced it.
   Future<void> _runStartupInput() async {
     final shell = _session;
@@ -489,7 +215,7 @@ extension _Init on SSHPageState {
         mounted &&
         shell != null &&
         identical(_session, shell) &&
-        _tmuxCurrentSession == null;
+        _sess.zellijSessionName == null;
 
     // Snippets name the server they run on, and their scripts are written
     // against one. A terminal on this device has neither.
@@ -639,13 +365,7 @@ extension _Init on SSHPageState {
     _writeLn('\n\n${libL10n.disconnected}\r\n');
     TermSessionManager.updateStatus(_sessionId, TermSessionStatus.disconnected);
 
-    // Always, not only when there is a tmux session to re-attach. Reconnecting
-    // was gated on that because tmux is what makes a shell's *state* survive,
-    // but a link that dropped while the app was in someone's pocket is the
-    // ordinary case and it has no tmux — and being asked "go back?" is not an
-    // answer to it. A fresh shell on the same server is; the reconnect path
-    // already opened one as its own fallback for a tmux session that had gone.
-    final restored = await _tryReconnect(tmuxSession: _tmuxCurrentSession);
+    final restored = await _tryReconnect(zellijName: _sess.zellijSessionName);
     if (!mounted) return;
     if (restored) {
       _disconnectDialogOpen = false;
@@ -666,7 +386,7 @@ extension _Init on SSHPageState {
   /// pressing reconnect on a slow server must not offer to throw the terminal
   /// away. So this says what happened and stops there.
   ///
-  /// Re-attaching tmux keeps what runs in it. Without a session to re-attach,
+  /// Re-attaching Zellij keeps what runs in it. Without a session to re-attach,
   /// the reconnect opens a new shell and the one on screen — perhaps fine, only
   /// slow — ends with whatever it was running and what it printed, so that is
   /// asked first.
@@ -686,8 +406,8 @@ extension _Init on SSHPageState {
     }
     final shell = _session;
     final backend = _backend;
-    final tmux = _tmuxCurrentSession;
-    if (tmux == null || tmux.isEmpty) {
+    final zellij = _sess.zellijSessionName;
+    if (zellij == null) {
       final confirmed = await context.showSheet<bool>(
         title: l10n.reconnect,
         child: Text(l10n.reconnectEndsShell),
@@ -713,7 +433,7 @@ extension _Init on SSHPageState {
     final answers = await _answers(backend);
     if (!mounted) return;
     final restored = await _tryReconnect(
-      tmuxSession: _tmuxCurrentSession,
+      zellijName: _sess.zellijSessionName,
       keepLink: answers,
     );
     if (!mounted) return;
@@ -745,16 +465,19 @@ extension _Init on SSHPageState {
     }
   }
 
-  /// Re-establish SSH, re-attaching [tmuxSession] when there is one, and
+  /// Re-establish SSH, re-attaching [zellijName] when there is one, and
   /// showing a cancellable progress dialog while it runs. [keepLink] lets go
   /// of a borrowed link that still answers instead of closing it.
   ///
   /// Returns `true` when the terminal was restored.
-  Future<bool> _tryReconnect({String? tmuxSession, bool keepLink = false}) async {
+  Future<bool> _tryReconnect({
+    String? zellijName,
+    bool keepLink = false,
+  }) async {
     _reconnectCancelled = false;
     if (mounted) _showReconnectingDialog();
     try {
-      return await _reconnect(tmuxSession: tmuxSession, keepLink: keepLink);
+      return await _reconnect(zellijName: zellijName, keepLink: keepLink);
     } catch (e, st) {
       Loggers.app.warning('SSH reconnect threw', e, st);
       await _failReconnect();
@@ -865,14 +588,14 @@ extension _Init on SSHPageState {
     _setupDiscontinuityTimer();
   }
 
-  /// Reconnect SSH after a connection loss, re-attaching [tmuxSession] when
+  /// Reconnect SSH after a connection loss, re-attaching [zellijName] when
   /// there is one to re-attach.
   ///
-  /// Returns `true` when a usable terminal was restored (either the tmux
+  /// Returns `true` when a usable terminal was restored (either the Zellij
   /// session was re-attached or, as a fallback, a raw shell was opened). Returns
   /// `false` only when the SSH transport itself could not be re-established, in
   /// which case the caller falls back to the disconnect prompt.
-  Future<bool> _reconnect({String? tmuxSession, bool keepLink = false}) async {
+  Future<bool> _reconnect({String? zellijName, bool keepLink = false}) async {
     // Tear down the stale SSH session/client first — only the shell, when the
     // link is borrowed and still answers.
     _sess.dropBackend(alive: keepLink);
@@ -918,28 +641,18 @@ extension _Init on SSHPageState {
       return false;
     }
 
-    if (tmuxSession != null && tmuxSession.isNotEmpty) {
-      if (await _reattachTmux(sessionName: tmuxSession)) {
-        if (!mounted || _reconnectCancelled) {
-          await _failReconnect();
-          return false;
-        }
+    if (zellijName != null) {
+      final attached = await _reattachZellij(zellijName);
+      if (!mounted || _reconnectCancelled) {
+        await _failReconnect(unbound: attached);
+        return false;
+      }
+      if (attached != null) {
+        _bindForegroundSession(attached, zellijName: zellijName);
         _setupDiscontinuityTimer();
         _focusTerminal(keyboard: false);
         return true;
       }
-      if (!mounted || _reconnectCancelled) {
-        await _failReconnect();
-        return false;
-      }
-
-      // tmux wasn't restorable (unavailable or session gone) — fall back to a
-      // raw shell so the terminal remains usable instead of being left blank.
-      _logTmuxInfo(
-        'Previous tmux session "$tmuxSession" no longer available, '
-        'falling back to a raw shell',
-      );
-      _clearTmuxState();
     }
 
     final shell = await _sess.openShell();
@@ -958,88 +671,6 @@ extension _Init on SSHPageState {
     return true;
   }
 
-  /// Re-attach the previous tmux [sessionName] (+ window) after reconnecting.
-  ///
-  /// Verifies via a control channel that tmux is available and that the session
-  /// still exists, then launches the attach command as the foreground session.
-  Future<bool> _reattachTmux({required String sessionName}) async {
-    final control = await _createTmuxDiscoverySession();
-    try {
-      bool available;
-      try {
-        available = await control.isAvailable;
-      } catch (e, st) {
-        Loggers.app.warning(
-          'tmux availability check on reconnect failed',
-          e,
-          st,
-        );
-        return false;
-      }
-      if (!available) return false;
-
-      final tmuxBin = control.scanner.tmuxBin ?? 'tmux';
-      final List<TmuxSessionInfo>? sessions;
-      try {
-        sessions = await control.sessions;
-      } catch (e, st) {
-        Loggers.app.warning('tmux list sessions on reconnect failed', e, st);
-        return false;
-      }
-      if (sessions == null) {
-        Loggers.app.warning('tmux list sessions on reconnect failed');
-        return false;
-      }
-      TmuxSessionInfo? restoredSession;
-      for (final session in sessions) {
-        if (session.name == sessionName) {
-          restoredSession = session;
-          break;
-        }
-      }
-      if (restoredSession == null) return false;
-
-      final restoredWindowIndex = _tmuxCurrentWindow;
-      final windows = restoredWindowIndex == null
-          ? const <TmuxWindowInfo>[]
-          : await control.tryListWindows(restoredSession.id.value) ??
-                const <TmuxWindowInfo>[];
-      final windowIndex = validateRestoredWindowIndex(
-        restoredWindowIndex,
-        windows,
-      );
-      final command = windowIndex != null
-          ? TmuxCommandBuilder.attachSessionWindow(
-              restoredSession.id.value,
-              windowIndex,
-              tmuxBin: tmuxBin,
-            )
-          : TmuxCommandBuilder.attachSession(
-              restoredSession.id.value,
-              tmuxBin: tmuxBin,
-            );
-
-      final session = await _openTmuxControlSession(command);
-      if (session == null) return false;
-
-      _saveTmuxState(sessionName: sessionName, windowIndex: windowIndex);
-      _bindForegroundSession(session);
-      _logTmuxInfo(
-        'Reconnected and re-attached tmux session "$sessionName"'
-        '${windowIndex != null ? ' window $windowIndex' : ''}',
-      );
-      return true;
-    } finally {
-      await control.dispose();
-    }
-  }
-
-  /// Clear the in-memory + restorable tmux state (used when a session can no
-  /// longer be restored, e.g. after it was killed server-side).
-  void _clearTmuxState() {
-    _tmuxPageController.clear();
-  }
-
   /// After a reconnect that did not restore the terminal — see
   /// [TerminalSession.dropBackend], asked whether the link still answers.
   ///
@@ -1053,7 +684,9 @@ extension _Init on SSHPageState {
   Future<void> _failReconnect({ShellSession? unbound}) async {
     final alive =
         mounted &&
-        (_reconnectCancelled ? _backend?.isClosed == false : await _answers(_backend));
+        (_reconnectCancelled
+            ? _backend?.isClosed == false
+            : await _answers(_backend));
     if (mounted) {
       _sess.dropBackend(alive: alive, unbound: unbound);
       return;
@@ -1067,307 +700,206 @@ extension _Init on SSHPageState {
 
   void _writeLn(String p0) => _sess.writeLn(p0);
 
-  TmuxRestoreState get _restoreTmuxState => TmuxRestoreState(
-    sessionName: _tmuxPageController.restorableSessionName,
-    windowIndex: _tmuxPageController.restorableWindowIndex,
-  );
-
-  void _saveTmuxState({required String sessionName, int? windowIndex}) {
-    _tmuxPageController.saveState(
-      sessionName: sessionName,
-      windowIndex: windowIndex,
-    );
-  }
-
-  /// Only where [_canTmux] says so — every caller checks, and the null
-  /// assertions below are what that check is protecting.
-  Future<TmuxSession> _createTmuxDiscoverySession() async {
+  ZellijSessions? get _zellij {
     final client = _client;
-    return TmuxSession(
-      PersistentShell(
-        client,
-        sessionFactory: () async {
-          // An SSH exec channel carries the protocol as is; anything else is a
-          // pseudo-terminal, which has to be quietened first.
-          if (client != null) {
-            final sh = await client.execute('sh', environment: _sshEnvironment);
-            return SshPersistentShellSession(sh);
-          }
-          return PtyPersistentShellSession.open(
-            (command) async => (await _sess.execute(command))!,
-          );
-        },
-      ),
-    );
+    if (client == null || widget.args.source is! ServerSource) return null;
+    return ZellijSessions(SshExec(client), environment: _sess.environment);
   }
 
-  Future<TmuxLaunchPlan> _resolveForegroundLaunchPlan() async {
-    if (!Stores.setting.tmuxAuto.fetch() || !_canTmux) {
-      return const TmuxLaunchPlan.none();
-    }
-    // A page opened to run something — a container's shell, a VM's serial
-    // console, a command from the file browser — runs it in a plain shell.
-    // [_initTerminal] types [SshPageArgs.initCmd] only when no tmux session
-    // was attached, so with tmux on it was silently never run.
-    if (widget.args.initCmd != null || widget.args.initSnippet != null) {
-      return const TmuxLaunchPlan.none();
-    }
+  String get _defaultZellijName {
+    final name = Stores.setting.zellijSessionName.fetch().trim();
+    return ZellijSessions.validName(name) ? name : 'server_box';
+  }
 
-    final TmuxSession tmuxSession;
-    try {
-      tmuxSession = await _createTmuxDiscoverySession().timeout(
-        const Duration(seconds: 5),
-      );
-    } on TimeoutException catch (e, st) {
-      Loggers.app.warning('tmux control session creation timed out', e, st);
-      return const TmuxLaunchPlan.none();
-    } catch (e, st) {
-      Loggers.app.warning('tmux control session creation failed', e, st);
-      return const TmuxLaunchPlan.none();
-    }
-
-    try {
-      bool available;
+  Future<(ShellSession?, String?)> _openForegroundSession() async {
+    final zellij = _zellij;
+    if (zellij != null &&
+        Stores.setting.zellijAuto.fetch() &&
+        widget.args.initCmd == null &&
+        widget.args.initSnippet == null) {
       try {
-        available = await tmuxSession.isAvailable;
-      } catch (e, st) {
-        Loggers.app.warning('tmux availability check failed', e, st);
-        return const TmuxLaunchPlan.none();
+        final bin = await zellij.find();
+        if (!mounted) return (null, null);
+        if (bin != null) {
+          final sessions = await zellij.list(bin);
+          if (!mounted) return (null, null);
+          final defaultName = _defaultZellijName;
+          final ZellijChoice? choice;
+          if (Stores.setting.zellijShowSelector.fetch()) {
+            choice = await showZellijSessionPickerSheet(
+              context,
+              sessions: sessions,
+              defaultSessionName: defaultName,
+              allowTerminate: false,
+            );
+          } else if (sessions.isEmpty) {
+            choice = (action: ZellijAction.create, name: defaultName);
+          } else {
+            final name = sessions.contains(defaultName)
+                ? defaultName
+                : sessions.first;
+            choice = (action: ZellijAction.attach, name: name);
+          }
+          if (!mounted) return (null, null);
+          if (choice != null) {
+            final shell = await _openZellij(zellij, bin, choice);
+            if (shell != null) return (shell, choice.name);
+          }
+        }
+      } catch (error, stack) {
+        Loggers.app.warning('Could not open Zellij on connect', error, stack);
       }
-
-      if (!available) {
-        return const TmuxLaunchPlan.none();
-      }
-      final tmuxBin = tmuxSession.scanner.tmuxBin ?? 'tmux';
-      final sessions = await _loadTmuxSessions(tmuxSession);
-      // A listing that failed is not "no sessions": the shell opens plainly
-      // rather than a picker that reads as an empty server.
-      if (sessions == null) {
-        Toast.error('tmux: ${libL10n.fail}');
-        return const TmuxLaunchPlan.none();
-      }
-
-      final restoredPlan = await _buildRestoredForegroundLaunchPlan(
-        tmuxSession,
-        sessions,
-        tmuxBin: tmuxBin,
-      );
-      if (restoredPlan.shouldLaunchTmux) return restoredPlan;
-
-      final plan = await _buildInitialForegroundLaunchPlan(
-        sessions: sessions,
-        tmuxBin: tmuxBin,
-      );
-      return plan;
-    } finally {
-      await tmuxSession.dispose();
     }
+    return (mounted ? await _sess.openShell() : null, null);
   }
 
-  /// Null when the listing failed.
-  Future<List<TmuxSessionInfo>?> _loadTmuxSessions(
-    TmuxSession tmuxSession,
+  Future<ShellSession?> _openZellij(
+    ZellijSessions zellij,
+    String bin,
+    ZellijChoice choice,
   ) async {
+    final backend = _backend;
+    final create = choice.action == ZellijAction.create;
+    // Zellij accepts unique prefixes for attach. Check the full name again
+    // when acting on a picker result, which may have been open for a while.
+    if (!create && !(await zellij.list(bin)).contains(choice.name)) return null;
+    if (!mounted || _endRequested || !identical(_backend, backend)) return null;
+    final command = zellij.attachCommand(bin, choice.name, create: create);
+    return command == null ? null : _sess.execute(command);
+  }
+
+  Future<ShellSession?> _reattachZellij(String name) async {
+    final zellij = _zellij;
+    if (zellij == null) return null;
     try {
-      if (await tmuxSession.sessions case final sessions?) return sessions;
-      Loggers.app.warning('tmux list sessions failed');
-    } catch (e, st) {
-      Loggers.app.warning('tmux list sessions failed', e, st);
+      final bin = await zellij.find();
+      if (bin == null) return null;
+      return await _openZellij(zellij, bin, (
+        action: ZellijAction.attach,
+        name: name,
+      ));
+    } catch (error, stack) {
+      Loggers.app.warning('Could not reattach Zellij', error, stack);
+      return null;
     }
-    return null;
   }
 
-  Future<TmuxLaunchPlan> _buildRestoredForegroundLaunchPlan(
-    TmuxSession tmuxSession,
-    List<TmuxSessionInfo> sessions, {
-    required String tmuxBin,
-  }) async {
-    final restoredState = _restoreTmuxState;
-    if (!restoredState.hasSession) return const TmuxLaunchPlan.none();
-
-    TmuxSessionInfo? restoredSession;
-    for (final session in sessions) {
-      if (session.name == restoredState.sessionName) {
-        restoredSession = session;
-        break;
-      }
-    }
-    if (restoredSession == null) return const TmuxLaunchPlan.none();
-
-    final windows = restoredState.windowIndex == null
-        ? const <TmuxWindowInfo>[]
-        : await tmuxSession.tryListWindows(restoredSession.id.value) ??
-              const <TmuxWindowInfo>[];
-
-    final restoredPlan = buildRestoredTmuxLaunchPlan(
-      restoredState,
-      sessions,
-      windows: windows,
-      tmuxBin: tmuxBin,
-    );
-    if (restoredPlan.shouldLaunchTmux) {
-      _logTmuxInfo(
-        'Restoring tmux session "${restoredState.sessionName}"'
-        '${restoredPlan.windowIndex != null ? ' window ${restoredPlan.windowIndex}' : ''}',
-      );
-      return restoredPlan;
-    }
-
-    Loggers.app.info(
-      'Restored tmux session "${restoredState.sessionName}" not found, falling back to picker',
-    );
-    return const TmuxLaunchPlan.none();
-  }
-
-  Future<TmuxLaunchPlan> _buildInitialForegroundLaunchPlan({
-    required List<TmuxSessionInfo> sessions,
-    required String tmuxBin,
-  }) async {
-    final showSelector = Stores.setting.tmuxShowSelector.fetch();
-    final defaultName = Stores.setting.tmuxSessionName.fetch();
-    final sessionName = defaultName.isEmpty ? 'server_box' : defaultName;
-
-    if (!showSelector) {
-      return buildAutoTmuxLaunchPlan(
-        sessions,
-        defaultSessionName: sessionName,
-        tmuxBin: tmuxBin,
-      );
-    }
-    if (!mounted) return const TmuxLaunchPlan.none();
-
-    final picked = await showTmuxSessionPickerSheet(
-      context,
-      sessions: [
-        for (final session in sessions)
-          TmuxPickerSession.fromDiscovery(session),
-      ],
-      defaultSessionName: sessionName,
-      showSkip: true,
-    );
-    final choice = switch (picked) {
-      TmuxPickExisting(:final sessionId, :final sessionName) =>
-        TmuxAttachExisting(sessionName: sessionName, sessionId: sessionId),
-      TmuxPickNew(:final sessionName) => TmuxAttachNew(
-        sessionName: sessionName,
-      ),
-      TmuxPickSkip() || TmuxPickDetach() || null => null,
-    };
-
-    if (choice == null) {
-      return const TmuxLaunchPlan.none();
-    }
-
-    return buildChosenTmuxLaunchPlan(choice, tmuxBin: tmuxBin);
-  }
-
-  Future<void> _showTmuxControlSessionSwitcher(
-    TmuxControlClient control,
-  ) async {
+  Future<void> _returnToShell() async {
+    final old = _session;
+    final backend = _backend;
+    ShellSession? shell;
     try {
-      await control.refreshState();
-    } catch (e, st) {
-      Loggers.app.warning('Failed to refresh tmux control state', e, st);
-      if (mounted) Toast.show(context.l10n.tmuxNotAvailable);
+      shell = await _sess.openShell();
+    } catch (error, stack) {
+      Loggers.app.warning('Could not return to the SSH shell', error, stack);
+    }
+    if (!mounted ||
+        _endRequested ||
+        !identical(_backend, backend) ||
+        !identical(_session, old)) {
+      shell?.close();
       return;
     }
-    if (!mounted) return;
-
-    final snapshot = control.snapshot;
-    final defaultName = Stores.setting.tmuxSessionName.fetch();
-    final picked = await showTmuxSessionPickerSheet(
-      context,
-      sessions: [
-        for (final session
-            in snapshot?.sessions ?? const <TmuxControlSessionSummary>[])
-          TmuxPickerSession.fromControl(session),
-      ],
-      defaultSessionName: defaultName.isEmpty ? 'server_box' : defaultName,
-      selectedSessionId: snapshot?.session.id,
-      showDetach: true,
-    );
-    if (picked == null || !mounted) return;
-
-    try {
-      switch (picked) {
-        case TmuxPickExisting(:final sessionId):
-          await control.switchSession(sessionId);
-        case TmuxPickNew(:final sessionName):
-          await control.createSession(sessionName);
-        case TmuxPickDetach():
-          await control.detach();
-          return;
-        case TmuxPickSkip():
-          return;
-      }
-      _focusTerminal(keyboard: false);
-    } catch (e, st) {
-      Loggers.app.warning('Failed to switch tmux session', e, st);
-      if (mounted) Toast.error(libL10n.fail);
+    if (shell != null) {
+      _replaceForeground(shell);
+    } else if (old == null) {
+      _setConnectionStep(TerminalConnectionStep.shellFailed);
+      TermSessionManager.updateStatus(
+        _sessionId,
+        TermSessionStatus.disconnected,
+      );
+    } else {
+      Toast.error(libL10n.fail);
     }
   }
 
-  Future<void> _showTmuxSwitcher() async {
-    // The first open may be attaching tmux itself; see [_switchingTmux].
-    if (!_canTmux || !mounted || _openingTerminal || _switchingTmux) return;
-    _switchingTmux = true;
+  void _replaceForeground(ShellSession shell, {String? zellijName}) {
+    final old = _session;
+    _sess.unbindForeground();
     try {
-      await _runTmuxSwitcher();
-    } finally {
-      _switchingTmux = false;
+      // Closing the SSH PTY disconnects only this Zellij client. Its forced
+      // close behavior was set when launching the client.
+      old?.close();
+    } catch (error, stack) {
+      Loggers.app.warning('Could not close the previous shell', error, stack);
     }
+    _bindForegroundSession(shell, zellijName: zellijName);
+    _followBottom();
+    _focusTerminal(keyboard: false);
   }
 
-  Future<void> _runTmuxSwitcher() async {
-    final control = _tmuxControl;
-    if (control != null) {
-      await _showTmuxControlSessionSwitcher(control);
+  Future<void> _showZellijSwitcher() async {
+    final zellij = _zellij;
+    final old = _session;
+    final backend = _backend;
+    if (zellij == null || old == null || _openingTerminal || _switchingZellij) {
       return;
     }
-
-    final tmuxSession = await _createTmuxDiscoverySession();
+    bool current() =>
+        mounted &&
+        !_endRequested &&
+        identical(_backend, backend) &&
+        identical(_session, old);
+    _switchingZellij = true;
     try {
-      final available = await tmuxSession.isAvailable;
-      if (!available || !mounted) {
-        if (mounted) Toast.show(context.l10n.tmuxNotAvailable);
+      final bin = await zellij.find();
+      if (!current()) return;
+      if (bin == null) {
+        Toast.show(l10n.zellijNotAvailable);
         return;
       }
-      final tmuxBin = tmuxSession.scanner.tmuxBin ?? 'tmux';
-
-      final sessions = await tmuxSession.sessions;
-      if (!mounted) return;
-      if (sessions == null) {
-        Toast.error(libL10n.fail);
-        return;
-      }
-
-      final defaultName = Stores.setting.tmuxSessionName.fetch();
-      final sessionName = defaultName.isEmpty ? 'server_box' : defaultName;
-
-      final picked = await showTmuxSessionPickerSheet(
+      final sessions = await zellij.list(bin);
+      if (!current()) return;
+      final selected = _sess.zellijSessionName;
+      final choice = await showZellijSessionPickerSheet(
         context,
-        sessions: [
-          for (final session in sessions)
-            TmuxPickerSession.fromDiscovery(session),
-        ],
-        defaultSessionName: sessionName,
-        showSkip: true,
+        sessions: sessions,
+        defaultSessionName: _defaultZellijName,
+        currentSessionName: selected,
       );
-      final choice = switch (picked) {
-        TmuxPickExisting(:final sessionId, :final sessionName) =>
-          TmuxAttachExisting(sessionName: sessionName, sessionId: sessionId),
-        TmuxPickNew(:final sessionName) => TmuxAttachNew(
-          sessionName: sessionName,
-        ),
-        TmuxPickSkip() || TmuxPickDetach() || null => null,
-      };
-
-      if (choice == null) return;
-
-      final plan = buildChosenTmuxLaunchPlan(choice, tmuxBin: tmuxBin);
-      await _replaceForegroundWithLaunchPlan(plan);
+      if (choice == null || !current()) return;
+      switch (choice.action) {
+        case ZellijAction.attach when choice.name == selected:
+          return;
+        case ZellijAction.attach:
+        case ZellijAction.create:
+          final shell = await _openZellij(zellij, bin, choice);
+          if (!current()) {
+            shell?.close();
+          } else if (shell != null) {
+            _replaceForeground(shell, zellijName: choice.name);
+          } else {
+            Toast.error(libL10n.fail);
+          }
+        case ZellijAction.detach:
+          await _returnToShell();
+        case ZellijAction.terminate:
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (dialogContext) => AlertDialog(
+              title: Text(l10n.zellijTerminate),
+              content: Text(l10n.zellijTerminateConfirm(choice.name)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: Text(libL10n.cancel),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                  child: Text(l10n.zellijTerminate),
+                ),
+              ],
+            ),
+          );
+          if (confirm == true && current()) {
+            await zellij.terminate(bin, choice.name);
+          }
+      }
+    } catch (error, stack) {
+      Loggers.app.warning('Could not manage Zellij sessions', error, stack);
+      if (mounted) Toast.error(libL10n.fail);
     } finally {
-      await tmuxSession.dispose();
+      _switchingZellij = false;
     }
   }
 }

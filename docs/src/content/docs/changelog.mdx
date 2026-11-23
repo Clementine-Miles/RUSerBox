@@ -41,7 +41,7 @@ description: What changed in each released version
   split panes in Terminal and Files, and customizable wallpapers and themes.
 - **Expanded server tools in the Monitor panel:** processes, services, scheduled
   tasks, containers (images, logs, container shell, and scheduled volume and
-  folder backups), system users and groups, snippets, firewall, benchmark, tmux,
+  folder backups), system users and groups, snippets, firewall, benchmark,
   iperf, file editor, remote desktop (VNC and RDP), virtualization and BMC
   (Redfish).
 - **App Store for self-hosted web apps:** deploy and update over 40 Docker
@@ -93,7 +93,6 @@ description: What changed in each released version
 - **Windows installer (`.exe`):** per-user installer that requires no
   administrator rights and bundles the Visual C++ runtime, alongside WinGet
   support. The portable `.zip` archive remains available.
-- **tmux:** zoom and unzoom panes, keeping zoom active when switching panes.
 - **Redesigned full-screen server view** across all platforms, showing a single
   server or all servers with burn-in protection.
 
@@ -120,9 +119,6 @@ description: What changed in each released version
 - Database: fixed a migration failure when opening databases from older releases
   (prior to schema v31), and added retries for transient I/O errors when opening
   the database on Windows.
-- tmux: fixed pane and window target resolution, cross-window switching, clean
-  detaching, live screen tracking on pane switches, and output replay after
-  reconnecting.
 - Terminal: typing quickly no longer duplicates characters; opening a session
   from the picker switches to its tab; replacing the background image takes
   effect immediately; and the Files button resolves the shell's working
@@ -390,7 +386,7 @@ description: What changed in each released version
   from Android's file picker.
 - **More monitoring data**, including GPU, disk, network, battery, sensor and
   SMART readings, with up to 30 days of agent history.
-- **App-drawn tmux controls, reduced motion, improved terminal reconnection**
+- **Reduced motion, improved terminal reconnection**
   and support for older SSH servers are also available.
 
 ### Changed
@@ -650,7 +646,6 @@ explains the situation and lets you export or wipe.)
 ### Fixed
 
 - Servers without a home directory are handled.
-- tmux rendering is correct for UTF-8, and its UI is localized.
 - The Windows IME candidate window's text reaches the terminal.
 - `systemctl` is used to list units, so units that `systemctl list-units`
   alone would miss are shown.
@@ -693,13 +688,8 @@ expected and not a sign of an attack.
 
 ### Added
 
-- **tmux in the terminal.** Auto-attach on connect, a session and window
-  picker, and a default session name — all off by default under **Settings →
-  Terminal → tmux auto-attach**. The terminal's virtual key strip gained a
-  tmux key, and it says so when tmux is not installed on the server.
 - **Auto-reconnect.** A dropped connection reconnects with a cancellable
-  progress dialog and re-attaches tmux. A shell without tmux also reconnects,
-  to a fresh shell, which means its state is lost.
+  progress dialog. A shell is opened again once the link recovers.
 - **Built-in terminal or system SSH, on every desktop platform.** The switch
   is at **Settings → Terminal → General**: built-in uses the app's own
   terminal, system SSH launches the system `ssh` command in an external

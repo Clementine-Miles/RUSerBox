@@ -327,7 +327,6 @@ ${SnippetX.serverKeys.map((e) => '`$e`').join(', ')}\n
 `\${ctrl+?}`, `\${alt+?}`, `\${sleep N}`, `\${enter N}`\n
 ${libL10n.example}: 
 - `\${ctrl+c}` (Control + C)
-- `\${ctrl+b}d` (Tmux Detach)
 ''',
           styleSheet: MarkdownStyleSheet(
             codeblockDecoration: const BoxDecoration(color: Colors.transparent),

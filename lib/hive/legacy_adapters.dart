@@ -101,7 +101,7 @@ class LegacyVirtKeyAdapter extends TypeAdapter<LegacyVirtKeyV1> {
     'f12',
     'shift',
     'sudo',
-    'tmux',
+    'zellij',
   ];
 
   @override

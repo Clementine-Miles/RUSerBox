@@ -335,7 +335,7 @@ class MonitorLiveSession {
 
   final String id;
 
-  /// `shell`, `container <id>`, `tmux <name>`, …
+  /// `shell`, `container <id>`, …
   final String what;
   final bool attached;
 

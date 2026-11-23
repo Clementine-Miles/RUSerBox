@@ -50,7 +50,7 @@ const kr: Translation = {
     terminal: {
       title: 'SSH 터미널',
       description:
-        '모바일 가상 키로 vim, tmux, htop을 쾌적하게 조작하세요. 점프 호스트와 ProxyCommand를 기본 지원합니다.',
+        '모바일 가상 키로 vim, Zellij, htop을 쾌적하게 조작하세요. 점프 호스트와 ProxyCommand를 기본 지원합니다.',
     },
     files: {
       title: 'SFTP 파일 관리',

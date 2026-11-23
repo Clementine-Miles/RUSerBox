@@ -152,8 +152,7 @@ pub struct Session {
     /// The machine account the shell runs as (the agent's own), for the audit
     /// log.
     pub user: String,
-    /// What runs in it, as the audit log says it (`shell`, `container <id>`,
-    /// `tmux <name>`): listed by `GET /live`.
+    /// What runs in it, as the audit log says it (`shell` or `container <id>`): listed by `GET /live`.
     pub what: String,
     /// Where the client that opened it connected from.
     pub remote_ip: Option<String>,

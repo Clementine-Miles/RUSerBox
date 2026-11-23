@@ -22,7 +22,7 @@ enum VirtualKeyFunc {
   snippet,
   file,
   sudoPassword,
-  tmuxSwitch,
+  zellijSwitch,
 }
 
 enum VirtualKey {
@@ -71,7 +71,7 @@ enum VirtualKey {
   f11,
   f12,
   sudo,
-  tmux,
+  zellij,
 }
 
 extension VirtualKeyX on VirtualKey {
@@ -103,7 +103,6 @@ extension VirtualKeyX on VirtualKey {
 
     if (this == VirtualKey.pgdn) return 'PgDn';
     if (this == VirtualKey.pgup) return 'PgUp';
-    if (this == VirtualKey.tmux) return 'tmux';
 
     if (name.length > 1) {
       return name.substring(0, 1).toUpperCase() + name.substring(1);
@@ -132,7 +131,7 @@ extension VirtualKeyX on VirtualKey {
   /// Default order of virtual keys
   static const defaultOrder = [
     // Two full rows, each key of a pair over the other: ↑ over ↓, PgUp over
-    // PgDn. The file browser, the sudo password and tmux are off until turned
+    // PgDn. The file browser, the sudo password and zellij are off until turned
     // on in the settings.
     VirtualKey.esc,
     VirtualKey.alt,
@@ -189,7 +188,7 @@ extension VirtualKeyX on VirtualKey {
     VirtualKey.sftp => Icons.file_open,
     VirtualKey.snippet => Icons.code,
     VirtualKey.sudo => Icons.password,
-    VirtualKey.tmux => Icons.window,
+    VirtualKey.zellij => Icons.window,
     VirtualKey.ime => Icons.keyboard,
     _ => null,
   };
@@ -201,7 +200,7 @@ extension VirtualKeyX on VirtualKey {
     VirtualKey.sftp => VirtualKeyFunc.file,
     VirtualKey.snippet => VirtualKeyFunc.snippet,
     VirtualKey.sudo => VirtualKeyFunc.sudoPassword,
-    VirtualKey.tmux => VirtualKeyFunc.tmuxSwitch,
+    VirtualKey.zellij => VirtualKeyFunc.zellijSwitch,
     VirtualKey.ime => VirtualKeyFunc.toggleIME,
     _ => null,
   };
@@ -221,7 +220,7 @@ extension VirtualKeyX on VirtualKey {
     VirtualKey.sudo => l10n.trySudo,
     VirtualKey.ime => l10n.virtKeyHelpIME,
     VirtualKey.snippet => l10n.virtKeyHelpSnippet,
-    VirtualKey.tmux => l10n.virtKeyHelpTmux,
+    VirtualKey.zellij => l10n.virtKeyHelpZellij,
     _ => null,
   };
 

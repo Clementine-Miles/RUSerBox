@@ -47,7 +47,7 @@ class TerminalFloatingShell extends ConsumerWidget {
       onCollapse: shell.collapse,
       // Taken back to where it came from, not merely closed: the shell is
       // still running and the tab is where the rest of what you can do with it
-      // lives — snippets, sudo, tmux, the file browser.
+      // lives — snippets, sudo, zellij, the file browser.
       onHide: () {
         shell.hide();
         ref.read(homeTabRequestProvider.notifier).go(AppTab.ssh);
@@ -137,7 +137,7 @@ extension _Utils on _FloatTerminalState {
   /// The keys this window can actually serve.
   ///
   /// The tab's strip carries four more — snippets, the file browser, the sudo
-  /// password, the tmux switcher — and every one of them opens a page or a
+  /// password, the zellij switcher — and every one of them opens a page or a
   /// dialog belonging to the terminal *page*, which is not what is in this
   /// window. Left in, they would be buttons that take a tap and do nothing,
   /// which is the failure `VirtualKeySupport.worksOn` exists to avoid; so they are not
@@ -270,7 +270,7 @@ extension _Actions on _FloatTerminalState {
       case VirtualKeyFunc.snippet:
       case VirtualKeyFunc.file:
       case VirtualKeyFunc.sudoPassword:
-      case VirtualKeyFunc.tmuxSwitch:
+      case VirtualKeyFunc.zellijSwitch:
         return;
       case null:
         break;

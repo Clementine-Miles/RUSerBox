@@ -80,7 +80,7 @@ class VirtKeyNamesMigration extends SettingsMigration {
     'f11',
     'f12',
     'sudo',
-    'tmux',
+    'zellij',
   ];
 
   static const orderKey = 'sshVirtKeys';

@@ -855,10 +855,8 @@ async fn an_iperf_port_out_of_range_is_refused_before_anything_spawns() {
     assert!(state.sessions.is_empty(), "nothing should have been registered");
 }
 
-/// A tmux session id that is not `$` and digits is refused before tmux is even
-/// looked for, with the issue the panel phrases.
 #[ntex::test]
-async fn an_invalid_tmux_session_id_is_refused_before_anything_spawns() {
+async fn an_unknown_terminal_target_does_not_spawn_a_shell() {
     let state = app_state().await;
     let ticket = state.tickets.issue(Purpose::Terminal).unwrap();
     let srv = test_server(state.clone()).await;
@@ -866,7 +864,7 @@ async fn an_invalid_tmux_session_id_is_refused_before_anything_spawns() {
 
     io.send(
         ws::Message::Text(ByteString::from_static(
-            r#"{"type":"open","auth":{"kind":"local"},"target":{"kind":"tmux","session":"$3;rm"}}"#,
+            r#"{"type":"open","auth":{"kind":"local"},"target":{"kind":"unsupported"}}"#,
         )),
         &codec,
     )
@@ -874,32 +872,7 @@ async fn an_invalid_tmux_session_id_is_refused_before_anything_spawns() {
     .unwrap();
 
     let frame = next_control(&io, &codec).await;
-    assert_eq!(frame["code"], "invalid_input", "{frame}");
-    assert_eq!(frame["issue"], "invalid_session_id", "{frame}");
-    assert!(state.sessions.is_empty(), "nothing should have been registered");
-}
-
-/// A new session's name is checked too, and the refusal names which rule it
-/// broke: `:` is tmux's own session/window separator.
-#[ntex::test]
-async fn an_invalid_tmux_new_name_is_refused_before_anything_spawns() {
-    let state = app_state().await;
-    let ticket = state.tickets.issue(Purpose::Terminal).unwrap();
-    let srv = test_server(state.clone()).await;
-    let (io, codec) = open_terminal(&srv, &ticket).await;
-
-    io.send(
-        ws::Message::Text(ByteString::from_static(
-            r#"{"type":"open","auth":{"kind":"local"},"target":{"kind":"tmux_new","name":"a:b"}}"#,
-        )),
-        &codec,
-    )
-    .await
-    .unwrap();
-
-    let frame = next_control(&io, &codec).await;
-    assert_eq!(frame["code"], "invalid_input", "{frame}");
-    assert_eq!(frame["issue"], "name_separator", "{frame}");
+    assert_eq!(frame["code"], "bad_request", "{frame}");
     assert!(state.sessions.is_empty(), "nothing should have been registered");
 }
 

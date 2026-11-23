@@ -48,7 +48,7 @@ extension _AskAi on SSHPageState {
         // on.
         screen: () => _sess.screenText,
         programStatus: () =>
-            _sess.status.describeForAgent(paneLabel: tmuxPaneLabel),
+            _sess.status.describeForAgent(),
       ),
     );
   }

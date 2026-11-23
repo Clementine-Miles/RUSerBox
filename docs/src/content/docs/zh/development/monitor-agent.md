@@ -20,7 +20,7 @@ App 和 Monitor 使用同一个协议版本号（`sbm_parser::protocol`）。只
 App 通过 `GET /api/v1/capabilities` 查询 Monitor 支持的功能，以及当前调用者能否使用它们。返回内容包括：
 
 - `access`：`ok`，为 false 时还带有 `why`。`insecure_transport` 表示请求需要 TLS、loopback 调用方或 `[remote_access] allow_insecure`。watch token 的 `access` 是 `{"ok": false}`。
-- `features`：Monitor 提供的机器管理 endpoint，例如 `power`。名称在列表中且 `access.ok` 时，客户端才提供对应页面。`container_exec`、`iperf` 和 `tmux` 是终端的 target，不是页面；各自只在列出时提供。`alerts`、`audit` 和 `live` 对应 Monitor 标签页的各部分（`GET /alerts`、`GET /audit`、`/live*`），`desk` 对应其中的通知。`update` 对应 `GET /update`：Monitor 的版本、读到的最新 release（`?check=1` 重新读取）、`outdated`、安装方式（`install`：`script`、`container`、`nix`、`other`），`script` 时还有用于更新的 `command`、启动更新是否需要 sudo 密码，以及上一次更新的 `run`（状态和输出）。`POST /update/run` 在 Monitor 之外启动更新，更新不受 Monitor 重启影响。
+- `features`：Monitor 提供的机器管理 endpoint，例如 `power`。名称在列表中且 `access.ok` 时，客户端才提供对应页面。`container_exec` 和 `iperf` 是终端目标，各自只在列出时提供。`alerts`、`audit` 和 `live` 对应 Monitor 标签页的各部分（`GET /alerts`、`GET /audit`、`/live*`），`notifications` 对应其中的通知。`update` 对应 `GET /update`：Monitor 的版本、读到的最新 release（`?check=1` 重新读取）、`outdated`、安装方式（`install`：`script`、`container`、`nix`、`other`），`script` 时还有用于更新的 `command`、启动更新是否需要 sudo 密码，以及上一次更新的 `run`（状态和输出）。`POST /update/run` 在 Monitor 之外启动更新，更新不受 Monitor 重启影响。
 
 不要仅根据 Monitor 版本或默认配置推断功能是否可用；应读取运行中 Monitor
 返回的 capabilities。
@@ -61,7 +61,7 @@ Monitor 只有一个账号，只用密码登录；它可以做 Monitor 运行所
 
 `server_box_monitor password` 在命令行中直接修改数据库中的密码（`--password-env VAR` 从环境变量读取），没有账号时会创建它。
 
-部分修改需要在请求体中再次提供当前密码（`current_password`）：修改密码、部署 Web 应用、修改其设置或移除它、查看它的初始登录信息、恢复或删除容器备份，以及批准或移除 desk 应用。它也受上述登录限流约束。缺失或错误时返回 `403 reauth`；连续输错会返回 `429 throttled` 和 `Retry-After`。
+部分修改需要在请求体中再次提供当前密码（`current_password`）：修改密码、恢复或删除容器备份。它也受上述登录限流约束。缺失或错误时返回 `403 reauth`；连续输错会返回 `429 throttled` 和 `Retry-After`。
 
 错误格式为 `{"error": "<code>", "message": "..."}`：
 
@@ -76,7 +76,7 @@ Monitor 只有一个账号，只用密码登录；它可以做 Monitor 运行所
 
 ### 修改密码
 
-修改密码会注销其他所有访问。修改前签发的面板 token 在所有 endpoint 都返回 `401`（同一秒签发的 token 仍然有效，因此修改后立即重新登录可以正常使用），watch token 和 LK Cloud session 都会被删除；在运行中的 Monitor 里，终端会话、未使用的 ticket、正在运行的 Agent mode 任务、Web 应用窗口、relay 和监听会收到 `{"type":"error","code":"password_changed"}` 并被关闭。在命令行中重置密码无法通知正在运行的 Monitor，已打开的连接会保持到 Monitor 重启。
+修改密码会注销其他所有访问。修改前签发的账户 token 在所有 endpoint 都返回 `401`（同一秒签发的 token 仍然有效，因此修改后立即重新登录可以正常使用），watch token 和 LK Cloud session 都会被删除；在运行中的 Monitor 里，终端会话、未使用的 ticket、正在运行的 Agent mode 任务、relay 和监听会收到 `{"type":"error","code":"password_changed"}` 并被关闭。在命令行中重置密码无法通知正在运行的 Monitor，已打开的连接会保持到 Monitor 重启。
 
 ### 传输安全
 

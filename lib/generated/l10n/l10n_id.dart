@@ -1146,7 +1146,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Pilih sebuah snippet dan jalankan di terminal ini.';
 
   @override
-  String get virtKeyHelpTmux => 'Berpindah antar sesi dan jendela tmux.';
+  String get virtKeyHelpZellij => 'Manage Zellij sessions on the SSH host.';
 
   @override
   String get virtKeyIntroActions => 'Pintasan';
@@ -1250,55 +1250,50 @@ class AppLocalizationsId extends AppLocalizations {
   String get sortByJoinTime => 'Menurut waktu ditambahkan';
 
   @override
-  String get tmuxAutoAttach => 'Sambung otomatis ke tmux';
+  String get zellijInvalidName => 'Enter a valid Zellij session name.';
 
   @override
-  String get tmuxAuto => 'tmux otomatis';
+  String get zellijSessions => 'Zellij sessions';
 
   @override
-  String get tmuxAutoTip =>
-      'Mulai atau sambungkan tmux secara otomatis saat terhubung lewat SSH';
+  String get zellijDetach => 'Detach';
 
   @override
-  String get tmuxSessionSelector => 'Pemilih sesi';
+  String get zellijTerminate => 'Terminate session';
 
   @override
-  String get tmuxSessionSelectorTip =>
-      'Tampilkan pemilih sesi saat menghubungkan';
-
-  @override
-  String get tmuxDefaultSessionName => 'Nama sesi bawaan';
-
-  @override
-  String get tmuxSessionName => 'Nama sesi';
-
-  @override
-  String get tmuxNewSession => 'Sesi baru';
-
-  @override
-  String get tmuxNewWindow => 'Jendela baru';
-
-  @override
-  String get tmuxNoWindowsFound => 'Tidak ada jendela yang ditemukan';
-
-  @override
-  String tmuxWindowCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count jendela',
-    );
-    return '$_temp0';
+  String zellijTerminateConfirm(String name) {
+    return 'Terminate Zellij session “$name” and its running programs?';
   }
 
   @override
-  String get tmuxAttached => 'Tersambung';
+  String get zellijAutoAttach => 'Sambung otomatis ke Zellij';
 
   @override
-  String get tmuxSkip => 'Lewati';
+  String get zellijAuto => 'Zellij otomatis';
 
   @override
-  String get tmuxNotAvailable => 'tmux tidak tersedia';
+  String get zellijAutoTip =>
+      'Mulai atau sambungkan Zellij secara otomatis saat terhubung lewat SSH';
+
+  @override
+  String get zellijSessionSelector => 'Pemilih sesi';
+
+  @override
+  String get zellijSessionSelectorTip =>
+      'Tampilkan pemilih sesi saat menghubungkan';
+
+  @override
+  String get zellijDefaultSessionName => 'Nama sesi bawaan';
+
+  @override
+  String get zellijSessionName => 'Nama sesi';
+
+  @override
+  String get zellijNewSession => 'Sesi baru';
+
+  @override
+  String get zellijNotAvailable => 'Zellij tidak tersedia';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -5235,9 +5230,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get programIdle => 'Tidak aktif';
 
   @override
-  String get programThisShell => 'Shell ini';
-
-  @override
   String get programProgress => 'Progres';
 
   @override
@@ -6817,7 +6809,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get reconnectEndsShell =>
-      'Tidak ada sesi tmux untuk dipasang kembali, jadi menyambungkan ulang akan mengakhiri shell ini dan semua yang masih berjalan di dalamnya, serta menghapus keluarannya dari layar.';
+      'Tidak ada sesi Zellij untuk dipasang kembali, jadi menyambungkan ulang akan mengakhiri shell ini dan semua yang masih berjalan di dalamnya, serta menghapus keluarannya dari layar.';
 
   @override
   String get handedness => 'Tangan dominan';

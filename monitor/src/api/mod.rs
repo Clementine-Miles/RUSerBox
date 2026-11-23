@@ -31,7 +31,6 @@ pub mod process;
 pub mod service;
 pub mod snippets;
 pub mod system_users;
-pub mod tmux;
 pub mod update;
 pub mod push;
 pub mod respond;

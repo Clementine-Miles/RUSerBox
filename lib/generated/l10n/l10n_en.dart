@@ -1135,7 +1135,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick a snippet and run it in this terminal.';
 
   @override
-  String get virtKeyHelpTmux => 'Switch between tmux sessions and windows.';
+  String get virtKeyHelpZellij => 'Manage Zellij sessions on the SSH host.';
 
   @override
   String get virtKeyIntroActions => 'Shortcuts';
@@ -1240,56 +1240,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortByJoinTime => 'By join time';
 
   @override
-  String get tmuxAutoAttach => 'tmux auto-attach';
+  String get zellijInvalidName => 'Enter a valid Zellij session name.';
 
   @override
-  String get tmuxAuto => 'Auto tmux';
+  String get zellijSessions => 'Zellij sessions';
 
   @override
-  String get tmuxAutoTip =>
-      'Automatically start or attach tmux when connecting over SSH';
+  String get zellijDetach => 'Detach';
 
   @override
-  String get tmuxSessionSelector => 'Session selector';
+  String get zellijTerminate => 'Terminate session';
 
   @override
-  String get tmuxSessionSelectorTip =>
-      'Show the session picker when connecting';
-
-  @override
-  String get tmuxDefaultSessionName => 'Default session name';
-
-  @override
-  String get tmuxSessionName => 'Session name';
-
-  @override
-  String get tmuxNewSession => 'New session';
-
-  @override
-  String get tmuxNewWindow => 'New window';
-
-  @override
-  String get tmuxNoWindowsFound => 'No windows found';
-
-  @override
-  String tmuxWindowCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count windows',
-      one: '1 window',
-    );
-    return '$_temp0';
+  String zellijTerminateConfirm(String name) {
+    return 'Terminate Zellij session “$name” and its running programs?';
   }
 
   @override
-  String get tmuxAttached => 'Attached';
+  String get zellijAutoAttach => 'Zellij auto-attach';
 
   @override
-  String get tmuxSkip => 'Skip';
+  String get zellijAuto => 'Auto Zellij';
 
   @override
-  String get tmuxNotAvailable => 'tmux is not available';
+  String get zellijAutoTip =>
+      'Automatically start or attach Zellij when connecting over SSH';
+
+  @override
+  String get zellijSessionSelector => 'Session selector';
+
+  @override
+  String get zellijSessionSelectorTip =>
+      'Show the session picker when connecting';
+
+  @override
+  String get zellijDefaultSessionName => 'Default session name';
+
+  @override
+  String get zellijSessionName => 'Session name';
+
+  @override
+  String get zellijNewSession => 'New session';
+
+  @override
+  String get zellijNotAvailable => 'Zellij is not available';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -5243,9 +5237,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programIdle => 'Idle';
 
   @override
-  String get programThisShell => 'This shell';
-
-  @override
   String get programProgress => 'Progress';
 
   @override
@@ -6816,7 +6807,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reconnectEndsShell =>
-      'There is no tmux session to re-attach, so reconnecting ends this shell and anything still running in it, and clears its output from the screen.';
+      'Reconnecting will end this shell and any programs running in it, then clear its output.';
 
   @override
   String get handedness => 'Handedness';

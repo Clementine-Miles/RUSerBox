@@ -26,7 +26,7 @@ void main() {
     final history = SqliteStore('history');
     history.set(
       'sshTabs',
-      '[{"sourceId":"server-1","tmuxSession":"main","tmuxWindow":0}]',
+      '[{"sourceId":"server-1","session":"main","window":0}]',
     );
     history.set('fileTabs', '[{"kind":"local","path":"/tmp"}]');
     history.set('workspaces', '[]');

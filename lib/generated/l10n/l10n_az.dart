@@ -1140,8 +1140,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get virtKeyHelpSnippet => 'Snippet seç və bu terminalda icra et.';
 
   @override
-  String get virtKeyHelpTmux =>
-      'tmux sessiyaları və pəncərələri arasında keçid et.';
+  String get virtKeyHelpZellij => 'Manage Zellij sessions on the SSH host.';
 
   @override
   String get virtKeyIntroActions => 'Qısayollar';
@@ -1245,55 +1244,50 @@ class AppLocalizationsAz extends AppLocalizations {
   String get sortByJoinTime => 'Əlavə edilmə vaxtına görə';
 
   @override
-  String get tmuxAutoAttach => 'tmux sessiyasına avtomatik qoşulma';
+  String get zellijInvalidName => 'Enter a valid Zellij session name.';
 
   @override
-  String get tmuxAuto => 'Avtomatik tmux';
+  String get zellijSessions => 'Zellij sessions';
 
   @override
-  String get tmuxAutoTip =>
-      'SSH ilə əlaqə qurarkən tmux sessiyasını avtomatik başlat və ya ona qoşul';
+  String get zellijDetach => 'Detach';
 
   @override
-  String get tmuxSessionSelector => 'Sessiya seçimi';
+  String get zellijTerminate => 'Terminate session';
 
   @override
-  String get tmuxSessionSelectorTip => 'Əlaqə qurarkən sessiya seçimini göstər';
-
-  @override
-  String get tmuxDefaultSessionName => 'Standart sessiya adı';
-
-  @override
-  String get tmuxSessionName => 'Sessiya adı';
-
-  @override
-  String get tmuxNewSession => 'Yeni sessiya';
-
-  @override
-  String get tmuxNewWindow => 'Yeni pəncərə';
-
-  @override
-  String get tmuxNoWindowsFound => 'Pəncərə tapılmadı';
-
-  @override
-  String tmuxWindowCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count pəncərə',
-      one: '1 pəncərə',
-    );
-    return '$_temp0';
+  String zellijTerminateConfirm(String name) {
+    return 'Terminate Zellij session “$name” and its running programs?';
   }
 
   @override
-  String get tmuxAttached => 'Qoşulub';
+  String get zellijAutoAttach => 'Zellij sessiyasına avtomatik qoşulma';
 
   @override
-  String get tmuxSkip => 'Keç';
+  String get zellijAuto => 'Avtomatik Zellij';
 
   @override
-  String get tmuxNotAvailable => 'tmux əlçatan deyil';
+  String get zellijAutoTip =>
+      'SSH ilə əlaqə qurarkən Zellij sessiyasını avtomatik başlat və ya ona qoşul';
+
+  @override
+  String get zellijSessionSelector => 'Sessiya seçimi';
+
+  @override
+  String get zellijSessionSelectorTip =>
+      'Əlaqə qurarkən sessiya seçimini göstər';
+
+  @override
+  String get zellijDefaultSessionName => 'Standart sessiya adı';
+
+  @override
+  String get zellijSessionName => 'Sessiya adı';
+
+  @override
+  String get zellijNewSession => 'Yeni sessiya';
+
+  @override
+  String get zellijNotAvailable => 'Zellij əlçatan deyil';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -5230,9 +5224,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String get programIdle => 'Boşda';
 
   @override
-  String get programThisShell => 'Bu shell';
-
-  @override
   String get programProgress => 'İrəliləyiş';
 
   @override
@@ -6805,7 +6796,7 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get reconnectEndsShell =>
-      'Yenidən qoşulmaq üçün tmux sessiyası yoxdur, ona görə yenidən qoşulmaq bu shell-i və içində hələ işləyən hər şeyi bağlayır və ekrandakı çıxışını təmizləyir.';
+      'Yenidən qoşulmaq üçün Zellij sessiyası yoxdur, ona görə yenidən qoşulmaq bu shell-i və içində hələ işləyən hər şeyi bağlayır və ekrandakı çıxışını təmizləyir.';
 
   @override
   String get handedness => 'Əsas əl';

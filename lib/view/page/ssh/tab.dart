@@ -565,14 +565,16 @@ extension _Actions on _SSHTabPageState {
     if (current == null) return const [];
     final args = current.data.page.args;
     final onServer = args.spi != null;
-    final status = terminalStatusAction(
-      session: current.data.session,
-      paneLabel: (pane) =>
-          current.data.pageKey.currentState?.tmuxPaneLabel(pane),
-    );
+    final status = terminalStatusAction(session: current.data.session);
     final all = <(BarAction, bool)>[
       (status, true),
       if (args.canReconnect) (_reconnectAction, false),
+      if (args.spi?.sshOn != null)
+        (BarAction(
+          icon: Icons.window_outlined,
+          label: l10n.zellijSessions,
+          onTap: () => current.data.pageKey.currentState?.showZellijFromToolbar(),
+        ), false),
       if (onServer) (_agentAction, true),
       (_snippetAction, false),
       // On the bar: only asked for by a screen reader, which has no other

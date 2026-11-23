@@ -1454,9 +1454,9 @@
   "@virtKeyHelpSnippet": {
     "description": "User-facing label or message for virt key help snippet."
   },
-  "virtKeyHelpTmux": "Switch between tmux sessions and windows.",
-  "@virtKeyHelpTmux": {
-    "description": "User-facing label or message for virt key help tmux."
+  "virtKeyHelpZellij": "Manage Zellij sessions on the SSH host.",
+  "@virtKeyHelpZellij": {
+    "description": "User-facing label or message for virt key help Zellij."
   },
   "virtKeyIntroActions": "Shortcuts",
   "@virtKeyIntroActions": {
@@ -1579,66 +1579,54 @@
   "@sortByJoinTime": {
     "description": "User-facing label or message for sort by join time."
   },
-  "tmuxAutoAttach": "tmux auto-attach",
-  "@tmuxAutoAttach": {
-    "description": "User-facing label or message for tmux auto attach."
-  },
-  "tmuxAuto": "Auto tmux",
-  "@tmuxAuto": {
-    "description": "User-facing label or message for tmux auto."
-  },
-  "tmuxAutoTip": "Automatically start or attach tmux when connecting over SSH",
-  "@tmuxAutoTip": {
-    "description": "Help text for the tmux auto setting or action."
-  },
-  "tmuxSessionSelector": "Session selector",
-  "@tmuxSessionSelector": {
-    "description": "User-facing label or message for tmux session selector."
-  },
-  "tmuxSessionSelectorTip": "Show the session picker when connecting",
-  "@tmuxSessionSelectorTip": {
-    "description": "Help text for the tmux session selector setting or action."
-  },
-  "tmuxDefaultSessionName": "Default session name",
-  "@tmuxDefaultSessionName": {
-    "description": "User-facing label or message for tmux default session name."
-  },
-  "tmuxSessionName": "Session name",
-  "@tmuxSessionName": {
-    "description": "User-facing label or message for tmux session name."
-  },
-  "tmuxNewSession": "New session",
-  "@tmuxNewSession": {
-    "description": "User-facing label or message for tmux new session."
-  },
-  "tmuxNewWindow": "New window",
-  "@tmuxNewWindow": {
-    "description": "User-facing label or message for tmux new window."
-  },
-  "tmuxNoWindowsFound": "No windows found",
-  "@tmuxNoWindowsFound": {
-    "description": "User-facing label or message for tmux no windows found."
-  },
-  "tmuxWindowCount": "{count, plural, one{1 window} other{{count} windows}}",
-  "@tmuxWindowCount": {
-    "description": "User-facing label or message for tmux window count.",
+  "zellijInvalidName": "Enter a valid Zellij session name.",
+  "zellijSessions": "Zellij sessions",
+  "zellijDetach": "Detach",
+  "zellijTerminate": "Terminate session",
+  "zellijTerminateConfirm": "Terminate Zellij session “{name}” and its running programs?",
+  "@zellijTerminateConfirm": {
+    "description": "Confirmation before terminating a named remote Zellij session.",
     "placeholders": {
-      "count": {
-        "type": "int"
+      "name": {
+        "type": "String"
       }
     }
   },
-  "tmuxAttached": "Attached",
-  "@tmuxAttached": {
-    "description": "User-facing label or message for tmux attached."
+  "zellijAutoAttach": "Zellij auto-attach",
+  "@zellijAutoAttach": {
+    "description": "User-facing label or message for Zellij auto attach."
   },
-  "tmuxSkip": "Skip",
-  "@tmuxSkip": {
-    "description": "User-facing label or message for tmux skip."
+  "zellijAuto": "Auto Zellij",
+  "@zellijAuto": {
+    "description": "User-facing label or message for Zellij auto."
   },
-  "tmuxNotAvailable": "tmux is not available",
-  "@tmuxNotAvailable": {
-    "description": "User-facing label or message for tmux not available."
+  "zellijAutoTip": "Automatically start or attach Zellij when connecting over SSH",
+  "@zellijAutoTip": {
+    "description": "Help text for the Zellij auto setting or action."
+  },
+  "zellijSessionSelector": "Session selector",
+  "@zellijSessionSelector": {
+    "description": "User-facing label or message for Zellij session selector."
+  },
+  "zellijSessionSelectorTip": "Show the session picker when connecting",
+  "@zellijSessionSelectorTip": {
+    "description": "Help text for the Zellij session selector setting or action."
+  },
+  "zellijDefaultSessionName": "Default session name",
+  "@zellijDefaultSessionName": {
+    "description": "User-facing label or message for Zellij default session name."
+  },
+  "zellijSessionName": "Session name",
+  "@zellijSessionName": {
+    "description": "User-facing label or message for Zellij session name."
+  },
+  "zellijNewSession": "New session",
+  "@zellijNewSession": {
+    "description": "User-facing label or message for Zellij new session."
+  },
+  "zellijNotAvailable": "Zellij is not available",
+  "@zellijNotAvailable": {
+    "description": "User-facing label or message for Zellij not available."
   },
   "containerSegmentsMismatch": "Unexpected container response segment count: {count}",
   "@containerSegmentsMismatch": {
@@ -6792,10 +6780,6 @@
   "@programIdle": {
     "description": "A program in a terminal is at rest, waiting for the user's next instruction."
   },
-  "programThisShell": "This shell",
-  "@programThisShell": {
-    "description": "Heading over the program status reported by the terminal's own shell, as opposed to a tmux pane."
-  },
   "programProgress": "Progress",
   "@programProgress": {
     "description": "A progress bar a program shows in the terminal (OSC 9;4)."
@@ -8827,9 +8811,9 @@
   "@reconnect": {
     "description": "Terminal toolbar action that re-establishes the connection by hand."
   },
-  "reconnectEndsShell": "There is no tmux session to re-attach, so reconnecting ends this shell and anything still running in it, and clears its output from the screen.",
+  "reconnectEndsShell": "Reconnecting will end this shell and any programs running in it, then clear its output.",
   "@reconnectEndsShell": {
-    "description": "Confirmation before a manual reconnect that cannot re-attach tmux and so replaces the running shell."
+    "description": "Confirmation before a manual reconnect that cannot re-attach Zellij and so replaces the running shell."
   },
   "handedness": "Handedness",
   "handednessLeft": "Left hand",

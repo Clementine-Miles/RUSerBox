@@ -2076,11 +2076,11 @@ abstract class AppLocalizations {
   /// **'Pick a snippet and run it in this terminal.'**
   String get virtKeyHelpSnippet;
 
-  /// User-facing label or message for virt key help tmux.
+  /// User-facing label or message for virt key help Zellij.
   ///
   /// In en, this message translates to:
-  /// **'Switch between tmux sessions and windows.'**
-  String get virtKeyHelpTmux;
+  /// **'Manage Zellij sessions on the SSH host.'**
+  String get virtKeyHelpZellij;
 
   /// User-facing label or message for virt key intro actions.
   ///
@@ -2256,89 +2256,89 @@ abstract class AppLocalizations {
   /// **'By join time'**
   String get sortByJoinTime;
 
-  /// User-facing label or message for tmux auto attach.
+  /// No description provided for @zellijInvalidName.
   ///
   /// In en, this message translates to:
-  /// **'tmux auto-attach'**
-  String get tmuxAutoAttach;
+  /// **'Enter a valid Zellij session name.'**
+  String get zellijInvalidName;
 
-  /// User-facing label or message for tmux auto.
+  /// No description provided for @zellijSessions.
   ///
   /// In en, this message translates to:
-  /// **'Auto tmux'**
-  String get tmuxAuto;
+  /// **'Zellij sessions'**
+  String get zellijSessions;
 
-  /// Help text for the tmux auto setting or action.
+  /// No description provided for @zellijDetach.
   ///
   /// In en, this message translates to:
-  /// **'Automatically start or attach tmux when connecting over SSH'**
-  String get tmuxAutoTip;
+  /// **'Detach'**
+  String get zellijDetach;
 
-  /// User-facing label or message for tmux session selector.
+  /// No description provided for @zellijTerminate.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminate session'**
+  String get zellijTerminate;
+
+  /// Confirmation before terminating a named remote Zellij session.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminate Zellij session “{name}” and its running programs?'**
+  String zellijTerminateConfirm(String name);
+
+  /// User-facing label or message for Zellij auto attach.
+  ///
+  /// In en, this message translates to:
+  /// **'Zellij auto-attach'**
+  String get zellijAutoAttach;
+
+  /// User-facing label or message for Zellij auto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Zellij'**
+  String get zellijAuto;
+
+  /// Help text for the Zellij auto setting or action.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically start or attach Zellij when connecting over SSH'**
+  String get zellijAutoTip;
+
+  /// User-facing label or message for Zellij session selector.
   ///
   /// In en, this message translates to:
   /// **'Session selector'**
-  String get tmuxSessionSelector;
+  String get zellijSessionSelector;
 
-  /// Help text for the tmux session selector setting or action.
+  /// Help text for the Zellij session selector setting or action.
   ///
   /// In en, this message translates to:
   /// **'Show the session picker when connecting'**
-  String get tmuxSessionSelectorTip;
+  String get zellijSessionSelectorTip;
 
-  /// User-facing label or message for tmux default session name.
+  /// User-facing label or message for Zellij default session name.
   ///
   /// In en, this message translates to:
   /// **'Default session name'**
-  String get tmuxDefaultSessionName;
+  String get zellijDefaultSessionName;
 
-  /// User-facing label or message for tmux session name.
+  /// User-facing label or message for Zellij session name.
   ///
   /// In en, this message translates to:
   /// **'Session name'**
-  String get tmuxSessionName;
+  String get zellijSessionName;
 
-  /// User-facing label or message for tmux new session.
+  /// User-facing label or message for Zellij new session.
   ///
   /// In en, this message translates to:
   /// **'New session'**
-  String get tmuxNewSession;
+  String get zellijNewSession;
 
-  /// User-facing label or message for tmux new window.
+  /// User-facing label or message for Zellij not available.
   ///
   /// In en, this message translates to:
-  /// **'New window'**
-  String get tmuxNewWindow;
-
-  /// User-facing label or message for tmux no windows found.
-  ///
-  /// In en, this message translates to:
-  /// **'No windows found'**
-  String get tmuxNoWindowsFound;
-
-  /// User-facing label or message for tmux window count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one{1 window} other{{count} windows}}'**
-  String tmuxWindowCount(int count);
-
-  /// User-facing label or message for tmux attached.
-  ///
-  /// In en, this message translates to:
-  /// **'Attached'**
-  String get tmuxAttached;
-
-  /// User-facing label or message for tmux skip.
-  ///
-  /// In en, this message translates to:
-  /// **'Skip'**
-  String get tmuxSkip;
-
-  /// User-facing label or message for tmux not available.
-  ///
-  /// In en, this message translates to:
-  /// **'tmux is not available'**
-  String get tmuxNotAvailable;
+  /// **'Zellij is not available'**
+  String get zellijNotAvailable;
 
   /// User-facing label or message for container segments mismatch.
   ///
@@ -8987,12 +8987,6 @@ abstract class AppLocalizations {
   /// **'Idle'**
   String get programIdle;
 
-  /// Heading over the program status reported by the terminal's own shell, as opposed to a tmux pane.
-  ///
-  /// In en, this message translates to:
-  /// **'This shell'**
-  String get programThisShell;
-
   /// A progress bar a program shows in the terminal (OSC 9;4).
   ///
   /// In en, this message translates to:
@@ -11627,10 +11621,10 @@ abstract class AppLocalizations {
   /// **'Reconnect'**
   String get reconnect;
 
-  /// Confirmation before a manual reconnect that cannot re-attach tmux and so replaces the running shell.
+  /// Confirmation before a manual reconnect that cannot re-attach Zellij and so replaces the running shell.
   ///
   /// In en, this message translates to:
-  /// **'There is no tmux session to re-attach, so reconnecting ends this shell and anything still running in it, and clears its output from the screen.'**
+  /// **'Reconnecting will end this shell and any programs running in it, then clear its output.'**
   String get reconnectEndsShell;
 
   /// No description provided for @handedness.

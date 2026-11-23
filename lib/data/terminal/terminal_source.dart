@@ -1,7 +1,8 @@
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_tty/fl_tty.dart';
+import 'package:fl_tty/fl_tty.dart' hide ShellBackend;
 import 'package:server_box/core/local/device.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
+import 'package:server_box/data/model/server/shell_backend.dart';
 import 'package:server_box/data/terminal/ssh_terminal_environment.dart';
 
 /// Where a terminal's shell comes from.
@@ -132,7 +133,7 @@ final class LocalSource extends TerminalSource {
 /// container's terminal — rather than a shell on a machine in the list.
 ///
 /// Its own kind because nothing a server offers applies inside it. Snippets
-/// that name the server, its sudo password, its files, tmux and the Agent all
+/// that name the server, its sudo password, its files, Zellij and the Agent all
 /// act on the host, while what is typed here reaches the guest; so the
 /// terminal page, which offers those where it has a server, finds none here.
 ///

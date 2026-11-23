@@ -47,12 +47,9 @@ class MonitorShellBackend implements ShellBackend {
 
   /// A PTY is one stream. A command written into it would land in the user's
   /// shell rather than run beside it, so everything built on a second channel
-  /// — tmux, snippets that probe first, the AI helper — must not be offered.
+  /// — snippets that probe first, the AI helper — must not be offered.
   @override
   bool get supportsExec => false;
-
-  @override
-  bool get supportsTmux => false;
 
   @override
   Future<ShellSession> openShell({

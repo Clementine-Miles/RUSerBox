@@ -50,7 +50,7 @@ const fr: Translation = {
     terminal: {
       title: 'Terminal SSH tactile',
       description:
-        'Touches virtuelles dédiées pour maîtriser vim, tmux et htop sur mobile. Prise en charge native des bastions (jump hosts) et de ProxyCommand.',
+        'Touches virtuelles dédiées pour maîtriser vim, Zellij et htop sur mobile. Prise en charge native des bastions (jump hosts) et de ProxyCommand.',
     },
     files: {
       title: 'Gestionnaire SFTP',

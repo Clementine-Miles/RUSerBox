@@ -36,7 +36,7 @@ void main() {
     // Off until turned on in the settings.
     expect(order, isNot(contains(VirtualKey.sftp)));
     expect(order, isNot(contains(VirtualKey.sudo)));
-    expect(order, isNot(contains(VirtualKey.tmux)));
+    expect(order, isNot(contains(VirtualKey.zellij)));
   });
 
   test('an order this build knows every key of is returned as it was', () {

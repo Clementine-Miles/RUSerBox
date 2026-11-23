@@ -50,7 +50,7 @@ const en: BaseTranslation = {
     terminal: {
       title: 'SSH Terminal',
       description:
-        'Built for touch with custom virtual keys for vim, tmux, and htop. Supports jump hosts, Agent forwarding, and ProxyCommand.',
+        'Built for touch with custom virtual keys for vim, Zellij, and htop. Supports jump hosts, Agent forwarding, and ProxyCommand.',
     },
     files: {
       title: 'SFTP File Manager',

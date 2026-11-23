@@ -68,36 +68,36 @@ void main() {
     });
   });
 
-  group('the tmux key', () {
+  group('the Zellij key', () {
     // An agent's PTY has no exec channel, so the switcher cannot list
     // anything — and a key drawn on a strip that does nothing when tapped is
     // the failure `worksOn` exists to prevent.
-    bool tmuxOn(Spi spi, MonitorAccess? granted) => VirtualKey.tmux.worksOn(
+    bool zellijOn(Spi spi, MonitorAccess? granted) => VirtualKey.zellij.worksOn(
       ServerSource(spi),
       shellUsesAgent: serverShellUsesAgent(spi, granted),
     );
 
     test('is gone when the shell is the agent PTY', () {
-      expect(tmuxOn(server(prefer: ServerTransport.monitorHttp), full), isFalse);
+      expect(zellijOn(server(prefer: ServerTransport.monitorHttp), full), isFalse);
     });
 
     test('is there when the shell is SSH', () {
-      expect(tmuxOn(server(prefer: ServerTransport.ssh), full), isTrue);
-      expect(tmuxOn(server(), full), isTrue);
+      expect(zellijOn(server(prefer: ServerTransport.ssh), full), isTrue);
+      expect(zellijOn(server(), full), isTrue);
     });
 
     // What the old predicate got wrong. It read `Spi.transport`, which says
     // the agent leads; the grant says the agent will not serve a shell, so
-    // SSH carries the session and tmux works on it perfectly well. The key
+    // SSH carries the session and Zellij works on it perfectly well. The key
     // was hidden on the one server that is configured both ways.
     test('is there when the agent leads but will not serve a shell', () {
       final spi = server(prefer: ServerTransport.monitorHttp);
-      expect(tmuxOn(spi, MonitorAccess.none), isTrue);
-      expect(tmuxOn(spi, null), isTrue);
+      expect(zellijOn(spi, MonitorAccess.none), isTrue);
+      expect(zellijOn(spi, null), isTrue);
     });
 
     test('is gone on a server with no SSH to fall back to', () {
-      expect(tmuxOn(server(withSsh: false), full), isFalse);
+      expect(zellijOn(server(withSsh: false), full), isFalse);
     });
   });
 

@@ -1146,7 +1146,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выбрать сниппет и выполнить его в этом терминале.';
 
   @override
-  String get virtKeyHelpTmux => 'Переключение между сессиями и окнами tmux.';
+  String get virtKeyHelpZellij => 'Управление сессиями Zellij на SSH-сервере.';
 
   @override
   String get virtKeyIntroActions => 'Быстрые действия';
@@ -1250,58 +1250,50 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sortByJoinTime => 'По времени добавления';
 
   @override
-  String get tmuxAutoAttach => 'Автоподключение к tmux';
+  String get zellijInvalidName => 'Введите допустимое имя сессии Zellij.';
 
   @override
-  String get tmuxAuto => 'Автоматический tmux';
+  String get zellijSessions => 'Сессии Zellij';
 
   @override
-  String get tmuxAutoTip =>
-      'Автоматически запускать tmux или подключаться к нему при соединении по SSH';
+  String get zellijDetach => 'Отсоединиться';
 
   @override
-  String get tmuxSessionSelector => 'Выбор сессии';
+  String get zellijTerminate => 'Завершить сессию';
 
   @override
-  String get tmuxSessionSelectorTip =>
-      'Показывать выбор сессии при подключении';
-
-  @override
-  String get tmuxDefaultSessionName => 'Имя сессии по умолчанию';
-
-  @override
-  String get tmuxSessionName => 'Имя сессии';
-
-  @override
-  String get tmuxNewSession => 'Новая сессия';
-
-  @override
-  String get tmuxNewWindow => 'Новое окно';
-
-  @override
-  String get tmuxNoWindowsFound => 'Окон не найдено';
-
-  @override
-  String tmuxWindowCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count окна',
-      many: '$count окон',
-      few: '$count окна',
-      one: '1 окно',
-    );
-    return '$_temp0';
+  String zellijTerminateConfirm(String name) {
+    return 'Завершить сессию Zellij «$name» и работающие в ней программы?';
   }
 
   @override
-  String get tmuxAttached => 'Подключена';
+  String get zellijAutoAttach => 'Автоподключение к Zellij';
 
   @override
-  String get tmuxSkip => 'Пропустить';
+  String get zellijAuto => 'Автоматический Zellij';
 
   @override
-  String get tmuxNotAvailable => 'tmux недоступен';
+  String get zellijAutoTip =>
+      'Автоматически запускать Zellij или подключаться к нему при соединении по SSH';
+
+  @override
+  String get zellijSessionSelector => 'Выбор сессии';
+
+  @override
+  String get zellijSessionSelectorTip =>
+      'Показывать выбор сессии при подключении';
+
+  @override
+  String get zellijDefaultSessionName => 'Имя сессии по умолчанию';
+
+  @override
+  String get zellijSessionName => 'Имя сессии';
+
+  @override
+  String get zellijNewSession => 'Новая сессия';
+
+  @override
+  String get zellijNotAvailable => 'Zellij недоступен';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -5270,9 +5262,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get programIdle => 'Неактивна';
 
   @override
-  String get programThisShell => 'Эта оболочка';
-
-  @override
   String get programProgress => 'Ход выполнения';
 
   @override
@@ -6857,7 +6846,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reconnectEndsShell =>
-      'Нет сеанса tmux для повторного подключения, поэтому переподключение завершит эту оболочку и всё, что в ней ещё выполняется, и очистит её вывод на экране.';
+      'Нет сеанса Zellij для повторного подключения, поэтому переподключение завершит эту оболочку и всё, что в ней ещё выполняется, и очистит её вывод на экране.';
 
   @override
   String get handedness => 'Ведущая рука';

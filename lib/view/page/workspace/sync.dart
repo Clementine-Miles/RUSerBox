@@ -3,9 +3,7 @@ part of 'tab.dart';
 /// Synchronized input: what is typed in one terminal of the workspace on
 /// screen goes to every other terminal in it.
 ///
-/// Mirrors keystrokes rather than commands, as tmux's `synchronize-panes`
-/// does — so an editor, a pager, a half-typed line all stay in step, and
-/// nothing is run that was not typed.
+/// Editors, pagers, and partially typed lines stay in step.
 final class _Mirror {
   _Mirror(this.host);
 

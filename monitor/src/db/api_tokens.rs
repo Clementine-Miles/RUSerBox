@@ -31,7 +31,7 @@ const ALL_MARKER: &str = "*";
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Scope {
     /// Machine readings and listings: status, metrics, capabilities, processes,
-    /// services, containers, cron, tmux, firewall, storage, virt, users.
+    /// services, containers, cron, firewall, storage, virt, users.
     Read,
     /// Reading files and directory listings (`fs_roots`, `fs_list`, `fs_stat`, `fs_read`).
     FsRead,

@@ -49,7 +49,7 @@ const zhCN: Translation = {
     terminal: {
       title: '触控友好的 SSH 终端',
       description:
-        '内置专为手机优化的虚拟功能键，从容驾驭 vim、tmux 与 htop；原生支持跳板机与 ProxyCommand。',
+        '内置专为手机优化的虚拟功能键，从容驾驭 vim、Zellij 与 htop；原生支持跳板机与 ProxyCommand。',
     },
     files: {
       title: 'SFTP 文件直编',

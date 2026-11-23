@@ -82,7 +82,7 @@ void main() {
   test('live: sessions, connections, watch tokens and devices', () {
     final live = MonitorLive.fromJson({
       'sessions': [
-        {'id': 'ab', 'user': 'lk', 'what': 'tmux main', 'remote_ip': '127.0.0.1', 'opened_at': '2026-10-14T06:00:00+00:00', 'attached': true},
+        {'id': 'ab', 'user': 'lk', 'what': 'shell', 'remote_ip': '127.0.0.1', 'opened_at': '2026-10-14T06:00:00+00:00', 'attached': true},
       ],
       'connections': [
         {'id': '4', 'kind': 'rdp', 'target': 'win:3389', 'remote_ip': null, 'opened_at': '2026-10-14T06:00:00+00:00'},

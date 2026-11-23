@@ -9,7 +9,6 @@ import 'package:server_box/data/model/server/ssh_credential.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
 import 'package:server_box/data/terminal/terminal_status.dart';
-import 'package:server_box/data/terminal/tmux/tmux_ids.dart';
 import 'package:xterm/core.dart';
 
 class _FakeShell implements ShellSession {
@@ -50,29 +49,12 @@ ProgramStatusReport report(String payload) =>
 
 void main() {
   group('TerminalStatus', () {
-    test('state is the most urgent of the shell and every pane', () {
+    test('the headline reports the most urgent shell record', () {
       final status = TerminalStatus();
-      final pane = TmuxPaneId('%1');
       status.shell.apply(report('state=working'));
-      status.applyPane(pane, report('state=blocked'));
+      status.shell.apply(report('state=blocked:id=auth'));
       expect(status.state, ProgramState.blocked);
-      expect(status.headlineOf([TmuxPaneId('%2')]), isNull);
-      expect(status.headlineOf([pane])!.state, ProgramState.blocked);
-    });
-
-    test('a pane with nothing to show keeps no records', () {
-      final status = TerminalStatus();
-      var notified = 0;
-      status.addListener(() => notified++);
-      status.applyPane(TmuxPaneId('%1'), report('state=clear'));
-      expect(status.pane(TmuxPaneId('%1')), isNull);
-      expect(notified, 0);
-
-      status
-        ..applyPane(TmuxPaneId('%1'), report('state=working'))
-        ..applyPane(TmuxPaneId('%1'), report('state=clear'));
-      expect(status.pane(TmuxPaneId('%1')), isNull);
-      expect(notified, 2);
+      expect(status.headline?.state, ProgramState.blocked);
     });
 
     test('says every record as plain lines for the Agent', () {
@@ -81,27 +63,16 @@ void main() {
         ..shell.apply(
           report('state=blocked:kind=permission:id=eu:msg=QXBwcm92ZT8'),
         )
-        ..shell.apply(const ShellMark(ShellMarkKind.commandExecuted))
-        ..applyPane(TmuxPaneId('%3'), report('state=done'));
+        ..shell.apply(const ShellMark(ShellMarkKind.commandExecuted));
       expect(
-        status.describeForAgent(paneLabel: (_) => '1:logs'),
+        status.describeForAgent(),
         'shell: working app=deploy\n'
         'shell [eu]: blocked (permission) app=deploy msg="Approve?"\n'
-        'shell: a command is running\n'
-        'tmux pane %3 (1:logs): done',
+        'shell: a command is running',
       );
       expect(TerminalStatus().describeForAgent(), isEmpty);
     });
 
-    test('a closed pane takes its records with it', () {
-      final status = TerminalStatus()
-        ..applyPane(TmuxPaneId('%1'), report('state=done'))
-        ..applyPane(TmuxPaneId('%2'), report('state=error'));
-      status.retainPanes([TmuxPaneId('%2')]);
-      expect(status.state, ProgramState.error);
-      status.clearPanes();
-      expect(status.state, isNull);
-    });
   });
 
   group('TerminalSession', () {

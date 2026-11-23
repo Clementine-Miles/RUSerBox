@@ -18,10 +18,10 @@ extension _SSH on _AppSettingsPageState {
         _buildTermFontSize(),
         _buildTermLineHeight(),
       ]),
-      SettingsGroup(l10n.tmuxAutoAttach, [
-        _buildTmuxAutoToggle(),
-        _buildTmuxShowSelector(),
-        _buildTmuxSessionName(),
+      SettingsGroup(l10n.zellijAutoAttach, [
+        _buildZellijAutoToggle(),
+        _buildZellijShowSelector(),
+        _buildZellijSessionName(),
       ]),
     ];
   }
@@ -241,25 +241,25 @@ extension _SSH on _AppSettingsPageState {
     );
   }
 
-  SettingsRow _buildTmuxAutoToggle() {
-    final label = l10n.tmuxAuto;
+  SettingsRow _buildZellijAutoToggle() {
+    final label = l10n.zellijAuto;
     return SettingsRow(
       label,
       () => ListTile(
         leading: const Icon(Icons.terminal),
         title: Text(label),
-        subtitle: Text(l10n.tmuxAutoTip, style: UIs.textGrey),
-        trailing: StoreSwitch(prop: _setting.tmuxAuto),
+        subtitle: Text(l10n.zellijAutoTip, style: UIs.textGrey),
+        trailing: StoreSwitch(prop: _setting.zellijAuto),
       ),
-      keywords: 'tmux ${l10n.tmuxAutoTip}',
+      keywords: 'zellij ${l10n.zellijAutoTip}',
     );
   }
 
-  SettingsRow _buildTmuxShowSelector() {
-    final label = l10n.tmuxSessionSelector;
+  SettingsRow _buildZellijShowSelector() {
+    final label = l10n.zellijSessionSelector;
     return SettingsRow(
       label,
-      () => _setting.tmuxAuto.listenable().listenVal((autoEnabled) {
+      () => _setting.zellijAuto.listenable().listenVal((autoEnabled) {
         return IgnorePointer(
           ignoring: !autoEnabled,
           child: Opacity(
@@ -267,22 +267,22 @@ extension _SSH on _AppSettingsPageState {
             child: ListTile(
               leading: const Icon(Icons.list_alt),
               title: Text(label),
-              subtitle: Text(l10n.tmuxSessionSelectorTip, style: UIs.textGrey),
-              trailing: StoreSwitch(prop: _setting.tmuxShowSelector),
+              subtitle: Text(l10n.zellijSessionSelectorTip, style: UIs.textGrey),
+              trailing: StoreSwitch(prop: _setting.zellijShowSelector),
             ),
           ),
         );
       }),
-      keywords: 'tmux ${l10n.tmuxSessionSelectorTip}',
+      keywords: 'zellij ${l10n.zellijSessionSelectorTip}',
     );
   }
 
-  SettingsRow _buildTmuxSessionName() {
-    final label = l10n.tmuxDefaultSessionName;
+  SettingsRow _buildZellijSessionName() {
+    final label = l10n.zellijDefaultSessionName;
     return SettingsRow(
       label,
-      () => _setting.tmuxAuto.listenable().listenVal((autoEnabled) {
-        return _setting.tmuxSessionName.listenable().listenVal((name) {
+      () => _setting.zellijAuto.listenable().listenVal((autoEnabled) {
+        return _setting.zellijSessionName.listenable().listenVal((name) {
           final displayName = name.isEmpty ? 'server_box' : name;
           return IgnorePointer(
             ignoring: !autoEnabled,
@@ -292,28 +292,33 @@ extension _SSH on _AppSettingsPageState {
                 leading: const Icon(Icons.badge_outlined),
                 title: Text(label),
                 trailing: Text(displayName, style: UIs.text15),
-                onTap: () => _showTmuxSessionNameDialog(name),
+                onTap: () => _showZellijSessionNameDialog(name),
               ),
             ),
           );
         });
       }),
-      keywords: 'tmux',
+      keywords: 'zellij',
     );
   }
 
-  Future<void> _showTmuxSessionNameDialog(String current) async {
+  Future<void> _showZellijSessionNameDialog(String current) async {
     withTextFieldController((ctrl) async {
       ctrl.text = current;
       void onSave() {
-        _setting.tmuxSessionName.put(ctrl.text.trim());
+        final name = ctrl.text.trim();
+        if (name.isNotEmpty && !ZellijSessions.validName(name)) {
+          Toast.error(l10n.zellijInvalidName);
+          return;
+        }
+        _setting.zellijSessionName.put(name);
         // `popSheet`: `context` here is the settings page's, and the dialog
         // is on the root navigator.
         context.popSheet();
       }
 
       await context.showSheet<bool>(
-        title: l10n.tmuxSessionName,
+        title: l10n.zellijSessionName,
         child: Input(
           controller: ctrl,
           autoFocus: true,

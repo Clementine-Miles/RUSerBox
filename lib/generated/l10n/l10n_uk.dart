@@ -1145,7 +1145,7 @@ class AppLocalizationsUk extends AppLocalizations {
       'Вибрати сніпет і виконати його в цьому терміналі.';
 
   @override
-  String get virtKeyHelpTmux => 'Перемикання між сесіями та вікнами tmux.';
+  String get virtKeyHelpZellij => 'Manage Zellij sessions on the SSH host.';
 
   @override
   String get virtKeyIntroActions => 'Швидкі дії';
@@ -1250,58 +1250,50 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sortByJoinTime => 'За часом додавання';
 
   @override
-  String get tmuxAutoAttach => 'Автопідключення до tmux';
+  String get zellijInvalidName => 'Enter a valid Zellij session name.';
 
   @override
-  String get tmuxAuto => 'Автоматичний tmux';
+  String get zellijSessions => 'Zellij sessions';
 
   @override
-  String get tmuxAutoTip =>
-      'Автоматично запускати tmux або підключатися до нього під час з\'єднання по SSH';
+  String get zellijDetach => 'Detach';
 
   @override
-  String get tmuxSessionSelector => 'Вибір сесії';
+  String get zellijTerminate => 'Terminate session';
 
   @override
-  String get tmuxSessionSelectorTip =>
-      'Показувати вибір сесії під час підключення';
-
-  @override
-  String get tmuxDefaultSessionName => 'Типова назва сесії';
-
-  @override
-  String get tmuxSessionName => 'Назва сесії';
-
-  @override
-  String get tmuxNewSession => 'Нова сесія';
-
-  @override
-  String get tmuxNewWindow => 'Нове вікно';
-
-  @override
-  String get tmuxNoWindowsFound => 'Вікон не знайдено';
-
-  @override
-  String tmuxWindowCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count вікна',
-      many: '$count вікон',
-      few: '$count вікна',
-      one: '1 вікно',
-    );
-    return '$_temp0';
+  String zellijTerminateConfirm(String name) {
+    return 'Terminate Zellij session “$name” and its running programs?';
   }
 
   @override
-  String get tmuxAttached => 'Підключена';
+  String get zellijAutoAttach => 'Автопідключення до Zellij';
 
   @override
-  String get tmuxSkip => 'Пропустити';
+  String get zellijAuto => 'Автоматичний Zellij';
 
   @override
-  String get tmuxNotAvailable => 'tmux недоступний';
+  String get zellijAutoTip =>
+      'Автоматично запускати Zellij або підключатися до нього під час з\'єднання по SSH';
+
+  @override
+  String get zellijSessionSelector => 'Вибір сесії';
+
+  @override
+  String get zellijSessionSelectorTip =>
+      'Показувати вибір сесії під час підключення';
+
+  @override
+  String get zellijDefaultSessionName => 'Типова назва сесії';
+
+  @override
+  String get zellijSessionName => 'Назва сесії';
+
+  @override
+  String get zellijNewSession => 'Нова сесія';
+
+  @override
+  String get zellijNotAvailable => 'Zellij недоступний';
 
   @override
   String containerSegmentsMismatch(int count) {
@@ -5276,9 +5268,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get programIdle => 'Бездіяльна';
 
   @override
-  String get programThisShell => 'Ця оболонка';
-
-  @override
   String get programProgress => 'Хід виконання';
 
   @override
@@ -6858,7 +6847,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get reconnectEndsShell =>
-      'Немає сеансу tmux для повторного під’єднання, тому перепідключення завершить цю оболонку й усе, що в ній ще виконується, та очистить її вивід на екрані.';
+      'Немає сеансу Zellij для повторного під’єднання, тому перепідключення завершить цю оболонку й усе, що в ній ще виконується, та очистить її вивід на екрані.';
 
   @override
   String get handedness => 'Провідна рука';
