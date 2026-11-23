@@ -1,5 +1,5 @@
 /// The Monitor tab over scripted agents: the overview's versions, alerts and
-/// shortcuts, the web apps (updates first, a tap asking for a way in), the
+/// shortcuts,
 /// notifications in this app's words, the audit log by kind, ending a session,
 /// what an agent too old for a section says, and how to update an agent.
 library;
@@ -14,13 +14,11 @@ import 'package:server_box/data/model/server/monitor/monitor_access.dart';
 import 'package:server_box/data/model/server/monitor/monitor_capabilities.dart';
 import 'package:server_box/data/model/server/monitor/monitor_http_credential.dart';
 import 'package:server_box/data/model/server/monitor/monitor_overview.dart';
-import 'package:server_box/data/model/server/monitor/monitor_stack.dart';
 import 'package:server_box/data/model/server/server.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/provider/monitor_release.dart';
 import 'package:server_box/data/provider/server/monitor_overview.dart';
 import 'package:server_box/data/provider/server/single.dart';
-import 'package:server_box/data/provider/server/web_apps.dart';
 import 'package:server_box/data/res/status.dart';
 import 'package:server_box/data/store/private_key.dart';
 import 'package:server_box/data/store/server.dart';
@@ -30,17 +28,15 @@ import 'package:server_box/generated/l10n/l10n.dart';
 import 'package:server_box/src/rust/api/script.dart' as rust;
 import 'package:server_box/view/page/monitor/common.dart';
 import 'package:server_box/view/page/monitor/tab.dart';
-import 'package:server_box/view/page/web_apps/detail.dart';
 
 import '../helpers/rust_lib_helper.dart';
 import '../helpers/spi_fixture.dart';
 import '../helpers/test_db.dart';
 
-const _allFeatures = {'stacks', 'desk', 'alerts', 'audit', 'live'};
+const _allFeatures = {'notifications', 'alerts', 'audit', 'live'};
 
 final _versions = <String, String>{};
 final _features = <String, Set<String>>{};
-final _apps = <String, WebAppsState>{};
 final _overviews = <String, MonitorOverviewState>{};
 final _audits = <String, List<MonitorAuditEntry>>{};
 final _lives = <String, MonitorLive>{};
@@ -69,20 +65,6 @@ class _FakeServer extends ServerNotifier {
       version: _versions[spi.id] ?? '0.3.0',
     ),
   );
-}
-
-class _FakeApps extends WebAppsNotifier {
-  @override
-  WebAppsState build(String serverId) => _apps[serverId] ?? const WebAppsState();
-
-  @override
-  Future<void> refresh() async {}
-
-  @override
-  Future<Uri?> enter(String id) async {
-    _calls.add('enter $serverId/$id');
-    return null;
-  }
 }
 
 class _FakeOverview extends MonitorOverviewNotifier {
@@ -127,17 +109,6 @@ Spi _agent(String id, String name) => Spi(
   monitorHttp: MonitorHttpCredential(addr: 'https://$id:3770'),
 );
 
-MonitorWebApp _app(String id, String title, {String? health = 'healthy', bool proxy = true, String? latest}) =>
-    MonitorWebApp(
-      id: id,
-      title: {'en': title},
-      state: 'installed',
-      health: health,
-      proxy: proxy,
-      version: '1',
-      latest: latest ?? '1',
-    );
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(initRustLibForTest);
@@ -148,7 +119,7 @@ void main() {
     getIt.registerSingleton<ServerStore>(ServerStore());
     getIt.registerSingleton<PrivateKeyStore>(PrivateKeyStore());
     Stores.setting.serverStatusUpdateInterval.put(0);
-    for (final map in <Map>[_versions, _features, _apps, _overviews, _audits, _lives, _failed]) {
+    for (final map in <Map>[_versions, _features, _overviews, _audits, _lives, _failed]) {
       map.clear();
     }
     _calls.clear();
@@ -166,7 +137,6 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         serverProvider.overrideWith2((_) => _FakeServer()),
-        webAppsProvider.overrideWith2((_) => _FakeApps()),
         monitorOverviewProvider.overrideWith2((_) => _FakeOverview()),
         monitorLatestReleaseProvider.overrideWith((_) async => '0.3.0'),
       ],
@@ -257,46 +227,6 @@ void main() {
     expect(_calls, ['read a 1']);
   });
 
-  testWidgets('web apps: an update first, the filter, and a tap asking for a way in', (tester) async {
-    Stores.server.put(_agent('a', 'box-a'));
-    Stores.server.put(_agent('c', 'no-stacks'));
-    _features['c'] = {'desk'};
-    _apps['a'] = WebAppsState(
-      offered: true,
-      apps: [
-        _app('futo.immich', 'Immich'),
-        _app('jellyfin.jellyfin', 'Jellyfin', latest: '2'),
-        _app('x.busy', 'Busy', health: null, proxy: false),
-      ],
-    );
-    await pump(tester);
-    await section(tester, MonitorSection.apps);
-
-    expect(find.text('no-stacks'), findsNothing);
-    final top = tester.getTopLeft(find.text('Jellyfin')).dy;
-    expect(top, lessThan(tester.getTopLeft(find.text('Immich')).dy));
-    expect(find.textContaining('1 → 2'), findsOneWidget);
-
-    await tester.tap(find.text('Jellyfin'));
-    await tester.pump();
-    expect(_calls, ['enter a/jellyfin.jellyfin']);
-
-    await tester.tap(find.byTooltip(app_locale.l10n.monitorUpdatesOnly));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('Immich'), findsNothing);
-    expect(find.text('Jellyfin'), findsOneWidget);
-
-    // Not behind the proxy: its page instead, saying why.
-    await tester.tap(find.byTooltip(app_locale.l10n.monitorUpdatesOnly));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.tap(find.text('Busy'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(find.byType(WebAppPage), findsOneWidget);
-  });
-
   testWidgets('a notification the agent words by kind is in this app\'s words', (tester) async {
     Stores.server.put(_agent('a', 'box-a'));
     _overviews['a'] = MonitorOverviewState(
@@ -306,14 +236,13 @@ void main() {
           MonitorNotice(
             id: 7,
             level: 'error',
-            source: 'stack',
-            subject: 'Immich is down',
+            source: 'storage',
+            subject: 'Drive is failing',
             body: 'english',
             read: true,
-            kind: 'stack.down',
+            kind: 'storage.diskFailing',
             params: {
-              'titles': {'en': 'Immich'},
-              'services': ['server', 'redis'],
+              'device': 'sda',
             },
           ),
         ],
@@ -321,8 +250,8 @@ void main() {
     );
     await pump(tester);
     await section(tester, MonitorSection.notices);
-    expect(find.text(app_locale.l10n.noticeStackDown('Immich')), findsOneWidget);
-    expect(find.textContaining(app_locale.l10n.noticeStackDownBody('server, redis')), findsOneWidget);
+    expect(find.text(app_locale.l10n.noticeStorageDiskFailing('sda')), findsOneWidget);
+    expect(find.textContaining(app_locale.l10n.noticeStorageDiskFailingBody), findsOneWidget);
     expect(find.text('english'), findsNothing);
   });
 
@@ -377,7 +306,7 @@ void main() {
 
   testWidgets('an agent too old for a section says so', (tester) async {
     Stores.server.put(_agent('a', 'box-a'));
-    _features['a'] = {'stacks'};
+    _features['a'] = {'notifications'};
     await pump(tester);
     expect(find.text(app_locale.l10n.monitorAlertsNotOffered), findsOneWidget);
     await section(tester, MonitorSection.audit);

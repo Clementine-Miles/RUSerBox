@@ -6228,77 +6228,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get agentModeBypassWarn => 'すべて許可：削除、再起動、設定変更は確認なしで実行されます。';
 
   @override
-  String get webApps => 'Web アプリ';
-
-  @override
-  String get webAppUnhealthy => '異常';
-
-  @override
-  String get webAppDown => 'ダウン';
-
-  @override
-  String get webAppInstalling => 'インストール中';
-
-  @override
-  String get webAppsEmpty =>
-      'Web アプリはまだありません。Monitor パネルの App Store からデプロイしてください。';
-
-  @override
-  String get deskAppOpensInPanel => 'パネルで開きます';
-
-  @override
-  String get webAppVersion => 'バージョン';
-
-  @override
-  String get webAppHomepage => 'ホームページ';
-
-  @override
-  String webAppUpdate(String version) {
-    return 'バージョン $version があります。Monitor パネルで更新してください。';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$appは停止しています';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return '停止中のサービス: $services。';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => '実行中のコンテナがありません。';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$appの状態に問題があります';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return 'ヘルスチェックに失敗したサービス: $services。';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$appは再び実行中です';
-  }
-
-  @override
-  String get noticeStackBackBody => 'すべてのコンテナが稼働しています。';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return '$appの更新があります';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '$project $versionをインストールできます（現在: $current）。';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array は縮退しています';
   }
@@ -6412,19 +6341,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return '問題のあるアプリ：$count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return 'アプリの更新：$count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => '更新のみ';
-
-  @override
   String get monitorNoUpdates => '更新のあるアプリはありません。';
 
   @override
@@ -6535,9 +6451,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get monitorStatUnread => '未読';
-
-  @override
-  String get monitorStatUpdates => 'アプリの更新';
 
   @override
   String get monitorAuditEmpty => '一致する記録はありません。';

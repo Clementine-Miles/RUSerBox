@@ -51,7 +51,7 @@ help:
 		'  clean              Run flutter clean' \
 		'' \
 		'Monitor:' \
-		'  monitor-dev        Run monitor backend + panel dev server (vite on :3000, API on :3770)' \
+		'  monitor-dev        Run the Monitor HTTP API on port 3770' \
 		'  monitor-deploy     Put this checkout on a test machine: make monitor-deploy HOST=<ssh host>' \
 		'' \
 		'Release scripts:' \
@@ -196,21 +196,10 @@ sync-homebrew-cask:
 		DMG_ARM64_PATH="$(DMG_ARM64_PATH)" DMG_AMD64_PATH="$(DMG_AMD64_PATH)" TAP_REPO_PATH="$(TAP_REPO_PATH)" bash scripts/release/sync-homebrew-cask.sh; \
 	fi
 
-# A test machine's agent and panel from this checkout: make monitor-deploy HOST=<ssh host>
-# (scripts/monitor-deploy.sh; ARGS=--no-agent or --no-panel for one half).
+# Install this checkout's agent on a development host.
 monitor-deploy:
 	@[ -n "$(HOST)" ] || { echo 'HOST=<ssh host> is required'; exit 2; }
-	@bash scripts/monitor-deploy.sh "$(HOST)" $(ARGS)
+	@bash scripts/monitor-deploy.sh "$(HOST)"
 
-# Backend from monitor/ (finds config/db there); panel via vite dev server on
-# :3000 with /api proxied to :3770. Ctrl-C stops both.
 monitor-dev:
-	@if [ ! -d monitor/frontend/node_modules ]; then \
-		echo '==> Installing panel dependencies'; \
-		cd monitor/frontend && npm ci; \
-	fi
-	@echo '==> Panel: http://localhost:3000  API: http://localhost:3770'
-	@trap 'kill 0' INT TERM EXIT; \
-	(cd monitor && cargo run -p server_box_monitor -- serve) & \
-	(cd monitor/frontend && npm run dev) & \
-	wait
+	cd monitor && $(CARGO) run -p server_box_monitor -- serve

@@ -55,19 +55,6 @@ SBM_E2E_MUX_AGENT=/tmp/agent.sock \
 flutter test test/e2e/control_master_test.dart
 ```
 
-## Monitor panel tests
-
-The Monitor Svelte frontend has an independent Vitest and Testing Library suite:
-
-```bash
-cd monitor/frontend
-npm run test
-npm run test:coverage
-npm run check
-```
-
-`npm run check` performs type checking and is also part of `npm run build`.
-
 ## Unit tests
 
 Use unit tests for pure business logic, models, and parsers:

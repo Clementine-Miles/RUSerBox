@@ -6,7 +6,7 @@
 //! - `settings.db`: a database with this monitor's schema whose [`KEPT`] tables
 //!   are filled from the live one (the account's row only its password), every
 //!   other table empty,
-//! - `blobs/<sha256>`: the files those rows name (`core::blobs`).
+//! Older backups can also contain verified `blobs/<sha256>` entries.
 //!
 //! Restoring brings `settings.db` up to this build's migrations, then replaces
 //! the [`KEPT`] tables in one transaction, and puts back from `config.toml`
@@ -45,14 +45,6 @@ pub const KEPT: &[Kept] = &[
     kept("desktop_profile"),
     kept("bmc_target"),
     kept("virt_pve"),
-    kept("desk_preferences"),
-    kept("desk_dock"),
-    kept("desk_icon"),
-    kept("desk_wallpaper"),
-    kept("desk_background_denied"),
-    kept("desk_onboarding"),
-    Kept { table: "desk_app_storage", volatile: &["value", "updated_at"] },
-    kept("desk_app_declined"),
     kept("agent_settings"),
     kept("agent_provider"),
     kept("agent_credential"),
@@ -88,6 +80,14 @@ pub const LEFT_OUT: &[&str] = &[
     "performance_metrics",
     "access_log",
     "benchmark_run",
+    "desk_preferences",
+    "desk_dock",
+    "desk_icon",
+    "desk_wallpaper",
+    "desk_background_denied",
+    "desk_onboarding",
+    "desk_app_storage",
+    "desk_app_declined",
     "desk_theme",
     "desk_theme_background",
     "desk_session",
@@ -115,9 +115,6 @@ pub const LEFT_OUT: &[&str] = &[
 
 /// The account's columns a backup carries.
 const USER_COLUMNS: &[&str] = &["id", "password_hash"];
-
-/// Blob columns of the [`KEPT`] tables (`core::blobs`).
-const BLOBS: &str = "SELECT sha256 FROM main.desk_wallpaper";
 
 pub const MANIFEST: &str = "manifest.json";
 pub const CONFIG: &str = "config.toml";
@@ -320,9 +317,8 @@ async fn detach<T>(conn: &mut Guarded, result: anyhow::Result<T>) -> anyhow::Res
     result
 }
 
-/// Writes the settings into a new database at [path]; answers the blobs its
-/// rows name.
-pub async fn write_database(db: &SqlitePool, sealer: &Sealer, path: &Path) -> anyhow::Result<Vec<String>> {
+/// Writes the settings into a new database at [path].
+pub async fn write_database(db: &SqlitePool, sealer: &Sealer, path: &Path) -> anyhow::Result<()> {
     empty_database(path).await?;
     let mut conn = Guarded::acquire(db).await?;
     attach(&mut conn, path).await?;
@@ -330,7 +326,7 @@ pub async fn write_database(db: &SqlitePool, sealer: &Sealer, path: &Path) -> an
     detach(&mut conn, result).await
 }
 
-async fn copy_out(conn: &mut SqliteConnection, sealer: &Sealer) -> anyhow::Result<Vec<String>> {
+async fn copy_out(conn: &mut SqliteConnection, sealer: &Sealer) -> anyhow::Result<()> {
     conn.execute("BEGIN").await?;
     for k in KEPT {
         let mut cols = columns(conn, "main", k.table).await?;
@@ -347,9 +343,8 @@ async fn copy_out(conn: &mut SqliteConnection, sealer: &Sealer) -> anyhow::Resul
     // In clear inside the backup's own encryption: it restores on a machine
     // with another credentials key.
     sealer.unseal_all(conn, "other").await?;
-    let blobs: Vec<(String,)> = sqlx::query_as(BLOBS).fetch_all(&mut *conn).await?;
     conn.execute("COMMIT").await?;
-    Ok(blobs.into_iter().map(|(b,)| b).collect())
+    Ok(())
 }
 
 /// The archive's entries, read back: at most this many.
@@ -357,11 +352,8 @@ const MAX_ENTRIES: usize = 10_000;
 /// And at most this much inflated.
 const MAX_INFLATED: u64 = 1 << 30;
 
-/// Writes the archive to [out]: [manifest], [config], the database at [db]
-/// and [blobs] (`(sha256, path)`), each opened as it is streamed in. A row
-/// naming a file that is gone is backed up without it, as the monitor serves
-/// it now.
-pub fn write_archive(out: &Path, manifest: &Manifest, config: Option<&[u8]>, db: &Path, blobs: &[(String, PathBuf)]) -> anyhow::Result<()> {
+/// Writes a settings backup archive.
+pub fn write_archive(out: &Path, manifest: &Manifest, config: Option<&[u8]>, db: &Path) -> anyhow::Result<()> {
     let file = std::fs::File::create(out)?;
     let gz = flate2::write::GzEncoder::new(file, flate2::Compression::default());
     let mut tar = tar::Builder::new(gz);
@@ -381,16 +373,6 @@ pub fn write_archive(out: &Path, manifest: &Manifest, config: Option<&[u8]>, db:
     let mut db = std::fs::File::open(db)?;
     let len = db.metadata()?.len();
     add(DATABASE, len, &mut db)?;
-    for (sha, path) in blobs {
-        let file = match std::fs::File::open(path) {
-            Ok(f) => f,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => continue,
-            Err(e) => return Err(e.into()),
-        };
-        let len = file.metadata()?.len();
-        // At the length measured: a file that changed since is not this blob.
-        add(&format!("blobs/{sha}"), len, &mut file.take(len))?;
-    }
     tar.into_inner()?.finish()?.sync_all()?;
     Ok(())
 }
@@ -626,7 +608,7 @@ async fn copy_in(conn: &mut SqliteConnection, sealer: &Sealer, blobs: usize) -> 
 
 /// [current] with what [backup] says that is not this machine's: monitoring
 /// (intervals, rules, retention), push channels, and the server's name,
-/// allowed origins and card order. Addresses, TLS, the database, remote
+/// allowed origins. Addresses, TLS, the database, remote
 /// access limits and web apps' folders stay [current]'s.
 pub fn merge_config(mut current: Config, backup: &Config) -> Config {
     current.monitoring = backup.monitoring.clone();
@@ -635,7 +617,6 @@ pub fn merge_config(mut current: Config, backup: &Config) -> Config {
         let mut server = current.get_server();
         server.name = from.name.clone();
         server.cors_allowed_origins = from.cors_allowed_origins.clone();
-        server.card_order = from.card_order.clone();
         current.server = Some(server);
     }
     current
@@ -708,13 +689,10 @@ mod tests {
     #[tokio::test]
     async fn settings_go_back_and_history_stays() {
         let dir = tempfile::tempdir().unwrap();
-        let blobs = Blobs::beside(&dir.path().join("db"));
         let src = database().await;
         crate::db::accounts::insert_owner(&src, "old-hash").await.unwrap();
         sqlx::query("INSERT INTO snippet (id, name, script, position, updated_at) VALUES ('s1', 'Hi', 'echo hi', 0, 'x')").execute(&src).await.unwrap();
         sqlx::query("INSERT INTO snippet_tag (snippet_id, tag, position) VALUES ('s1', 'net', 0)").execute(&src).await.unwrap();
-        let sha = blobs.put(b"a wallpaper").await.unwrap();
-        sqlx::query("INSERT INTO desk_wallpaper (user_id, mime, sha256) VALUES (1, 'image/png', ?)").bind(&sha).execute(&src).await.unwrap();
         sqlx::query("INSERT INTO access_log (timestamp, kind, action, result) VALUES ('x', 'login', 'open', 'ok')").execute(&src).await.unwrap();
         let src_key = Sealer::temporary();
         sqlx::query("INSERT INTO bmc_target (id, name, url, username, password, position, updated_at) VALUES ('b', 'B', 'https://b', 'root', ?, 0, 'x')")
@@ -731,20 +709,18 @@ mod tests {
             .unwrap();
 
         let file = dir.path().join("settings.db");
-        let named = write_database(&src, &src_key, &file).await.unwrap();
+        write_database(&src, &src_key, &file).await.unwrap();
         let lost: String = sqlx::query_scalar("SELECT credential FROM agent_credential").fetch_one(&single(&file, false).await.unwrap()).await.unwrap();
         assert_eq!(lost, "");
-        assert_eq!(named, vec![sha.clone()]);
         let carried: String = sqlx::query_scalar("SELECT password FROM bmc_target").fetch_one(&single(&file, false).await.unwrap()).await.unwrap();
         assert_eq!(carried, "calvin", "in clear inside the backup's own encryption");
         let archive = dir.path().join("a.tar.gz");
         let manifest = Manifest { format: FORMAT, monitor_version: "t".into(), migration: 39, host: "h".into(), created_at: "now".into() };
-        write_archive(&archive, &manifest, Some(b"x = 1"), &file, &[(sha.clone(), blobs.path(&sha).unwrap())]).unwrap();
+        write_archive(&archive, &manifest, Some(b"x = 1"), &file).unwrap();
         let out = dir.path().join("out");
         std::fs::create_dir(&out).unwrap();
         let unpacked = unpack(&archive, &out).unwrap();
         assert_eq!(unpacked.config.as_deref(), Some(&b"x = 1"[..]));
-        assert_eq!(unpacked.blobs.len(), 1);
 
         // Another machine: its own account (id 5), history and snippets.
         let dst = database().await;
@@ -764,9 +740,6 @@ mod tests {
         assert_eq!(snippets, vec![("s1".to_string(),)]);
         let tags: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM snippet_tag").fetch_one(&dst).await.unwrap();
         assert_eq!(tags, 1);
-        let wall: (i64, String) = sqlx::query_as("SELECT user_id, sha256 FROM desk_wallpaper").fetch_one(&dst).await.unwrap();
-        assert_eq!(wall, (5, sha.clone()));
-        assert_eq!(other_blobs.read(&sha).await.unwrap().as_deref(), Some(&b"a wallpaper"[..]));
         let log: Vec<(String,)> = sqlx::query_as("SELECT timestamp FROM access_log").fetch_all(&dst).await.unwrap();
         assert_eq!(log, vec![("y".to_string(),)], "history is the machine's own");
     }

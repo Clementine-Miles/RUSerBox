@@ -6548,77 +6548,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Разрешить всё: удаление, перезапуск и изменение конфигурации выполняются без подтверждения.';
 
   @override
-  String get webApps => 'Веб-приложения';
-
-  @override
-  String get webAppUnhealthy => 'Неисправно';
-
-  @override
-  String get webAppDown => 'Не работает';
-
-  @override
-  String get webAppInstalling => 'Установка';
-
-  @override
-  String get webAppsEmpty =>
-      'Веб-приложений пока нет. Разверните их из App Store панели Monitor.';
-
-  @override
-  String get deskAppOpensInPanel => 'Открывается в панели';
-
-  @override
-  String get webAppVersion => 'Версия';
-
-  @override
-  String get webAppHomepage => 'Сайт';
-
-  @override
-  String webAppUpdate(String version) {
-    return 'Доступна версия $version. Обновите её в панели Monitor.';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app остановлен';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return 'Не запущены: $services.';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => 'Ни один контейнер не запущен.';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app работает с ошибками';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return 'Проверка состояния не пройдена: $services.';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app снова работает';
-  }
-
-  @override
-  String get noticeStackBackBody => 'Все контейнеры запущены.';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return 'Доступно обновление для $app';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return 'Можно установить $project $version (текущая версия: $current).';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array работает в деградированном режиме';
   }
@@ -6735,19 +6664,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return 'Приложения с проблемами: $count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return 'Обновления приложений: $count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => 'Только обновления';
-
-  @override
   String get monitorNoUpdates => 'Обновлений приложений нет.';
 
   @override
@@ -6858,9 +6774,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get monitorStatUnread => 'Непрочитанные';
-
-  @override
-  String get monitorStatUpdates => 'Обновления';
 
   @override
   String get monitorAuditEmpty => 'Подходящих записей нет.';

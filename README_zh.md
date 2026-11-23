@@ -95,7 +95,7 @@
 
 ## 帮助
 
-- [ServerBox Monitor](https://github.com/lollipopkit/flutter_server_box/tree/main/monitor) 是安装在你服务器上的服务端组件。不打开 ServerBox app 时仍需工作的功能都依赖它 —— **推送通知**、**桌面小部件** 和 **手表 app**；它同时也是添加服务器的第二种方式：app 可以经 HTTP 而不是 SSH 访问它，适用于不便暴露 SSH 端口的主机，并且图表在 app 首次连接前就已有历史数据。Monitor 还提供网页面板。
+- [ServerBox Monitor](https://github.com/lollipopkit/flutter_server_box/tree/main/monitor) 是安装在你服务器上的服务端组件。不打开 ServerBox app 时仍需工作的功能都依赖它 —— **推送通知**、**桌面小部件** 和 **手表 app**；它同时也是添加服务器的第二种方式：app 可以经 HTTP 而不是 SSH 访问它，适用于不便暴露 SSH 端口的主机，并且图表在 app 首次连接前就已有历史数据。
 - **Agent skills：** 本仓库包含三份供 AI agent 使用的 skill。使用下面的命令添加：
 
   ```sh

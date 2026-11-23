@@ -1,4 +1,4 @@
-use crate::api::desk::Level;
+use crate::api::notifications::Level;
 use crate::api::server::AppState;
 use crate::utils::lock::LockExt;
 use crate::{core::config::{Config, PushConfig}, utils::error::Result};

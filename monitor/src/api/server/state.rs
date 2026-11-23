@@ -135,25 +135,19 @@ pub struct AppState {
     /// and re-checks the account when it fires; terminal sessions, which
     /// outlive their sockets, are closed by `authz::end_account` itself.
     pub password_changed: broadcast::Sender<&'static str>,
-    /// The desk's events and which monitoring rules are firing — see
-    /// `api::desk`.
-    pub desk: Arc<crate::api::desk::DeskHub>,
+    /// Current monitoring alerts and notification history.
+    pub notifications: Arc<crate::api::notifications::NotificationHub>,
     /// Files kept beside the database — see `core::blobs`.
     pub blobs: Arc<crate::core::blobs::Blobs>,
     /// The database's credentials key — see `db::sealed`.
     pub sealer: Arc<crate::db::sealed::Sealer>,
     /// Agent mode's tasks and the pi runtime they run in — see `agent_mode`.
     pub agent: Arc<crate::agent_mode::AgentMode>,
-    /// Desk apps' backends: compiled components, calls, jobs (`apps`).
-    pub apps: Arc<crate::apps::Apps>,
-    /// The web apps this agent deployed, their jobs and proxies — see
-    /// `stacks`.
-    pub stacks: Arc<crate::stacks::Stacks>,
     pub container_backups: Arc<crate::container_backups::ContainerBackups>,
     /// Backups of this agent's settings — see `monitor_backup`.
     pub monitor_backup: Arc<crate::monitor_backup::MonitorBackup>,
     pub storage: Arc<crate::api::storage::StorageJobs>,
-    pub shares: Arc<crate::stacks::job::JobSlot>,
+    pub shares: Arc<crate::core::job::JobSlot>,
     /// The last process table read, which the next one's read and write
     /// speeds are differenced against — see `api::process`.
     pub process_sample: Arc<tokio::sync::Mutex<Option<crate::api::process::ProcessSample>>>,
@@ -165,9 +159,7 @@ pub struct AppState {
     /// `config_file::write` is atomic, so no reader ever sees a half-written
     /// file — but atomicity alone doesn't stop two handlers from each reading
     /// the same starting state and the later write discarding the earlier
-    /// one's field. `/settings` and `/card-order` are separate endpoints
-    /// precisely so ordinary use doesn't contend here, yet they still edit
-    /// one file and must not race.
+    /// one's field. The settings and push handlers share this lock.
     pub config_write: Arc<Mutex<()>>,
     /// The agent's own releases as last read — see `api::update`.
     pub update: Arc<crate::api::update::AgentUpdate>,
@@ -211,11 +203,15 @@ pub(super) fn agent_state(config: &Config) -> crate::core::fs_roots::Protected {
         protected.file(&crate::db::sealed::Sealer::key_path_beside(&db));
         protected.tree(crate::core::blobs::Blobs::beside(&db).dir());
         protected.tree(&crate::agent_mode::AgentMode::dir_beside(&db));
-        crate::stacks::Stacks::protect_beside(&db, &mut protected);
+        let parent = db.parent().unwrap_or_else(|| Path::new("."));
+        let legacy_stacks = parent.join("stacks");
+        protected.in_each(&legacy_stacks, ".env");
+        protected.tree(&legacy_stacks.join(".catalog"));
+        protected.tree(&legacy_stacks.join(".desk-catalog"));
         protected.tree(&crate::container_backups::ContainerBackups::dir_beside(&db));
         protected.tree(&crate::monitor_backup::MonitorBackup::dir_beside(&db));
         protected.tree(&crate::inference::legacy_dir_beside(&db));
-        protected.tree(&crate::apps::Apps::dir_beside(&db));
+        protected.tree(&parent.join("apps"));
     }
     protected.file(&config.jwt_secret_path());
     protected.file(&crate::db::bootstrap::initial_credentials_path(&url));
@@ -276,7 +272,7 @@ impl AppState {
             mcp_ip_limiter: RateLimiter::new(240, 60),
             mcp_token_limiter: RateLimiter::new(120, 60),
             password_changed: broadcast::channel(16).0,
-            desk: Arc::new(crate::api::desk::DeskHub::default()),
+            notifications: Arc::default(),
             // Beside the database actually open, which a test's in-memory
             // one is not, whatever its configuration names.
             blobs: Arc::new(match sqlite_file_of(&db) {
@@ -289,12 +285,6 @@ impl AppState {
             monitor_backup: Arc::new(crate::monitor_backup::MonitorBackup::new(sqlite_file_of(&db).as_deref())),
             storage: Arc::default(),
             shares: Arc::default(),
-            stacks: Arc::new(crate::stacks::Stacks::new(
-                sqlite_file_of(&db).as_deref(),
-                config.get_stacks().local_apps.as_deref().map(std::path::Path::new),
-                config.get_stacks().shared_dir.as_deref().map(std::path::Path::new),
-            )),
-            apps: Arc::new(crate::apps::Apps::new(sqlite_file_of(&db).as_deref())),
             process_sample: Arc::new(tokio::sync::Mutex::new(None)),
             virt: Arc::new(crate::api::virt::VirtState::default()),
             config,

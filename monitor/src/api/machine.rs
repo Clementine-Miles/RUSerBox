@@ -63,15 +63,11 @@ pub const FEATURES: &[&str] = &[
     // Whether a newer agent is out and how this one is updated
     // (`api::update`).
     "update",
-    // The panel's desk (`api::desk`): its arrangement and preferences, each
-    // app's storage and installed apps (`api::apps`).
-    "desk",
+    "notifications",
+    "desk", // Compatibility for older Android clients.
     // Agent mode (`api::agent`): tasks an AI agent runs here.
     "agent_mode",
-    // Web apps deployed with Docker Compose and shown through the agent's
-    // proxy (`api::stacks`).
-    "stacks",
-    // The monitoring rules firing now (`GET /alerts`, `api::desk`).
+    // The monitoring rules firing now (`GET /alerts`, `api::notifications`).
     "alerts",
     // The audit log read back (`GET /audit`, `api::audit_log`).
     "audit",
@@ -88,23 +84,6 @@ pub const FEATURES: &[&str] = &[
 // TODO: no argument once LK Cloud ships.
 pub fn features(lkc: bool) -> Vec<&'static str> {
     FEATURES.iter().copied().filter(|f| lkc || *f != "lkc").collect()
-}
-
-/// What this machine is, as a desk app package's `os` names it: `linux` and
-/// `/etc/os-release`'s `ID` on Linux, `macos`, `windows`, else the platform's
-/// own name. Read once: the system does not change under a running agent.
-pub fn systems() -> &'static [String] {
-    static SYSTEMS: std::sync::OnceLock<Vec<String>> = std::sync::OnceLock::new();
-    SYSTEMS.get_or_init(|| {
-        let mut out = vec![match std::env::consts::OS {
-            "macos" => "macos".to_string(),
-            other => other.to_string(),
-        }];
-        if let Some(id) = std::fs::read_to_string("/etc/os-release").ok().and_then(|t| sbm_parser::common::parse_os_id(&t)) {
-            out.push(id);
-        }
-        out
-    })
 }
 
 /// Who is asking, and from where, once [`gate`] let them through.

@@ -3,7 +3,7 @@
 //! Adds CORS headers (and answers preflights) only for configured origins;
 //! every other request passes through untouched. Rejecting unknown Origins
 //! server-side (as ntex-cors does) is wrong here: fetch sends an Origin header
-//! even on same-origin POSTs, so a hard reject breaks the panel's own login.
+//! even on same-origin POSTs, so a hard reject breaks browser clients.
 //! Cross-origin blocking is the browser's job, and auth is a bearer token
 //! (not cookies), so there is no CSRF surface requiring server-side blocks.
 
@@ -18,8 +18,7 @@ use ntex::web::{HttpResponse, WebRequest, WebResponse};
 /// Must cover every method registered under `/api/v1` — a method missing here
 /// is silently unusable from a cross-origin panel (the browser rejects the
 /// request after preflight, the server never sees it). `PUT` used to be
-/// missing, which broke saving settings and card order on a panel hosted
-/// away from the agent. `allow_methods_covers_registered_api_methods` guards
+/// missing, which broke saving settings from browser clients. `allow_methods_covers_registered_api_methods` guards
 /// against that drifting again.
 const ALLOW_METHODS: &str = "GET, POST, PUT, DELETE";
 

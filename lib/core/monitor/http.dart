@@ -15,7 +15,6 @@ import 'package:server_box/data/model/app/error.dart';
 import 'package:server_box/data/model/server/monitor/monitor_agent.dart';
 import 'package:server_box/data/model/server/monitor/monitor_api_token.dart';
 import 'package:server_box/data/model/server/monitor/monitor_capabilities.dart';
-import 'package:server_box/data/model/server/monitor/monitor_desk_app.dart';
 import 'package:server_box/data/model/server/monitor/monitor_exec_output.dart';
 import 'package:server_box/data/model/server/monitor/monitor_fs.dart';
 import 'package:server_box/data/model/server/monitor/monitor_http_credential.dart';
@@ -23,13 +22,12 @@ import 'package:server_box/data/model/server/monitor/monitor_metrics.dart';
 import 'package:server_box/data/model/server/monitor/monitor_overview.dart';
 import 'package:server_box/data/model/server/monitor/monitor_push.dart';
 import 'package:server_box/data/model/server/monitor/monitor_settings.dart';
-import 'package:server_box/data/model/server/monitor/monitor_stack.dart';
 import 'package:server_box/src/rust/api/bmc.dart' show certPinAccepts;
 import 'package:server_box/src/rust/api/protocol.dart';
 
 /// A [MonitorHttpClient] shared by every holder of a lease on the same
 /// credential: one sign-in, one connection pool. The status poll, the Monitor
-/// tab, web apps and file browsers each hold one; the client goes with the
+/// tab and file browsers each hold one; the client goes with the
 /// last [release].
 final class MonitorClientLease {
   MonitorClientLease(MonitorHttpCredential monitor) : _shared = _SharedClient.acquire(monitor);
@@ -767,38 +765,13 @@ class MonitorHttpClient {
     });
   }
 
-  // -------------------------------------------------------------- backup
-  //
-  // `/api/v1/stacks*`: the web apps the agent deployed, any account.
-
-  /// The deployed web apps, in the agent's order.
-  Future<List<MonitorWebApp>> stacks() => _authed(
-    () async => MonitorWebApp.deployed(await _object('/api/v1/stacks')),
-  );
-
-  /// A single-use ticket into web app [id] through the agent's proxy, which
-  /// a browser takes within seconds ([MonitorStackEntry.uri]).
-  Future<MonitorStackEntry> stackEnter(String id) => _authed(
-    () async => MonitorStackEntry.fromJson(
-      await _object('/api/v1/stacks/${Uri.encodeComponent(id)}/enter', post: const {}),
-    ),
-  );
-
-  /// The agent's address, which a proxy without a host of its own shares.
+  /// The active agent address, including after HTTP failover.
+  @visibleForTesting
   Uri get agentUri => Uri.parse(_addr);
-
-  // ------------------------------------------------------------ desk apps
-  //
-  // `/api/v1/apps`: the apps installed on the agent's desk, any account.
-
-  /// The approved desk apps, in the agent's order.
-  Future<List<MonitorDeskApp>> deskApps() => _authed(
-    () async => MonitorDeskApp.approved(await _object('/api/v1/apps')),
-  );
 
   // ------------------------------------------------------------ overview
   //
-  // What the Monitor tab reads beside the apps: the rules firing now, the
+  // What the Monitor tab reads: the rules firing now, the
   // notifications, the audit log, and what is signed in and open.
 
   /// The monitoring rules firing at the agent's last check.
@@ -822,17 +795,25 @@ class MonitorHttpClient {
   /// The newest [limit] notifications, and how many are unread.
   Future<MonitorNotices> notices({int limit = 100}) => _authed(
     () async => MonitorNotices.fromJson(
-      await _object('/api/v1/desk/notifications', query: {'limit': limit}),
+      await _notificationRequest((path) => _object(path, query: {'limit': limit})),
     ),
   );
 
   /// Marks [ids] read, or every notification with [all].
   Future<void> markNoticesRead({List<int> ids = const [], bool all = false}) => _authed(() async {
-    await _session().post<dynamic>(
-      '/api/v1/desk/notifications/read',
-      data: {'ids': ids, 'all': all},
+    await _notificationRequest(
+      (path) => _session().post<dynamic>('$path/read', data: {'ids': ids, 'all': all}),
     );
   });
+
+  Future<T> _notificationRequest<T>(Future<T> Function(String path) request) async {
+    try {
+      return await request('/api/v1/notifications');
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 404) rethrow;
+      return request('/api/v1/desk/notifications');
+    }
+  }
 
   /// A page of the audit log, newest first: rows older than [before], of one
   /// [kind] and [result] when given. Over a link the account may act on only.

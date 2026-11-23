@@ -11,7 +11,7 @@ import 'package:server_box/data/model/server/system.dart';
 /// (`monitor/src/api/server.rs`) serializes: an account over plaintext HTTP
 /// to an agent without `allow_insecure`, so `access` is refused. The agent's
 /// `monitor/tests/permissions_api.rs` checks this fixture against its own
-/// answer; the panel's `access.test.ts` reads it too.
+/// answer.
 void main() {
   final json =
       jsonDecode(

@@ -89,7 +89,6 @@ import 'package:server_box/view/page/users/users.dart';
 import 'package:server_box/view/page/virt/guest.dart';
 import 'package:server_box/view/page/virt/hardware.dart';
 import 'package:server_box/view/page/virt/resources.dart';
-import 'package:server_box/view/page/web_apps/detail.dart';
 import 'package:xterm/core.dart';
 
 import '../helpers/fake_shell.dart';
@@ -337,13 +336,6 @@ void main() {
       c,
       VirtResourceCreateArgs(serverId: stored().id, network: false),
     ),
-    'WebAppPage': (c) {
-      stored();
-      WebAppPage.route.go(
-        c,
-        args: const WebAppPageArgs(serverId: 's', appId: 'a'),
-      );
-    },
   };
 
   /// Pages a widget test cannot push, and why.

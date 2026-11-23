@@ -368,9 +368,8 @@ async fn mcp_answer(state: &AppState) -> HttpResponse {
     match crate::agent_mode::mcp::load(&state.db, &state.sealer).await {
         Ok(servers) => {
             let status = state.agent.mcp.refresh(state).await;
-            let apps = crate::agent_mode::mcp::app_servers(state).await;
             let signed_in = crate::agent_mode::mcp_oauth::signed_in(&state.db).await;
-            HttpResponse::Ok().json(&serde_json::json!({ "servers": servers, "apps": apps, "status": status, "signedIn": signed_in }))
+            HttpResponse::Ok().json(&serde_json::json!({ "servers": servers, "status": status, "signedIn": signed_in }))
         }
         Err(e) => refused(e.into()),
     }
@@ -403,63 +402,6 @@ pub async fn put_mcp(
     Ok(mcp_answer(&state).await)
 }
 
-/// What changes about a deployed app's MCP server: on or off, and the token
-/// it asks for (`null` removes it, absent keeps it).
-#[derive(Debug, serde::Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct AppServerWrite {
-    #[serde(default)]
-    pub enabled: Option<bool>,
-    #[serde(default, deserialize_with = "present")]
-    pub token: Option<Option<String>>,
-}
-
-/// A field that is there, `null` included: `Some(None)` for `null`, and
-/// `None` (by `default`) when absent.
-fn present<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<Option<String>>, D::Error> {
-    <Option<String> as serde::Deserialize>::deserialize(d).map(Some)
-}
-
-pub async fn put_mcp_app(
-    req: HttpRequest,
-    path: web::types::Path<(String, usize)>,
-    body: web::types::Json<AppServerWrite>,
-    state: Arc<AppState>,
-) -> Result<HttpResponse, WebError> {
-    require!(authz::acting_caller(&req, &state).await);
-    let (stack, index) = path.into_inner();
-    let w = body.into_inner();
-    let known = crate::stacks::mcp::servers(&state).await.into_iter().find(|s| s.stack == stack && s.index == index);
-    let Some(server) = known else {
-        return Ok(HttpResponse::NotFound().json(&serde_json::json!({ "error": "notFound" })));
-    };
-    if let Some(Some(token)) = &w.token
-        && (!matches!(server.credential, crate::stacks::mcp::Credential::Asked { .. }) || !crate::agent_mode::mcp::header_value_ok(token.trim()))
-    {
-        return Ok(HttpResponse::BadRequest().json(&serde_json::json!({ "error": "invalid", "reason": "token" })));
-    }
-    let token = w.token.as_ref().map(|t| t.as_deref().map(str::trim));
-    if let Err(e) = crate::stacks::store::set_mcp_use(&state.db, &state.sealer, &stack, index, w.enabled, token).await {
-        return Ok(refused(e.into()));
-    }
-    // Which server and what changed, never the token.
-    let mut what = Vec::new();
-    if let Some(on) = w.enabled {
-        what.push(if on { "on" } else { "off" });
-    }
-    match &w.token {
-        Some(Some(_)) => what.push("token set"),
-        Some(None) => what.push("token removed"),
-        None => {}
-    }
-    Event::new(Kind::Agent, Action::Write, Outcome::Ok)
-        .remote_ip(peer_ip(&req))
-        .detail(format!("mcp: {stack} #{index} {}", what.join(", ")))
-        .record(&state.db)
-        .await;
-    Ok(mcp_answer(&state).await)
-}
-
 /// Which server to sign in to, and the agent's address as the browser
 /// reaches it (where the sign-in comes back).
 #[derive(Debug, serde::Deserialize)]
@@ -474,8 +416,7 @@ pub struct OAuthStart {
 async fn known_server(state: &AppState, url: &str) -> Option<String> {
     let id = fl_pi_llm::host::mcp::server_id(url);
     let added = crate::agent_mode::mcp::load(&state.db, &state.sealer).await.unwrap_or_default().into_iter().any(|s| s.url == url);
-    let app = crate::agent_mode::mcp::app_servers(state).await.into_iter().any(|s| s.app.url == url);
-    (added || app).then_some(id)
+    added.then_some(id)
 }
 
 /// An origin the browser comes back to: `http(s)://host[:port]`, nothing else.

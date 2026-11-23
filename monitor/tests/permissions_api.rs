@@ -411,7 +411,6 @@ async fn a_plaintext_link_only_reads() {
         (Method::GET, "/api/v1/push", None),
         (Method::GET, "/api/v1/storage", None),
         (Method::GET, "/api/v1/shares", None),
-        (Method::POST, "/api/v1/stacks/refresh", None),
         (Method::PUT, "/api/v1/bmc", Some(json!({ "targets": [] }))),
         (Method::DELETE, "/api/v1/virt/pve", None),
         (Method::GET, "/api/v1/agent/permissions", None),
@@ -494,10 +493,6 @@ async fn the_clients_capabilities_fixture_is_what_a_plaintext_link_gets() {
     let whole = Value::Object(fixture.clone());
     serde_json::from_value::<sbm_parser::capabilities::Capabilities>(whole).expect("the readings");
     serde_json::from_value::<sbm_parser::SystemType>(fixture["platform"].clone()).expect("platform");
-    for stack in fixture["stacks"].as_array().unwrap() {
-        assert!(stack["id"].is_string(), "{stack}");
-        assert!(["installing", "installed", "failed"].contains(&stack["state"].as_str().unwrap()), "{stack}");
-    }
 }
 
 /// A sign-in hands the device a token it sends next time, which keeps it out

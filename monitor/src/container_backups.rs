@@ -9,10 +9,8 @@
 //!   while it writes may not open), and started again whatever happens.
 //! - System folders of the host bound into a container (`/etc`, `/`) are
 //!   never archived nor written back; a bound file is not a folder and is
-//!   left out too; nor is the folder web apps share (`stacks::Stacks::shared`,
-//!   downloads and media libraries of every app, none's data alone). All
-//!   are listed in the backup as skipped.
-//! - One backup or restore at a time; a [`Job`], as a web app's deploy is.
+//!   left out too. Skipped mounts are listed in the backup.
+//! - One backup or restore at a time; a [`Job`].
 //! - The directory is the agent's own state (`fs_roots::Protected`): it
 //!   holds databases.
 
@@ -26,8 +24,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::api::server::AppState;
 use crate::api::ws::audit::{Action, Event, Kind, Outcome};
-use crate::stacks::Refusal;
-use crate::stacks::job::{Job, JobKind, JobState};
+use crate::api::respond::Refusal;
+use crate::core::job::{Job, JobKind, JobState};
 
 const META: &str = "meta.json";
 
@@ -324,8 +322,6 @@ pub async fn back_up(
                 Some("system")
             } else if matches!(m, Mount::Bind { source, .. } if !Path::new(source).is_dir()) {
                 Some("notFolder")
-            } else if matches!(m, Mount::Bind { source, .. } if Path::new(source).starts_with(state.stacks.shared())) {
-                Some("shared")
             } else {
                 None
             };

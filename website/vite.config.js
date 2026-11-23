@@ -9,12 +9,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [tailwindcss(), svelte()],
-  // The site and ServerBox OS at /os/.
   build: {
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
-        os: path.resolve(__dirname, 'os/index.html'),
       },
     },
   },

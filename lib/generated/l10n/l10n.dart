@@ -11111,114 +11111,6 @@ abstract class AppLocalizations {
   /// **'Allow all: deleting, restarting and config changes run directly, without asking.'**
   String get agentModeBypassWarn;
 
-  /// Server page: card listing the web apps the Monitor deployed (Docker Compose services).
-  ///
-  /// In en, this message translates to:
-  /// **'Web apps'**
-  String get webApps;
-
-  /// Web app health: some of its services report unhealthy.
-  ///
-  /// In en, this message translates to:
-  /// **'Unhealthy'**
-  String get webAppUnhealthy;
-
-  /// Web app health: some of its services are not running.
-  ///
-  /// In en, this message translates to:
-  /// **'Down'**
-  String get webAppDown;
-
-  /// Web app state: being deployed.
-  ///
-  /// In en, this message translates to:
-  /// **'Installing'**
-  String get webAppInstalling;
-
-  /// Web apps tab: no server has a deployed Monitor web app.
-  ///
-  /// In en, this message translates to:
-  /// **'No web apps yet. Deploy them from the App Store of the Monitor panel.'**
-  String get webAppsEmpty;
-
-  /// Web apps tab: subtitle of an app installed on the Monitor panel desk, which opens the panel in the browser.
-  ///
-  /// In en, this message translates to:
-  /// **'Opens in the panel'**
-  String get deskAppOpensInPanel;
-
-  /// Web app details: the deployed version.
-  ///
-  /// In en, this message translates to:
-  /// **'Version'**
-  String get webAppVersion;
-
-  /// Web app details: the project's website.
-  ///
-  /// In en, this message translates to:
-  /// **'Homepage'**
-  String get webAppHomepage;
-
-  /// Web app details: the catalog has another version; updating is done in the Monitor web panel.
-  ///
-  /// In en, this message translates to:
-  /// **'Version {version} is available. Update it in the Monitor panel.'**
-  String webAppUpdate(String version);
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'{app} is down'**
-  String noticeStackDown(String app);
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'Not running: {services}.'**
-  String noticeStackDownBody(String services);
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'None of its containers is running.'**
-  String get noticeStackDownBodyEmpty;
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'{app} is unhealthy'**
-  String noticeStackUnhealthy(String app);
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'Failing its health check: {services}.'**
-  String noticeStackUnhealthyBody(String services);
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'{app} is running again'**
-  String noticeStackBack(String app);
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'Every container is up.'**
-  String get noticeStackBackBody;
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'{app}: an update is available'**
-  String noticeStackUpdate(String app);
-
-  /// Monitor tab: a Monitor notification or storage task, as the panel words it.
-  ///
-  /// In en, this message translates to:
-  /// **'{project} {version} can be installed (now {current}).'**
-  String noticeStackUpdateBody(String project, String version, String current);
-
   /// Monitor tab: a Monitor notification or storage task, as the panel words it.
   ///
   /// In en, this message translates to:
@@ -11392,24 +11284,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} unread'**
   String monitorUnread(int count);
-
-  /// Overview card: deployed web apps that are down or unhealthy.
-  ///
-  /// In en, this message translates to:
-  /// **'Apps with problems: {count}'**
-  String monitorAppsUnwell(int count);
-
-  /// Overview card: deployed web apps the catalog has a newer version of.
-  ///
-  /// In en, this message translates to:
-  /// **'App updates: {count}'**
-  String monitorAppsUpdates(int count);
-
-  /// Web apps section: show only apps with an update.
-  ///
-  /// In en, this message translates to:
-  /// **'Updates only'**
-  String get monitorUpdatesOnly;
 
   /// Web apps section: no app has an update.
   ///
@@ -11608,12 +11482,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unread'**
   String get monitorStatUnread;
-
-  /// Overview count: web apps with an update.
-  ///
-  /// In en, this message translates to:
-  /// **'App updates'**
-  String get monitorStatUpdates;
 
   /// Audit log: nothing matches.
   ///

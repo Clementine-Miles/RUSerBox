@@ -133,12 +133,6 @@ async fn hash(password: &str) -> std::result::Result<String, HttpResponse> {
     })
 }
 
-/// A body that carries only the password asked again.
-#[derive(Deserialize, Default)]
-pub struct Reauth {
-    pub(crate) current_password: Option<String>,
-}
-
 #[derive(Deserialize)]
 pub struct PasswordChange {
     current_password: Option<String>,

@@ -56,7 +56,10 @@ class MonitorCapabilities {
     return MonitorCapabilities(
       access: MonitorAccess.fromJson(json['access']),
       features: switch (json['features']) {
-        final List<dynamic> list => list.whereType<String>().toSet(),
+        final List<dynamic> list => {
+          for (final feature in list.whereType<String>())
+            feature == 'desk' ? MonitorFeature.notifications : feature,
+        },
         _ => const {},
       },
       platform: SystemType.fromWire(json['platform'] as String?),
@@ -81,8 +84,7 @@ class MonitorCapabilities {
 /// The names in [MonitorCapabilities.features] this app gates on, as the
 /// agent lists them in `/capabilities`.
 abstract final class MonitorFeature {
-  static const stacks = 'stacks';
-  static const desk = 'desk';
+  static const notifications = 'notifications';
   static const audit = 'audit';
   static const live = 'live';
   static const alerts = 'alerts';

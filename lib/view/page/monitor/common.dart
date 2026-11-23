@@ -10,14 +10,12 @@ import 'package:server_box/view/widget/group_title.dart';
 /// What the Monitor tab shows, one at a time.
 enum MonitorSection {
   overview,
-  apps,
   notices,
   audit,
   live;
 
   IconData get icon => switch (this) {
     overview => Icons.dashboard_outlined,
-    apps => Icons.apps,
     notices => Icons.notifications_none,
     audit => Icons.receipt_long_outlined,
     live => Icons.devices_outlined,
@@ -25,7 +23,6 @@ enum MonitorSection {
 
   String get label => switch (this) {
     overview => l10n.monitorOverview,
-    apps => l10n.webApps,
     notices => l10n.monitorNotices,
     audit => l10n.monitorAudit,
     live => l10n.monitorLive,
@@ -39,8 +36,7 @@ enum MonitorSection {
   /// says what each agent offers.
   String? get feature => switch (this) {
     overview => null,
-    apps => MonitorFeature.stacks,
-    notices => MonitorFeature.desk,
+    notices => MonitorFeature.notifications,
     audit => MonitorFeature.audit,
     live => MonitorFeature.live,
   };

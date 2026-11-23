@@ -49,11 +49,9 @@ jobs:
     outputs:
       rust: ${{ steps.filter.outputs.rust }}
       dart: ${{ steps.filter.outputs.dart }}
-      frontend: ${{ steps.filter.outputs.frontend }}
       docs: ${{ steps.filter.outputs.docs }}
       website: ${{ steps.filter.outputs.website }}
       android: ${{ steps.filter.outputs.android }}
-      docker: ${{ steps.filter.outputs.docker }}
       winget: ${{ steps.filter.outputs.winget }}
     env:
       GH_TOKEN: ${{ github.token }}
@@ -65,7 +63,7 @@ jobs:
 
           # Which filters are answered from the diff: all of them on a pull
           # request, none otherwise.
-          strict=' rust dart frontend docs website android docker winget '
+          strict=' rust dart docs website android winget '
 
           if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
             files="$(gh api --paginate \
@@ -111,9 +109,7 @@ jobs:
           # reaching main with nothing having compiled anything.
           shared='^\.github/(workflows/(analysis|build)\.yml$|actions/)|^pubspec\.(yaml|lock)$|^packages/'
 
-          # Not the panel and its SDK under `monitor/`: the agent reads only the
-          # panel's build output, at run time, and the tests build none of it.
-          emit rust "$shared|^crates/|^monitor/|^Cargo\.(toml|lock)$" '^monitor/(frontend|sdk)/'
+          emit rust "$shared|^crates/|^monitor/|^Cargo\.(toml|lock)$"
           # `crates/` because `flutter test` loads the FFI dylib and the
           # generated bindings come from there.
           #
@@ -131,13 +127,11 @@ jobs:
           # Android backup policy (`android_backup_policy_test.dart`) and the
           # DMG release script (`macos_entitlements_test.dart`).
           emit dart "$shared|^lib/|^test/|^integration_test/|^crates/|^macos/|^Cargo\.(toml|lock)$|^analysis_options\.yaml$|^docs/(schemas|examples|src/content/docs)/|^assets/|^\.claude/skills/serverbox-help/|^ios/[^/]+/(Info-[A-Za-z]+\.plist|PrivacyInfo\.xcprivacy)$|^ios/Runner\.xcodeproj/project\.pbxproj$|^android/app/src/main/(AndroidManifest\.xml|res/xml/)|^scripts/release/release-macos-dmg\.sh$"
-          emit frontend "$shared|^monitor/frontend/|^monitor/sdk/|^packages/webui/"
           emit docs "$shared|^docs/"
           emit website "$shared|^website/|^packages/webui/"
           emit android "$shared|^android/|^scripts/release/patch-jni-build-id\.sh$"
           # Rendered and checked here: `build.yml` uses them only on a release.
           emit winget '^\.github/(workflows/(analysis|build)\.yml$|winget/)|^scripts/release/winget\.sh$'
-          emit docker '^\.github/workflows/analysis\.yml$|^monitor/(src/stacks/|src/container_backups\.rs$|src/api/(stacks|container_backups)\.rs$|tests/stacks_docker\.rs$|tests/apps/)|^crates/sbm_parser/src/(stack|container_backup)\.rs$'
 
   reproducibilityCheck:
     # These are deterministic-input guards, not a reproducibility proof. The
@@ -207,12 +201,6 @@ jobs:
 
       - uses: ./.github/actions/setup-rust-pinned
 
-      # Desk app backends are components: `tests/apps_api.rs` builds its
-      # guest (`monitor/tests/apps/probe`) for this target.
-      - name: Add the wasm32-wasip2 target
-        shell: bash
-        run: rustup target add wasm32-wasip2
-
       # This job's own `cargo` builds into `target/`, so rust-cache applies
       # here, unlike to the build hook (see `build-hook-cache`). After the
       # toolchain step: the key includes the rustc it finds. Saved from main
@@ -225,8 +213,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: cargo test --workspace --no-fail-fast
 
-      # fl_lib's Rust (`fl_theme`, which the agent depends on by path, and its
-      # bridge to Dart) is a workspace of its own, so `--workspace` above does
+      # fl_lib's Rust is a workspace of its own, so `--workspace` above does
       # not reach it.
       - name: Test fl_lib's Rust
         if: matrix.os == 'ubuntu-latest'
@@ -252,80 +239,6 @@ jobs:
           cargo clippy --workspace --all-targets --all-features -- -D warnings
           cargo clippy --manifest-path packages/fl_lib/rust/Cargo.toml --workspace --all-targets -- -D warnings
 
-  stacksDocker:
-    name: Monitor Docker stack e2e
-    needs: changes
-    if: needs.changes.outputs.docker == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-          fetch-depth: 1
-          submodules: recursive
-          persist-credentials: false
-
-      # Keep the agent's path dependencies on the toolchain it ships with.
-      - uses: ./.github/actions/setup-rust-pinned
-
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-        with:
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Test web apps with Docker
-        run: SBM_E2E_DOCKER=1 cargo test -p server_box_monitor --test stacks_docker -- --ignored --nocapture
-
-  monitorFrontend:
-    name: Monitor frontend
-    needs: changes
-    if: needs.changes.outputs.frontend == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-          persist-credentials: false
-          submodules: recursive
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: monitor/frontend/package-lock.json
-      # packages/webui is a `file:` dependency, so the install above only
-      # symlinks it and its own dependencies are never fetched. `npm run check`
-      # is what needs them here — svelte-check reads that package's source, and
-      # without them reports every import in it as a missing module.
-      - name: Install dependencies
-        working-directory: monitor/frontend
-        run: |
-          npm ci
-          npm ci --prefix ../../packages/webui
-      - name: Test, lint, check and build
-        working-directory: monitor/frontend
-        # `--ignore-scripts` skips the `prebuild` hook, which installs
-        # packages/webui — the step above has already done exactly that, and
-        # this is the one place where both run. Nowhere else may drop the hook:
-        # Cloudflare Pages and a local `npm run build` have no step above them,
-        # and the hook is the only thing that installs it there.
-        run: |
-          npm exec vitest -- run
-          npm run lint
-          npm run check
-          npm run build --ignore-scripts
-
-  # Installed with bun and built with node, which is how both of these are
-  # written: the lockfile committed beside them is `bun.lock`, and the build
-  # script runs `astro`/`vite` under node.
-  #
-  # `npm install` was reading neither. It ignores a bun lockfile entirely and
-  # resolves the semver ranges afresh on every run, so what CI built was
-  # whatever npm had published that hour — and on 2026-09-03 that was astro
-  # 7.3.0, whose own `dist/assets/vite-plugin-assets.js` imports
-  # `astro/_internal/logger`, a subpath its `package.json` does not export.
-  # Every docs build failed, on branches that had not touched docs in weeks.
-  # A committed lockfile CI does not read is not a lockfile.
   docs:
     name: Documentation site
     needs: changes

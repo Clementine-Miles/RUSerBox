@@ -23,7 +23,6 @@ enum ServerDetailCards {
   battery(Icons.battery_full),
   pve(BoxIcons.bxs_dashboard),
   bmc(Icons.developer_board),
-  webApps(Icons.apps),
   custom(Icons.code);
 
   final IconData icon;
@@ -44,7 +43,6 @@ enum ServerDetailCards {
     battery => libL10n.battery,
     pve => 'PVE',
     bmc => 'BMC',
-    webApps => l10n.webApps,
     custom => libL10n.cmd,
   };
 
@@ -56,7 +54,6 @@ enum ServerDetailCards {
   /// is for the row that switches the card on and off.
   Widget? get mark => switch (this) {
     bmc => Feature.bmc.mark(),
-    webApps => Feature.monitor.mark(),
     _ => null,
   };
 

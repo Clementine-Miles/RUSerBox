@@ -30,7 +30,7 @@ use super::authz;
 use super::server::AppState;
 use super::ws::audit::{Action, Event, Kind, Outcome};
 use crate::container_backups;
-use crate::stacks::Refusal;
+use crate::api::respond::Refusal;
 
 fn refused(r: Refusal) -> HttpResponse {
     let status = ntex::http::StatusCode::from_u16(r.status).unwrap_or(ntex::http::StatusCode::BAD_REQUEST);

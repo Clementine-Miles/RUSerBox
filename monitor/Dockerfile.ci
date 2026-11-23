@@ -2,7 +2,6 @@
 # 运行时阶段与 monitor/Dockerfile 保持一致。
 # 构建上下文为 monorepo 根,且需要 workflow 预先准备:
 #   dist/docker/{amd64,arm64}/server_box_monitor  (musl 静态编译)
-#   monitor/frontend/dist/                        (前端产物)
 FROM alpine:3.24
 
 # ca-certificates for reqwest rustls; collection commands and the healthcheck's
@@ -15,7 +14,6 @@ WORKDIR /app
 
 ARG TARGETARCH
 COPY dist/docker/${TARGETARCH}/server_box_monitor .
-COPY monitor/frontend/dist/ ./frontend/dist/
 
 COPY monitor/.env.example .env
 COPY monitor/migrations/ ./migrations/

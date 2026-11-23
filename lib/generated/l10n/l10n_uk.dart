@@ -6551,77 +6551,6 @@ class AppLocalizationsUk extends AppLocalizations {
       'Дозволити все: видалення, перезапуск і зміни конфігурації виконуються без підтвердження.';
 
   @override
-  String get webApps => 'Вебзастосунки';
-
-  @override
-  String get webAppUnhealthy => 'Несправний';
-
-  @override
-  String get webAppDown => 'Не працює';
-
-  @override
-  String get webAppInstalling => 'Встановлення';
-
-  @override
-  String get webAppsEmpty =>
-      'Вебзастосунків поки немає. Розгорніть їх з App Store панелі Monitor.';
-
-  @override
-  String get deskAppOpensInPanel => 'Відкривається в панелі';
-
-  @override
-  String get webAppVersion => 'Версія';
-
-  @override
-  String get webAppHomepage => 'Сайт';
-
-  @override
-  String webAppUpdate(String version) {
-    return 'Доступна версія $version. Оновіть її в панелі Monitor.';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app зупинено';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return 'Не запущено: $services.';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => 'Жоден контейнер не запущено.';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app працює зі збоями';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return 'Перевірка стану не пройдена: $services.';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app знову працює';
-  }
-
-  @override
-  String get noticeStackBackBody => 'Усі контейнери запущено.';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return 'Доступне оновлення для $app';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return 'Можна встановити $project $version (поточна версія: $current).';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array деградований';
   }
@@ -6738,19 +6667,6 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return 'Застосунки з проблемами: $count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return 'Оновлення застосунків: $count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => 'Лише оновлення';
-
-  @override
   String get monitorNoUpdates => 'Оновлень застосунків немає.';
 
   @override
@@ -6861,9 +6777,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get monitorStatUnread => 'Непрочитані';
-
-  @override
-  String get monitorStatUpdates => 'Оновлення';
 
   @override
   String get monitorAuditEmpty => 'Відповідних записів немає.';

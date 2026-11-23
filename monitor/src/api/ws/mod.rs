@@ -6,7 +6,6 @@
 pub mod audit;
 pub mod listen;
 pub mod live;
-pub mod rdcleanpath;
 pub mod session;
 pub mod stream;
 pub mod terminal;

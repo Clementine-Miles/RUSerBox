@@ -2,24 +2,6 @@
 # CI 发布用 monitor/Dockerfile.ci(直接复用 workflow 编译好的 musl bin)。
 # 两者的运行时阶段需保持一致。
 # 构建上下文为 monorepo 根:docker build -f monitor/Dockerfile .
-FROM node:24-alpine AS frontend-builder
-
-# Layout mirrors the repo: the panel imports the app SDK beside it
-# (/app/monitor/sdk/serverbox-desk from /app/monitor/frontend).
-WORKDIR /app/monitor/frontend
-COPY monitor/frontend/package*.json ./
-RUN npm install
-
-COPY monitor/frontend/ ./
-# The desk's app bridge imports the protocol from the app SDK's source.
-COPY monitor/sdk/serverbox-desk/src/ /app/monitor/sdk/serverbox-desk/src/
-# `npm run build` first checks that no Git LFS file is a pointer.
-COPY scripts/check-lfs.sh /app/scripts/check-lfs.sh
-# svelte-check reads the tests too; one imports the agent's answer the app's
-# tests share.
-COPY test/fixtures/monitor/ /app/test/fixtures/monitor/
-RUN npm run build
-
 # Rust build stage
 FROM rust:1-alpine AS backend-builder
 
@@ -30,8 +12,6 @@ WORKDIR /app
 # Copy manifests and shared parser crate
 COPY monitor/Cargo.toml Cargo.lock ./
 COPY crates/ ./crates/
-# fl_lib's desktop catalog archive reader, from the submodule.
-COPY packages/fl_lib/rust/theme/ ./fl_theme/
 # fl_lib's LK Cloud client (`fl_lkc`).
 COPY packages/fl_lib/rust/lkc/ ./fl_lkc/
 # fl_pi_llm's runtime (Agent mode's pi), from its submodule likewise.
@@ -45,16 +25,6 @@ COPY monitor/src/ ./src/
 # relative to `src/api/`: in the repository that is the root's `assets/`, and
 # with `src/` at `/app/src` here it is `/assets`.
 COPY assets/yabs.b64 /assets/yabs.b64
-# The built-in web apps (`stacks::builtin`), embedded the same way: from
-# `src/stacks/` that is `/app/catalog/apps`.
-COPY monitor/catalog/apps/ ./catalog/apps/
-# The shipped desk app packages (`apps::catalog`, Git LFS: the checkout must
-# have them), embedded from `src/apps/`: also `/app/catalog/desk`.
-COPY monitor/catalog/desk/ ./catalog/desk/
-# Local inference's engines (`stacks::builtin::parts`): from `src/stacks/`,
-# `../../inference` is `/app/inference`.
-COPY monitor/inference/ ./inference/
-
 # 独立构建 monitor(脱离 monorepo workspace),修正 crates/ 下各依赖的相对路径
 #
 # Every `../crates/` path, not one crate by name: naming sbm_parser alone left
@@ -70,7 +40,6 @@ COPY monitor/inference/ ./inference/
 # ignores a non-root package's profiles with a warning.
 RUN sed -i -e 's|path = "../crates/|path = "crates/|' \
            -e 's|path = "../packages/fl_lib/rust/lkc"|path = "fl_lkc"|' \
-           -e 's|path = "../packages/fl_lib/rust/theme"|path = "fl_theme"|' \
            -e 's|path = "../packages/fl_pi_llm/fl_pi_llm/rust"|path = "fl_pi_llm"|' Cargo.toml \
     && CARGO_PROFILE_RELEASE_STRIP=true \
        CARGO_PROFILE_RELEASE_LTO=fat \
@@ -88,9 +57,7 @@ RUN adduser -D app
 
 WORKDIR /app
 
-# server.rs 从工作目录下的 frontend/dist 提供静态文件,路径必须一致
 COPY --from=backend-builder /app/target/release/server_box_monitor .
-COPY --from=frontend-builder /app/monitor/frontend/dist ./frontend/dist/
 
 # Copy configuration files
 COPY monitor/.env.example .env

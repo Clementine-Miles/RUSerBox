@@ -28,7 +28,6 @@ import 'package:server_box/data/provider/server/all.dart';
 import 'package:server_box/data/provider/server/metric.dart';
 import 'package:server_box/data/provider/server/reading_fmt.dart';
 import 'package:server_box/data/provider/server/single.dart';
-import 'package:server_box/data/provider/server/web_apps.dart';
 import 'package:server_box/data/res/chart_palette.dart';
 import 'package:server_box/data/res/url.dart';
 import 'package:server_box/data/store/stores.dart';
@@ -54,7 +53,6 @@ import 'package:server_box/view/page/server/state_ui.dart';
 import 'package:server_box/view/page/server/text_scale.dart';
 import 'package:server_box/view/page/server/trust_cert.dart';
 import 'package:server_box/view/page/server/widget/server_func_btns.dart';
-import 'package:server_box/view/page/web_apps/status.dart';
 import 'package:server_box/view/widget/built_from.dart';
 
 part 'bmc.dart';
@@ -62,7 +60,6 @@ part 'extra_cards.dart';
 part 'notices.dart';
 part 'range.dart';
 part 'readings.dart';
-part 'web_apps.dart';
 
 class ServerDetailPage extends ConsumerStatefulWidget {
   final SpiRequiredArgs args;
@@ -157,7 +154,6 @@ class _ServerDetailPageState extends ConsumerState<ServerDetailPage>
         ServerDetailCards.battery: _buildBatteries,
         ServerDetailCards.pve: _buildPve,
         ServerDetailCards.bmc: _buildBmc,
-        ServerDetailCards.webApps: _buildWebApps,
         ServerDetailCards.custom: _buildCustomCmd,
       };
 

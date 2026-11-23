@@ -55,9 +55,7 @@ updates:
           - "*"
 
   # Every JavaScript directory in one entry, so a week's upgrade arrives as one
-  # PR rather than four. packages/webui belongs with them rather than on its
-  # own: monitor/frontend and website consume it as a `file:` dependency and
-  # build from its source, so a bump there is only reviewable next to them.
+  # PR. The website builds against packages/webui as a `file:` dependency.
   #
   # Each of these keeps a `package-lock.json`, and that is what makes any of it
   # work: Dependabot writes a manifest and its lockfile together, and a
@@ -66,7 +64,6 @@ updates:
   # analysis.yml.
   - package-ecosystem: npm
     directories:
-      - "/monitor/frontend"
       - "/docs"
       - "/website"
       - "/packages/webui"

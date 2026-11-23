@@ -30,8 +30,6 @@ pub enum LiveKind {
     Listen,
     /// A guest's console (`/virt/console/ws`).
     VirtConsole,
-    /// A remote desktop over RDP (`/rdp/ws`).
-    Rdp,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -217,7 +215,7 @@ mod tests {
     async fn a_password_change_reaches_every_one_and_asks_for_a_recheck() {
         let live = Arc::new(LiveConnections::default());
         let (changes, _) = broadcast::channel(4);
-        let mut one = live.register(changes.subscribe(), LiveKind::Rdp, "host:3389", None);
+        let mut one = live.register(changes.subscribe(), LiveKind::Stream, "host:3389", None);
         changes.send("password_changed").unwrap();
         let signal = one.next().await;
         assert_eq!(signal, Signal::Changed("password_changed"));

@@ -8,7 +8,6 @@ import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/provider/server/all.dart';
 import 'package:server_box/data/provider/server/monitor_overview.dart';
 import 'package:server_box/data/provider/server/single.dart';
-import 'package:server_box/view/page/monitor/apps.dart';
 import 'package:server_box/view/page/monitor/audit.dart';
 import 'package:server_box/view/page/monitor/common.dart';
 import 'package:server_box/view/page/monitor/live.dart';
@@ -20,7 +19,7 @@ import 'package:server_box/view/widget/server_picker.dart';
 import 'package:server_box/view/widget/swap_switcher.dart';
 
 /// Every server reached through a `monitor` agent, from the agents' side: how
-/// each agent is and what it says is wrong now, the web apps they deployed,
+/// each agent is and which alerts are firing,
 /// their notifications, and, one server at a time, the audit log and what is
 /// signed in and open.
 ///
@@ -149,7 +148,6 @@ class _MonitorTabPageState extends ConsumerState<MonitorTabPage> {
     }
     return switch (_section) {
       MonitorSection.overview => MonitorOverviewView(servers: scope, bar: bar, onOpen: open),
-      MonitorSection.apps => MonitorAppsView(servers: scope, bar: bar),
       _ => MonitorNoticesView(servers: scope, bar: bar),
     };
   }

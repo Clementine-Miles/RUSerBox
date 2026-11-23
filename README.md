@@ -93,7 +93,7 @@ Download packages only from sources you trust.
 
 ## Help
 
-- [ServerBox Monitor](https://github.com/lollipopkit/flutter_server_box/tree/main/monitor) is a component you install on your servers. It is required for features that need to work while the app is closed — **push notifications**, **home-screen widgets**, and the **watch app**. It also offers another way to add a server: the app can connect to it over HTTP instead of SSH, which suits hosts whose SSH port you prefer not to expose, and gives charts historical data from before the app's first connection. Monitor also serves its own web panel.
+- [ServerBox Monitor](https://github.com/lollipopkit/flutter_server_box/tree/main/monitor) is a component you install on your servers. It is required for features that need to work while the app is closed — **push notifications**, **home-screen widgets**, and the **watch app**. It also offers another way to add a server: the app can connect to it over HTTP instead of SSH, which suits hosts whose SSH port you prefer not to expose, and gives charts historical data from before the app's first connection.
 - **Agent skills:** This repository includes three skills for AI agents. Add them with
 
   ```sh

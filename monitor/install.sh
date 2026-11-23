@@ -2,7 +2,7 @@
 # (Un)Install script for ServerBox Monitor
 # Release source: this monorepo's GitHub Releases (tag `monitor-v*`), asset
 # server-box-monitor_v<ver>_linux_<arch>.tar.gz, containing the server_box_monitor
-# binary + frontend/dist + migrations + example config.
+# binary, migrations and example configuration.
 #
 # The agent runs as an ordinary account by default. That matters beyond
 # tidiness: whoever signs in to the agent may do what the account it runs as
@@ -135,7 +135,7 @@ else
     # OpenRC has no per-user services: every script lives in /etc/init.d and is
     # started by root. What it does have is `command_user`, so the account the
     # agent runs as is still a choice — which is the part that matters, since
-    # `remote_access.full_access` turns a panel login into a shell as whoever
+    # `remote_access.full_access` turns an app login into a shell as whoever
     # that is.
     #
     # So the two modes mean the same thing they mean under systemd, and only
@@ -353,7 +353,7 @@ install_files() {
     cp "$pkg/server_box_monitor" "$APP_DIR/.server_box_monitor.new"
     chmod 755 "$APP_DIR/.server_box_monitor.new"
     mv -f "$APP_DIR/.server_box_monitor.new" "$APP_DIR/server_box_monitor"
-    for dir in frontend migrations; do
+    for dir in migrations; do
         rm -rf "$APP_DIR/.$dir.new" "$APP_DIR/.$dir.old"
         cp -r "$pkg/$dir" "$APP_DIR/.$dir.new"
         [ -e "$APP_DIR/$dir" ] && mv "$APP_DIR/$dir" "$APP_DIR/.$dir.old"
@@ -577,8 +577,7 @@ upgrade() {
 
     download
     install_files
-    echo "Restarting the agent. Connections through it (a terminal it opened, the"
-    echo "panel, the app) drop now; the agent is back in a few seconds."
+    echo "Restarting the agent. Open connections close until it is back."
     # The restart ends the agent, and with it a terminal the agent opened,
     # which may be the one running this. Its hangup must not cut the restart
     # short: OpenRC's rc-service stops and starts from this process tree

@@ -78,7 +78,10 @@ pub mod machine {
         ONCE.call_once(|| {
             let _ = rustls::crypto::ring::default_provider().install_default();
         });
-        let config = Config { jwt_secret: Some(SECRET.to_string()), ..config };
+        let config = Config {
+            jwt_secret: Some(SECRET.to_string()),
+            ..config
+        };
         let db = super::database().await;
         super::add_owner(&db).await;
         let state = AppState::new(Arc::new(config), db);
@@ -116,11 +119,11 @@ pub mod machine {
         // Past the endpoints' own bound on the commands they run, which a
         // Windows runner starting PowerShell for several tests at once can
         // take half a minute just to begin.
-        let mut req = srv.request(method, srv.url(path)).timeout(
-            std::time::Duration::from_secs(
+        let mut req = srv
+            .request(method, srv.url(path))
+            .timeout(std::time::Duration::from_secs(
                 server_box_monitor::core::remote_access::DEFAULT_EXEC_TIMEOUT_SECS + 30,
-            ),
-        );
+            ));
         if signed {
             req = req.header(
                 "Authorization",
@@ -135,18 +138,33 @@ pub mod machine {
         .unwrap_or_else(|e| panic!("{path}: {e:?} after {:?}", started.elapsed()));
         let status = resp.status().as_u16();
         // A process table is well past the client's default body limit.
-        let bytes = resp.body().limit(16 * 1024 * 1024).await.unwrap_or_default();
-        (status, serde_json::from_slice(&bytes).unwrap_or(Value::Null))
+        let bytes = resp
+            .body()
+            .limit(16 * 1024 * 1024)
+            .await
+            .unwrap_or_default();
+        (
+            status,
+            serde_json::from_slice(&bytes).unwrap_or(Value::Null),
+        )
     }
 
     /// A POST answered with a stream: the whole of it, once it ends.
     #[allow(dead_code)]
     /// Posts raw [bytes] with [content_type].
-    pub async fn post_bytes(srv: &TestServer, path: &str, content_type: &str, bytes: Vec<u8>) -> (u16, Value) {
+    pub async fn post_bytes(
+        srv: &TestServer,
+        path: &str,
+        content_type: &str,
+        bytes: Vec<u8>,
+    ) -> (u16, Value) {
         let resp = srv
             .request(Method::POST, srv.url(path))
             .timeout(std::time::Duration::from_secs(60))
-            .header("Authorization", format!("Bearer {}", generate_token(SECRET).unwrap()))
+            .header(
+                "Authorization",
+                format!("Bearer {}", generate_token(SECRET).unwrap()),
+            )
             .header("Content-Type", content_type)
             .send_body(bytes)
             .await
@@ -160,7 +178,10 @@ pub mod machine {
         let resp = srv
             .request(Method::POST, srv.url(path))
             .timeout(std::time::Duration::from_secs(60))
-            .header("Authorization", format!("Bearer {}", generate_token(SECRET).unwrap()))
+            .header(
+                "Authorization",
+                format!("Bearer {}", generate_token(SECRET).unwrap()),
+            )
             .send_json(&body)
             .await
             .unwrap();
@@ -174,203 +195,5 @@ pub mod machine {
             .await
             .expect("the whole stream");
         (status, String::from_utf8_lossy(&bytes).into_owned())
-    }
-}
-
-/// A first-party package the agent ships (`monitor/catalog/desk/<id>.fsba`), installed
-/// from its catalog and approved on a [`machine`] server, its backend called
-/// as the desk calls it. Root's work gets an empty sudo password: these run
-/// as root on a throwaway machine.
-pub mod package {
-    use std::time::{Duration, Instant};
-
-    use ntex::http::Method;
-    use ntex::web::test::TestServer;
-    use serde_json::{Value, json};
-
-    use super::machine::call;
-
-    pub struct App<'a> {
-        srv: &'a TestServer,
-        id: String,
-    }
-
-    /// A function's failure: the agent's code (`failedPrecondition`, …) and
-    /// its words.
-    #[derive(Debug, PartialEq, Eq)]
-    pub struct Refusal {
-        pub error: String,
-        pub message: String,
-    }
-
-    /// A job that ended: its state, its value or error, its lines.
-    #[derive(Debug)]
-    pub struct Ended {
-        pub state: String,
-        pub value: Value,
-        pub error: Value,
-        pub lines: Vec<String>,
-    }
-
-    /// [id] installed from the catalog and approved with what it asks for.
-    pub async fn install<'a>(srv: &'a TestServer, id: &str) -> App<'a> {
-        let (status, app) = call(srv, true, Method::POST, &format!("/api/v1/apps/catalog/{id}/install"), None).await;
-        assert_eq!(status, 200, "{id}: {app}");
-        let body = json!({ "sha256": app["sha256"], "permissions": app["manifest"]["permissions"], "current_password": super::PASSWORD });
-        let (status, approved) = call(srv, true, Method::PUT, &format!("/api/v1/apps/{id}/approval"), Some(body)).await;
-        assert_eq!(status, 200, "{id}: {approved}");
-        App { srv, id: id.to_string() }
-    }
-
-    fn sudo(root: bool) -> Value {
-        if root { json!({ "password": "" }) } else { Value::Null }
-    }
-
-    impl App<'_> {
-        /// [function] of the backend's `api`, as root when [root].
-        pub async fn call(&self, function: &str, args: Value, root: bool) -> Result<Value, Refusal> {
-            let body = json!({ "function": function, "args": args, "sudo": sudo(root) });
-            let (status, r) = call(self.srv, true, Method::POST, &format!("/api/v1/apps/{}/call", self.id), Some(body)).await;
-            if status == 200 {
-                return Ok(r["value"].clone());
-            }
-            Err(Refusal { error: r["error"].as_str().unwrap_or_default().into(), message: r["message"].as_str().unwrap_or_default().into() })
-        }
-
-        /// [function] of its `jobs`, as root when [root], followed until it
-        /// ends (at most [wait]).
-        pub async fn job(&self, function: &str, args: Value, root: bool, wait: Duration) -> Ended {
-            let body = json!({ "function": function, "args": args, "sudo": sudo(root) });
-            let (status, r) = call(self.srv, true, Method::POST, &format!("/api/v1/apps/{}/jobs", self.id), Some(body)).await;
-            assert_eq!(status, 202, "{function}: {r}");
-            let deadline = Instant::now() + wait;
-            loop {
-                let (_, v) = call(self.srv, true, Method::GET, &format!("/api/v1/apps/{}/jobs", self.id), None).await;
-                if v["state"] != "running" {
-                    let lines = v["lines"].as_array().into_iter().flatten().filter_map(|l| l["text"].as_str().map(str::to_string)).collect();
-                    return Ended { state: v["state"].as_str().unwrap_or_default().into(), value: v["value"].clone(), error: v["error"].clone(), lines };
-                }
-                assert!(Instant::now() < deadline, "{function}: did not end");
-                tokio::time::sleep(Duration::from_secs(2)).await;
-            }
-        }
-
-        /// As [Self::job], which must end well; its value.
-        pub async fn job_ok(&self, function: &str, args: Value, root: bool, wait: Duration) -> Value {
-            let ended = self.job(function, args, root, wait).await;
-            assert_eq!(ended.state, "succeeded", "{function}: {:?}\n{}", ended.error, ended.lines.join("\n"));
-            ended.value
-        }
-    }
-}
-
-/// Catalog apps (`monitor/catalog/apps`) on a real Docker, for the e2e tests that
-/// deploy them: each a copy under a name of its own (`<name>_e2e`, its built
-/// images too), so a copy an agent on the same machine deployed is never
-/// touched.
-pub mod catalog {
-    use std::time::{Duration, Instant};
-
-    use ntex::http::Method;
-    use ntex::web::test::TestServer;
-    use serde_json::{Value, json};
-
-    use super::machine::call;
-
-    /// `monitor/catalog/apps/<id>` copied as `<id>_e2e` into [dir]; the copy's id.
-    pub fn copy_app(id: &str, dir: &std::path::Path) -> String {
-        let from = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("catalog/apps").join(id);
-        let (publisher, name) = id.split_once('.').unwrap();
-        let copy = format!("{publisher}.{name}_e2e");
-        let to = dir.join(&copy);
-        std::fs::create_dir(&to).unwrap();
-        for entry in std::fs::read_dir(&from).unwrap() {
-            let entry = entry.unwrap();
-            let mut text = std::fs::read_to_string(entry.path()).unwrap();
-            if entry.file_name() == "manifest.toml" {
-                text = text.replacen(&format!("name = \"{name}\""), &format!("name = \"{name}_e2e\""), 1);
-            } else {
-                // The image a package builds, which a purge removes.
-                text = text.replace(&format!("localhost/{publisher}-{name}:"), &format!("localhost/{publisher}-{name}_e2e:"));
-            }
-            std::fs::write(to.join(entry.file_name()), text).unwrap();
-        }
-        copy
-    }
-
-    /// The compose project of app [id].
-    pub fn project(id: &str) -> String {
-        let (publisher, name) = id.split_once('.').unwrap();
-        format!("sbm-{publisher}-{name}")
-    }
-
-    /// The containers of app [id]'s project, by `docker ps -a`.
-    pub fn containers(id: &str) -> Vec<String> {
-        let out = std::process::Command::new("docker")
-            .args(["ps", "-aq", "--filter", &format!("label=com.docker.compose.project={}", project(id))])
-            .output()
-            .unwrap();
-        String::from_utf8_lossy(&out.stdout).split_whitespace().map(str::to_string).collect()
-    }
-
-    /// Waits for app [id]'s job to end; its state, and its log on failure.
-    pub async fn finished(srv: &TestServer, id: &str) -> String {
-        let deadline = Instant::now() + Duration::from_secs(1800);
-        loop {
-            let (_, job) = call(srv, true, Method::GET, &format!("/api/v1/stacks/{id}/job"), None).await;
-            let state = job["state"].as_str().unwrap_or_default().to_string();
-            if state != "running" {
-                if state != "succeeded" {
-                    let lines: Vec<&str> = job["lines"].as_array().into_iter().flatten().filter_map(|l| l["text"].as_str()).collect();
-                    eprintln!("job {state}:\n{}", lines.join("\n"));
-                }
-                return state;
-            }
-            assert!(Instant::now() < deadline, "the job did not end");
-            tokio::time::sleep(Duration::from_secs(2)).await;
-        }
-    }
-
-    /// The app's containers and network gone, should the test end early (its
-    /// data is in a temporary folder of the agent's).
-    pub struct Cleanup(pub String);
-
-    impl Drop for Cleanup {
-        fn drop(&mut self) {
-            let project = project(&self.0);
-            let _ = std::process::Command::new("sh")
-                .arg("-c")
-                .arg(format!("docker ps -aq --filter label=com.docker.compose.project={project} | xargs -r docker rm -f; docker network rm {project}_default"))
-                .output();
-        }
-    }
-
-    /// App [id] deployed with the settings its check offers, licence and
-    /// notices accepted; those settings, once the deploy succeeded.
-    pub async fn deploy(srv: &TestServer, id: &str) -> (Value, Cleanup) {
-        let (status, check) = call(srv, true, Method::POST, &format!("/api/v1/stacks/{id}/check"), Some(json!({ "settings": {} }))).await;
-        assert_eq!(status, 200, "{check}");
-        let (status, body) = call(
-            srv,
-            true,
-            Method::POST,
-            &format!("/api/v1/stacks/{id}"),
-            Some(json!({ "current_password": super::PASSWORD, "settings": check["settings"], "acknowledged": true, "accept_license": true })),
-        )
-        .await;
-        assert_eq!(status, 202, "{body}");
-        let cleanup = Cleanup(id.to_string());
-        assert_eq!(finished(srv, id).await, "succeeded", "{id} deployed");
-        (check["settings"].clone(), cleanup)
-    }
-
-    /// App [id] and its data removed through the agent: nothing of its
-    /// project is left.
-    pub async fn remove(srv: &TestServer, id: &str) {
-        let (status, body) =
-            call(srv, true, Method::DELETE, &format!("/api/v1/stacks/{id}"), Some(json!({ "current_password": super::PASSWORD, "purge": true }))).await;
-        assert_eq!(status, 202, "{body}");
-        assert_eq!(finished(srv, id).await, "succeeded", "{id} removed");
-        assert_eq!(containers(id), Vec::<String>::new(), "{id}: containers left");
     }
 }

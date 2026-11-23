@@ -265,7 +265,6 @@
       </a>
       <nav>
         <a href="#features" onclick={(event) => scrollToSection(event, 'features')}>{$LL.nav.features()}</a>
-        <a href={`/os/?lang=${locale}`}>{$LL.nav.os()}<span class="beta-tag">{$LL.nav.beta()}</span></a>
         <a href="#download" onclick={(event) => scrollToSection(event, 'download')}>{$LL.nav.download()}</a>
         <a href="#other-apps" onclick={(event) => scrollToSection(event, 'other-apps')}>{$LL.nav.otherApps()}</a>
         <a href={docsHref(locale)}>{$LL.nav.docs()}</a>
@@ -299,11 +298,6 @@
           <Button href="#download" onclick={(event) => scrollToSection(event, 'download')}>{$LL.hero.primaryAction()}</Button>
           <Button variant="secondary" href="#features" onclick={(event) => scrollToSection(event, 'features')}>{$LL.hero.secondaryAction()}</Button>
         </div>
-        <a class="hero-os-pill" href={`/os/?lang=${locale}`}>
-          <span class="hero-os-pill-badge">{$LL.nav.os()}<span class="beta-tag">{$LL.nav.beta()}</span></span>
-          <span class="hero-os-pill-meta">{$LL.os.formerlyMonitor()}</span>
-          <span class="hero-os-pill-arrow" aria-hidden="true">→</span>
-        </a>
       </div>
 
       <div
@@ -488,7 +482,6 @@
       <span>© 2026 lollipopkit</span>
       <div class="footer-links">
         <a href="#features" onclick={(event) => scrollToSection(event, 'features')}>{$LL.footer.features()}</a>
-        <a href={`/os/?lang=${locale}`}>{$LL.nav.os()}<span class="beta-tag">{$LL.nav.beta()}</span></a>
         <a href="#other-apps" onclick={(event) => scrollToSection(event, 'other-apps')}>{$LL.nav.otherApps()}</a>
         <a href={docsHref(locale)}>{$LL.nav.docs()}</a>
         <a href="https://github.com/lollipopkit/flutter_server_box">GitHub</a>

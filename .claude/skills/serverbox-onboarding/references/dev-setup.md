@@ -15,7 +15,6 @@ written here whenever the checkout is available.
 | Flutter (stable) >= 3.50.0 | Everything in the app | `environment:` in `pubspec.yaml` |
 | Dart SDK >= 3.11.0 | Ships with Flutter | same |
 | Rust 1.98.1 via rustup | `crates/sbm_ffi` is compiled into **every** app build | `crates/sbm_ffi/rust-toolchain.toml` |
-| Node 24 | Monitor panel, docs site, project website | `monitor/frontend/.node-version` |
 | Xcode / Android Studio / Visual Studio | Only the platform you build for | — |
 
 Rust is the one people skip because the project looks like a pure Flutter app.
@@ -86,7 +85,6 @@ re-run it.
 | `integration_test/*` | A connected device or simulator; `flutter test` alone never runs them |
 | `cargo test -p sbm_parser --test ssh_e2e` | `SBM_E2E_SSH_HOST` in the workspace-root `.env`; silently skipped without it |
 | `cargo test -p server_box_monitor --test terminal_ws` | `SBM_E2E_TERMINAL_*` for the real-sshd case; the in-process fake sshd covers the rest |
-| `cd monitor/frontend && npm run test` | `npm ci` once; `npm run check` is the type gate |
 
 Two traps specific to this suite, both of which produce a hang rather than a
 failure:
@@ -114,21 +112,12 @@ recipe for adding one.
 ## Monitor development
 
 ```sh
-make monitor-dev     # backend on :3770, panel vite dev server on :3000
+make monitor-dev     # Monitor API on :3770
 ```
 
-The first run installs the panel's dependencies. Run the two halves separately
-when you need to:
-
-```sh
-cd monitor && cargo run -p server_box_monitor -- serve
-cd monitor/frontend && npm run dev
-```
 
 - Config is `monitor/config.toml`, every key documented in
   `config.example.toml`; `cargo run -- config` prints the resolved values.
-- The panel is served by the Monitor itself when `frontend/dist` exists, so a
-  production build is `npm run build` in `monitor/frontend`.
 - `npm run build` runs a `prebuild` that installs `packages/webui`'s own
   dependencies. `@serverbox/webui` is a `file:` dependency, so an ordinary
   install only symlinks it and `svelte-check` then cannot resolve anything
@@ -136,9 +125,7 @@ cd monitor/frontend && npm run dev
 - sqlx verifies queries at compile time: set `DATABASE_URL`, or refresh the
   offline cache with `cargo sqlx prepare`.
 - `monitor/CLAUDE.md` holds that side's rules;
-  `docs/src/content/docs/development/monitor-agent.md` is the API and access
-  model, `docs/src/content/docs/development/desk-app-reference.md` the
-  contract with desk apps.
+  `docs/src/content/docs/development/monitor-agent.md` is the API and access model.
 
 ## Building releases
 
@@ -168,7 +155,6 @@ make build PLATFORM=<android|ios|macos|linux|windows>   # dart run fl_build -p .
 | `test/frb_parser_test.dart` cannot load the dylib | The FFI crate was never built | `cargo build -p sbm_ffi` |
 | iOS build fails in fl_tty's hook on `ensure-iul-libs.sh` | `packages/fl_tty/third_party/iul` names a revision iul has not published | Point it at a published one, or `rustup component add llvm-tools` and `rustup target add aarch64-apple-ios aarch64-apple-ios-sim aarch64-unknown-linux-musl` to build it |
 | A Rust target silently builds for the host | That target is missing from `crates/sbm_ffi/rust-toolchain.toml` — not an error, a fallback | Add it to `targets` |
-| `svelte-check` reports `Cannot find module` for `packages/webui/src/*` | vite or svelte-check was run directly, skipping the `prebuild` | `npm run build` in `monitor/frontend` |
 | sqlx macros fail to compile | No `DATABASE_URL` and a stale offline cache | Set it, or `cargo sqlx prepare` |
 | `flutter test` hangs with no output naming a file | A widget test wrote to a real on-disk database inside the fake-async zone | Use `openTestDb()` and `forTest()` |
 | Changing a model breaks the Hive import | Generated adapters emit `fields[n] as String` for a new non-nullable field, so a box written before it fails to open | Freeze the type in `lib/hive/legacy_adapters.dart` instead of regenerating |
@@ -180,7 +166,6 @@ make analyze
 cargo build -p sbm_ffi
 make test
 cargo test --workspace
-cd monitor/frontend && npm run test && npm run check   # only if you touched the panel
 ```
 
 Commit messages are one lowercase prefix and an imperative description:

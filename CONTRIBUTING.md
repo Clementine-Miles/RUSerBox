@@ -49,8 +49,7 @@ Two things that trip the check up:
 2. `make deps` — fetch Dart/Flutter dependencies.
 3. `make run` — start the app. `make help` lists everything else.
 
-Working on the server-side Monitor needs Node as well: `make monitor-dev` runs
-its backend (API on `:3770`) and its Svelte panel (Vite on `:3000`) together.
+Run `make monitor-dev` to start the Monitor HTTP API on port 3770.
 See [monitor/README.md](monitor/README.md) for the service's installation and
 configuration instructions.
 
@@ -80,9 +79,6 @@ editing.
 make analyze              # flutter analyze lib test
 make test                 # flutter test
 cargo test --workspace    # parser, native sampler, FFI, monitor
-
-# Only if you touched the monitor panel
-cd monitor/frontend && npm run test && npm run check
 ```
 
 `flutter analyze` runs on every pull request; the Rust tests are worth running

@@ -3,7 +3,7 @@ use crate::monitoring::threshold::{Threshold, ThresholdType};
 use tracing::{info, warn};
 
 /// A rule over its threshold at a check: the rule as configured and the
-/// reading that crossed it. `/alerts` answers these (`api::desk::DeskHub`);
+/// reading that crossed it. `/alerts` answers these (`api::notifications::NotificationHub`);
 /// `message` is the line every push channel got.
 #[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct Firing {
@@ -20,7 +20,7 @@ pub struct Firing {
 
 /// Checks every rule and answers the rules firing now: the monitoring loop
 /// pushes them, and they make the desk's notifications and `/alerts`
-/// (`api::desk`).
+/// (`api::notifications`).
 pub async fn check_rules_with_velocity(
     metrics: &SystemMetrics,
     config: &Config,

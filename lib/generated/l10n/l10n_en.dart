@@ -6507,77 +6507,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Allow all: deleting, restarting and config changes run directly, without asking.';
 
   @override
-  String get webApps => 'Web apps';
-
-  @override
-  String get webAppUnhealthy => 'Unhealthy';
-
-  @override
-  String get webAppDown => 'Down';
-
-  @override
-  String get webAppInstalling => 'Installing';
-
-  @override
-  String get webAppsEmpty =>
-      'No web apps yet. Deploy them from the App Store of the Monitor panel.';
-
-  @override
-  String get deskAppOpensInPanel => 'Opens in the panel';
-
-  @override
-  String get webAppVersion => 'Version';
-
-  @override
-  String get webAppHomepage => 'Homepage';
-
-  @override
-  String webAppUpdate(String version) {
-    return 'Version $version is available. Update it in the Monitor panel.';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app is down';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return 'Not running: $services.';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => 'None of its containers is running.';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app is unhealthy';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return 'Failing its health check: $services.';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app is running again';
-  }
-
-  @override
-  String get noticeStackBackBody => 'Every container is up.';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return '$app: an update is available';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '$project $version can be installed (now $current).';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array is degraded';
   }
@@ -6693,19 +6622,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return 'Apps with problems: $count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return 'App updates: $count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => 'Updates only';
-
-  @override
   String get monitorNoUpdates => 'No app has an update.';
 
   @override
@@ -6816,9 +6732,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monitorStatUnread => 'Unread';
-
-  @override
-  String get monitorStatUpdates => 'App updates';
 
   @override
   String get monitorAuditEmpty => 'Nothing recorded matches.';

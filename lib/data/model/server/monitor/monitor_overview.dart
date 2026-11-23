@@ -296,7 +296,6 @@ abstract final class MonitorAuditKind {
     'fs',
     'machine',
     'agent',
-    'stack',
     'stream',
     'listen',
     'ticket',

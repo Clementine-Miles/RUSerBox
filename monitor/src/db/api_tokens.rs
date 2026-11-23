@@ -31,7 +31,7 @@ const ALL_MARKER: &str = "*";
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Scope {
     /// Machine readings and listings: status, metrics, capabilities, processes,
-    /// services, containers, cron, tmux, firewall, storage, virt, stacks, users.
+    /// services, containers, cron, tmux, firewall, storage, virt, users.
     Read,
     /// Reading files and directory listings (`fs_roots`, `fs_list`, `fs_stat`, `fs_read`).
     FsRead,
@@ -49,8 +49,6 @@ pub enum Scope {
     Cron,
     /// Controlling virtual machines and LXC containers (`virt_power`).
     Virt,
-    /// Controlling deployed web apps (`stack_action`).
-    Stacks,
     /// Shutting down, rebooting or suspending this machine (`power`).
     Power,
 }
@@ -66,7 +64,6 @@ impl Scope {
         Scope::Container,
         Scope::Cron,
         Scope::Virt,
-        Scope::Stacks,
         Scope::Power,
     ];
 
@@ -81,7 +78,6 @@ impl Scope {
             Scope::Container => "container",
             Scope::Cron => "cron",
             Scope::Virt => "virt",
-            Scope::Stacks => "stacks",
             Scope::Power => "power",
         }
     }

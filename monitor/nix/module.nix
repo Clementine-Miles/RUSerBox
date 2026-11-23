@@ -19,10 +19,9 @@
 #   config.toml              read, and written when absent or migrated
 #   serverbox_monitor.db     the SQLite file
 #   blobs/                   files the agent keeps beside it (`core::blobs`)
-#   frontend/dist            the panel's static files
 #
 # So the working directory cannot be the package — that is in the store and
-# read-only — and it cannot be a plain directory either, because the panel has
+# read-only — and it cannot be a plain directory either, because the agent has
 # to be found from it. StateDirectory gives the first two a writable home, and
 # `preStart` links the third in from the package. Migrations need nothing:
 # `sqlx::migrate!` embeds them at compile time.
@@ -49,7 +48,7 @@ in
         The account the agent runs as.
 
         Not root by default, and the reason is not tidiness: with
-        `remote_access.full_access` on, a panel login opens a shell as whoever
+        `remote_access.full_access` on, an app login opens a shell as whoever
         this is. `install.sh` makes the same choice for the same reason.
       '';
     };
@@ -90,11 +89,11 @@ in
       '';
       description = ''
         config.toml, declared. Null leaves the file alone, which is what a
-        machine configured through the panel wants: the agent writes its own
+        machine configured through the app wants: the agent writes its own
         settings there, and a declarative file would be overwritten on every
         rebuild and then rewritten by the agent.
 
-        Set this and the file becomes generated and read-only, so the panel's
+        Set this and the file becomes generated and read-only, so the app's
         settings page stops being able to persist anything.
       '';
     };
@@ -159,15 +158,9 @@ in
         RestrictSUIDSGID = true;
       };
 
-      preStart = ''
-        # The panel, found relative to the working directory. A symlink rather
-        # than a copy so that a rebuild moves it without leaving the old one.
-        ln -sfn ${cfg.package}/share/server-box-monitor/frontend \
-          /var/lib/server-box-monitor/frontend
-      ''
-      + lib.optionalString (cfg.settings != null) ''
+      preStart = lib.optionalString (cfg.settings != null) ''
         # Declared config wins, every start. Deliberately clobbering: with
-        # `settings` set the file is this module's, and the panel's settings
+        # `settings` set the file is this module's, and the app's settings
         # page cannot persist over it.
         install -m 0640 ${
           (pkgs.formats.toml { }).generate "config.toml" cfg.settings

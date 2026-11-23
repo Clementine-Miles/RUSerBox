@@ -1,5 +1,5 @@
 //! Clients that cannot read `sbm_parser::protocol` over FFI write the number
-//! down themselves: the panel, the iOS and Android widgets and the watch app.
+//! down themselves: the iOS and Android widgets and the watch app.
 //! Each must say what this crate says, or a raised `MIN_CLIENT_PROTOCOL`
 //! would refuse a client that was in fact current.
 
@@ -8,14 +8,8 @@ use std::path::Path;
 use sbm_parser::protocol::{HEADER, PROTOCOL};
 
 /// Each client's source, how it writes the number (`{p}`), and the statement
-/// that puts it in the header (`{h}`, compared without case). The panel's
-/// requests are `protocol.test.ts`'s to check.
+/// that puts it in the header (`{h}`, compared without case).
 const CLIENTS: &[(&str, &str, &str)] = &[
-    (
-        "monitor/frontend/src/lib/protocol.ts",
-        "export const PROTOCOL = {p}",
-        "export const PROTOCOL_HEADER = '{h}'",
-    ),
     (
         "ios/StatusWidget/WidgetMonitorClient.swift",
         "private let sbmProtocol = \"{p}\"",

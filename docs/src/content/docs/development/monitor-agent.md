@@ -124,10 +124,10 @@ not derive them again from counters it may only hold part of.
 
 The Monitor has one account, signed in with its password alone, and it may do
 whatever the system account the Monitor runs as may do. There are no roles,
-grants, or file roots. The Monitor, the web panel, and the App share the
+grants, or file roots. The Monitor and the Android app share the
 contract below.
 
-Reading status, metrics, history, velocity, capabilities, and the card order
+Reading status, metrics, history, velocity and capabilities
 needs a login or a watch token. A watch token can do nothing else; every other
 endpoint answers it `401`.
 
@@ -139,7 +139,7 @@ endpoint answers it `401`.
 | `PUT /api/v1/me/password` | `current_password`, `new_password` (at least 8 characters); answers `204` |
 
 A client keeps the `device` token per Monitor (the App in the Keychain or
-Keystore, the panel in `localStorage`) and sends it with every later sign-in.
+Keystore) and sends it with every later sign-in.
 `name` is what the device is listed as under `GET /live`, else its User-Agent:
 at most 80 characters, control characters dropped. Every sign-in, accepted or
 refused, is an audit row (`login`, the address, and `device known`,
@@ -249,7 +249,7 @@ deny = ["rm -rf /"]
 ```
 
 A `sudo` password has no way in through MCP: an action that needs root answers
-`sudo_rejected`, for the operator to do from the panel or with passwordless
+`sudo_rejected`, for the operator to do from the app or with passwordless
 `sudo`.
 
 ### Password change
@@ -278,6 +278,8 @@ endpoints answer `forbidden`.
 
 | Endpoint | Answers | Rule |
 |---|---|---|
+| `GET /api/v1/notifications` | Recent notifications and unread count | Any login |
+| `POST /api/v1/notifications/read` | Marks selected or all notifications read | Any login |
 | `GET /api/v1/alerts` | `checked_at`, `alerts`: `rule`, `monitor_type`, `matcher`, `threshold`, `value`, `since` for each rule firing at the last check (kept in memory: a restart forgets `since`) | Any login |
 | `GET /api/v1/update[?check=1]` | `version`, `latest`, `checked_at`, `error`, `outdated`, `install`, `command`, `needs_password`, `run`. The release is read every 12 hours; `check=1` reads it again, at most once a minute. `run` is `state` (`running`, `done`, `failed`, `interrupted`), `started_at`, `exit`, `lines` | Any login |
 | `POST /api/v1/update/run` | `202`. Takes `password` (sudo's) where `needs_password`; a wrong one is `403 sudo_password`. `409 not_script` when `install.sh` did not install the Monitor, `409 running` while an update runs. Audited | Transport |
@@ -291,12 +293,12 @@ endpoints answer `forbidden`.
 Monitor's own state: its database and journal files, `jwt.secret`, `credentials.key`,
 `initial-admin-credentials.txt`, `config.toml` and its backups, `.env`, the
 TLS certificate and key, the custom-commands directory, the blob store,
-stacks' `.env` files, and container backups. These paths are matched after
+legacy app deployment secrets, and container backups. These paths are matched after
 resolving symlinks, refused with `403`, left out of listings, and their
 directories cannot be renamed, removed, or chmod-ed.
 
 ### Terminal endpoint
 
-The terminal of the App and of the web panel is a local shell running as the
+The terminal in the app is a local shell running as the
 Monitor process user, on a PTY. The Monitor does not sign in to sshd: an `open`
 carrying SSH credentials is refused.

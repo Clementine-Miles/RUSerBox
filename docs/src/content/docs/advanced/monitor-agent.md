@@ -187,13 +187,8 @@ The Monitor runs as an ordinary user by default. Whoever signs in may do what th
 The Monitor reads `config.toml` from the directory beside its binary. See
 [`config.example.toml`](https://github.com/lollipopkit/flutter_server_box/blob/main/monitor/config.example.toml)
 for every available option. By default, the Monitor listens on `0.0.0.0:3770`.
-If `frontend/dist` is present, it also serves the web panel from that address.
 
-Collection intervals, alert rules, notification channels, data retention, and
-allowed panel origins can be edited without opening `config.toml`. Use
-**Server Settings** in the web panel, or open the server in the App and tap
-the settings button in the top bar. Both interfaces update the same Monitor and
-configuration file.
+Open the server’s settings in the Android app to edit collection intervals, alert rules, notification channels and data retention.
 
 The JWT secret, `database_url`, and `[remote_access]` options (plaintext
 tolerance, SSH address, and size limits) can only be changed in the
@@ -236,7 +231,7 @@ and it restarts last. So the command can run in a terminal the Monitor itself
 opened; that terminal closes when the Monitor restarts, and the Monitor is back
 within a few seconds.
 
-#### Update from the panel or the App
+#### Update from the app
 
 The Monitor checks its releases every 12 hours and leaves a notification when a
 newer one is out. It knows how it was installed: by `install.sh`, in a
@@ -245,15 +240,11 @@ the others are told how to update instead.
 
 The update runs apart from the Monitor: under systemd as a transient service of
 its own (`systemd-run`), elsewhere in a session of its own. The Monitor's restart
-ends every connection through it, the panel's and the App's included, but not
+ends every connection through it, including the app’s, but not
 the update. The output goes to `update.log` in the Monitor's directory, and the
 Monitor that comes back reports how it went. Under OpenRC the installer needs
 root, so the Monitor asks for the sudo password; it is used once and not saved.
 
-- **Panel**: **Settings → Server → ServerBox Monitor** shows the version and
-  the newest release, with **Check now** and **Update now**. While the update
-  runs, the page shows its output, says when the Monitor is restarting, and shows
-  the new version when it is back. Clicking the notification opens this page.
 - **App**: the **Monitor** tab marks a Monitor with a newer release, and one too
   old for the App to sign in to. Tapping the mark opens the same steps with
   **Update now**. A Monitor too old to sign in to with the password alone still
@@ -270,7 +261,7 @@ how much history it has collected. The App shows only the ranges the Monitor can
 provide. For API fields and history-query behavior, see
 [Monitor API and access model](/docs/development/monitor-agent/).
 
-## Panel credentials
+## Monitor credentials
 
 The Monitor has one account, signed in with its password alone; there is no
 username. The password is stored in the Monitor's SQLite database, not in
@@ -331,16 +322,14 @@ A password change signs out everything else:
   and paired widgets and Watch are unpaired. No restart is needed for this,
   and `jwt_secret` does not need to change.
 - **Open terminals, port forwards and listeners, at once when the password is
-  changed from the App or the panel.** The command above writes the database
+  changed from the app.** The command above writes the database
   and cannot reach the running Monitor, so connections already open under the
   old password keep running until the Monitor restarts: `systemctl --user
   restart server_box_monitor`, or `rc-service server-box-monitor restart` on
   OpenRC. Restart it after a reset made because the password may be known to
   someone else.
 
-The password can also be changed from the App (the server's settings button,
-then **Access**) or the panel; both ask for the current password. Changing it in the App updates the password the App has
-saved for that server.
+To change it in the app, open the server’s settings, choose **Access**, and enter the current password. The app saves the new password for that server.
 
 After changing the password on the server, update **Monitor Password** in the
 App and replace it in any other client that uses it. Clients are not notified
@@ -349,7 +338,7 @@ updated.
 
 ### A forgotten password
 
-There is no password recovery flow in the panel. Reset the password on the
+Reset the password on the
 server with the command above.
 
 Login attempts are rate-limited. Each sign-in gives the App or the browser a
@@ -370,7 +359,7 @@ the password forgets every device.
    transport** to choose which one the App tries first.
 3. Enter:
    - **URL**: for example, `https://1.2.3.4:3770`
-   - **Monitor Password**: the Monitor's password — see [Panel credentials](#panel-credentials)
+   - **Monitor Password**: the Monitor's password — see [Monitor credentials](#monitor-credentials)
    - **Monitor Certificate**: for a self-signed certificate, review and trust it here, or on the first connection
 4. Save the configuration.
 
@@ -387,12 +376,9 @@ from the bar's title and the server from its server button.
 
 - **Overview**: each Monitor, whether it answers, its version (with the newest
   release when it is older), the [alert rules](#alert-rules) firing now with
-  the reading and how long they have fired, and shortcuts to unread
-  notifications and to web apps that are down or have an update.
-- **Web apps**: see [Monitor web apps](../monitor-apps/#open-apps-from-the-serverbox-app).
+  the reading and how long they have fired, and shortcuts to unread notifications.
 - **Notifications**: what the Monitors reported, newest first, in the App's
-  language: a rule that started firing, a web app down, back or with an
-  update, a disk, array or pool in trouble. Read state is shared with the panel.
+  language. It reports firing rules, Monitor updates and storage problems.
 - **Audit log**: one server at a time. Sign-ins (accepted and refused, with the
   address), terminals, commands, file writes, machine management, deployments
   and the rest, filtered by type and result. It is shown only over a link the
@@ -432,7 +418,7 @@ show a distinct, stable entry for each device.
 Signing in to the Monitor allows what the operating-system account the Monitor
 runs as may do: commands, processes, systemd, containers, snippets, power,
 scheduled tasks, the firewall, the terminal, files, remote desktop, port
-forwarding, and the web panel's Proxmox VE, libvirt and BMC pages. There are
+forwarding, plus Proxmox VE, libvirt and BMC pages. There are
 no roles or per-feature permissions; that account is the limit.
 
 The installer therefore runs the Monitor as an ordinary user by default. With
@@ -492,7 +478,7 @@ App does not need to stay in the foreground:
 
 - **Home-screen widgets**: Configure the server in the App after installing the Monitor. The widget selects from the server list published by the App; you do not enter a URL manually.
 - **Watch app**: It can show only servers with the Monitor configured. These servers sync by default, and you can exclude individual servers in the iOS settings.
-- **Push alerts**: A rule decides when to alert and a channel decides where it goes — `[[monitoring.rules]]` and `[[push]]` in `config.toml`, or the same two lists in the App and the web panel, where a channel also has a **Send a test** button. See [Alert rules](#alert-rules) for how a rule is written.
+- **Push alerts**: A rule decides when to alert and a channel decides where it goes — `[[monitoring.rules]]` and `[[push]]` in `config.toml`, or the same two lists in the app, where a channel also has a **Send a test** button. See [Alert rules](#alert-rules) for how a rule is written.
 
 ## Notification channels
 
@@ -520,7 +506,7 @@ fields. Every type is listed in
   read when a notification is sent, from the Monitor's environment or its
   `.env`; `config.toml` keeps the reference. A channel whose variable is unset
   or empty is refused on save and fails to send, naming the variable. Other
-  settings are not expanded. A credential entered in the App or the web panel
+  settings are not expanded. A credential entered in the app
   is taken as typed, never as a reference: signing in does not give access to
   the Monitor's environment.
 - **Bark**: with `cipher_key` set, the notification is encrypted with AES-CBC
@@ -660,11 +646,11 @@ cannot. See [Access](#access).
 
 **Certificate errors.** Configure valid TLS or put the Monitor behind a reverse proxy. For a self-signed certificate, compare its SHA-256 with the Monitor's (`openssl x509 -in tls.crt -noout -fingerprint -sha256`) and trust it; a changed certificate is shown again.
 
-**The panel uses a different origin.** Add that origin to
+**An HTTP client uses a different origin.** Add that origin to
 `cors_allowed_origins` in `config.toml` or the `SBM_CORS_ORIGINS` environment
 variable.
 
-**Login is rejected, or the password is lost.** Reset it on the server with `server_box_monitor password`; see [Panel credentials](#panel-credentials). Repeated failures are throttled, so a wrong password can also present as a slow or unresponsive Monitor.
+**Login is rejected, or the password is lost.** Reset it on the server with `server_box_monitor password`; see [Monitor credentials](#monitor-credentials). Repeated failures are throttled, so a wrong password can also present as a slow or unresponsive Monitor.
 
 **A request gets no response.** Confirm that the Monitor is running and its
 port is reachable. Then inspect the database's `access_log` table, which

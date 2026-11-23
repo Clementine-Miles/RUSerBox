@@ -24,7 +24,7 @@ use fl_lkc::{Client, DeviceAuthorization, DevicePoll, Failure, Tokens, User, now
 use serde::Serialize;
 use sqlx::SqlitePool;
 
-use crate::api::desk::Level;
+use crate::api::notifications::Level;
 use crate::api::server::AppState;
 use crate::monitoring::push::Alert;
 use crate::api::ws::audit::{Action, Event, Kind, Outcome};

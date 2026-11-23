@@ -225,7 +225,6 @@ String auditKindLabel(String kind) => switch (kind) {
   'fs' => libL10n.file,
   'machine' => l10n.monitorAuditMachine,
   'agent' => 'Agent',
-  'stack' => l10n.webApps,
   'stream' => l10n.connection,
   'listen' => l10n.monitorAuditListen,
   'ticket' => l10n.monitorAuditTicket,

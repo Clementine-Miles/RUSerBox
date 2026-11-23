@@ -2,7 +2,7 @@
 //! is updated (`sbm_parser::monitor_agent`, shared with the app).
 //!
 //! The agent reads its releases itself, every [EVERY] and on a client's
-//! `?check=1`, and leaves a desk notification once per newer version.
+//! `?check=1`, and leaves a notification once per newer version.
 //!
 //! `POST /update/run` starts `install.sh upgrade` outside the agent
 //! (`sbm_parser::monitor_agent::start_update_script`): the upgrade restarts
@@ -21,7 +21,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
 use super::authz;
-use super::desk::{Level, Source, account};
+use super::notifications::{Level, Source};
 use super::ws::audit::{Action, Event, Kind, Outcome, peer_ip};
 use crate::utils::fetch::{Fetch, HttpFetch};
 use super::server::AppState;
@@ -239,7 +239,7 @@ pub async fn get(
     query: web::types::Query<UpdateQuery>,
     state: Arc<AppState>,
 ) -> Result<HttpResponse, WebError> {
-    if let Err(response) = account(&req, &state).await {
+    if let Err(response) = authz::jwt_caller(&req, &state).await {
         return Ok(response);
     }
     let (checked, read) = state.update.checked(query.check == Some(1)).await;
@@ -341,7 +341,7 @@ pub async fn watch(state: Arc<AppState>) {
     }
 }
 
-/// A desk notification for a newer version, once per version: kept as the
+/// A notification for a newer version, once per version: kept as the
 /// notification itself, so one that has rotated out is said again. After a
 /// read only, one at a time.
 async fn notice(state: &AppState, checked: &Checked) {
@@ -359,7 +359,7 @@ async fn notice(state: &AppState, checked: &Checked) {
     }
     let params = serde_json::json!({ "version": latest, "current": VERSION });
     if let Err(e) = state
-        .desk
+        .notifications
         .notify(
             &state.db,
             Level::Info,

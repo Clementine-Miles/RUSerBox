@@ -6499,77 +6499,6 @@ class AppLocalizationsAz extends AppLocalizations {
       'Hamısına icazə ver: silmə, yenidən başlatma və konfiqurasiya dəyişiklikləri soruşulmadan icra olunur.';
 
   @override
-  String get webApps => 'Veb tətbiqlər';
-
-  @override
-  String get webAppUnhealthy => 'Problemli';
-
-  @override
-  String get webAppDown => 'İşləmir';
-
-  @override
-  String get webAppInstalling => 'Quraşdırılır';
-
-  @override
-  String get webAppsEmpty =>
-      'Hələ veb tətbiq yoxdur. Onları Monitor panelinin App Store bölməsindən quraşdırın.';
-
-  @override
-  String get deskAppOpensInPanel => 'Paneldə açılır';
-
-  @override
-  String get webAppVersion => 'Versiya';
-
-  @override
-  String get webAppHomepage => 'Veb sayt';
-
-  @override
-  String webAppUpdate(String version) {
-    return '$version versiyası mövcuddur. Onu Monitor panelində yeniləyin.';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app dayanıb';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return 'İşləmir: $services.';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => 'Konteynerlərinin heç biri işləmir.';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app sağlam deyil';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return 'Sağlamlıq yoxlamasından keçmir: $services.';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app yenidən işləyir';
-  }
-
-  @override
-  String get noticeStackBackBody => 'Bütün konteynerlər işləyir.';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return '$app: yeniləmə var';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '$project $version quraşdırıla bilər (indi $current).';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array zəifləyib';
   }
@@ -6686,19 +6615,6 @@ class AppLocalizationsAz extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return 'Problemli tətbiqlər: $count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return 'Tətbiq yeniləmələri: $count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => 'Yalnız yeniləmələr';
-
-  @override
   String get monitorNoUpdates => 'Yeniləməsi olan tətbiq yoxdur.';
 
   @override
@@ -6809,9 +6725,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get monitorStatUnread => 'Oxunmamış';
-
-  @override
-  String get monitorStatUpdates => 'Yeniləmələr';
 
   @override
   String get monitorAuditEmpty => 'Uyğun qeyd yoxdur.';

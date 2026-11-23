@@ -32,7 +32,6 @@ use super::json;
 use super::process;
 use super::server::{self, AppState};
 use super::service::{self, ServicePart};
-use super::stacks;
 use super::storage;
 use super::system_users::{self, UserPart};
 use super::tmux;
@@ -138,7 +137,6 @@ impl TokenHost {
             ),
             no_args("storage", "Block devices, filesystems, mounts, RAID arrays, ZFS pools and disk health."),
             no_args("virt", "Virtualization host (Proxmox VE or libvirt) and its virtual machines and containers."),
-            no_args("stacks", "Catalog and deployed web app stacks managed by this Monitor."),
             tool(
                 "system_users",
                 "System users and groups on Linux, or detailed records of one account.",
@@ -388,22 +386,6 @@ impl TokenHost {
         )]
     }
 
-    fn stacks_tools() -> Vec<Tool> {
-        vec![tool(
-            "stack_action",
-            "Starts, stops, restarts or updates a deployed web app stack.",
-            json!({
-                "type": "object",
-                "properties": {
-                    "id": { "type": "string", "description": "Stack ID from `stacks`." },
-                    "action": { "type": "string", "enum": ["start", "stop", "restart", "update"] }
-                },
-                "required": ["id", "action"],
-                "additionalProperties": false
-            }),
-        )]
-    }
-
     fn power_tools() -> Vec<Tool> {
         vec![tool(
             "power",
@@ -439,7 +421,6 @@ impl Host for TokenHost {
                 Scope::Container => tools.extend(Self::container_tools()),
                 Scope::Cron => tools.extend(Self::cron_tools()),
                 Scope::Virt => tools.extend(Self::virt_tools()),
-                Scope::Stacks => tools.extend(Self::stacks_tools()),
                 Scope::Power => tools.extend(Self::power_tools()),
             }
         }
@@ -532,10 +513,6 @@ impl Host for TokenHost {
             "virt" => match virt::load_view(state, None).await {
                 Ok(body) => structured(body),
                 Err(e) => tool_error(format!("virtualization load failed: {e}")),
-            },
-            "stacks" => match stacks::list_apps(state).await {
-                Ok(body) => structured(body),
-                Err(e) => tool_error(format!("stacks unavailable: {e}")),
             },
             "system_users" => {
                 let part: UserPart = match arguments.get("part") {
@@ -645,7 +622,6 @@ impl Host for TokenHost {
             "container_action" => self.container_action(arguments).await,
             "cron_edit" => self.cron_edit(arguments).await,
             "virt_power" => self.virt_power(arguments).await,
-            "stack_action" => self.stack_action(arguments).await,
             "power" => self.power(arguments).await,
             _ => tool_error(format!("unknown tool: {name}")),
         }
@@ -819,25 +795,6 @@ impl TokenHost {
                 Some(err) => tool_error(serde_json::to_string(&err).unwrap_or_else(|_| "virt power failed".into())),
             },
             Err(e) => tool_error(format!("virt power failed: {e}")),
-        }
-    }
-
-    async fn stack_action(&self, arguments: Value) -> CallToolResult {
-        #[derive(serde::Deserialize)]
-        struct Args {
-            id: String,
-            action: crate::stacks::StackAction,
-        }
-        let args: Args = match serde_json::from_value(arguments) {
-            Ok(a) => a,
-            Err(e) => return tool_error(format!("invalid arguments: {e}")),
-        };
-        match crate::stacks::act(&self.state, &args.id, args.action).await {
-            Ok(job) => structured(serde_json::to_value(job.view(0)).unwrap_or(Value::Null)),
-            Err(r) => tool_error(match r.field {
-                Some(field) => format!("{} ({field})", r.error),
-                None => r.error.to_string(),
-            }),
         }
     }
 

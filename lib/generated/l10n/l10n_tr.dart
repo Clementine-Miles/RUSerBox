@@ -6491,77 +6491,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Tümüne izin ver: silme, yeniden başlatma ve yapılandırma değişiklikleri sorulmadan yapılır.';
 
   @override
-  String get webApps => 'Web uygulamaları';
-
-  @override
-  String get webAppUnhealthy => 'Sağlıksız';
-
-  @override
-  String get webAppDown => 'Çalışmıyor';
-
-  @override
-  String get webAppInstalling => 'Yükleniyor';
-
-  @override
-  String get webAppsEmpty =>
-      'Henüz web uygulaması yok. Monitor panelinin App Store\'undan dağıtın.';
-
-  @override
-  String get deskAppOpensInPanel => 'Panelde açılır';
-
-  @override
-  String get webAppVersion => 'Sürüm';
-
-  @override
-  String get webAppHomepage => 'Web sitesi';
-
-  @override
-  String webAppUpdate(String version) {
-    return '$version sürümü mevcut. Monitor panelinden güncelleyin.';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app çalışmıyor';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return 'Çalışmıyor: $services.';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => 'Hiçbir konteyner çalışmıyor.';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app sağlıksız';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return 'Sağlık denetimi başarısız: $services.';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app yeniden çalışıyor';
-  }
-
-  @override
-  String get noticeStackBackBody => 'Tüm konteynerler çalışıyor.';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return '$app için güncelleme var';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '$project $version yüklenebilir (şu anki: $current).';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array düşürülmüş durumda';
   }
@@ -6678,19 +6607,6 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return 'Sorunlu uygulamalar: $count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return 'Uygulama güncellemeleri: $count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => 'Yalnızca güncellemeler';
-
-  @override
   String get monitorNoUpdates => 'Güncellemesi olan uygulama yok.';
 
   @override
@@ -6801,9 +6717,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get monitorStatUnread => 'Okunmamış';
-
-  @override
-  String get monitorStatUpdates => 'Güncellemeler';
 
   @override
   String get monitorAuditEmpty => 'Eşleşen kayıt yok.';

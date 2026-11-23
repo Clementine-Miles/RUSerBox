@@ -45,7 +45,7 @@ Environment variables override `config.toml`: `SBM_HOST`, `SBM_PORT`,
 `SBM_TLS_CERT`, `SBM_TLS_KEY`, `SBM_CORS_ORIGINS`, `DATABASE_URL`,
 `JWT_SECRET` (generated and kept beside the database when unset).
 
-### The panel login
+### Monitor credentials
 
 The Monitor has one account, signed in with its password alone — no username,
 and not the SSH account. On first start the Monitor sets a random password,
@@ -60,8 +60,7 @@ cd ~/.local/share/server-box-monitor     # or /opt/server-box-monitor
 Run it there and as the service's account, or it creates a second, empty
 database the service never reads. The command prompts (8 characters at
 least), or reads it from `--password-env VAR`; it takes no password argument on
-purpose. There is no recovery in the panel — this command is the reset. The app
-and the panel can change the password too. A change signs out everything else:
+purpose. The Android app can change the password too. A change signs out everything else:
 older logins stop working, paired widgets and watches are unpaired, and open
 terminals and forwards close (after a command-line reset, only once the Monitor
 restarts). Repeated wrong passwords are throttled up to five
@@ -117,7 +116,7 @@ account, with none of SSH's authentication in between.
 
 - **Push alerts**: a rule says when, a channel says where — `[[monitoring.rules]]`
   and `[[push]]` in `config.toml`, or the same lists in the app (the settings
-  button in the server page's top bar) and in the web panel, where a channel
+  button in the server page's top bar), where a channel
   has **Send a test**. Rule changes take effect after a restart.
 - **Rules**: `name`, `monitor_type` (cpu, memory, swap, disk, network,
   temperature), `matcher` and `threshold`.
@@ -148,5 +147,4 @@ account, with none of SSH's authentication in between.
 | Certificate error | Configure TLS or a proxy; for a self-signed one, compare the SHA-256 and trust it |
 | Login refused, or the Monitor seems slow | Wrong password, throttled (per source address; a device that signed in before is never locked out by failures elsewhere); reset with `server_box_monitor password` |
 | Settings turned themselves off after an upgrade | A config from before August 2026 uses old flat keys (`terminal_enabled`...) that are no longer read; rewrite it against [`config.example.toml`](https://github.com/lollipopkit/flutter_server_box/blob/main/monitor/config.example.toml) |
-| A web panel on another origin cannot reach it | `cors_allowed_origins` in `config.toml`, or `SBM_CORS_ORIGINS` |
 | Nothing answers | Is the process running and the port reachable? Then the `access_log` table in its database: who asked for what, from where, and the result (never a credential) |

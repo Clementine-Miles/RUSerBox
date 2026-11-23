@@ -8374,124 +8374,6 @@
   "@agentModeBypassWarn": {
     "description": "Agent: warning shown while the allow-all mode is picked for a new task."
   },
-  "webApps": "Web apps",
-  "@webApps": {
-    "description": "Server page: card listing the web apps the Monitor deployed (Docker Compose services)."
-  },
-  "webAppUnhealthy": "Unhealthy",
-  "@webAppUnhealthy": {
-    "description": "Web app health: some of its services report unhealthy."
-  },
-  "webAppDown": "Down",
-  "@webAppDown": {
-    "description": "Web app health: some of its services are not running."
-  },
-  "webAppInstalling": "Installing",
-  "@webAppInstalling": {
-    "description": "Web app state: being deployed."
-  },
-  "webAppsEmpty": "No web apps yet. Deploy them from the App Store of the Monitor panel.",
-  "@webAppsEmpty": {
-    "description": "Web apps tab: no server has a deployed Monitor web app."
-  },
-  "deskAppOpensInPanel": "Opens in the panel",
-  "@deskAppOpensInPanel": {
-    "description": "Web apps tab: subtitle of an app installed on the Monitor panel desk, which opens the panel in the browser."
-  },
-  "webAppVersion": "Version",
-  "@webAppVersion": {
-    "description": "Web app details: the deployed version."
-  },
-  "webAppHomepage": "Homepage",
-  "@webAppHomepage": {
-    "description": "Web app details: the project's website."
-  },
-  "webAppUpdate": "Version {version} is available. Update it in the Monitor panel.",
-  "@webAppUpdate": {
-    "description": "Web app details: the catalog has another version; updating is done in the Monitor web panel.",
-    "placeholders": {
-      "version": {
-        "type": "String"
-      }
-    }
-  },
-  "noticeStackDown": "{app} is down",
-  "@noticeStackDown": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
-    "placeholders": {
-      "app": {
-        "type": "String"
-      }
-    }
-  },
-  "noticeStackDownBody": "Not running: {services}.",
-  "@noticeStackDownBody": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
-    "placeholders": {
-      "services": {
-        "type": "String"
-      }
-    }
-  },
-  "noticeStackDownBodyEmpty": "None of its containers is running.",
-  "@noticeStackDownBodyEmpty": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it."
-  },
-  "noticeStackUnhealthy": "{app} is unhealthy",
-  "@noticeStackUnhealthy": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
-    "placeholders": {
-      "app": {
-        "type": "String"
-      }
-    }
-  },
-  "noticeStackUnhealthyBody": "Failing its health check: {services}.",
-  "@noticeStackUnhealthyBody": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
-    "placeholders": {
-      "services": {
-        "type": "String"
-      }
-    }
-  },
-  "noticeStackBack": "{app} is running again",
-  "@noticeStackBack": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
-    "placeholders": {
-      "app": {
-        "type": "String"
-      }
-    }
-  },
-  "noticeStackBackBody": "Every container is up.",
-  "@noticeStackBackBody": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it."
-  },
-  "noticeStackUpdate": "{app}: an update is available",
-  "@noticeStackUpdate": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
-    "placeholders": {
-      "app": {
-        "type": "String"
-      }
-    }
-  },
-  "noticeStackUpdateBody": "{project} {version} can be installed (now {current}).",
-  "@noticeStackUpdateBody": {
-    "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
-    "placeholders": {
-      "project": {
-        "type": "String"
-      },
-      "version": {
-        "type": "String"
-      },
-      "current": {
-        "type": "String"
-      }
-    }
-  },
   "noticeStorageArrayDegraded": "/dev/{array} is degraded",
   "@noticeStorageArrayDegraded": {
     "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
@@ -8669,28 +8551,6 @@
       }
     }
   },
-  "monitorAppsUnwell": "Apps with problems: {count}",
-  "@monitorAppsUnwell": {
-    "description": "Overview card: deployed web apps that are down or unhealthy.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "monitorAppsUpdates": "App updates: {count}",
-  "@monitorAppsUpdates": {
-    "description": "Overview card: deployed web apps the catalog has a newer version of.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "monitorUpdatesOnly": "Updates only",
-  "@monitorUpdatesOnly": {
-    "description": "Web apps section: show only apps with an update."
-  },
   "monitorNoUpdates": "No app has an update.",
   "@monitorNoUpdates": {
     "description": "Web apps section: no app has an update."
@@ -8852,10 +8712,6 @@
   "monitorStatUnread": "Unread",
   "@monitorStatUnread": {
     "description": "Overview count: unread notifications."
-  },
-  "monitorStatUpdates": "App updates",
-  "@monitorStatUpdates": {
-    "description": "Overview count: web apps with an update."
   },
   "monitorAuditEmpty": "Nothing recorded matches.",
   "@monitorAuditEmpty": {

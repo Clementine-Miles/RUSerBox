@@ -13,7 +13,6 @@ import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/provider/monitor_release.dart';
 import 'package:server_box/data/provider/server/monitor_overview.dart';
 import 'package:server_box/data/provider/server/single.dart';
-import 'package:server_box/data/provider/server/web_apps.dart';
 import 'package:server_box/view/page/monitor/common.dart';
 import 'package:server_box/view/page/monitor/update_agent.dart';
 
@@ -36,7 +35,6 @@ class MonitorOverviewView extends ConsumerWidget {
     var online = 0;
     var firing = 0;
     var unread = 0;
-    var updates = 0;
     // Whether an agent cannot say its newest release itself: too old to sign
     // in to, or to have `/update`.
     var unsaid = false;
@@ -52,7 +50,6 @@ class MonitorOverviewView extends ConsumerWidget {
       final overview = ref.watch(monitorOverviewProvider(spi.id));
       firing += overview.alerts?.alerts.length ?? 0;
       unread += overview.notices?.unread ?? 0;
-      updates += ref.watch(webAppsProvider(spi.id)).apps?.where((a) => a.updatable).length ?? 0;
     }
 
     // Read from GitHub only for such an agent. A failed lookup is no newer
@@ -81,7 +78,6 @@ class MonitorOverviewView extends ConsumerWidget {
                 firing > 0 ? scheme.error : null,
               ),
               (Icons.notifications_none, '$unread', l10n.monitorStatUnread, unread > 0 ? scheme.primary : null),
-              (Icons.system_update_alt, '$updates', l10n.monitorStatUpdates, updates > 0 ? scheme.primary : null),
             ],
           ),
           UIs.height13,
@@ -190,15 +186,12 @@ class _AgentCard extends ConsumerWidget {
     final reached = ref.watch(serverProvider(spi.id).select((s) => s.agentCapabilities != null));
     final version = ref.watch(serverProvider(spi.id).select((s) => s.agentCapabilities?.version));
     final overview = ref.watch(monitorOverviewProvider(spi.id));
-    final apps = ref.watch(webAppsProvider(spi.id)).apps ?? const [];
     // The agent's own answer where it gives one; this app's read otherwise.
     final update = overview.update;
     final (outdated, newest) = update?.latest != null
         ? (update!.outdated, update.latest)
         : (monitorOutdated(version, latest), latest);
 
-    final updates = apps.where((a) => a.updatable).length;
-    final unwell = apps.where((a) => const {'unhealthy', 'down'}.contains(a.health)).length;
     final unread = overview.notices?.unread ?? 0;
 
     final alerts = overview.alerts;
@@ -284,34 +277,17 @@ class _AgentCard extends ConsumerWidget {
                 ),
               ),
             ),
-          if (unread > 0 || updates > 0 || unwell > 0)
+          if (unread > 0)
             Padding(
               padding: const EdgeInsets.fromLTRB(13, 0, 13, 13),
-              child: Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  if (unwell > 0)
-                    MonitorTag(
-                      l10n.monitorAppsUnwell(unwell),
-                      icon: Icons.error_outline,
-                      color: scheme.error,
-                      onTap: () => onOpen(MonitorSection.apps, spi.id),
-                    ),
-                  if (unread > 0)
-                    MonitorTag(
-                      l10n.monitorUnread(unread),
-                      icon: Icons.notifications_none,
-                      color: scheme.primary,
-                      onTap: () => onOpen(MonitorSection.notices, spi.id),
-                    ),
-                  if (updates > 0)
-                    MonitorTag(
-                      l10n.monitorAppsUpdates(updates),
-                      icon: Icons.system_update_alt,
-                      onTap: () => onOpen(MonitorSection.apps, spi.id),
-                    ),
-                ],
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: MonitorTag(
+                  l10n.monitorUnread(unread),
+                  icon: Icons.notifications_none,
+                  color: scheme.primary,
+                  onTap: () => onOpen(MonitorSection.notices, spi.id),
+                ),
               ),
             ),
         ],

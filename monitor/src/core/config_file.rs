@@ -289,12 +289,12 @@ mod tests {
         with_temp_cwd(|_| {
             let mut config = minimal_config();
             let mut server = config.get_server();
-            server.card_order = vec!["cpu".into(), "memory".into()];
+            server.port = 4170;
             config.server = Some(server);
 
             write(&config).unwrap();
             let read_back = read().unwrap();
-            assert_eq!(read_back.get_server().card_order, vec!["cpu", "memory"]);
+            assert_eq!(read_back.get_server().port, 4170);
         });
     }
 

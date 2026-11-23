@@ -43,20 +43,14 @@
         "virt",
         "firewall",
         "update",
+        "notifications",
         "desk",
         "agent_mode",
-        "stacks",
         "alerts",
         "audit",
         "live",
         "lkc",
         "mcp"
-    ],
-    "stacks": [
-        {
-            "id": "immich",
-            "state": "installed"
-        }
     ],
     "access": {
         "ok": false,

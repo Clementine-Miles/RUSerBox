@@ -3,11 +3,10 @@
 /// sign-in in it) and what is signed in (this device among it, by name).
 /// Nothing on the agent is ended or forgotten.
 ///
-/// The same agent and variables as `monitor_web_apps_test.dart`, in the
-/// environment or the workspace-root `.env`:
+/// Configure the agent in the environment or the workspace-root `.env`.
 ///
-/// - `SBM_E2E_MONITOR_WEBAPPS_ADDR`, `SBM_E2E_MONITOR_WEBAPPS_PASSWORD`.
-/// - `SBM_E2E_MONITOR_WEBAPPS_INSECURE=1` for an agent on plain HTTP. A
+/// - `SBM_E2E_MONITOR_OVERVIEW_ADDR`, `SBM_E2E_MONITOR_OVERVIEW_PASSWORD`.
+/// - `SBM_E2E_MONITOR_OVERVIEW_INSECURE=1` for an agent on plain HTTP. A
 ///   self-signed certificate is pinned as presented, as on a first connect.
 library;
 
@@ -20,10 +19,10 @@ import '../helpers/rust_lib_helper.dart';
 import '../helpers/ssh_e2e.dart';
 
 Future<void> main() async {
-  final addr = e2eEnv('SBM_E2E_MONITOR_WEBAPPS_ADDR');
-  final pwd = e2eEnv('SBM_E2E_MONITOR_WEBAPPS_PASSWORD');
+  final addr = e2eEnv('SBM_E2E_MONITOR_OVERVIEW_ADDR');
+  final pwd = e2eEnv('SBM_E2E_MONITOR_OVERVIEW_PASSWORD');
   if (addr == null || pwd == null) {
-    test('monitor overview e2e', () {}, skip: 'SBM_E2E_MONITOR_WEBAPPS_ADDR / _PASSWORD not set');
+    test('monitor overview e2e', () {}, skip: 'SBM_E2E_MONITOR_OVERVIEW_ADDR / _PASSWORD not set');
     return;
   }
   final client = MonitorHttpClient(
@@ -31,7 +30,7 @@ Future<void> main() async {
       addr: addr,
       pwd: pwd,
       certSha256: await e2eAgentCertSha256(addr),
-      allowInsecure: e2eEnv('SBM_E2E_MONITOR_WEBAPPS_INSECURE') == '1',
+      allowInsecure: e2eEnv('SBM_E2E_MONITOR_OVERVIEW_INSECURE') == '1',
     ),
   );
   setUpAll(initRustLibForTest);
@@ -39,7 +38,7 @@ Future<void> main() async {
 
   test('the agent offers the tab\'s sections', () async {
     final caps = await client.capabilities();
-    expect(caps.features, containsAll(['alerts', 'audit', 'live', 'desk']));
+    expect(caps.features, containsAll(['alerts', 'audit', 'live', 'notifications']));
     expect(caps.access.ok, isTrue, reason: 'the audit log and sessions need a link the agent lets act');
   });
 

@@ -28,12 +28,12 @@ use sqlx::SqlitePool;
 use tokio::sync::Notify;
 use zeroize::Zeroizing;
 
-use crate::api::desk::{Level, Source};
+use crate::api::notifications::{Level, Source};
 use crate::monitoring::push::{Alert, push_all};
 use crate::api::server::AppState;
 use crate::core::blobs::Blobs;
 use crate::db::sealed::{self, Sealer};
-use crate::stacks::Refusal;
+use crate::api::respond::Refusal;
 use webdav::{Dav, DavError};
 
 /// The largest backup made or read: what passes LK Cloud's WebDAV
@@ -679,7 +679,6 @@ pub enum Outcome {
 pub struct Host<'a> {
     pub db: &'a SqlitePool,
     pub sealer: &'a Sealer,
-    pub blobs: &'a Blobs,
     pub work: &'a MonitorBackup,
     pub server_name: String,
 }
@@ -772,7 +771,7 @@ async fn make(host: &Host<'_>, stored: &Row, recipient: &str, force: bool) -> Re
 
     let scratch = host.work.scratch().await.map_err(|e| Failure::new("io", e))?;
     let db_file = scratch.path().join(snapshot::DATABASE);
-    let blobs = snapshot::write_database(host.db, host.sealer, &db_file).await.map_err(|e| Failure::new("database", format!("{e:#}")))?;
+    snapshot::write_database(host.db, host.sealer, &db_file).await.map_err(|e| Failure::new("database", format!("{e:#}")))?;
     let manifest = snapshot::Manifest {
         format: snapshot::FORMAT,
         monitor_version: env!("CARGO_PKG_VERSION").to_string(),
@@ -780,25 +779,12 @@ async fn make(host: &Host<'_>, stored: &Row, recipient: &str, force: bool) -> Re
         host: host.server_name.clone(),
         created_at: chrono::Utc::now().to_rfc3339(),
     };
-    let files: Vec<(String, PathBuf)> = blobs.into_iter().filter_map(|sha| host.blobs.path(&sha).map(|p| (sha, p))).collect();
     let archive = scratch.path().join("backup.tar.gz");
     let encrypted = scratch.path().join("backup.age");
     let recipient = recipient.to_string();
     let (a, e, d) = (archive.clone(), encrypted.clone(), db_file.clone());
     tokio::task::spawn_blocking(move || -> Result<(), Failure> {
-        // Measured first, so a set past the limit is never packed.
-        let mut total = 0u64;
-        for (_, path) in &files {
-            match std::fs::metadata(path) {
-                Ok(m) => total += m.len(),
-                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-                Err(e) => return Err(Failure::new("io", e)),
-            }
-        }
-        if total > MAX_BYTES {
-            return Err(Failure::new("tooLarge", "past the largest backup"));
-        }
-        snapshot::write_archive(&a, &manifest, config.as_deref(), &d, &files).map_err(|e| Failure::new("io", format!("{e:#}")))?;
+        snapshot::write_archive(&a, &manifest, config.as_deref(), &d).map_err(|e| Failure::new("io", format!("{e:#}")))?;
         if std::fs::metadata(&a).map_err(|e| Failure::new("io", e))?.len() > MAX_BYTES {
             return Err(Failure::new("tooLarge", "past the largest backup"));
         }
@@ -1066,7 +1052,7 @@ pub async fn start(state: Arc<AppState>) {
 /// again.
 pub async fn check(state: &AppState, force: bool) {
     let before = row(&state.db).await.ok().flatten().and_then(|r| r.last_error);
-    let host = Host { db: &state.db, sealer: &state.sealer, blobs: &state.blobs, work: &state.monitor_backup, server_name: state.config.get_server_name() };
+    let host = Host { db: &state.db, sealer: &state.sealer, work: &state.monitor_backup, server_name: state.config.get_server_name() };
     match back_up(&host, force).await {
         Ok(Outcome::Made(name, Some(f))) => {
             tracing::warn!("monitor backup: uploaded {name}; pruning: {}: {}", f.code, f.detail);
@@ -1112,7 +1098,7 @@ async fn failed(state: &AppState, before: Option<&str>, f: &Failure) {
 }
 
 async fn notify(state: &AppState, level: Level, subject: &str, body: &str, kind: &str, params: serde_json::Value, push: bool) {
-    if let Err(e) = state.desk.notify(&state.db, level, Source::Backup, subject, body, Some((kind, &params))).await {
+    if let Err(e) = state.notifications.notify(&state.db, level, Source::Backup, subject, body, Some((kind, &params))).await {
         tracing::error!("monitor backup: notifying: {e}");
     }
     if push {

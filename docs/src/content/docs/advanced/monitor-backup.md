@@ -4,19 +4,19 @@ description: Back up the Monitor's settings to a WebDAV folder, encrypted with y
 ---
 
 The Monitor can back up its own settings to a WebDAV folder: the account
-password, snippets, remote desktops, BMC and PVE connections, desk preferences
+password, snippets, remote desktop profiles, BMC and PVE connections
 and themes, Agent mode settings, push channels and monitoring rules. Metrics
 history, the audit log, sessions, installed packages and deployed web apps are
 left out.
 
-Open **Settings → Settings backup** in the panel.
+Configure the backup destination with the authenticated `/api/v1/monitor-backup` endpoint.
 
 ## Set it up
 
 1. Enter the folder's address (one folder per server, for example
    `https://dav.example.com/serverbox/web-1/`), the user name and the password,
    and press **Test**. The folder is made on the first backup.
-2. Press **Save** and enter the panel password.
+2. Press **Save** and enter the Monitor password.
 3. Press **Set passphrase**. The first backup is made right after.
 
 The address must be HTTPS. Plain HTTP works to the same machine, or to another
@@ -57,8 +57,7 @@ the files the settings name (`blobs/`).
 
 ## Restore
 
-In the panel, press **Restore** next to a backup and enter its passphrase, then
-the panel password. The settings are replaced; the server's history, its
+Restore with the command below and enter the backup passphrase. The settings are replaced; the server's history, its
 listen address, TLS files, database location and where backups go stay. The
 account password becomes the one in the backup, so every device signs in
 again. A Monitor run as a systemd service (as the installer sets it up) or under

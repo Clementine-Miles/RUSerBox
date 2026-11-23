@@ -1,4 +1,4 @@
-//! `GET/PUT /settings` and the dashboard's card order.
+//! `GET/PUT /settings`.
 
 use crate::{
     api::authz,
@@ -157,48 +157,5 @@ pub(super) async fn update_settings(
     *app_state.live_settings.write().await = LiveSettings::from_config(&monitoring);
 
     tracing::info!("Settings saved via PUT /api/v1/settings");
-    Ok(HttpResponse::Ok().json(&serde_json::json!({ "status": "ok" })))
-}
-
-/// Home-grid card order — split out from `SettingsPayload`/`PUT /settings`
-/// deliberately: reordering cards by drag-and-drop happens far more often
-/// than editing rules/CORS, and routing it through the full settings payload
-/// would mean read-modify-write races against whatever the settings page has
-/// open, risking clobbering an in-progress edit there. No restart-required
-/// concept applies — this is never read by the backend, only stored for sync.
-#[derive(Serialize, Deserialize)]
-pub(super) struct CardOrderPayload {
-    card_order: Vec<String>,
-}
-
-pub(super) async fn get_card_order(req: HttpRequest, app_state: Arc<AppState>) -> Result<HttpResponse> {
-    require_read_access!(&req, &app_state);
-    let file_config = match config_file::read_async().await {
-        Ok(c) => c,
-        Err(e) => return Ok(crate::api::respond::config_unreadable(&e)),
-    };
-    Ok(HttpResponse::Ok().json(&CardOrderPayload { card_order: file_config.get_server().card_order }))
-}
-
-pub(super) async fn update_card_order(
-    req: HttpRequest,
-    app_state: Arc<AppState>,
-    payload: web::types::Json<CardOrderPayload>,
-) -> Result<HttpResponse> {
-    require_acting!(&req, &app_state);
-    let _config_guard = app_state.config_write.lock().await;
-
-    let mut config = match config_file::read_async().await {
-        Ok(c) => c,
-        Err(e) => return Ok(crate::api::respond::config_unreadable(&e)),
-    };
-    let mut server_config = config.get_server();
-    server_config.card_order = payload.into_inner().card_order;
-    config.server = Some(server_config);
-
-    if let Err(e) = config_file::write_async(&config).await {
-        return Ok(HttpResponse::InternalServerError()
-            .json(&ErrorResponse { error: e.to_string() }));
-    }
     Ok(HttpResponse::Ok().json(&serde_json::json!({ "status": "ok" })))
 }

@@ -13,7 +13,6 @@ use crate::{
 use ntex::http::header::RETRY_AFTER;
 use ntex::SharedCfg;
 use ntex::web::{self, App, HttpRequest, HttpResponse, middleware::Logger};
-use ntex_files::Files;
 use sbm_parser::{SystemType, capabilities::Capabilities};
 use serde::Serialize;
 use std::sync::Arc;
@@ -111,7 +110,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
             .route("/ws-ticket", web::post().to(issue_ws_ticket))
             .route("/terminal/ws", web::get().to(terminal_ws))
             .route("/stream/ws", web::get().to(crate::api::ws::stream::stream_ws))
-            .route("/rdp/ws", web::get().to(crate::api::ws::rdcleanpath::rdp_ws))
             .route("/listen/ws", web::get().to(ws::listen::listen_ws))
             .route("/virt/console/ws", web::get().to(ws::virt_console::virt_console_ws))
             .service(
@@ -225,30 +223,12 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
                     .route(web::get().to(crate::api::desktops::list))
                     .route(web::put().to(crate::api::desktops::replace)),
             )
-            .service(web::resource("/desk").route(web::get().to(crate::api::desk::get)))
-            .service(
-                web::resource("/desk/preferences")
-                    .route(web::put().to(crate::api::desk::put_preferences)),
-            )
-            .service(
-                web::resource("/desk/onboarding")
-                    .route(web::put().to(crate::api::desk::put_onboarding))
-                    .route(web::delete().to(crate::api::desk::delete_onboarding)),
-            )
-            .service(
-                // A streamed body, read whole and bounded in the handler.
-                web::resource("/desk/wallpaper")
-                    .route(web::get().to(crate::api::desk::get_wallpaper))
-                    .route(web::put().to(crate::api::desk::put_wallpaper))
-                    .route(web::delete().to(crate::api::desk::delete_wallpaper)),
-            )
-            .service(
-                web::resource("/desk/session")
-                    .route(web::get().to(crate::api::desk::get_session))
-                    .route(web::put().to(crate::api::desk::put_session)),
-            )
-            .service(web::resource("/desk/notifications").route(web::get().to(crate::api::desk::notifications)))
-            .route("/alerts", web::get().to(crate::api::desk::alerts))
+            .route("/alerts", web::get().to(crate::api::notifications::alerts))
+            .route("/notifications", web::get().to(crate::api::notifications::notifications))
+            .route("/notifications/read", web::post().to(crate::api::notifications::mark_read))
+            // Legacy Android clients use the previous paths and capability.
+            .route("/desk/notifications", web::get().to(crate::api::notifications::notifications))
+            .route("/desk/notifications/read", web::post().to(crate::api::notifications::mark_read))
             .route("/update", web::get().to(crate::api::update::get))
             .route("/update/run", web::post().to(crate::api::update::start))
             .route("/audit", web::get().to(crate::api::audit_log::list))
@@ -256,8 +236,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
             .route("/live/sessions/{id}", web::delete().to(crate::api::live::end_session))
             .route("/live/connections/{id}", web::delete().to(crate::api::live::end_connection))
             .route("/live/devices/{id}", web::delete().to(crate::api::live::forget_device))
-            .service(web::resource("/desk/notifications/read").route(web::post().to(crate::api::desk::mark_read)))
-            .service(web::resource("/desk/events").route(web::get().to(crate::api::desk::events)))
             .service(
                 web::resource("/agent/flows")
                     .route(web::get().to(crate::api::agent::list))
@@ -296,7 +274,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
                     .route(web::get().to(crate::api::agent::get_mcp))
                     .route(web::put().to(crate::api::agent::put_mcp)),
             )
-            .service(web::resource("/agent/mcp/apps/{stack}/{index}").route(web::put().to(crate::api::agent::put_mcp_app)))
             .service(web::resource("/agent/mcp/oauth/start").route(web::post().to(crate::api::agent::mcp_oauth_start)))
             .service(web::resource("/agent/mcp/oauth/callback").route(web::get().to(crate::api::agent::mcp_oauth_callback)))
             .service(web::resource("/agent/mcp/oauth").route(web::delete().to(crate::api::agent::mcp_oauth_forget)))
@@ -331,28 +308,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
                     .route(web::put().to(crate::api::agent::memory_put))
                     .route(web::delete().to(crate::api::agent::memory_delete)),
             )
-            .service(
-                web::resource("/apps")
-                    .route(web::get().to(crate::api::apps::list))
-                    .route(web::post().to(crate::api::apps::install)),
-            )
-            .service(web::resource("/apps/sudo").route(web::get().to(crate::api::app_backend::sudo)))
-            .service(web::resource("/apps/catalog").route(web::get().to(crate::api::apps::catalog)))
-            .service(web::resource("/apps/catalog/{id}/install").route(web::post().to(crate::api::apps::install_offered)))
-            .service(web::resource("/apps/{id}").route(web::delete().to(crate::api::apps::remove)))
-            .service(web::resource("/apps/{id}/approval").route(web::put().to(crate::api::apps::approve)))
-            .service(web::resource("/apps/{id}/launch").route(web::get().to(crate::api::apps::launch)))
-            .service(
-                web::resource("/apps/{id}/call")
-                    .route(web::post().to(crate::api::app_backend::call)),
-            )
-            .service(
-                web::resource("/apps/{id}/jobs")
-                    .route(web::get().to(crate::api::app_backend::job))
-                    .route(web::post().to(crate::api::app_backend::start_job)),
-            )
-            .service(web::resource("/apps/{id}/jobs/cancel").route(web::post().to(crate::api::app_backend::cancel_job)))
-            .service(web::resource("/apps/{id}/ui/{ticket}/{path}*").route(web::get().to(crate::api::apps::ui)))
             .service(web::resource("/storage").route(web::get().to(crate::api::storage::view)))
             .service(web::resource("/storage/health").route(web::post().to(crate::api::storage::health)))
             .service(web::resource("/storage/maintenance").route(web::put().to(crate::api::storage::set_maintenance)))
@@ -390,28 +345,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
             .service(web::resource("/monitor-backup/run").route(web::post().to(crate::api::monitor_backup::run)))
             .service(web::resource("/monitor-backup/list").route(web::get().to(crate::api::monitor_backup::list)))
             .service(web::resource("/monitor-backup/restore").route(web::post().to(crate::api::monitor_backup::restore)))
-            .service(web::resource("/stacks").route(web::get().to(crate::api::stacks::list)))
-            .service(web::resource("/stacks/refresh").route(web::post().to(crate::api::stacks::refresh)))
-            .service(
-                web::resource("/stacks/{id}")
-                    .route(web::post().to(crate::api::stacks::install))
-                    .route(web::delete().to(crate::api::stacks::remove)),
-            )
-            .service(web::resource("/stacks/{id}/prepare").route(web::get().to(crate::api::stacks::prepare)))
-            .service(web::resource("/stacks/{id}/check").route(web::post().to(crate::api::stacks::check)))
-            .service(web::resource("/stacks/{id}/settings").route(web::put().to(crate::api::stacks::reconfigure)))
-            .service(web::resource("/stacks/{id}/action").route(web::post().to(crate::api::stacks::act)))
-            .service(web::resource("/stacks/{id}/job").route(web::get().to(crate::api::stacks::job)))
-            .service(web::resource("/stacks/{id}/job/cancel").route(web::post().to(crate::api::stacks::cancel)))
-            .service(web::resource("/stacks/{id}/services").route(web::get().to(crate::api::stacks::services)))
-            .service(web::resource("/stacks/{id}/login").route(web::post().to(crate::api::stacks::login)))
-            .service(web::resource("/stacks/{id}/enter").route(web::post().to(crate::api::stacks::enter)))
-            .service(
-                web::resource("/desk/apps/{app}/storage")
-                    .route(web::get().to(crate::api::desk_storage::list))
-                    .route(web::put().to(crate::api::desk_storage::put))
-                    .route(web::delete().to(crate::api::desk_storage::remove)),
-            )
             .service(
                 web::resource("/snippets/plan")
                     .route(web::post().to(crate::api::snippets::plan)),
@@ -454,14 +387,10 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
             )
             .route("/settings", web::get().to(get_settings))
             .route("/settings", web::put().to(update_settings))
-            .route("/card-order", web::get().to(get_card_order))
-            .route("/card-order", web::put().to(update_card_order))
             .route("/metrics/history", web::get().to(get_metrics_history))
             .route("/health", web::get().to(health_check))
             .route("/velocity", web::get().to(get_velocity))
             .route("/velocity/history", web::get().to(get_velocity_history))
-            // An endpoint this agent does not have is a JSON 404, not the
-            // panel's page the app-level fallback would answer with a 200.
             .default_service(web::to(api_not_found)),
     );
 }
@@ -494,23 +423,6 @@ pub async fn start_server(app_state: Arc<AppState>) -> Result<()> {
                 .middleware(cors)
                 .middleware(Logger::default())
                 .configure(configure_api)
-                // Built assets: hashed, precompressed, cached for good.
-                .service(web::resource("/assets/{name}").route(web::get().to(crate::api::assets::asset)))
-                .service(web::resource("/desk-app/{name}").route(web::get().to(crate::api::assets::desk_app)))
-                // Serve legacy `/static` paths and root assets from the bundled
-                // Svelte frontend. TODO: drop `/static` once no bookmark or old
-                // panel build can still ask for it (the build serves `/assets`).
-                .service(
-                    Files::new("/static", "frontend/dist")
-                        .use_etag(true)
-                        .use_last_modified(true),
-                )
-                .service(
-                    Files::new("/", "frontend/dist")
-                        .use_etag(true)
-                        .use_last_modified(true)
-                        .index_file("index.html"),
-                )
         },
     )
     // ntex 4 pins each worker to a core by default. The agent shares its
@@ -556,12 +468,12 @@ pub(crate) fn load_rustls_config(tls: &crate::core::config::TlsConfig) -> Result
 
 /// Which `ServerStatus` fields this platform can collect at all — depends
 /// only on the OS the agent runs on, never on a sample, so unlike `/metrics`
-/// this isn't meant to be polled; the frontend fetches it once per server
+/// this isn't meant to be polled; the client fetches it once per server
 /// connection. See `sbm_parser::capabilities` for the three-state meaning and
 /// `monitoring::effective_capabilities` for monitor's native-sampling overrides.
 /// `Capabilities` plus the OS family — mechanically derived from the same
 /// `system_type()` used to compute `capabilities` itself, so it can't drift
-/// out of sync. Used by the panel to pick an OS icon for the sidebar/header;
+/// out of sync.
 /// `Bsd` covers macOS (the only Bsd target this monitor actually ships on).
 #[derive(Serialize)]
 struct CapabilitiesView {
@@ -591,19 +503,9 @@ struct CapabilitiesView {
     /// `api::machine::FEATURES`. Whether they may be used over this link is
     /// `access`.
     features: Vec<&'static str>,
-    /// The web apps this agent deployed, and their state (`stacks`): what
-    /// decides whether a panel offers their windows. Empty for a watch token.
-    stacks: Vec<StackBrief>,
     /// Whether the caller may act on the machine over this link: `ok`, and
     /// `why` (`insecure_transport`) when not. Never, for a watch token.
     access: serde_json::Value,
-}
-
-#[derive(Serialize)]
-struct StackBrief {
-    id: String,
-    /// `installing` | `installed` | `failed`.
-    state: String,
 }
 
 async fn get_capabilities(req: HttpRequest, app_state: Arc<AppState>) -> Result<HttpResponse> {
@@ -623,7 +525,7 @@ async fn get_capabilities(req: HttpRequest, app_state: Arc<AppState>) -> Result<
 
 /// `/capabilities`' body — what this agent is and may be asked, for [caller]
 /// over a [secure] link. The MCP tool of the same name answers it unchanged,
-/// so a client and the panel are told the same thing.
+/// so all clients see the same capabilities.
 pub(crate) async fn capabilities_view(
     app_state: &AppState,
     caller: Option<&Caller>,
@@ -654,15 +556,6 @@ pub(crate) async fn capabilities_view(
             .metrics_days,
         oldest_sample,
         features: crate::api::machine::features(app_state.config.lkc),
-        stacks: match caller {
-            Some(_) => crate::stacks::store::all(&app_state.db)
-                .await
-                .unwrap_or_default()
-                .into_iter()
-                .map(|r| StackBrief { id: r.id, state: r.state })
-                .collect(),
-            None => Vec::new(),
-        },
         access: authz::access_view(caller, app_state, secure),
     };
     serde_json::to_value(&view).unwrap_or_default()
@@ -692,11 +585,9 @@ async fn issue_ws_ticket(
         Purpose::Terminal => (ok, "terminal not available"),
         Purpose::Stream => (ok, "stream not available"),
         Purpose::Listen => (ok, "listen not available"),
-        Purpose::Rdp => (ok, "rdp not available"),
         // Bound to the console it opens, so only `POST /virt/console` mints
         // one.
         Purpose::Virt => (false, "virt consoles are opened through /virt/console"),
-        Purpose::Proxy => (false, "app windows are entered through /stacks/{id}/enter"),
     };
     if !available {
         Event::new(Kind::Ticket, Action::Denied, Outcome::Denied)
@@ -717,9 +608,7 @@ async fn issue_ws_ticket(
                     Purpose::Terminal => "terminal",
                     Purpose::Stream => "stream",
                     Purpose::Listen => "listen",
-                    Purpose::Rdp => "rdp",
                     Purpose::Virt => "virt",
-                    Purpose::Proxy => "proxy",
                 })
                 .record(&app_state.db)
                 .await;

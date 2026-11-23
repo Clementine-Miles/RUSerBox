@@ -24,9 +24,6 @@ pub struct Config {
     /// `Option`; see `core::remote_access`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub remote_access: Option<RemoteAccessConfig>,
-    /// The web apps it deploys (`stacks`).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stacks: Option<StacksConfig>,
     /// What an MCP client may do (`/mcp`, #1681). Absent in every config
     /// written before the endpoint existed, hence `Option`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -53,32 +50,6 @@ pub struct Config {
     // agent is left to migrate from.
     #[serde(flatten)]
     pub legacy: LegacyGoConfig,
-}
-
-/// `[stacks]`: where web apps come from besides the catalog, and how their
-/// windows are reached.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct StacksConfig {
-    /// A folder of app folders (`<publisher>.<name>/manifest.toml` and its
-    /// compose files) offered beside the catalog's: an app being written, or
-    /// one of the operator's own. Read at start.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub local_apps: Option<String>,
-    /// The folder every app shares (`{shared}` in a manifest): downloads,
-    /// media, books, so a downloader's files are a media server's library.
-    /// `shared/` beside the database when absent. Apps run as its owner
-    /// (`SBM_UID`/`SBM_GID`).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shared_dir: Option<String>,
-    /// Apps' windows by host rather than by port: `https://*.apps.example.com`
-    /// (`stacks::proxy::Hosts`), for an agent behind a reverse proxy or a
-    /// tunnel that sends that wildcard to [Self::apps_port].
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub apps_url: Option<String>,
-    /// The listener [Self::apps_url] is served on; 3779 when absent.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub apps_port: Option<u16>,
 }
 
 /// The Go agent's flat `config.json` keys — see [`Config::legacy`].
@@ -115,12 +86,7 @@ pub struct ServerConfig {
     /// Cloudflare Pages). Empty = same-origin only (no CORS headers).
     #[serde(default)]
     pub cors_allowed_origins: Vec<String>,
-    /// Home-grid card display order (StatCard keys, e.g. "cpu"/"memory"/...),
-    /// persisted server-side (not per-browser localStorage) so every client
-    /// viewing this agent sees the same arrangement. Empty = default order;
-    /// never read by the backend itself, purely a sync point for the panel.
-    #[serde(default)]
-    pub card_order: Vec<String>,
+
 }
 
 /// Operator ceiling on what MCP clients may do (`config.toml` `[mcp]`),
@@ -213,7 +179,6 @@ impl Default for ServerConfig {
                 }),
             name: None,
             cors_allowed_origins: Vec::new(),
-            card_order: Vec::new(),
         }
     }
 }
@@ -508,7 +473,7 @@ impl Config {
         }
         if let Some(mcp) = self.mcp.as_ref() {
             for scope in &mcp.disabled_scopes {
-                if crate::db::api_tokens::Scope::parse(scope).is_none() {
+                if scope != "stacks" && crate::db::api_tokens::Scope::parse(scope).is_none() {
                     anyhow::bail!("mcp.disabled_scopes: unknown scope {scope:?}");
                 }
             }
@@ -539,7 +504,6 @@ impl Config {
                     }),
                 name: self.legacy.name.clone(),
                 cors_allowed_origins: Vec::new(),
-                card_order: Vec::new(),
             };
 
             let interval_seconds = if let Some(interval_str) = &self.legacy.interval {
@@ -623,10 +587,6 @@ impl Config {
 
     pub fn get_mcp(&self) -> McpConfig {
         self.mcp.clone().unwrap_or_default()
-    }
-
-    pub fn get_stacks(&self) -> StacksConfig {
-        self.stacks.clone().unwrap_or_default()
     }
 
     pub fn get_monitoring(&self) -> MonitoringConfig {
@@ -1018,7 +978,6 @@ impl Default for Config {
             // Written out so a generated config.toml shows the section and
             // its switches; every switch in it defaults to off
             remote_access: Some(RemoteAccessConfig::default()),
-            stacks: None,
             lkc: false,
             // No channel until the operator adds one: a placeholder would
             // send each alert to a third party with an empty key.
@@ -1080,7 +1039,6 @@ mod tests {
                 tls: None,
                 name: None,
                 cors_allowed_origins: Vec::new(),
-                card_order: Vec::new(),
             }),
             ..Default::default()
         };

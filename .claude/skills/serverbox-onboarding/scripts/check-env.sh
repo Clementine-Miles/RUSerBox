@@ -128,7 +128,6 @@ fi
 # --- Node -------------------------------------------------------------------
 # Only the monitor panel, the docs site and the website need it. Absent is
 # fine for app-only work, hence a warning rather than a failure.
-node_pin="$ROOT/monitor/frontend/.node-version"
 want_node=$([ -f "$node_pin" ] && head -1 "$node_pin" || echo "")
 if command -v node >/dev/null 2>&1; then
     have_node=$(node --version 2>/dev/null | sed 's/^v//')
@@ -163,7 +162,6 @@ else
     warn "dart dependencies not fetched yet — run: make deps"
 fi
 
-if [ -d "$ROOT/monitor/frontend/node_modules" ]; then
     ok "monitor panel dependencies installed"
 else
     warn "monitor panel dependencies not installed — 'make monitor-dev' installs them on first run"

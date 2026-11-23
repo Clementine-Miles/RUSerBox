@@ -31,7 +31,7 @@ use serde_json::json;
 use super::authz;
 use super::server::AppState;
 use super::ws::audit::{Action, Event, Kind, Outcome, peer_ip};
-use crate::stacks::job::{JobKind, JobState};
+use crate::core::job::{JobKind, JobState};
 
 
 

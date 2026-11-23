@@ -57,7 +57,7 @@ pub fn build_cli() -> Command {
         )
         .subcommand(
             Command::new("password")
-                .about("Set the agent's password (signs in to the app and the panel)")
+                .about("Set the agent's password (signs in to the app)")
                 .arg(
                     Arg::new("password-env")
                         .long("password-env")
@@ -69,7 +69,7 @@ pub fn build_cli() -> Command {
             Command::new("backup")
                 .about("Back up the monitor's settings to WebDAV, list and restore backups")
                 .subcommand_required(true)
-                .subcommand(Command::new("run").about("Back up now, with the settings the panel saved"))
+                .subcommand(Command::new("run").about("Back up now, with the agent’s saved settings"))
                 .subcommand(backup_target(Command::new("list").about("List the backups in the folder")))
                 .subcommand(
                     backup_target(Command::new("restore").about("Restore a backup into this monitor (stop it first, or restart it after)"))
@@ -91,7 +91,7 @@ pub fn build_cli() -> Command {
         )
 }
 
-/// Where `backup list|restore` read from: the folder the panel saved unless
+/// Where `backup list|restore` read from: the agent’s saved folder unless
 /// `--url` names another.
 fn backup_target(cmd: Command) -> Command {
     cmd.arg(Arg::new("url").long("url").value_name("URL").help("The WebDAV folder; the saved one by default"))
@@ -187,7 +187,6 @@ async fn handle_serve(matches: &clap::ArgMatches) -> anyhow::Result<()> {
     crate::api::benchmark::start_poller(app_state.clone());
     // Deployed web apps get their proxies back; a deployment a stop cut
     // short is marked failed.
-    crate::stacks::resume(&app_state).await;
     // The model servers already on this machine, for Agent mode.
     crate::inference::refresh_providers(&app_state);
     tokio::spawn(crate::container_backups::start(app_state.clone()));
@@ -287,7 +286,7 @@ fn secret(env: Option<&String>, prompt: &str) -> anyhow::Result<String> {
     }
 }
 
-fn refused(r: crate::stacks::Refusal) -> anyhow::Error {
+fn refused(r: crate::api::respond::Refusal) -> anyhow::Error {
     anyhow::anyhow!("refused: {}", r.error)
 }
 
@@ -335,7 +334,7 @@ async fn handle_backup(matches: &clap::ArgMatches) -> anyhow::Result<()> {
 
     match matches.subcommand() {
         Some(("run", _)) => {
-            let host = monitor_backup::Host { db: &db, sealer: &sealer, blobs: &blobs, work: &work, server_name: config.get_server_name() };
+            let host = monitor_backup::Host { db: &db, sealer: &sealer, work: &work, server_name: config.get_server_name() };
             match monitor_backup::back_up(&host, true).await {
                 Ok(monitor_backup::Outcome::Made(name, None)) => println!("Uploaded {name}"),
                 Ok(monitor_backup::Outcome::Made(name, Some(f))) => println!("Uploaded {name}; removing the oldest failed: {}", f.code),

@@ -1222,9 +1222,6 @@ impl AgentMode {
         if let Some(m) = memory.prompt(true).await.map_err(|e| anyhow::anyhow!("memory: {e}"))? {
             system_prompt = format!("{system_prompt}\n\n{m}");
         }
-        if let Some(apps) = crate::stacks::agent_note(state).await {
-            system_prompt = format!("{system_prompt}\n\n{apps}");
-        }
         let mut tools = tools::all(state.clone(), Some(flow.clone()));
         tools.extend(fl_pi_llm::host::memory::tools(memory));
         if let Some((prompt, tool)) = skills::for_task(&self.db, &self.skills_root).await {

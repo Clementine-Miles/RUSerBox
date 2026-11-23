@@ -4,36 +4,10 @@ English | [简体中文](README_zh.md)
 
 ServerBox Monitor is the server-side component for
 [ServerBox](https://github.com/lollipopkit/flutter_server_box). It records
-server metrics, serves the Monitor HTTP API, and can host the web panel.
+server metrics and serves the HTTP API used by the Android application.
 The configuration format may change between releases, so review
 `config.example.toml` after upgrading.
 
-
-## 🖥️ Screenshots
-<table>
-  <tr>
-    <td>
-	    <h5 align="center">iOS push</h5>
-    </td>
-    <td>
-	    <h5 align="center">Webhook push (QQ)</h5>
-    </td>
-    <td>
-	    <h5 align="center">iOS widget</h5>
-    </td>
-  </tr>
-  <tr>
-    <td>
-	    <img width="107px" src="doc/imgs/ios-push.png">
-    </td>
-    <td>
-	    <img width="307px" src="doc/imgs/webhook.png">
-    </td>
-    <td>
-	    <img width="197px" src="doc/imgs/ios-widget.png">
-    </td>
-  </tr>
-</table>
 
 ## Install and run
 
@@ -63,25 +37,18 @@ repository. Releases are cut by the `monitor-release.yml` workflow, which is
 `workflow_dispatch`-only; when no such release exists, use `SBM_INSTALL_PKG`
 with a locally built package, or [Docker](Dockerfile).
 
-A machine with no operating system to install it on can boot **sbOS**
-instead: each release carries images with the Monitor, its panel and Docker on
-Alpine Linux (`sbOS_musl_*`) or Debian (`sbOS_GNU_*`), for x64 and arm64.
-Write one to a USB stick and boot it, or run `sbm-install` on it to put the
-system on a disk — see [`os/README.md`](os/README.md).
-
 `upgrade` without `--user` or `--system` finds the installed form itself and
 reruns through `sudo` for a system unit or OpenRC; with none installed it
 changes nothing. It replaces the files while the Monitor runs and restarts it
 last, so it can run in a terminal the Monitor opened (which then closes). The
 Monitor reads its releases itself (`GET /api/v1/update`, every 12 hours, with a
-desk notification per newer version); the panel's Settings → Server and the
-App's Monitor tab offer the same command
+notification per newer version). The app's Monitor tab offers the upgrade command
 (`sbm_parser::monitor_agent::upgrade_command`) in a terminal.
 
 Configuration lives in `config.toml` beside the binary. Every key, with the
 comments explaining it, is in [`config.example.toml`](config.example.toml);
 `cargo run -- config` prints the resolved values. The Monitor listens on
-`0.0.0.0:3770` and serves its own panel there when `frontend/dist` is present.
+`0.0.0.0:3770` and serves the HTTP API there.
 
 ### Signing in
 
@@ -98,7 +65,7 @@ cd /opt/server-box-monitor   # or ~/.local/share/server-box-monitor
 
 It prompts twice without echo, and `--password-env VAR` reads the password from
 the environment instead; there is no argument form, since a command line reaches
-`ps` and the shell history. The app and the panel can change it too. Run it from
+`ps` and the shell history. The app can change it too. Run it from
 the Monitor's own directory — `config.toml` and the database path are relative to
 the working directory, so elsewhere it silently sets a password in a new, empty
 database.
@@ -117,7 +84,6 @@ exactly that:
 | File browser | `/api/v1/fs/*` |
 | Remote desktop, local and dynamic port forwards | `/api/v1/stream/ws` |
 | Remote port forwards | `/api/v1/listen/ws` |
-| The panel's remote desktops (VNC, RDP) | `/api/v1/stream/ws`, `/api/v1/rdp/ws` |
 
 `/api/v1/stream/ws` relays one TCP connection to an address the app names,
 dialled from this machine as the Monitor's account. `/api/v1/listen/ws` is the
@@ -138,16 +104,16 @@ with `command_user` under OpenRC — and `--system` (root) makes signing in a ro
 shell. The full API contract is
 [Monitor API and Access Model](https://serverbox.lollipopkit.com/docs/development/monitor-agent/).
 
-A terminal (the app's or the panel's) is that same shell on a PTY. Sessions
+The app's terminal is that same shell on a PTY. Sessions
 survive a dropped connection for a few minutes, so a phone changing networks
 rejoins the same shell instead of losing it.
 
 Changing the password signs out every other session: tokens issued before it
-stop working, paired watches and widgets are unpaired, and open terminals,
+stop working, paired widgets are unpaired, and open terminals,
 relays and listeners are closed.
 
 Upgrading from a Monitor with several accounts keeps the oldest admin's password
-and moves the other accounts' Agent mode tasks, memory and desk themes to it.
+and moves the other accounts' Agent mode tasks and memory to it.
 
 Notes:
 

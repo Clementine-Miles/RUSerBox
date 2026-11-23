@@ -38,7 +38,7 @@ use serde_json::json;
 use super::authz;
 use super::server::AppState;
 use super::ws::audit::{Action, Event, Kind, Outcome, peer_ip};
-use crate::stacks::job::{Job, JobKind, JobState};
+use crate::core::job::{Job, JobKind, JobState};
 
 /// The storage change running or last run: one at a time. And the last
 /// SMART reading, which needs root and so is not made on every page load.

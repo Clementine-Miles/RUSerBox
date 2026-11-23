@@ -2,8 +2,7 @@
 //! through, the rate that bounds them, and `POST /api/v1/push/test` to send
 //! one on demand.
 //!
-//! Its own endpoint rather than fields of `PUT /settings`, for the reason
-//! `/card-order` is one: a save here must not be a read-modify-write of
+//! This has a dedicated endpoint so that saving it does not overwrite
 //! everything the settings page happens to have open. It also keeps the
 //! credential handling below in one place instead of threading it through
 //! `SettingsPayload`.

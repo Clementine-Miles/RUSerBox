@@ -55,7 +55,7 @@ fn ensure_crypto_provider() {
 /// Out of the crate's directory, once, before any server starts.
 ///
 /// The panel-login half below sends every write route a valid login, and three
-/// of them — settings, the card order, turning full access off — rewrite
+/// of them — settings, turning full access off — rewrite
 /// `config.toml` in the working directory. `cargo test` runs from the crate,
 /// whose `config.toml` is a developer's own: running this file cleared its
 /// alert rules and switched its full access off. With no `config.toml` here
@@ -243,11 +243,6 @@ fn forbidden_routes() -> Vec<(Method, &'static str, Option<serde_json::Value>)> 
                 "cors_allowed_origins": [],
             })),
         ),
-        (
-            Method::PUT,
-            "/api/v1/card-order",
-            Some(json!({ "card_order": [] })),
-        ),
         // The password. The panel-login half sends a wrong `current_password`,
         // so it stops at re-authentication — which is still not a 401.
         (
@@ -410,7 +405,6 @@ async fn a_watch_token_reads_metrics_and_nothing_else() {
         "/api/v1/metrics",
         "/api/v1/metrics/history?minutes=60",
         "/api/v1/capabilities",
-        "/api/v1/card-order",
         "/api/v1/velocity",
         "/api/v1/velocity/history",
     ] {

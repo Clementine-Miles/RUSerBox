@@ -81,15 +81,10 @@ Monitor 是独立的 server binary，构建步骤与 Flutter App 分开：
 
 ```bash
 # 在仓库根目录执行
-cargo build --release
-
-# 构建网页面板
-cd monitor/frontend
-npm install
-npm run build
+cargo build -p server_box_monitor --release
 ```
 
-网页面板构建后，Monitor 会在 `frontend/dist` 存在时提供该面板。开发时可在仓库根目录运行 `make monitor-dev`，同时启动 API（`:3770`）和 Vite dev server（`:3000`）。
+运行 `make monitor-dev` 可在 3770 端口启动 Monitor API。
 
 release 产物由 `monitor-release.yml` workflow 构建，目前只能通过 `workflow_dispatch` 运行。Monitor 的 `monitor-v*` tag 与 App release 分开管理。Docker 构建方法见 `monitor/Dockerfile`。
 

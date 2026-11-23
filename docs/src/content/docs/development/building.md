@@ -92,17 +92,11 @@ Flutter App:
 
 ```bash
 # From the repository root
-cargo build --release
+cargo build -p server_box_monitor --release
 
-# Build the web panel
-cd monitor/frontend
-npm install
-npm run build
 ```
 
-After building the panel, Monitor serves it when `frontend/dist` exists.
-For development, run `make monitor-dev` from the repository root. It starts
-the API on `:3770` and the Vite dev server on `:3000`.
+Run `make monitor-dev` to start the API on port 3770.
 
 The `monitor-release.yml` workflow builds release artifacts and currently
 runs only through `workflow_dispatch`. Monitor `monitor-v*` tags are separate

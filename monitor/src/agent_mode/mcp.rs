@@ -5,8 +5,7 @@
 //! request, a token most often. Like a provider's key, a header's value goes
 //! in and never comes back out: a read names the headers that are set.
 //! Connections are kept between tasks and made again when the server's
-//! settings change or a call finds it gone. Deployed apps' servers
-//! (`stacks::mcp`) join them on their own.
+//! settings change or a call finds it gone.
 
 use crate::utils::lock::LockExt;
 use std::collections::{BTreeMap, HashMap};
@@ -118,26 +117,6 @@ impl ServersWrite {
         }
         Ok(())
     }
-}
-
-/// A deployed app's server as a read shows it: what the app says, and its id.
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AppServer {
-    pub id: String,
-    #[serde(flatten)]
-    pub app: crate::stacks::mcp::AppMcp,
-}
-
-/// The deployed apps' servers, an address an admin added left to theirs.
-pub async fn app_servers(state: &AppState) -> Vec<AppServer> {
-    let own: Vec<String> = load(&state.db, &state.sealer).await.unwrap_or_default().into_iter().map(|s| s.id).collect();
-    crate::stacks::mcp::servers(state)
-        .await
-        .into_iter()
-        .map(|app| AppServer { id: pi_mcp::server_id(&app.url), app })
-        .filter(|s| !own.contains(&s.id))
-        .collect()
 }
 
 /// Every server, in order, its headers named.
@@ -270,22 +249,6 @@ impl Hub {
                 c.headers.push(("Authorization".into(), token));
             }
         }
-        let mut apps = app_servers(state).await;
-        for s in apps.iter_mut().filter(|s| s.app.enabled && s.app.credential == crate::stacks::mcp::Credential::OAuth) {
-            if signed_in.contains(&s.id) {
-                s.app.header = super::mcp_oauth::bearer(&state.db, &state.sealer, &fetch, &s.id).await.map(|t| ("Authorization".into(), t));
-            }
-        }
-        for s in apps.iter().filter(|s| s.app.ready()) {
-            let server = Server {
-                id: s.id.clone(),
-                name: s.app.title.clone(),
-                url: s.app.url.clone(),
-                enabled: true,
-                headers: s.app.header.iter().map(|(name, _)| name.clone()).collect(),
-            };
-            configs.push((server, McpServerConfig { url: s.app.url.clone(), headers: s.app.header.clone().into_iter().collect() }));
-        }
         let mut connections = self.connections.lock().await;
         connections.retain(|id, _| configs.iter().any(|(s, _)| &s.id == id));
         let wanted: Vec<_> = configs
@@ -324,17 +287,6 @@ impl Hub {
             }
         }
         let errors = self.errors.locked();
-        let waiting = apps.iter().filter(|s| s.app.enabled && !s.app.ready()).map(|s| Status {
-            id: s.id.clone(),
-            connected: false,
-            label: None,
-            tools: Vec::new(),
-            error: Some(match s.app.credential {
-                crate::stacks::mcp::Credential::Asked { .. } => "needsToken".into(),
-                crate::stacks::mcp::Credential::OAuth => "needsSignIn".into(),
-                _ => "noCredential".into(),
-            }),
-        });
         configs
             .iter()
             .map(|(s, _)| match connections.get(&s.id) {
@@ -351,7 +303,6 @@ impl Hub {
                 },
                 None => Status { id: s.id.clone(), connected: false, label: None, tools: Vec::new(), error: errors.get(&s.id).cloned() },
             })
-            .chain(waiting)
             .collect()
     }
 

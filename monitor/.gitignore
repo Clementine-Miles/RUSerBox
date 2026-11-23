@@ -1,7 +1,5 @@
 .config
 server_box_monitor
-frontend/node_modules
-frontend/dist
 target
 serverbox_monitor.db*
 .env
@@ -23,4 +21,3 @@ config.toml.bak-*
 #
 # TODO: drop with that migration.
 config.json
-frontend/e2e/.results

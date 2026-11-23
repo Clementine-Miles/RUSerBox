@@ -52,7 +52,6 @@ pub const PVE_PASSWORD: Field = field("virt_pve", "password");
 pub const PVE_TOKEN_SECRET: Field = field("virt_pve", "token_secret");
 pub const AGENT_CREDENTIAL: Field = required("agent_credential", "credential");
 pub const AGENT_MCP_HEADERS: Field = required("agent_mcp_server", "headers");
-pub const STACK_MCP_TOKEN: Field = field("stack_mcp", "token");
 pub const MCP_OAUTH_CLIENT_SECRET: Field = field("mcp_oauth", "client_secret");
 pub const MCP_OAUTH_ACCESS_TOKEN: Field = required("mcp_oauth", "access_token");
 pub const MCP_OAUTH_REFRESH_TOKEN: Field = field("mcp_oauth", "refresh_token");
@@ -68,7 +67,6 @@ pub const FIELDS: &[Field] = &[
     PVE_TOKEN_SECRET,
     AGENT_CREDENTIAL,
     AGENT_MCP_HEADERS,
-    STACK_MCP_TOKEN,
     MCP_OAUTH_CLIENT_SECRET,
     MCP_OAUTH_ACCESS_TOKEN,
     MCP_OAUTH_REFRESH_TOKEN,

@@ -22,10 +22,9 @@ class MonitorNoticesView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locale = Localizations.localeOf(context).toLanguageTag();
     final groups = [
       for (final spi in servers)
-        if (ref.watch(monitorOverviewProvider(spi.id)) case final state when state.offers(MonitorFeature.desk))
+        if (ref.watch(monitorOverviewProvider(spi.id)) case final state when state.offers(MonitorFeature.notifications))
           (spi: spi, state: state),
     ];
     final unread = groups.any((g) => (g.state.notices?.unread ?? 0) > 0);
@@ -66,7 +65,6 @@ class MonitorNoticesView extends ConsumerWidget {
                       _NoticeRow(
                         key: ValueKey('${spi.id}/${notice.id}'),
                         notice: notice,
-                        locale: locale,
                         onRead: () => _markRead(ref, spi.id, ids: [notice.id]),
                       ),
                 ],
@@ -104,16 +102,15 @@ class MonitorNoticesView extends ConsumerWidget {
 }
 
 class _NoticeRow extends StatelessWidget {
-  const _NoticeRow({super.key, required this.notice, required this.locale, required this.onRead});
+  const _NoticeRow({super.key, required this.notice, required this.onRead});
 
   final MonitorNotice notice;
-  final String locale;
   final VoidCallback onRead;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final (subject, body) = noticeText(notice, locale);
+    final (subject, body) = noticeText(notice);
     final (icon, color) = switch (notice.level) {
       'error' => (Icons.error_outline, scheme.error),
       'warning' => (Icons.warning_amber_rounded, Colors.orange),

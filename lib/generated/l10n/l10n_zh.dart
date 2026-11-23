@@ -6129,76 +6129,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get agentModeBypassWarn => '全部放行：删除、重启和修改配置都会直接执行，不再询问。';
 
   @override
-  String get webApps => 'Web 应用';
-
-  @override
-  String get webAppUnhealthy => '异常';
-
-  @override
-  String get webAppDown => '不可用';
-
-  @override
-  String get webAppInstalling => '正在安装';
-
-  @override
-  String get webAppsEmpty => '还没有 Web 应用。请在 Monitor 面板的 App Store 中部署。';
-
-  @override
-  String get deskAppOpensInPanel => '在面板中打开';
-
-  @override
-  String get webAppVersion => '版本';
-
-  @override
-  String get webAppHomepage => '主页';
-
-  @override
-  String webAppUpdate(String version) {
-    return '有新版本 $version，请在 Monitor 面板中更新。';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app已停止运行';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return '未运行的服务：$services。';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => '没有容器在运行。';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app运行异常';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return '健康检查失败的服务：$services。';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app已恢复运行';
-  }
-
-  @override
-  String get noticeStackBackBody => '所有容器均已运行。';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return '$app有可用更新';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '可安装$project $version（当前版本：$current）。';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array 已降级';
   }
@@ -6307,19 +6237,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String monitorUnread(int count) {
     return '$count 条未读';
   }
-
-  @override
-  String monitorAppsUnwell(int count) {
-    return '异常应用：$count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return '应用更新：$count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => '仅看有更新';
 
   @override
   String get monitorNoUpdates => '没有可更新的应用。';
@@ -6432,9 +6349,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get monitorStatUnread => '未读通知';
-
-  @override
-  String get monitorStatUpdates => '应用更新';
 
   @override
   String get monitorAuditEmpty => '没有符合条件的记录。';
@@ -13139,76 +13053,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get agentModeBypassWarn => '全部允許：刪除、重新啟動和設定變更都會直接執行，不再詢問。';
 
   @override
-  String get webApps => 'Web 應用程式';
-
-  @override
-  String get webAppUnhealthy => '異常';
-
-  @override
-  String get webAppDown => '無法使用';
-
-  @override
-  String get webAppInstalling => '正在安裝';
-
-  @override
-  String get webAppsEmpty => '尚無 Web 應用程式。請在 Monitor 面板的 App Store 中部署。';
-
-  @override
-  String get deskAppOpensInPanel => '在面板中開啟';
-
-  @override
-  String get webAppVersion => '版本';
-
-  @override
-  String get webAppHomepage => '首頁';
-
-  @override
-  String webAppUpdate(String version) {
-    return '有新版本 $version，請在 Monitor 面板中更新。';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app已停止執行';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return '未執行的服務：$services。';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => '沒有任何容器正在執行。';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app運作異常';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return '健康檢查失敗的服務：$services。';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app已恢復執行';
-  }
-
-  @override
-  String get noticeStackBackBody => '所有容器都在執行。';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return '$app有可用更新';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '可安裝$project $version（目前版本：$current）。';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array 已降級';
   }
@@ -13317,19 +13161,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String monitorUnread(int count) {
     return '$count 則未讀';
   }
-
-  @override
-  String monitorAppsUnwell(int count) {
-    return '異常應用程式：$count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return '應用程式更新：$count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => '僅顯示有更新';
 
   @override
   String get monitorNoUpdates => '沒有可更新的應用程式。';
@@ -13442,9 +13273,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get monitorStatUnread => '未讀通知';
-
-  @override
-  String get monitorStatUpdates => '應用程式更新';
 
   @override
   String get monitorAuditEmpty => '沒有符合條件的紀錄。';

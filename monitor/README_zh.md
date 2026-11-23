@@ -8,30 +8,6 @@ ServerBox Monitor 是
 不同版本之间可能会调整配置格式，升级后请重新检查 `config.example.toml`。
 
 ## 🖥️ 截图
-<table>
-  <tr>
-    <td>
-	    <h5 align="center">iOS 推送</h5>
-    </td>
-    <td>
-	    <h5 align="center">Webhook 推送 (QQ)</h5>
-    </td>
-    <td>
-	    <h5 align="center">iOS 桌面部件</h5>
-    </td>
-  </tr>
-  <tr>
-    <td>
-	    <img width="107px" src="doc/imgs/ios-push.png">
-    </td>
-    <td>
-	    <img width="307px" src="doc/imgs/webhook.png">
-    </td>
-    <td>
-	    <img width="197px" src="doc/imgs/ios-widget.png">
-    </td>
-  </tr>
-</table>
 
 ## 安装和运行
 
@@ -58,14 +34,9 @@ checkout 中的脚本, 不一定与上面命令下载的 `main` 上的版本一�
 若尚无对应 release，请用 `SBM_INSTALL_PKG` 指向本地构建的包，或使用
 [Docker](Dockerfile)。
 
-没有操作系统的机器可以直接启动 **sbOS**：每个 release 附带内含 Monitor、面板和
-Docker 的系统镜像，分别基于 Alpine Linux（`sbOS_musl_*`）和 Debian
-（`sbOS_GNU_*`），支持 x64 和 arm64。写入 U 盘后启动，或者运行 `sbm-install`
-把系统装到磁盘上——见 [`os/README.md`](os/README.md)。
 
 配置文件是二进制旁边的 `config.toml`。所有配置项及其注释都在
 [`config.example.toml`](config.example.toml) 里；`cargo run -- config` 会打印
-解析后的值。Monitor 默认监听 `0.0.0.0:3770`，当 `frontend/dist` 存在时同时在该
 地址提供面板。
 
 ### 登录
@@ -81,7 +52,7 @@ cd /opt/server-box-monitor   # 或 ~/.local/share/server-box-monitor
 ```
 
 它会无回显地提示输入两次；`--password-env VAR` 改为从环境变量读取密码。没有通过
-参数传入密码的方式，因为命令行会出现在 `ps` 和 shell 历史中。App 和面板也可以修改
+参数传入密码的方式，因为命令行会出现在 `ps` 和 shell 历史中。App 也可以修改
 密码。请在 Monitor 自己的目录下运行：`config.toml` 和数据库路径都相对于工作目录，在
 其他目录运行会在一个新的空数据库里设置密码，且不会有任何提示。
 
@@ -115,7 +86,7 @@ monitor 服务器不提供 SFTP：Monitor 的文件 API 传输的是文件内容
 `--system`（root）则意味着登录后就是 root shell。完整的 API 约定见
 [Monitor API 与访问模型](https://serverbox.lollipopkit.com/docs/zh/development/monitor-agent/)。
 
-终端（App 的和面板的）就是 PTY 上的这个 shell。会话在连接断开后会保留几分钟，手机
+终端（App 的的）就是 PTY 上的这个 shell。会话在连接断开后会保留几分钟，手机
 切换网络后可以接回同一个 shell 而不是丢失它。
 
 修改密码会注销其他所有会话：之前签发的 token 失效，已配对的手表和小组件被解除配对，

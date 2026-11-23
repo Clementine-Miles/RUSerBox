@@ -17,10 +17,10 @@ use std::time::{Duration, Instant};
 use sbm_parser::storage::{self as st, DiskHealth, Maintenance};
 use serde::{Deserialize, Serialize};
 
-use crate::api::desk::{Level, Source};
+use crate::api::notifications::{Level, Source};
 use crate::api::server::AppState;
 use crate::monitoring::push::{Alert, push_all};
-use crate::stacks::Refusal;
+use crate::api::respond::Refusal;
 
 const WATCH_EVERY: Duration = Duration::from_secs(300);
 const SMART_EVERY: Duration = Duration::from_secs(3600);
@@ -319,7 +319,7 @@ pub async fn check(state: &Arc<AppState>) {
 /// Said on the desk, and when [push], through the push channels.
 #[allow(clippy::too_many_arguments)]
 async fn notify(state: &AppState, level: Level, key: &str, subject: &str, body: &str, kind: &str, params: serde_json::Value, push: bool) {
-    if let Err(e) = state.desk.notify(&state.db, level, Source::Storage(key.to_string()), subject, body, Some((kind, &params))).await {
+    if let Err(e) = state.notifications.notify(&state.db, level, Source::Storage(key.to_string()), subject, body, Some((kind, &params))).await {
         tracing::error!("storage {key}: notifying: {e}");
     }
     if push {

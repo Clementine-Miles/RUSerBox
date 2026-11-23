@@ -47,16 +47,10 @@ pub enum Purpose {
     Stream,
     /// A port listened on for the app's remote forwards — see `api::ws::listen`.
     Listen,
-    /// The panel's RDP session — see `api::ws::rdcleanpath`. Carried inside the
-    /// first PDU rather than as a subprotocol, which the RDP client cannot set.
-    Rdp,
     /// A guest's console on the Virtualization page — see
     /// `api::ws::virt_console`. Minted only by `POST /virt/console`, with the
     /// console it opens.
     Virt,
-    /// A web app's window entering its proxy — see `stacks::proxy`. Minted
-    /// only by `POST /stacks/{id}/enter`.
-    Proxy,
 }
 
 struct Entry {

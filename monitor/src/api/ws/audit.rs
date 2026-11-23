@@ -65,11 +65,6 @@ pub enum Kind {
     /// detail the verb and the command's first line — never a password, an
     /// API key, what was typed or what a command printed.
     Agent,
-    /// A web app the agent deploys (`stacks`): deployed, updated, started,
-    /// stopped, removed, or a window entered through its proxy. The subject
-    /// is the account; the detail the verb and the app — never a setting's
-    /// value or a secret.
-    Stack,
     /// A tool an MCP client ran through `POST /mcp` (#1681). The subject is
     /// the credential kind (an API token); the detail is the tool's name —
     /// never its arguments, which are a caller's to keep to itself.
@@ -82,7 +77,7 @@ pub enum Kind {
 
 impl Kind {
     /// Every kind, as `GET /audit?kind=` takes them.
-    pub const ALL: [Kind; 15] = [
+    pub const ALL: [Kind; 14] = [
         Kind::Ticket,
         Kind::Terminal,
         Kind::Exec,
@@ -95,7 +90,6 @@ impl Kind {
         Kind::Machine,
         Kind::Backup,
         Kind::Agent,
-        Kind::Stack,
         Kind::Login,
         Kind::Mcp,
     ];
@@ -114,7 +108,6 @@ impl Kind {
             Kind::Machine => "machine",
             Kind::Backup => "backup",
             Kind::Agent => "agent",
-            Kind::Stack => "stack",
             Kind::Login => "login",
             Kind::Mcp => "mcp",
         }

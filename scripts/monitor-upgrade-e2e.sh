@@ -4,7 +4,7 @@
 #
 #   scripts/monitor-upgrade-e2e.sh <node>
 #
-# Builds the agent on SBM_E2E_BUILD_HOST (lkd-wsl) and the panel here, packs
+# Builds the agent on SBM_E2E_BUILD_HOST (lkd-wsl), packs
 # them as a release is packed, and for each form `install.sh` installs —
 # a `systemctl --user` service, then the system one — installs it, has the
 # agent update itself through its API (`POST /update/run`, as the panel and
@@ -27,15 +27,12 @@ remote() { printf '%s\n' "$1" | ssh "$build" sh -s; }
 echo "==> build: agent on $build"
 rsync -az --delete \
   --exclude target --exclude node_modules --exclude build --exclude .dart_tool --exclude .git \
-  --exclude 'frontend/dist' --exclude '.claude/worktrees' \
+  --exclude '.claude/worktrees' \
   "$root/" "$build:$src/"
 remote ". \"\$HOME/.cargo/env\" 2>/dev/null; cd ~/$src && cargo build -q -p server_box_monitor --profile monitor-test --target x86_64-unknown-linux-musl"
-echo "==> build: panel, package"
-(cd "$root/monitor/frontend" && npm run build >/dev/null)
+echo "==> build: package"
 pkg="$work/server-box-monitor"
-mkdir -p "$pkg/frontend"
 scp -q "$build:$src/target/x86_64-unknown-linux-musl/monitor-test/server_box_monitor" "$pkg/"
-cp -r "$root/monitor/frontend/dist" "$pkg/frontend/dist"
 cp -r "$root/monitor/migrations" "$pkg/migrations"
 cp "$root/monitor/config.example.toml" "$root/monitor/.env.example" "$pkg/"
 COPYFILE_DISABLE=1 tar --no-xattrs -C "$work" -czf "$work/pkg.tar.gz" server-box-monitor
@@ -68,9 +65,9 @@ upgrade() {
   vm "i=0; until $as curl -s -o /dev/null http://127.0.0.1:3770/api/v1/health || [ \$i -gt 30 ]; do i=\$((i+1)); sleep 1; done"
   after=$(vm "$as $pid")
   [ -n "$after" ] && [ "$after" != 0 ] && [ "$after" != "$before" ] || { echo "FAIL: the agent did not come back (pid $before -> $after)" >&2; exit 1; }
-  left=$(vm "ls -A $dir | grep -E '^\.(server_box_monitor|frontend|migrations)\.(new|old)$' || true")
+  left=$(vm "ls -A $dir | grep -E '^\.(server_box_monitor|migrations)\.(new|old)$' || true")
   [ -z "$left" ] || { echo "FAIL: left behind: $left" >&2; exit 1; }
-  vm "test -f $dir/frontend/dist/index.html && test -d $dir/migrations" || { echo "FAIL: files missing" >&2; exit 1; }
+  vm "test -x $dir/server_box_monitor && test -d $dir/migrations" || { echo "FAIL: files missing" >&2; exit 1; }
   echo "    back as pid $after"
 }
 

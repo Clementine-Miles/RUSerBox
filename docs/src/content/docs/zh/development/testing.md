@@ -47,19 +47,6 @@ cargo test -p sbm_parser --test ssh_e2e
 
 ```
 
-## Monitor 面板测试
-
-Monitor 的 Svelte 前端有独立的 Vitest 和 Testing Library 测试：
-
-```bash
-cd monitor/frontend
-npm run test
-npm run test:coverage
-npm run check
-```
-
-`npm run check` 进行类型检查，也是 `npm run build` 的一部分。
-
 ## 单元测试（Unit Test）
 
 单元测试用于验证纯业务逻辑、数据模型与解析器：

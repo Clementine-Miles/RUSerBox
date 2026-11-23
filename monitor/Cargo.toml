@@ -10,8 +10,6 @@ path = "src/lib.rs"
 [dependencies]
 # Shared status parser (monorepo-wide)
 sbm_parser = { path = "../crates/sbm_parser" }
-# Desktop catalog archive reader from the fl_lib submodule.
-fl_theme = { path = "../packages/fl_lib/rust/theme" }
 # Agent mode's agent loop: pi on QuickJS, hosted from Rust (`agent_mode`).
 fl_pi_llm = { path = "../packages/fl_pi_llm/fl_pi_llm/rust", default-features = false, features = ["reqwest"] }
 sbm_redfish = { path = "../crates/sbm_redfish" }
@@ -23,23 +21,10 @@ sbm_native = { path = "../crates/sbm_native" }
 
 # Web framework
 ntex = { version = "4", features = ["tokio", "rustls"] }
-ntex-files = "4.2"
 ntex-ratelimiter = "0.5"
 
 # TLS (ring instead of aws-lc: no cmake/assembly dependency for static musl builds)
 rustls = { version = "0.23", default-features = false, features = ["ring", "logging", "std", "tls12"] }
-# The panel's RDP sessions (`api::ws::rdcleanpath`): the RDCleanPath PDU the
-# browser's IronRDP client opens with, and the TLS client the agent uses to
-# reach the RDP server on its behalf (the browser cannot do RDP's TLS). Pinned
-# to the protocol version `@devolutions/iron-remote-desktop-rdp` 0.7 speaks.
-ironrdp-rdcleanpath = "=0.2.2"
-tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "logging", "tls12"] }
-# The web apps' proxy (`stacks::proxy`): its own listeners, HTTP/1.1 with
-# upgrades both ways; ntex's client cannot hand an upgraded connection over.
-hyper = { version = "1", features = ["server", "client", "http1"] }
-hyper-util = { version = "0.1", features = ["tokio", "server", "client-legacy", "http1"] }
-http-body-util = "0.1"
-
 # Async runtime
 tokio = { version = "1.53", features = ["full"] }
 
@@ -71,19 +56,11 @@ roxmltree = "0.21"
 # Agent mode's chat key, derived from the credentials key (`sealed::Sealer::derive_key`).
 blake3 = "1"
 
-# Desk app packages (`api::apps`): a gzipped tar, read entry by entry with
-# every size bounded while it is read.
 tar = { version = "0.4", default-features = false }
 flate2 = "1"
-# Launch tickets for their UI (HMAC); the crypto already in the tree.
 ring = "0.17"
-# Desk app backends as components (`apps::runtime`): Cranelift, async with
-# epoch interruption, so a call yields and a loop is cut off.
-wasmtime = { version = "49", default-features = false, features = ["runtime", "cranelift", "component-model", "async", "std", "pooling-allocator", "call-hook"] }
-wasmtime-wasi = { version = "49", default-features = false, features = ["p2"] }
 base64 = "0.22"
 hex = "0.4"
-semver = "1.0"
 
 # Configuration
 dotenvy = "0.15"
@@ -157,14 +134,10 @@ version = "0.1"
 path = "../crates/sbm_mcp"
 
 [dev-dependencies]
-# ntex's test server otherwise turns on every crate's trace log, which
-# makes Cranelift compiling a component take tens of seconds.
 ntex = { version = "4", features = ["no-test-logging"] }
-# Test modules for the app runtime, written as text.
-wat = "1"
 tempfile = "3.27.0"
-# Self-signed certificates for the fake RDP server in `tests/rdp_ws.rs`.
-# `ring`, so the tree keeps one crypto implementation.
+# TLS servers and self-signed certificates for integration tests.
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "logging", "tls12"] }
 rcgen = { version = "0.14", default-features = false, features = ["ring", "pem"] }
 # Paused time, for what waits minutes (the sudo password's 15).
 tokio = { version = "1.53", features = ["full", "test-util"] }

@@ -15,7 +15,7 @@ containers, processes, systemd. The repository is a monorepo:
 | `crates/sbm_parser` | Shared status parser — one source of truth for the command manifest and the parsing, used by the app over FFI and by the monitor |
 | `crates/sbm_ffi` | flutter_rust_bridge binding crate, built into the app by `hook/build.dart` |
 | `crates/sbm_native` | Native per-platform sampler, monitor only |
-| `monitor/` | ServerBox Monitor: a Rust program installed on a server, plus its Svelte panel |
+| `monitor/` | ServerBox Monitor: a headless Rust program installed on a server |
 | `packages/` | Vendored Dart forks, each a submodule, referenced by path from `pubspec.yaml` |
 | `docs/` | The documentation site (Astro Starlight), English with a `zh/` mirror |
 
@@ -52,7 +52,6 @@ with the repo is worse than no skill. Inside a checkout, prefer these:
 | What commands exist | `make help` (the `Makefile`) |
 | Flutter / Dart minimum | `environment:` in `pubspec.yaml` |
 | Rust channel and shipped targets | `crates/sbm_ffi/rust-toolchain.toml` |
-| Node version | `monitor/frontend/.node-version` |
 | Every Monitor config key | `monitor/config.example.toml` |
 | Contribution rules and checks | `CONTRIBUTING.md` |
 | Working rules for agents | `CLAUDE.md`, `monitor/CLAUDE.md` |
@@ -75,12 +74,12 @@ make gen         # build_runner + gen-l10n — after touching any annotated mode
 make analyze     # flutter analyze lib test integration_test
 make test        # flutter test
 cargo test --workspace          # parser, native sampler, FFI, monitor
-make monitor-dev                # Monitor API on :3770 + panel dev server on :3000
+make monitor-dev                # Monitor API on :3770
 make build PLATFORM=<android|ios|macos|linux|windows>
 ```
 
 Values as of writing: Flutter >= 3.50.0, Dart SDK >= 3.11.0, Rust pinned to
-1.98.1 for the FFI crate, Node 24 for the monitor panel and the docs site.
+1.98.1 for the FFI crate, Node 24 for the docs and website.
 
 ## What costs people an afternoon
 

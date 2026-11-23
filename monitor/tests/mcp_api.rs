@@ -195,7 +195,6 @@ async fn a_default_token_gets_full_control_and_runs_commands_out_of_the_box() {
         "processes",
         "storage",
         "virt",
-        "stacks",
         "system_users",
         "fs_roots",
         "fs_read",
@@ -206,7 +205,6 @@ async fn a_default_token_gets_full_control_and_runs_commands_out_of_the_box() {
         "container_action",
         "cron_edit",
         "virt_power",
-        "stack_action",
         "power",
     ] {
         assert!(names.contains(&expected), "missing {expected} in {names:?}");

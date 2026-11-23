@@ -19,15 +19,14 @@ const _pollInterval = Duration(minutes: 1);
 final class MonitorOverviewState {
   const MonitorOverviewState({this.features = const {}, this.alerts, this.notices, this.update, this.error});
 
-  /// What the agent offers of `alerts`, `audit`, `live`, `desk` (its
-  /// notifications) and `update`, as its capabilities said; empty for an
+  /// What the agent offers of `alerts`, `audit`, `live`, `notifications` and `update`, as its capabilities said; empty for an
   /// agent too old for any of them, or none heard from yet.
   final Set<String> features;
 
   /// Null until the first answer, and when the agent has no `alerts`.
   final MonitorAlerts? alerts;
 
-  /// Null until the first answer, and when the agent has no `desk`.
+  /// Null until the first answer, and when the agent has no `notifications`.
   final MonitorNotices? notices;
 
   /// Null until the first answer, and when the agent has no `update`.
@@ -62,12 +61,12 @@ class MonitorOverviewNotifier extends _$MonitorOverviewNotifier {
     MonitorFeature.alerts,
     MonitorFeature.audit,
     MonitorFeature.live,
-    MonitorFeature.desk,
+    MonitorFeature.notifications,
     MonitorFeature.update,
   };
 
   /// What [refresh] polls; `audit` and `live` are read when asked.
-  static const _polled = {MonitorFeature.alerts, MonitorFeature.desk, MonitorFeature.update};
+  static const _polled = {MonitorFeature.alerts, MonitorFeature.notifications, MonitorFeature.update};
 
   AgentPoll? _poll;
 
@@ -122,7 +121,7 @@ class MonitorOverviewNotifier extends _$MonitorOverviewNotifier {
       // One after the other: the first signs the client in, and two at once
       // would both find it signed out.
       final alerts = _features.contains(MonitorFeature.alerts) ? await client.alerts() : null;
-      final notices = _features.contains(MonitorFeature.desk) ? await client.notices() : null;
+      final notices = _features.contains(MonitorFeature.notifications) ? await client.notices() : null;
       final update = _features.contains(MonitorFeature.update) ? await client.update() : null;
       if (current()) state = state.copyWith(alerts: alerts, notices: notices, update: update);
     } catch (e) {

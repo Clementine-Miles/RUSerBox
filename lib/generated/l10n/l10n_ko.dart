@@ -6232,76 +6232,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get agentModeBypassWarn => '모두 허용: 삭제, 재시작, 설정 변경이 확인 없이 실행됩니다.';
 
   @override
-  String get webApps => '웹 앱';
-
-  @override
-  String get webAppUnhealthy => '비정상';
-
-  @override
-  String get webAppDown => '다운';
-
-  @override
-  String get webAppInstalling => '설치 중';
-
-  @override
-  String get webAppsEmpty => '아직 웹 앱이 없습니다. Monitor 패널의 App Store에서 배포하세요.';
-
-  @override
-  String get deskAppOpensInPanel => '패널에서 열립니다';
-
-  @override
-  String get webAppVersion => '버전';
-
-  @override
-  String get webAppHomepage => '홈페이지';
-
-  @override
-  String webAppUpdate(String version) {
-    return '$version 버전을 사용할 수 있습니다. Monitor 패널에서 업데이트하세요.';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app이(가) 중지됨';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return '실행 중이 아님: $services.';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => '실행 중인 컨테이너가 없습니다.';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app 상태가 비정상임';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return '상태 확인 실패: $services.';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app이(가) 다시 실행 중임';
-  }
-
-  @override
-  String get noticeStackBackBody => '모든 컨테이너가 실행 중입니다.';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return '$app 업데이트 사용 가능';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '$project $version을(를) 설치할 수 있습니다 (현재: $current).';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array 성능 저하';
   }
@@ -6415,19 +6345,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return '문제가 있는 앱: $count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return '앱 업데이트: $count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => '업데이트만';
-
-  @override
   String get monitorNoUpdates => '업데이트가 있는 앱이 없습니다.';
 
   @override
@@ -6538,9 +6455,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get monitorStatUnread => '읽지 않음';
-
-  @override
-  String get monitorStatUpdates => '앱 업데이트';
 
   @override
   String get monitorAuditEmpty => '일치하는 기록이 없습니다.';

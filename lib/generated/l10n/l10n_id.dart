@@ -6507,77 +6507,6 @@ class AppLocalizationsId extends AppLocalizations {
       'Izinkan semua: penghapusan, mulai ulang, dan perubahan konfigurasi dijalankan tanpa konfirmasi.';
 
   @override
-  String get webApps => 'Aplikasi web';
-
-  @override
-  String get webAppUnhealthy => 'Tidak sehat';
-
-  @override
-  String get webAppDown => 'Mati';
-
-  @override
-  String get webAppInstalling => 'Menginstal';
-
-  @override
-  String get webAppsEmpty =>
-      'Belum ada aplikasi web. Pasang dari App Store di panel Monitor.';
-
-  @override
-  String get deskAppOpensInPanel => 'Dibuka di panel';
-
-  @override
-  String get webAppVersion => 'Versi';
-
-  @override
-  String get webAppHomepage => 'Situs web';
-
-  @override
-  String webAppUpdate(String version) {
-    return 'Versi $version tersedia. Perbarui dari panel Monitor.';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app sedang tidak berjalan';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return 'Tidak berjalan: $services.';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => 'Tidak ada kontainer yang berjalan.';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app bermasalah';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return 'Pemeriksaan kesehatan gagal: $services.';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app berjalan kembali';
-  }
-
-  @override
-  String get noticeStackBackBody => 'Semua kontainer berjalan.';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return 'Pembaruan untuk $app tersedia';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '$project $version dapat dipasang (saat ini: $current).';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array mengalami penurunan';
   }
@@ -6694,19 +6623,6 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return 'Aplikasi bermasalah: $count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return 'Pembaruan aplikasi: $count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => 'Hanya pembaruan';
-
-  @override
   String get monitorNoUpdates => 'Tidak ada aplikasi yang punya pembaruan.';
 
   @override
@@ -6817,9 +6733,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get monitorStatUnread => 'Belum dibaca';
-
-  @override
-  String get monitorStatUpdates => 'Pembaruan aplikasi';
 
   @override
   String get monitorAuditEmpty => 'Tidak ada catatan yang cocok.';

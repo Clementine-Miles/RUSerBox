@@ -66,41 +66,9 @@ jobs:
             exit 1
           fi
 
-  frontend:
-    name: Build frontend
-    needs: meta
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-          persist-credentials: false
-
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: monitor/frontend/package-lock.json
-
-      - name: Build
-        working-directory: monitor/frontend
-        run: |
-          npm ci
-          npm run build
-
-      - name: Upload dist
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: monitor-frontend-dist
-          path: monitor/frontend/dist
-          if-no-files-found: error
-          retention-days: 3
-
   native:
     name: Build ${{ matrix.platform }}-${{ matrix.arch }}
-    needs: [meta, frontend]
+    needs: meta
     strategy:
       fail-fast: false
       matrix:
@@ -142,7 +110,7 @@ jobs:
       - name: Check out IronRDP
         run: git submodule update --init --depth 1 third_party/ironrdp
 
-      # The agent uses fl_lib's catalog archive reader and LK Cloud client.
+      # The agent uses fl_lib's LK Cloud client.
       - name: Check out fl_lib
         run: git submodule update --init --depth 1 packages/fl_lib
 
@@ -171,12 +139,6 @@ jobs:
         shell: bash
         run: cargo build -p server_box_monitor --profile release-monitor --target ${{ matrix.target }}
 
-      - name: Download frontend dist
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          name: monitor-frontend-dist
-          path: monitor/frontend/dist
-
       - name: Package
         shell: bash
         run: |
@@ -189,8 +151,6 @@ jobs:
           staging="${BIN_NAME}"
           mkdir -p "$staging"
           cp "target/${{ matrix.target }}/release-monitor/${bin}${ext}" "$staging/"
-          mkdir -p "$staging/frontend"
-          cp -r monitor/frontend/dist "$staging/frontend/dist"
           cp -r monitor/migrations "$staging/migrations"
           cp monitor/config.example.toml monitor/.env.example "$staging/"
 
@@ -239,7 +199,7 @@ jobs:
 
   docker:
     name: Publish image to ghcr.io
-    needs: [meta, frontend, native]
+    needs: [meta, native]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -251,12 +211,6 @@ jobs:
         with:
           lfs: true
           persist-credentials: false
-
-      - name: Download frontend dist
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          name: monitor-frontend-dist
-          path: monitor/frontend/dist
 
       - name: Download linux bins
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -311,72 +265,9 @@ jobs:
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
 
-  os:
-    name: sbOS ${{ matrix.flavor }} ${{ matrix.arch }}
-    needs: [meta, native]
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor: [musl, gnu]
-        arch: [x64, arm64]
-        include:
-          - arch: x64
-            runner: ubuntu-latest
-            pkg: monitor-pkg-linux-amd64
-            required: true
-          # A native arm64 runner, so nothing is emulated. Not allowed to hold
-          # the release: a runner that cannot build it is not a reason to
-          # publish no release at all.
-          - arch: arm64
-            runner: ubuntu-24.04-arm
-            pkg: monitor-pkg-linux-arm64
-            required: false
-    runs-on: ${{ matrix.runner }}
-    continue-on-error: ${{ !matrix.required }}
-    timeout-minutes: 60
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-
-      # The release package of this architecture: the static musl binary, the
-      # panel's build and the migrations, exactly as install.sh installs them.
-      - name: Download release package
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          name: ${{ matrix.pkg }}
-          path: os-pkg
-
-      - name: Build image
-        shell: bash
-        run: |
-          set -euo pipefail
-          shopt -s nullglob
-          pkg=(os-pkg/*.tar.gz)
-          if [ "${#pkg[@]}" -ne 1 ]; then
-            echo "Expected one package in os-pkg, found ${#pkg[@]}."
-            exit 1
-          fi
-          monitor/os/build.sh "${{ matrix.flavor }}" \
-            --arch "${{ matrix.arch }}" \
-            --version "${{ needs.meta.outputs.version }}" \
-            --pkg "${pkg[0]}" \
-            --out os-out
-
-      - name: Upload image
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: monitor-os-${{ matrix.flavor }}-${{ matrix.arch }}
-          path: |
-            os-out/*.img
-            os-out/*.packages.txt
-          if-no-files-found: error
-          retention-days: 3
-
   release:
     name: Create GitHub Release
-    needs: [meta, native, docker, os]
+    needs: [meta, native, docker]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -389,20 +280,13 @@ jobs:
           path: packages
           merge-multiple: true
 
-      - name: Download sbOS images
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
-        with:
-          pattern: monitor-os-*
-          path: packages
-          merge-multiple: true
-
       - name: Checksums
         shell: bash
         working-directory: packages
         # `--`, so an archive is never read as an option. The names are all
         # `server-box-monitor_…` today, which is the kind of thing that holds
         # until it doesn't; it keeps the bare filenames `sha256sum -c` expects.
-        run: sha256sum -- *.tar.gz *.zip *.img > SHA256SUMS
+        run: sha256sum -- *.tar.gz *.zip > SHA256SUMS
 
       - name: Create Release
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
@@ -446,20 +330,12 @@ jobs:
 
             Also tagged `latest`. `linux/amd64` and `linux/arm64`.
 
-            ## sbOS
-            ServerBox Monitor and Docker as a bootable system: write the image to a USB stick, boot it, and the console shows the panel's address; `sbm-install <disk>` installs it on a disk. `sbOS_musl_*` is based on Alpine Linux, `sbOS_GNU_*` on Debian 13; `x64` boots BIOS and UEFI, `arm64` UEFI. Each `.packages.txt` lists the distribution packages inside and where their sources are. sbOS is not affiliated with Alpine Linux or Debian; Debian is a registered trademark owned by Software in the Public Interest, Inc.
-            ```sh
-            dd if=sbOS_GNU_x64.img of=/dev/sdX bs=4M status=progress conv=fsync
-            ```
-
             ```sh
             sha256sum -c SHA256SUMS --ignore-missing
             ```
           files: |
             packages/*.tar.gz
             packages/*.zip
-            packages/*.img
-            packages/*.packages.txt
             packages/SHA256SUMS
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -6610,77 +6610,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Tout autoriser : les suppressions, redémarrages et modifications de configuration s’exécutent sans demander.';
 
   @override
-  String get webApps => 'Applications web';
-
-  @override
-  String get webAppUnhealthy => 'Défaillante';
-
-  @override
-  String get webAppDown => 'Hors service';
-
-  @override
-  String get webAppInstalling => 'Installation en cours';
-
-  @override
-  String get webAppsEmpty =>
-      'Aucune application web pour l\'instant. Déployez-les depuis l\'App Store du panneau Monitor.';
-
-  @override
-  String get deskAppOpensInPanel => 'S’ouvre dans le panneau';
-
-  @override
-  String get webAppVersion => 'Version';
-
-  @override
-  String get webAppHomepage => 'Site web';
-
-  @override
-  String webAppUpdate(String version) {
-    return 'La version $version est disponible. Mettez-la à jour depuis le panneau Monitor.';
-  }
-
-  @override
-  String noticeStackDown(String app) {
-    return '$app est arrêté';
-  }
-
-  @override
-  String noticeStackDownBody(String services) {
-    return 'À l’arrêt : $services.';
-  }
-
-  @override
-  String get noticeStackDownBodyEmpty => 'Aucun conteneur ne fonctionne.';
-
-  @override
-  String noticeStackUnhealthy(String app) {
-    return '$app est en mauvais état';
-  }
-
-  @override
-  String noticeStackUnhealthyBody(String services) {
-    return 'Échec du contrôle de santé : $services.';
-  }
-
-  @override
-  String noticeStackBack(String app) {
-    return '$app fonctionne de nouveau';
-  }
-
-  @override
-  String get noticeStackBackBody => 'Tous les conteneurs fonctionnent.';
-
-  @override
-  String noticeStackUpdate(String app) {
-    return 'Une mise à jour de $app est disponible';
-  }
-
-  @override
-  String noticeStackUpdateBody(String project, String version, String current) {
-    return '$project $version peut être installé (actuellement : $current).';
-  }
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array est dégradée';
   }
@@ -6798,19 +6727,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String monitorAppsUnwell(int count) {
-    return 'Apps en difficulté : $count';
-  }
-
-  @override
-  String monitorAppsUpdates(int count) {
-    return 'Mises à jour d’apps : $count';
-  }
-
-  @override
-  String get monitorUpdatesOnly => 'Mises à jour seulement';
-
-  @override
   String get monitorNoUpdates => 'Aucune app n’a de mise à jour.';
 
   @override
@@ -6921,9 +6837,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get monitorStatUnread => 'Non lues';
-
-  @override
-  String get monitorStatUpdates => 'Mises à jour';
 
   @override
   String get monitorAuditEmpty => 'Aucune entrée ne correspond.';

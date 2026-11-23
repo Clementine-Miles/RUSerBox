@@ -132,9 +132,9 @@ curl -fsSL https://raw.githubusercontent.com/lollipopkit/flutter_server_box/main
 
 默认情况下，Monitor 以当前普通用户身份运行。登录 Monitor 后即可执行该用户权限范围内的所有操作，详见[访问权限](#访问)。若传入 `--system`（配合 `sudo`）安装为 root 系统服务，登录后即拥有 root 权限。
 
-Monitor 从二进制文件所在目录读取 `config.toml`。所有可用配置项见 [`config.example.toml`](https://github.com/lollipopkit/flutter_server_box/blob/main/monitor/config.example.toml)。默认监听地址是 `0.0.0.0:3770`；该目录下存在 `frontend/dist` 时，Monitor 也会在此提供网页面板。
+Monitor 从二进制文件所在目录读取 `config.toml`。所有可用配置项见 [`config.example.toml`](https://github.com/lollipopkit/flutter_server_box/blob/main/monitor/config.example.toml)。默认监听地址是 `0.0.0.0:3770`。
 
-无需直接编辑 `config.toml`，也可以修改采集间隔、告警规则、通知渠道、数据保留时间和允许的面板来源。在网页面板使用 **服务器设置**，或在 App 中打开已配置 Monitor 的服务器并点击顶部设置按钮。两个入口会修改同一个 Monitor 和配置文件。
+无需直接编辑 `config.toml`，也可以修改采集间隔、告警规则、通知渠道、数据保留时间。在 App 中打开已配置 Monitor 的服务器并点击顶部设置按钮。
 
 JWT secret、`database_url` 和 `[remote_access]`（是否允许明文、SSH 地址和各项限额）只能通过配置文件修改。
 
@@ -156,20 +156,19 @@ curl -fsSL https://raw.githubusercontent.com/lollipopkit/flutter_server_box/main
 
 升级在 Monitor 运行时原地进行：先替换文件，最后重启。因此这条命令可以在 Monitor 自己打开的终端里运行；Monitor 重启时该终端会关闭，Monitor 几秒后恢复。
 
-#### 在面板或 App 中更新
+#### 在 App 中更新
 
 Monitor 每 12 小时检查一次 release，有新版本时留下一条通知。Monitor 知道自己的安装方式：`install.sh`、容器、NixOS 模块或其他。只有 `install.sh` 安装的可以自行更新，其他方式会说明各自的更新方法。
 
-更新在 Monitor 之外运行：systemd 下是一个独立的临时服务（`systemd-run`），其他情况下是一个独立的会话。Monitor 重启会断开经由它的所有连接（包括面板和 App 的连接），但不会中断更新。输出写入 Monitor 目录下的 `update.log`，重启后的 Monitor 会报告更新结果。OpenRC 下安装脚本需要 root，Monitor 会要求输入 sudo 密码；密码只用一次，不会保存。
+更新在 Monitor 之外运行：systemd 下是一个独立的临时服务（`systemd-run`），其他情况下是一个独立的会话。Monitor 重启会断开经由它的所有连接，但不会中断更新。输出写入 Monitor 目录下的 `update.log`，重启后的 Monitor 会报告更新结果。OpenRC 下安装脚本需要 root，Monitor 会要求输入 sudo 密码；密码只用一次，不会保存。
 
-- **面板**：**设置 → 服务器 → ServerBox Monitor** 显示当前版本和最新 release，可点击 **立即检查** 和 **立即更新**。更新期间页面实时显示日志，Monitor 重启后会自动重连并显示新版本。点击桌面通知也会直接打开此页面。
 - **App**：**Monitor** 标签页会标出有更新的 Monitor，以及因版本过旧无法单密码登录的实例。点击标记即可按引导执行 **立即更新**。尚不支持单密码登录的旧版 Monitor 仍需验证原账户名（通常为 `admin`）：App 会结合已保存的密码完成一次登录并触发更新，不会保存该账户名。若服务器同时配置了 SSH，而 Monitor 无法自行启动更新，App 会在 SSH 终端中执行升级命令。
 
 ## App 能回溯多久
 
 图表可选范围取决于 Monitor 的数据保留时长和已采集的历史数据。App 只显示 Monitor 能提供的范围。API 字段和历史查询行为见[Monitor API 与访问模型](/docs/zh/development/monitor-agent/)。
 
-## 面板凭据
+## Monitor 凭据
 
 Monitor 只有一个账号，只用密码登录，没有用户名。密码保存在 Monitor 的 SQLite 数据库中，不在 `config.toml` 里配置。该文件中的 `jwt_secret` 用于签署会话 token，并不是密码。
 
@@ -208,15 +207,15 @@ SBM_PW="$SBM_PW" ./server_box_monitor password --password-env SBM_PW
 修改密码会注销其他所有访问：
 
 - **登录和已配对的设备：无论用哪种方式修改，都会立即失效。** 修改前的登录从下一次请求起被拒绝，已配对的小组件和 Watch 会被解除配对。这一步不需要重启 Monitor，也不需要修改 `jwt_secret`。
-- **已打开的终端、端口转发和监听：** 在 App 或面板中修改密码时会立即关闭。上面的命令只更新数据库，不会通知正在运行的 Monitor；旧密码建立的连接会一直保持到 Monitor 重启。systemd 使用 `systemctl --user restart server_box_monitor`，OpenRC 使用 `rc-service server-box-monitor restart`。如果重置密码是因为它可能已泄露，请随后重启 Monitor。
+- **已打开的终端、端口转发和监听：** 在 App中修改密码时会立即关闭。上面的命令只更新数据库，不会通知正在运行的 Monitor；旧密码建立的连接会一直保持到 Monitor 重启。systemd 使用 `systemctl --user restart server_box_monitor`，OpenRC 使用 `rc-service server-box-monitor restart`。如果重置密码是因为它可能已泄露，请随后重启 Monitor。
 
-也可以在 App（服务器页面顶部的设置按钮，然后选择**访问**）或面板中修改密码，两处都需要输入当前密码。在 App 中修改时，App 会同时更新为该服务器保存的密码。
+也可以在 App（服务器页面顶部的设置按钮，然后选择**访问**）修改密码，需要输入当前密码。在 App 中修改时，App 会同时更新为该服务器保存的密码。
 
 在服务器上修改密码后，请在 App 中编辑服务器并更新 **Monitor 密码**，其他保存了该密码的客户端也要同步更新。客户端不会收到密码变更通知，因此更新前无法登录。
 
 ### 忘记密码
 
-网页面板不提供密码找回功能。请在服务器上运行上面的命令重置密码。
+请在服务器上运行上面的命令重置密码。
 
 登录有限流。每次登录成功后，App 或浏览器会得到一个设备 token，之后每次登录都会带上它。登录过的设备按来源地址和该设备自身限流，其他地方的失败尝试不会把它锁住；其他客户端按来源地址和一个它们共用的计数限流。按地址和按设备计数时，前三次失败不会延迟；共用计数允许二十次。此后等待时间从 1 秒开始逐次翻倍，最长 5 分钟。连续输错密码时，Monitor 可能因此响应缓慢，甚至暂时没有响应。修改密码会让所有设备 token 失效。
 
@@ -226,7 +225,7 @@ SBM_PW="$SBM_PW" ./server_box_monitor password --password-env SBM_PW
 2. 打开 **Monitor HTTP**。它与 SSH 相互独立，可以单独启用，也可以同时启用两种连接方式。若两者都启用，在 **优先连接方式** 中选择 App 优先尝试的方式。
 3. 填写：
    - **URL**：例如 `https://1.2.3.4:3770`
-   - **Monitor 密码**：Monitor 的密码，见[面板凭据](#面板凭据)
+   - **Monitor 密码**：Monitor 的密码，见[Monitor 凭据](#Monitor 凭据)
    - **Monitor 证书**：使用自签名证书时，在这里或首次连接时核对并信任
 4. 保存配置。
 
@@ -237,8 +236,7 @@ Monitor HTTP 配置不会添加 SSH 凭据。若没有另外配置 SSH，App 只
 App 的 **Monitor** 标签页显示所有通过 Monitor 添加的服务器。新安装的 App 不会把它放在导航栏中：可以从 **更多** 打开，或在 **设置 › 应用 › 主页标签** 中添加。在宽屏窗口中，左侧一栏是各部分和服务器列表；在手机上，从栏上的标题切换部分，从服务器按钮切换服务器。
 
 - **概览**：每个 Monitor 是否可连接、它的版本（落后时同时显示最新版本）、正在触发的[告警规则](#告警规则)及当前读数和持续时间，以及未读通知、异常或有更新的 Web 应用的入口。
-- **Web 应用**：见 [Monitor Web 应用](../monitor-apps/#在-serverbox-app-中打开应用)。
-- **通知**：Monitor 报告的事件，按时间倒序，以 App 的语言显示：规则开始触发、Web 应用停止运行、恢复或有更新、磁盘、阵列或存储池异常。已读状态与面板同步。
+- **通知**：Monitor 报告的事件，按时间倒序，以 App 的语言显示：规则开始触发、磁盘、阵列或存储池异常。
 - **审计日志**：一次显示一台服务器。包括登录（成功和被拒绝的，以及来源地址）、终端、命令、文件写入、主机管理、部署等，可按类型和结果筛选。只有在 Monitor 允许操作的连接上才会显示（HTTPS、本机回环，或开启了 `allow_insecure`）。
 - **会话与设备**：一次显示一台服务器。包括终端会话、经 Monitor 中转的连接（端口转发、远程桌面、控制台）、手表和小组件的令牌，以及用密码登录过的设备。可以结束会话或连接，也可以撤销令牌。忘记设备后，它下次登录会计入账户级的失败尝试限制；这不会让设备退出登录，因为保存了密码的设备会再次登录。要阻止某台设备，请修改密码。
 
@@ -256,7 +254,7 @@ App 和 Monitor 采集数据时都不会等待交互式 `sudo` 输入。如果 S
 
 ## 访问
 
-登录 Monitor 后，你将拥有 Monitor 运行所用系统账户的全部权限：可执行命令、管理进程与 systemd 服务、操作容器与代码片段、控制电源、配置计划任务与防火墙、打开终端、读写文件、建立远程桌面与端口转发，以及使用网页面板中的 Proxmox VE、libvirt 和 BMC 功能。Monitor 不再区分角色或按功能细分的权限，运行账户本身的权限即为边界。
+登录 Monitor 后，你将拥有 Monitor 运行所用系统账户的全部权限：可执行命令、管理进程与 systemd 服务、操作容器与代码片段、控制电源、配置计划任务与防火墙、打开终端、读写文件、建立远程桌面与端口转发，以及使用Proxmox VE、libvirt 和 BMC 功能。Monitor 不再区分角色或按功能细分的权限，运行账户本身的权限即为边界。
 
 因此，`install.sh` 默认以普通用户身份安装和运行 Monitor。若使用 `--system` 以 root 身份安装，登录 Monitor 即拥有 root shell。如需限制 Monitor 的访问范围，请使用专门受限的系统账户运行它。
 
@@ -288,7 +286,7 @@ Monitor 保存的外部凭据（BMC 与 Proxmox VE 密码、Agent 模式的模�
 
 - **主屏幕小组件**：安装 Monitor 并在 App 中添加服务器后，小组件可直接从 App 同步的服务器列表中选择目标，无需手动填写 URL。
 - **Watch App**：仅显示已配置 Monitor 的服务器。默认自动同步全部 Monitor 服务器，也可在 iOS 的设置中按需排除。
-- **推送告警**：告警规则决定触发条件，通知渠道决定发送目标（对应 `config.toml` 中的 `[[monitoring.rules]]` 和 `[[push]]`）。你也可以直接在 App 或网页面板中编辑这两项配置，并使用渠道旁的 **发送测试** 按钮验证配置。规则语法见下文[告警规则](#告警规则)。
+- **推送告警**：告警规则决定触发条件，通知渠道决定发送目标（对应 `config.toml` 中的 `[[monitoring.rules]]` 和 `[[push]]`）。你也可以直接在 App中编辑这两项配置，并使用渠道旁的 **发送测试** 按钮验证配置。规则语法见下文[告警规则](#告警规则)。
 
 ## 通知渠道
 
@@ -305,7 +303,7 @@ Monitor 保存的外部凭据（BMC 与 Proxmox VE 密码、Agent 模式的模�
 | `discord` | `webhook_url` | `content`、`username`、`avatar_url`、`thread_id` |
 | `ntfy` | `topic` | `server`、`title`、`message`、`priority`、`tags`、`click`、`icon`、`attach`、`delay`、`email`、`markdown`、`token`、`username`、`password` |
 
-- **从环境变量读取凭据**：在 `config.toml` 中，凭据字段（`sc_key`、Bark 的 `key` 和 `cipher_key`、iOS 的 `token`、webhook 的 header 值、SMTP 和 ntfy 的 `password`、ntfy 的 `token`、`bot_token`、`webhook_url`）可以用 `${NAME}` 引用环境变量，可以单独使用，也可以写在值中间（`Authorization = "Bearer ${HA_TOKEN}"`）；`$${` 表示字面的 `${`。发送通知时从 Monitor 的环境变量或 `.env` 读取，`config.toml` 中保留引用本身。变量未设置或为空时，保存会被拒绝，发送也会失败，错误中会给出变量名。其他设置不做替换。在 App 或网页面板中填写的凭据按原样保存，不会被当作引用，因此登录后无法通过这里读取 Monitor 的环境变量。
+- **从环境变量读取凭据**：在 `config.toml` 中，凭据字段（`sc_key`、Bark 的 `key` 和 `cipher_key`、iOS 的 `token`、webhook 的 header 值、SMTP 和 ntfy 的 `password`、ntfy 的 `token`、`bot_token`、`webhook_url`）可以用 `${NAME}` 引用环境变量，可以单独使用，也可以写在值中间（`Authorization = "Bearer ${HA_TOKEN}"`）；`$${` 表示字面的 `${`。发送通知时从 Monitor 的环境变量或 `.env` 读取，`config.toml` 中保留引用本身。变量未设置或为空时，保存会被拒绝，发送也会失败，错误中会给出变量名。其他设置不做替换。在 App中填写的凭据按原样保存，不会被当作引用，因此登录后无法通过这里读取 Monitor 的环境变量。
 - **Bark**：设置 `cipher_key` 后，通知内容使用 AES-CBC 加密（16、24 或 32 个字符的 key，分别对应 AES-128/192/256）。在 Bark App 的“推送加密”中填写相同的 key 和算法。Bark 服务器只能收到 device key 和密文。
 - **SMTP**：`security` 可选 `starttls`（587 端口，默认）、`tls`（465）或 `none`（25）。使用 `none` 时，只有服务器在本机才接受密码。`to` 可以填写多个地址，用逗号分隔。
 - **Telegram**：设置 `parse_mode` 后，消息内容和服务器名称会按该模式转义，只有你自己写的 `text` 会被当作标记解析。
@@ -417,8 +415,8 @@ threshold = ">=70c"
 
 **证书错误。** 配置有效的 TLS，或将 Monitor 放在反向代理后。使用自签名证书时，将 SHA-256 与 Monitor 上的证书核对（`openssl x509 -in tls.crt -noout -fingerprint -sha256`）后信任；证书变化时会再次显示。
 
-**面板使用不同的 origin。** 在 `config.toml` 的 `cors_allowed_origins` 或环境变量 `SBM_CORS_ORIGINS` 中添加该 origin。
+**HTTP 客户端使用不同的来源。** 在 `config.toml` 的 `cors_allowed_origins` 或环境变量 `SBM_CORS_ORIGINS` 中添加该 origin。
 
-**登录被拒绝，或密码丢失。** 在服务器上用 `server_box_monitor password` 重置，见[面板凭据](#面板凭据)。连续失败会被限流，所以密码错误也可能表现为 Monitor 变慢或不响应。
+**登录被拒绝，或密码丢失。** 在服务器上用 `server_box_monitor password` 重置，见[Monitor 凭据](#Monitor 凭据)。连续失败会被限流，所以密码错误也可能表现为 Monitor 变慢或不响应。
 
 **请求无响应。** 确认 Monitor 正在运行且端口可达，再检查数据库中的 `access_log` 表。该表记录访问者、时间、来源、请求资源和结果，不保存凭据。
