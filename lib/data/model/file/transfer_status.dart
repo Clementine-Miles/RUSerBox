@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:easy_isolate/easy_isolate.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:server_box/core/service/in_flight_work.dart';
 import 'package:server_box/data/model/file/backend/local.dart';
 import 'package:server_box/data/model/file/backend/monitor.dart';
 import 'package:server_box/data/model/file/copy_tree.dart';
@@ -80,9 +79,6 @@ class FileTransferStatus {
   Duration? spentTime;
   bool _disposed = false;
 
-  /// From queued to [dispose], which every way a transfer ends goes through.
-  final _releaseInFlight = InFlightWork.hold();
-
   @override
   bool operator ==(Object other) =>
       other is FileTransferStatus && id == other.id;
@@ -93,7 +89,6 @@ class FileTransferStatus {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
-    _releaseInFlight();
     // Read before the worker is killed: a transfer that finished has already
     // renamed its staged copy into place and has nothing to clean up.
     final unfinished = status != FileTransferStage.finished;

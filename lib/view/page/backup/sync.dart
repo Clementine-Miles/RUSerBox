@@ -3,21 +3,18 @@ part of '../backup.dart';
 /// Where the backup syncs on its own: one at a time.
 enum _SyncDest {
   off,
-  icloud,
   webdav,
   lkc;
 
   /// The ones this build offers, [off] first.
   static List<_SyncDest> get offered => [
     off,
-    if (isICloudSupported) icloud,
     webdav,
     if (Lkc.enabled) lkc,
   ];
 
   /// The one on now.
   static _SyncDest get current {
-    if (isICloudSupported && PrefProps.icloudSync.get()) return icloud;
     if (PrefProps.webdavSync.get()) return webdav;
     if (Lkc.enabled && LkcSyncPrefs.enabled.get()) return lkc;
     return off;
@@ -26,7 +23,6 @@ enum _SyncDest {
   /// What turns it on; none for [off].
   PrefPropDefault<bool>? get pref => switch (this) {
     off => null,
-    icloud => PrefProps.icloudSync,
     webdav => PrefProps.webdavSync,
     lkc => LkcSyncPrefs.enabled,
   };
@@ -40,21 +36,19 @@ enum _SyncDest {
 
   String get name => switch (this) {
     off => l10n.syncOff,
-    icloud => 'iCloud',
     webdav => 'WebDAV',
     lkc => 'LK Cloud',
   };
 
   IconData get icon => switch (this) {
     off => Icons.sync_disabled,
-    icloud => Icons.cloud,
     webdav => Icons.storage,
     lkc => Icons.cloud_sync,
   };
 
   /// Which one of its kind: the server, the account.
   String? get note => switch (this) {
-    off || icloud => null,
+    off => null,
     webdav => switch (SyncRemotes.webdavUrl) {
       final url? => Uri.tryParse(url)?.host ?? url,
       null => null,
@@ -145,13 +139,6 @@ extension _SyncWidgets on _BackupPageState {
             action: libL10n.copy,
             onAction: () => BackupService.backup(context, ClipboardBackupSource()),
           ),
-          if (isICloudSupported && channel != _SyncDest.icloud)
-            _manualRow(
-              _SyncDest.icloud.icon,
-              _SyncDest.icloud.name,
-              busy: remoteLoading.value,
-              onRestore: _onTapIcloudRestore,
-            ),
           if (_webdavSet && channel != _SyncDest.webdav)
             _manualRow(
               _SyncDest.webdav.icon,
@@ -211,7 +198,7 @@ extension _SyncWidgets on _BackupPageState {
     return CardX(
       child: Column(
         children: [
-          _buildSyncStatus(dest),
+          _buildSyncStatus(),
           if (dest == _SyncDest.webdav)
             ListTile(
               title: Text(libL10n.server),
@@ -261,7 +248,7 @@ extension _SyncWidgets on _BackupPageState {
 
   /// How the last sync went, and when; the one thing to do about it where
   /// there is one (the password).
-  Widget _buildSyncStatus(_SyncDest dest) {
+  Widget _buildSyncStatus() {
     return ListenableBuilder(
       listenable: Listenable.merge([
         _syncing,
@@ -273,67 +260,55 @@ extension _SyncWidgets on _BackupPageState {
         fileLog.tooNew,
       ]),
       builder: (context, _) {
-        return FutureBuilder<bool>(
-          future: dest == _SyncDest.icloud ? _icloudConflict : null,
-          builder: (context, icloudStatus) {
-            final scheme = Theme.of(context).colorScheme;
-            final failure = bakSync.lastFailure.value;
-            final at = bakSync.syncCheckpoint?.$3;
-            final last = at == null ? null : l10n.syncLastAt(DateTime.fromMillisecondsSinceEpoch(at).ymdhms());
-            // A word for the state; what it is about, or when it last went
-            // well, under it.
-            final (icon, color, title, detail, onTap) = switch (()) {
-              // The last one's outcome is cleared as one starts: none to say
-              // until it ends.
-              _ when _syncing.value || bakSync.running.value => (
-                Icons.sync,
-                scheme.primary,
-                l10n.syncStateRunning,
-                last,
-                null,
-              ),
-              _ when SyncKeyring.passwordMismatch.value.isNotEmpty => (
-                Icons.key_off,
-                scheme.error,
-                l10n.syncStatePassword,
-                l10n.syncPasswordMismatch,
-                () => _onTapSetBakPwd(context),
-              ),
-              _ when SchemaVersion.readsAhead || BakSyncer.remoteTooNew.value != null || lkcLog.tooNew.value || fileLog.tooNew.value => (
-                Icons.system_update,
-                Colors.orange,
-                l10n.syncStateUpdate,
-                l10n.syncRemoteTooNew,
-                null,
-              ),
-              _ when failure != null => (
-                Icons.warning_rounded,
-                Colors.orange,
-                l10n.syncStateFailed,
-                syncFailureText(failure) ?? '$failure',
-                null,
-              ),
-              _ when icloudStatus.data ?? false => (
-                Icons.warning_rounded,
-                Colors.orange,
-                l10n.icloudBackupStateConflict,
-                last,
-                null,
-              ),
-              _ when last != null => (Icons.check_circle, Colors.green, l10n.syncDone, last, null),
-              // Nothing synced yet, nor failed.
-              _ => (Icons.sync, scheme.onSurfaceVariant, l10n.syncNow, null, _syncNow),
-            };
-            return ListTile(
-              leading: Icon(icon, color: color),
-              title: Text(title),
-              subtitle: detail == null ? null : Text(detail, style: UIs.textGrey),
-              onTap: onTap,
-              trailing: _syncing.value || bakSync.running.value
-                  ? SizedLoading.small
-                  : IconButton(onPressed: _syncNow, icon: const Icon(Icons.sync), tooltip: l10n.syncNow),
-            );
-          },
+        final scheme = Theme.of(context).colorScheme;
+        final failure = bakSync.lastFailure.value;
+        final at = bakSync.syncCheckpoint?.$3;
+        final last = at == null ? null : l10n.syncLastAt(DateTime.fromMillisecondsSinceEpoch(at).ymdhms());
+        // A word for the state; what it is about, or when it last went
+        // well, under it.
+        final (icon, color, title, detail, onTap) = switch (()) {
+          // The last one's outcome is cleared as one starts: none to say
+          // until it ends.
+          _ when _syncing.value || bakSync.running.value => (
+            Icons.sync,
+            scheme.primary,
+            l10n.syncStateRunning,
+            last,
+            null,
+          ),
+          _ when SyncKeyring.passwordMismatch.value.isNotEmpty => (
+            Icons.key_off,
+            scheme.error,
+            l10n.syncStatePassword,
+            l10n.syncPasswordMismatch,
+            () => _onTapSetBakPwd(context),
+          ),
+          _ when SchemaVersion.readsAhead || BakSyncer.remoteTooNew.value != null || lkcLog.tooNew.value || fileLog.tooNew.value => (
+            Icons.system_update,
+            Colors.orange,
+            l10n.syncStateUpdate,
+            l10n.syncRemoteTooNew,
+            null,
+          ),
+          _ when failure != null => (
+            Icons.warning_rounded,
+            Colors.orange,
+            l10n.syncStateFailed,
+            syncFailureText(failure) ?? '$failure',
+            null,
+          ),
+          _ when last != null => (Icons.check_circle, Colors.green, l10n.syncDone, last, null),
+          // Nothing synced yet, nor failed.
+          _ => (Icons.sync, scheme.onSurfaceVariant, l10n.syncNow, null, _syncNow),
+        };
+        return ListTile(
+          leading: Icon(icon, color: color),
+          title: Text(title),
+          subtitle: detail == null ? null : Text(detail, style: UIs.textGrey),
+          onTap: onTap,
+          trailing: _syncing.value || bakSync.running.value
+              ? SizedLoading.small
+              : IconButton(onPressed: _syncNow, icon: const Icon(Icons.sync), tooltip: l10n.syncNow),
         );
       },
     );
@@ -443,15 +418,6 @@ extension _SyncActions on _BackupPageState {
     switch (to) {
       case _SyncDest.off:
         return true;
-      case _SyncDest.icloud:
-        _syncing.value = true;
-        try {
-          await bakSync.sync(rs: icloud, throttleMilli: 0);
-        } finally {
-          if (mounted) _syncing.value = false;
-        }
-        _refreshIcloudStatus();
-        return _syncWent();
       case _SyncDest.webdav:
         if (!_webdavSet) {
           await _onTapWebdavSetting(context);
@@ -512,34 +478,12 @@ extension _SyncActions on _BackupPageState {
       Loggers.app.warning('Sync now', e, s);
     } finally {
       if (mounted) _syncing.value = false;
-      _refreshIcloudStatus();
     }
   }
 
   Future<void> _onTapDestRestore(_SyncDest dest) => switch (dest) {
     _SyncDest.off => Future.value(),
-    _SyncDest.icloud => _onTapIcloudRestore(),
     _SyncDest.webdav => _onTapWebdavDl(context),
     _SyncDest.lkc => _onTapLkcRestore(context),
   };
-
-  /// The backup iCloud holds, as it is.
-  Future<void> _onTapIcloudRestore() async {
-    remoteLoading.value = true;
-    Directory? dir;
-    try {
-      if (!await icloud.exists(Paths.bakName)) return Toast.show(l10n.dirEmpty);
-      dir = await Directory.systemTemp.createTemp('sb-icloud-restore-');
-      final path = '${dir.path}/${Paths.bakName}';
-      await icloud.download(relativePath: Paths.bakName, localPath: path);
-      final bytes = await File(path).readAsBytes();
-      if (mounted) await BackupService.restoreData(context, bytes);
-    } catch (e, s) {
-      if (mounted) context.showErrSheet(e, s, libL10n.restore);
-      Loggers.app.warning('Restore iCloud backup failed', e, s);
-    } finally {
-      await dir?.delete(recursive: true);
-      if (mounted) remoteLoading.value = false;
-    }
-  }
 }

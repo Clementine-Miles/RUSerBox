@@ -108,41 +108,7 @@ extension _Tags on _ServerEditPageState {
   }
 }
 
-extension _Discovery on _ServerEditPageState {
-  /// Fills this form in from a discovered host: only what the source knew,
-  /// and the name only while it is still empty. Its hops are added as
-  /// servers, the ones that are not already, and become its jump servers.
-  Future<void> _onTapDiscover() async {
-    final found = await pickDiscoveredHost(context);
-    if (!mounted || found == null) return;
-    final ssh = found.server.ssh;
-    if (ssh == null) return;
-
-    if (found.via.isNotEmpty) {
-      final notifier = ref.read(serversProvider.notifier);
-      final plan = planDiscoveredServers([
-        found,
-      ], ref.read(serversProvider).servers.values.toList());
-      try {
-        for (final hop in plan.add) {
-          if (hop.id != found.server.id) await notifier.addServer(hop);
-        }
-      } catch (e, s) {
-        if (mounted) context.showErrSheet(e, s);
-        return;
-      }
-      _jumpServers.value = [
-        for (final id in ssh.resolvedJumpIds) plan.ids[id] ?? id,
-      ];
-    }
-    _ipController.text = ssh.ip;
-    _portController.text = '${ssh.port}';
-    if (found.userKnown) _usernameController.text = ssh.user;
-    if (ssh.proxyCommand case final cmd?) _proxyCommandCtrl.text = cmd;
-    if (ssh.controlPath case final path?) _controlPathCtrl.text = path;
-    if (_nameController.text.isEmpty) _nameController.text = found.server.name;
-  }
-
+extension _Draft on _ServerEditPageState {
   void _initWithDraft(ServerDraft draft) {
     if (draft.host case final host?) _ipController.text = host;
     if (draft.port case final port?) _portController.text = '$port';
@@ -928,52 +894,6 @@ typedef _SaveForm = ({
 });
 
 extension _Utils on _ServerEditPageState {
-  void _markSSHConfigImportHandled() {
-    Stores.setting.firstTimeReadSSHCfg.put(false);
-  }
-
-  /// Offers `~/.ssh/config` once, for the first server, when it has hosts:
-  /// in the discovery sheet, where they are picked and their jumps come with
-  /// them.
-  Future<void> _checkSSHConfigImport() async {
-    final hasExistingServers = ref.read(serversProvider).servers.isNotEmpty;
-    var hasHosts = false;
-    if (!hasExistingServers && await SshConfigDiscovery.isAvailable()) {
-      try {
-        hasHosts = (await const SshConfigDiscovery().discover()).hosts.isNotEmpty;
-      } catch (e) {
-        // Unreadable here, the sandboxed build's case: nothing to offer
-        // unasked. Settings → SSH config import picks the file by hand.
-        dprint('Reading SSH config for the first server: $e');
-      }
-    }
-    if (!hasHosts) {
-      _markSSHConfigImportHandled();
-      return;
-    }
-    if (!mounted) return;
-
-    final shouldImport = await context.showSheet<bool>(
-      title: l10n.sshConfigImport,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.sshConfigFound),
-          const SizedBox(height: 8),
-          Text(l10n.sshConfigImportPermission),
-        ],
-      ),
-      actions: Btnx.cancelOk,
-    );
-    _markSSHConfigImportHandled();
-    if (shouldImport != true || !mounted) return;
-    await showSshDiscoverySheet(
-      context,
-      sources: const [SshConfigDiscovery()],
-    );
-  }
-
   Future<void> _showCmdTypesDialog(Set<ShellCmdType> allCmdTypes) {
     return context.showSheet(
       title: '${libL10n.disabled} ${libL10n.cmd}',

@@ -1,4 +1,3 @@
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/data/model/server/connect_credential.dart';
 import 'package:server_box/data/model/server/monitor/monitor_access.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
@@ -92,7 +91,7 @@ abstract interface class ServerCapabilities {
         granted ?? MonitorAccess.none,
       ),
       ServerConnectCredentialLocal() => LocalCapabilities(
-        supported: LocalServer.isSupported,
+        supported: false,
       ),
     };
   }
@@ -327,7 +326,7 @@ class LocalCapabilities implements ServerCapabilities {
   const LocalCapabilities({required this.supported});
 
   /// Whether this build can start processes here at all — see
-  /// `LocalServer.isSupported`. False is a local server synced to a phone,
+  /// Whether the client can use a local profile. Android only imports old profiles,
   /// which then offers nothing rather than a row of buttons that fail.
   final bool supported;
 

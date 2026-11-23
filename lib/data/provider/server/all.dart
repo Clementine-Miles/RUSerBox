@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart' show listEquals;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:server_box/core/service/scoped_token.dart';
-import 'package:server_box/core/service/watch_sync.dart';
 import 'package:server_box/core/service/widget_sync.dart';
 import 'package:server_box/core/ssh/host_keys.dart';
 import 'package:server_box/core/sync/sync.dart';
@@ -371,8 +370,7 @@ class ServersNotifier extends _$ServersNotifier {
   Future<void> _delServer(String id) async {
     final deleting = state.servers[id];
     if (deleting == null) return;
-    // Keep both surfaces from minting while local cleanup still needs the row.
-    unawaited(WatchSync.instance.revokeServer(deleting));
+    // Keep the widget from minting while local cleanup still needs the row.
     final finishWidgetDeletion = WidgetSync.instance.beginServerDeletion(deleting);
     final List<String> newOrder;
     try {
@@ -384,7 +382,6 @@ class ServersNotifier extends _$ServersNotifier {
       Stores.server.deleteById(id);
     } finally {
       finishWidgetDeletion();
-      WatchSync.instance.finishServerDeletion(id);
     }
     final newServers = Map<String, Spi>.from(state.servers);
     newServers.remove(id);
@@ -405,11 +402,7 @@ class ServersNotifier extends _$ServersNotifier {
     );
     await _clearSudoPasswordOverrideBestEffort(id);
 
-    // Now that the row is gone, so the rebuilt lists cannot contain it.
-    // Not waited for: on iOS/Android `push` talks to remaining monitor agents
-    // and WatchConnectivity, which can stall for tens of seconds and leave the
-    // edit page open after the confirmation sheet closes.
-    unawaited(WatchSync.instance.push());
+    // Rebuild the widget list after removing the row from the server store.
     unawaited(WidgetSync.instance.push());
 
     // Deselect if the deleted server was selected, and invalidate its provider
@@ -493,12 +486,10 @@ class ServersNotifier extends _$ServersNotifier {
       } else {
         Stores.server.update(old, newSpi);
       }
-      // Both surfaces revoke in the background with the old credential
-      // snapshot, ahead of their next mint for this server.
+      // Revoke with the old credential before minting its replacement.
       revokeScopedTokensLeftBehind(
         old,
         newSpi,
-        queueWatchRevoke: WatchSync.instance.revokeEditedServer,
         queueWidgetRevoke: WidgetSync.instance.revokeEditedServer,
       );
 

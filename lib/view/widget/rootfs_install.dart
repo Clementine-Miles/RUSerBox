@@ -30,12 +30,7 @@ Future<bool> installRootfs(
   bool another = false,
   String? label,
 }) async {
-  // Both platforms fetch the same release of the same distribution; what
-  // differs is what they do with it — Android unpacks a rootfs for proot, iOS a
-  // tree for the engine — and neither difference reaches this dialog.
-  final present = isIOS
-      ? await IosRootfs.isInstalled
-      : await AndroidRootfs.isInstalled;
+  final present = await AndroidRootfs.isInstalled;
   // This early return is for the one caller that means "there has to be one to
   // enter": a terminal was opened and had nothing to open into. Adding another
   // and replacing one both mean to install *although* something is there, and

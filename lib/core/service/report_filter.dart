@@ -14,12 +14,10 @@ import 'package:fl_lib/fl_lib.dart'
         SyncPasswordMissing,
         SyncRefused;
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show McpTools;
-import 'package:icloud_storage_plus/models/exceptions.dart';
 import 'package:server_box/data/model/app/error.dart';
 
 /// Whether an error is a defect in this app, or the network's or the user's
-/// account's doing: a host that does not answer, credentials it refuses,
-/// iCloud signed out.
+/// account's doing, such as a host that does not answer or rejects credentials.
 ///
 /// The fix for the second kind is where it is thrown — a failure the app
 /// expects is handled there and never becomes uncaught. This is what those
@@ -51,7 +49,6 @@ abstract final class ReportFilter {
     // HTTP to a sync remote, a monitor agent or an AI endpoint. `badResponse`
     // stays: a 500 from an agent can be the agent's own defect, which is ours.
     DioException(:final type) => !_dioNetwork.contains(type),
-    ICloudContainerAccessException() => false,
     // A password removed between `BakSyncer.sync`'s check and the upload.
     RemoteBackupPasswordMissing() || SyncPasswordMissing() => false,
     // A sync key the password here does not open, or one not arrived yet.

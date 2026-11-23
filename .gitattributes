@@ -51,7 +51,7 @@ test/fixtures/rootfs_manifest/*.sig -text
 # Only the docs and the website: F-Droid builds the
 # app from a plain `git clone`, without LFS (fdroidserver#1190), and reads
 # `fastlane/` for its listing, so anything the app's build or listing reads
-# (`android/`, `ios/`, `macos/`, `linux/`, `windows/`, `web/`, `assets/`,
+# (`android/`, `assets/`,
 # `fastlane/`, the packages) stays a regular file.
 #
 # Every CI checkout has `lfs: true`; Cloudflare Pages fetches LFS objects when it

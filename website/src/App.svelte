@@ -82,7 +82,8 @@
     { src: `${shotBase}/iphone/files.jpg`, key: 'four', x: 24, y: -2, hoverSlot: 1.5, rotate: 8.5, hoverRotate: 1.8, motion: 20 },
   ]
 
-  const releases = 'https://github.com/lollipopkit/flutter_server_box/releases'
+  const repository = 'https://github.com/Clementine-Miles/ru_serbox'
+  const releases = `${repository}/releases`
   const moreServiceList = [
     { key: 'llmapi', href: 'https://cpa.lolli.tech' },
     { key: 'uptimer', href: 'https://up.lolli.tech' },
@@ -91,73 +92,6 @@
     { key: 'llmbox', href: 'https://github.com/lollipopkit/llmbox' },
     { key: 'mfuse', href: 'https://mfuse.lollipopkit.com' },
   ]
-
-  function detectPlatform() {
-    if (typeof navigator === 'undefined') return undefined
-    const ua = navigator.userAgent || ''
-    const platform = navigator.platform || ''
-    if (/iPhone|iPad|iPod/i.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
-      return 'ios'
-    }
-    if (/Android/i.test(ua)) return 'android'
-    if (/Mac/i.test(platform || ua)) return 'macos'
-    if (/Win/i.test(platform || ua)) return 'windows'
-    if (/Linux/i.test(platform || ua)) return 'linux'
-    return undefined
-  }
-
-  const currentPlatform = detectPlatform()
-
-  // `file` says what the source gives you; formats and commands stay untranslated.
-  const downloadGroups = [
-    {
-      key: 'ios',
-      label: 'iOS',
-      sources: [
-        { label: 'App Store', href: 'https://apps.apple.com/app/id1586449703' },
-        // Unsigned: the user signs it themselves.
-        { label: 'GitHub Releases', file: '_NoSign.ipa', href: releases },
-      ],
-    },
-    {
-      key: 'macos',
-      label: 'macOS',
-      sources: [
-        { label: 'GitHub Releases', file: '.dmg arm64 / amd64', href: releases },
-        { label: 'Homebrew Cask', file: 'brew install --cask server-box', command: 'brew install --cask server-box' },
-      ],
-    },
-    {
-      key: 'android',
-      label: 'Android',
-      sources: [
-        { label: 'GitHub Releases', file: '.apk arm64 / arm / amd64', href: releases },
-        { label: 'F-Droid', href: 'https://f-droid.org/packages/tech.lolli.toolbox' },
-        { label: 'OpenAPK', href: 'https://www.openapk.net/serverbox/tech.lolli.toolbox/' },
-      ],
-    },
-    {
-      key: 'linux',
-      label: 'Linux',
-      sources: [
-        { label: 'GitHub Releases', file: '.AppImage', href: releases },
-      ],
-    },
-    {
-      key: 'windows',
-      label: 'Windows',
-      sources: [
-        { label: 'GitHub Releases', file: '.zip', href: releases },
-      ],
-    },
-  ]
-
-  const orderedDownloadGroups = currentPlatform
-    ? [
-        ...downloadGroups.filter((g) => g.key === currentPlatform),
-        ...downloadGroups.filter((g) => g.key !== currentPlatform),
-      ]
-    : downloadGroups
 
   const stackMotion = spring(
     { x: 0, y: 0 },
@@ -181,8 +115,6 @@
   }
 
   let locale = $state(initialLocale)
-  let copiedCommand = $state(undefined)
-  let copyFallbackCommand = $state(undefined)
 
   function applyLocale(nextLocale) {
     locale = nextLocale
@@ -239,21 +171,6 @@
     })
   }
 
-  async function copyCommand(command) {
-    copyFallbackCommand = undefined
-
-    try {
-      await navigator.clipboard.writeText(command)
-      copiedCommand = command
-      window.setTimeout(() => {
-        if (copiedCommand === command) copiedCommand = undefined
-      }, 1800)
-    } catch {
-      copiedCommand = undefined
-      copyFallbackCommand = command
-      window.prompt($LL.download.copyPrompt(), command)
-    }
-  }
 </script>
 
 {#if locale}
@@ -385,47 +302,16 @@
       </div>
 
       <div class="download-list">
-        {#each orderedDownloadGroups as group}
-          <article class="download-platform" class:current={group.key === currentPlatform}>
-            <div class="download-platform-copy">
-              <h3>
-                {group.label}
-                {#if group.key === currentPlatform}
-                  <span class="platform-dot" aria-hidden="true"></span>
-                {/if}
-              </h3>
-            </div>
-            <div class="download-actions">
-              {#each group.sources as source}
-                {#if source.command}
-                  <button
-                    class="download-icon-btn"
-                    type="button"
-                    aria-label={`${group.label} ${source.label}`}
-                    onclick={() => copyCommand(source.command)}
-                  >
-                    <span>
-                      {#if copyFallbackCommand === source.command}
-                        {source.command}
-                      {:else if copiedCommand === source.command}
-                        {$LL.download.copied()}
-                      {:else}
-                        {source.label}
-                      {/if}
-                    </span>
-                    {#if source.file}<small>{source.file}</small>{/if}
-                  </button>
-                {:else}
-                  <a class="download-icon-btn" href={source.href} aria-label={`${group.label} ${source.label}`}>
-                    <span>{source.label}</span>
-                    {#if source.file}<small>{source.file}</small>{/if}
-                    <ExternalLink size={14} strokeWidth={1.8} aria-hidden="true" />
-                  </a>
-                {/if}
-              {/each}
-            </div>
-          </article>
-        {/each}
+        <article class="download-platform">
+          <div class="download-platform-copy"><h3>Android</h3></div>
+          <div class="download-actions">
+            <a class="download-icon-btn" href={releases}>
+              <span>{$LL.cta.githubAction()}</span>
+              <small>.apk arm64 / arm / amd64</small>
+              <ExternalLink size={14} strokeWidth={1.8} aria-hidden="true" />
+            </a>
+          </div>
+        </article>
       </div>
 
       <p class="download-note">{$LL.download.note()} {$LL.cta.title()}</p>
@@ -484,8 +370,8 @@
         <a href="#features" onclick={(event) => scrollToSection(event, 'features')}>{$LL.footer.features()}</a>
         <a href="#other-apps" onclick={(event) => scrollToSection(event, 'other-apps')}>{$LL.nav.otherApps()}</a>
         <a href={docsHref(locale)}>{$LL.nav.docs()}</a>
-        <a href="https://github.com/lollipopkit/flutter_server_box">GitHub</a>
-        <a href="https://github.com/lollipopkit/flutter_server_box/releases">{$LL.footer.releases()}</a>
+        <a href={repository}>GitHub</a>
+        <a href={releases}>{$LL.footer.releases()}</a>
       </div>
     </footer>
   </main>

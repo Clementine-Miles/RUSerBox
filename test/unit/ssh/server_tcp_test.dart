@@ -445,28 +445,20 @@ void main() {
   group('local', () {
     const local = Spi(name: 'this-mac', id: 'local', local: true);
 
-    test('a direct socket from this device', () async {
+    test('imported local profiles fail before opening a socket', () async {
       final dialer = ServerTcpDialer(spi: local, ssh: _noSsh);
       addTearDown(dialer.close);
 
-      final socket = await dialer.connect('127.0.0.1', echo.port);
-      addTearDown(socket.destroy);
-      // Not a pair: the peer is the echo server itself.
-      expect(socket.remotePort, echo.port);
-      expect(await _socketRoundTrip(socket, [1]), [1]);
-
-      final channel = await dialer.open('127.0.0.1', echo.port);
-      addTearDown(channel.close);
-      expect(channel.transport, ServerTransport.local);
-      expect(await _roundTrip(channel, [2]), [2]);
-
-      final tunnel = await dialer.loopback('127.0.0.1', echo.port);
-      addTearDown(tunnel.close);
-      final viaTunnel = await connectTunnel(tunnel);
-      addTearDown(viaTunnel.destroy);
-      expect(await _socketRoundTrip(viaTunnel, [3]), [3]);
-      expect(echo.accepted, 3);
-    }, skip: _localSkip);
+      await expectLater(
+        dialer.connect('127.0.0.1', echo.port),
+        throwsA(
+          isA<ServerTcpErr>()
+              .having((e) => e.type, 'type', ServerTcpErrType.localUnsupported)
+              .having((e) => e.transport, 'transport', ServerTransport.local),
+        ),
+      );
+      expect(echo.accepted, 0);
+    });
 
     test('a caller that leaves local out is refused, typed', () async {
       final dialer = ServerTcpDialer(
@@ -488,13 +480,6 @@ void main() {
     });
   });
 }
-
-/// A local server on a platform that cannot stand for one is refused before
-/// any socket; the desktop test hosts can.
-final Object _localSkip =
-    Platform.isMacOS || Platform.isLinux || Platform.isWindows
-    ? false
-    : 'local servers are desktop-only';
 
 const _sshOnly = Spi(
   name: 'ssh-only',

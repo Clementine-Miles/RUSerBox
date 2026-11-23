@@ -20,7 +20,6 @@ extension _App on _AppSettingsPageState {
         if (_bioAuthAvail == true) ...[_buildBioAuth(), _buildBioAuthDelay()],
         if (isMobile) _buildWakeLock(),
         if (isAndroid) _buildBgRun(),
-        if (isDesktop) _buildHideTitleBar(),
         _buildMotion(),
         // Not in a release build: debug and profile builds, the ones tested
         // on a device, can read and edit the raw settings.
@@ -325,23 +324,6 @@ extension _App on _AppSettingsPageState {
         trailing: StoreSwitch(prop: _setting.collapseUIDefault),
       ),
       keywords: l10n.collapseUITip,
-    );
-  }
-
-  SettingsRow _buildHideTitleBar() {
-    final label = libL10n.hideTitleBar;
-    return SettingsRow(
-      label,
-      () => ListTile(
-        leading: const Icon(Icons.web_asset),
-        title: Text(label),
-        trailing: StoreSwitch(
-          prop: _setting.hideTitleBar,
-          callback: (value) async {
-            await SystemUIs.updateTitleBarStyle(hideTitleBar: value);
-          },
-        ),
-      ),
     );
   }
 

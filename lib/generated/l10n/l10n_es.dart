@@ -183,10 +183,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get backupPassword => 'Contraseña de respaldo';
 
   @override
-  String get backupPasswordRemoveSynced =>
-      'Se eliminará la contraseña de copia de seguridad en todos los dispositivos que usen el mismo Llavero de iCloud. La sincronización se pausará hasta que se configure una nueva contraseña.';
-
-  @override
   String get backupPasswordRemoved => 'Contraseña de respaldo eliminada';
 
   @override
@@ -287,37 +283,11 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get icloudBackupStateConflict => 'Conflicto detectado';
-
-  @override
   String get bgRun => 'Ejecución en segundo plano';
 
   @override
   String get bgRunTip =>
       'Este interruptor solo indica que la aplicación intentará correr en segundo plano, si puede hacerlo o no depende de si tiene el permiso correspondiente. En Android puro, por favor desactiva la “optimización de batería” para esta app, en MIUI por favor cambia la estrategia de ahorro de energía a “Sin restricciones”.';
-
-  @override
-  String get trayReadings => 'Lecturas';
-
-  @override
-  String get trayChart => 'Gráfico';
-
-  @override
-  String get trayChartNone => 'Ninguno';
-
-  @override
-  String get trayCompact => 'Filas compactas';
-
-  @override
-  String get trayCompactTip =>
-      'Una línea por servidor, sin el gráfico. Linux siempre utiliza un diseño de una sola línea porque su menú del panel se envía mediante D-Bus, que transporta una etiqueta en lugar de un diseño personalizado; aun así, puede incluir el gráfico seleccionado como imagen.';
-
-  @override
-  String get trayKeepRunning => 'Seguir ejecutándose en la bandeja';
-
-  @override
-  String get trayKeepRunningTip =>
-      'Al cerrar la ventana, la aplicación permanece en la bandeja del sistema y sigue supervisando tus servidores. Desactiva esta opción para que el botón de cierre termine la aplicación.';
 
   @override
   String get bgRunNeedsNotification =>
@@ -389,12 +359,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dirEmpty => 'Asegúrate de que el directorio esté vacío';
-
-  @override
-  String get discoverSshServers => 'Buscar servidores SSH';
-
-  @override
-  String get discoveryFailed => 'Falló el descubrimiento';
 
   @override
   String get distro => 'Distribución';
@@ -486,20 +450,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get image => 'Imagen';
-
-  @override
-  String get macDmgImportDenied =>
-      'macOS no dejó leer los datos de la versión anterior';
-
-  @override
-  String get macDmgImported => 'Datos de la versión anterior importados';
-
-  @override
-  String get macDmgImportFailed =>
-      'No se pudieron leer los datos de la versión anterior';
-
-  @override
-  String get macDmgTitle => 'Versión DMG';
 
   @override
   String get showHiddenFiles => 'Mostrar archivos ocultos';
@@ -810,17 +760,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pushToken => 'Token de notificaciones';
 
   @override
-  String get liveActivity => 'Actividad en vivo';
-
-  @override
-  String get liveActivityTip =>
-      'Muestra las sesiones de terminal en la pantalla bloqueada y en Dynamic Island. El nombre del servidor y el estado de la conexión se muestran allí sin desbloquear el dispositivo.';
-
-  @override
-  String get liveActivitySystemDisabled =>
-      'iOS no lo permite. Los interruptores están en Ajustes › ServerBox › Actividades en vivo y Ajustes › Face ID y código › Actividades en vivo.';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand se ejecuta en el entorno Linux de este dispositivo. Instala primero un sistema Linux.';
 
@@ -1096,19 +1035,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get sshConfigFound =>
-      'Se ha encontrado una configuración SSH en el sistema.';
-
-  @override
   String get sshConfigImport => 'Importar Configuración SSH';
-
-  @override
-  String get sshConfigImportPermission =>
-      '¿Permites leer ~/.ssh/config e importar automáticamente la configuración de los servidores que contiene?';
-
-  @override
-  String get sshConfigImportTip =>
-      'Sugerencia para leer ~/.ssh/config al crear el primer servidor';
 
   @override
   String sshHostKeyChangedDesc(String serverName) {
@@ -1137,14 +1064,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sshVerificationCode => 'Código de verificación';
-
-  @override
-  String get sshConfigManualSelect =>
-      '¿Te gustaría seleccionar manualmente el archivo de configuración SSH?';
-
-  @override
-  String get sshConfigPermissionDenied =>
-      'No se puede acceder al archivo de configuración SSH debido a los permisos de macOS.';
 
   @override
   String get sshTermHelp =>
@@ -1282,9 +1201,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get wakeLock => 'Mantener despierto';
-
-  @override
-  String get watchNotPaired => 'No hay un Apple Watch emparejado';
 
   @override
   String get webdavSettingEmpty => 'La configuración de Webdav está vacía';
@@ -1459,17 +1375,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get processThreads => 'Hilos';
-
-  @override
-  String get watchServers => 'Servidores en el reloj';
-
-  @override
-  String get watchServersTip =>
-      'El reloj consulta al Monitor por su cuenta, así que solo se pueden elegir servidores con el Monitor.';
-
-  @override
-  String get watchNoMonitorServer =>
-      'Ningún servidor tiene el Monitor configurado.';
 
   @override
   String get legacyStatusGoneTitle => 'Las URL de estado ya no funcionan';
@@ -1647,11 +1552,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get agentRedact => 'Ocultar secretos antes de enviar';
-
-  @override
-  String macDmgImportedPartly(String path) {
-    return 'Se importaron los datos de la versión instalada anteriormente. Los archivos descargados se quedaron en $path.';
-  }
 
   @override
   String get bmcAccount => 'Cuenta';
@@ -2347,12 +2247,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get thisDevice => 'Este dispositivo';
 
   @override
-  String get localServerTip =>
-      'Lee este dispositivo directamente ejecutando aquí el script de estado. No se usan SSH ni el Monitor, y su configuración se conserva.';
-
-  @override
   String get localServerUnsupported =>
-      'Esta plataforma no puede leer este dispositivo como servidor. Linux, Windows y la versión DMG de macOS sí pueden.';
+      'Configura una conexión SSH o Monitor para usar este perfil.';
 
   @override
   String get transportSectionOff =>
@@ -7099,48 +6995,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get syncKeyRotate => 'Reemplazar la clave de sincronización';
 
   @override
-  String get discoverIntro => 'Encuentra máquinas para añadir como servidores.';
-
-  @override
   String get lan => 'LAN';
-
-  @override
-  String get discoveryScan => 'Escanear';
-
-  @override
-  String get discoveryScanAgain => 'Escanear de nuevo';
-
-  @override
-  String get discoveryScanning => 'Escaneando…';
-
-  @override
-  String discoveryFound(int count) {
-    return '$count encontrados';
-  }
-
-  @override
-  String discoverySelected(int count) {
-    return '$count seleccionados';
-  }
-
-  @override
-  String discoveryAddN(int count) {
-    return 'Añadir $count';
-  }
-
-  @override
-  String discoveryAddedN(int count) {
-    return '$count añadidos';
-  }
-
-  @override
-  String get discoveryAdded => 'Añadido';
-
-  @override
-  String get discoveryExists => 'Ya existe';
-
-  @override
-  String get localServerNoSsh => 'Sin SSH';
 
   @override
   String get introWelcome =>
@@ -7148,47 +7003,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get security => 'Seguridad';
-
-  @override
-  String get sshConfig => 'Config. SSH';
-
-  @override
-  String get tailscaleStopped => 'Tailscale no está en ejecución';
-
-  @override
-  String get tailscaleStoppedTip =>
-      'Instalado en este dispositivo, pero sin conexión a un tailnet.';
-
-  @override
-  String get cloudflareApiToken => 'Token de API';
-
-  @override
-  String get cloudflareApiTokenTip =>
-      'Requiere Account · Cloudflare Tunnel · Read.';
-
-  @override
-  String get discoveryChooseFile => 'Elegir archivo';
-
-  @override
-  String get discoveryOnline => 'En línea';
-
-  @override
-  String get discoveryOffline => 'Sin conexión';
-
-  @override
-  String get discoverySelectAll => 'Seleccionar todo';
-
-  @override
-  String get discoveryFilter => 'Filtrar por nombre o dirección';
-
-  @override
-  String get discoverySameMachine => 'La misma máquina en varias direcciones';
-
-  @override
-  String get discoveryPrimaryAddress => 'Dirección principal';
-
-  @override
-  String get discoveryAlternateAddress => 'Dirección alternativa';
 
   @override
   String get agentPermsGroup => 'Agent';

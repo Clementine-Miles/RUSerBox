@@ -97,8 +97,6 @@ const ja: Translation = {
     title: 'すべての運用ツールを、ひとつに。',
     subtitle:
       'ターミナル、SFTP クライアント、監視ダッシュボードを行き来する必要はもうありません。',
-    installIosPrompt: '# iOS',
-    installReleasePrompt: '# Android、Linux、Windows',
   },
   os: {
     metaTitle: 'ServerBox OS（旧 ServerBox Monitor）— ブラウザデスクトップと監視エンジンをサーバーに',
@@ -186,19 +184,14 @@ const ja: Translation = {
     appAction: 'アプリを入手',
   },
   download: {
-    title: 'あらゆるプラットフォームにネイティブ対応。',
-    subtitle:
-      'お使いの OS とお好みの配布元を選択してください。',
-    copied: 'コピーしました',
-    copyPrompt: 'インストールコマンドをコピー:',
-    note:
-      'ヒント：サーバー側に ServerBox OS を導入すると、プッシュ通知、ウィジェット、履歴グラフが利用できます。',
+    title: 'Android 版をダウンロード',
+    subtitle: 'お使いの端末のアーキテクチャに合った APK を選んでください。',
+    note: 'ServerBox Monitor は履歴グラフ、通知、ホーム画面ウィジェットを提供します。',
   },
   cta: {
     title: 'AGPLv3 の無料オープンソース。',
     subtitle:
       'コードの閲覧やコントリビュートは GitHub から。今すぐ最新リリースをお試しください。',
-    appStoreAction: 'App Store',
     githubAction: 'GitHub Releases',
   },
   otherApps: {

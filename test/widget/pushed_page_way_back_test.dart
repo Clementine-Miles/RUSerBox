@@ -65,8 +65,6 @@ import 'package:server_box/view/page/services/services.dart';
 import 'package:server_box/view/page/setting/entries/home_tabs.dart';
 import 'package:server_box/view/page/setting/entries/keybindings.dart';
 import 'package:server_box/view/page/setting/entry.dart';
-import 'package:server_box/view/page/setting/platform/desktop.dart';
-import 'package:server_box/view/page/setting/platform/ios.dart';
 import 'package:server_box/view/page/setting/seq/known_hosts.dart';
 import 'package:server_box/view/page/setting/seq/srv_detail_seq.dart';
 import 'package:server_box/view/page/setting/seq/srv_func_seq.dart';
@@ -182,7 +180,6 @@ void main() {
     'ServerStatusSharePage': (c) => ServerStatusSharePage.route.go(c, onServer()),
     'BmcDrivesPage': (c) => BmcDrivesPage.route.go(c, onServer()),
     'BmcLogsPage': (c) => BmcLogsPage.route.go(c, onServer()),
-    'DesktopSettingsPage': (c) => DesktopSettingsPage.route.go(c),
     'FirewallPage': (c) => FirewallPage.route.go(c, onServer()),
     'GroupDetailPage': (c) => GroupDetailPage.route.go(
       c,
@@ -196,7 +193,6 @@ void main() {
     ),
     'HomeTabsConfigPage': (c) => HomeTabsConfigPage.route.go(c),
     'IPerfPage': (c) => IPerfPage.route.go(c, onServer()),
-    'IosSettingsPage': (c) => IosSettingsPage.route.go(c),
     'KeybindingsPage': (c) => KeybindingsPage.route.go(c),
     'KnownHostsPage': (c) => KnownHostsPage.route.go(c),
     'LocalFilePage': (c) => LocalFilePage.route.go(c),

@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:fl_lib/fl_lib.dart';
 import 'package:meta/meta.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/core/ssh/exec.dart';
 import 'package:server_box/core/utils/privileged_exec.dart';
 import 'package:server_box/core/utils/sudo_password.dart';
@@ -65,25 +64,18 @@ class LibvirtBackend extends _LibvirtCore with _Snapshots, _Storage, _Hardware, 
     @visibleForTesting super.uploadReadyTimeout,
   });
 
-  /// Uploads go over whatever of the server carries bytes: its SSH
-  /// connection, whichever transport leads for everything else, or this
-  /// device's own process.
+  /// Uploads use the server's SSH connection.
   factory LibvirtBackend.of(Ref ref, String serverId) {
-    bool local() => ref.read(serverProvider(serverId)).spi.local;
     return LibvirtBackend(
       serverId: serverId,
       exec: () => ref.read(serverProvider(serverId).notifier).ensureExec(),
       knownSudoPassword: () => SudoPassword.known(serverId),
       onSudoRejected: () => SudoPassword.forget(serverId),
-      // TODO: upload over the Monitor too (its file API, or a byte-stream
-      // exec); today an image goes up only through SSH or on this device.
       canStream: () =>
-          local() || ref.read(serverProvider(serverId)).capabilities.byteStream,
-      byteExec: () async => local()
-          ? LocalServer.exec()
-          : SshExec(
-              await ref.read(serverProvider(serverId).notifier).ensureShellClient(),
-            ),
+          ref.read(serverProvider(serverId)).capabilities.byteStream,
+      byteExec: () async => SshExec(
+        await ref.read(serverProvider(serverId).notifier).ensureShellClient(),
+      ),
     );
   }
 

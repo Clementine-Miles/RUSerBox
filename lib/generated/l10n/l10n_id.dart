@@ -181,10 +181,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get backupPassword => 'Kata sandi cadangan';
 
   @override
-  String get backupPasswordRemoveSynced =>
-      'Kata sandi cadangan akan dihapus dari semua perangkat yang menggunakan Rantai Kunci iCloud yang sama. Sinkronisasi akan dijeda hingga kata sandi baru diatur.';
-
-  @override
   String get backupPasswordRemoved => 'Kata sandi cadangan dihapus';
 
   @override
@@ -285,37 +281,11 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get icloudBackupStateConflict => 'Terdeteksi konflik';
-
-  @override
   String get bgRun => 'Jalankan di Backgroud';
 
   @override
   String get bgRunTip =>
       'Sakelar ini hanya berarti aplikasi akan mencoba berjalan di latar belakang, apakah aplikasi dapat berjalan di latar belakang tergantung pada apakah izin diaktifkan atau tidak. Untuk Android asli, nonaktifkan \"Pengoptimalan Baterai\" di aplikasi ini, dan untuk miui, ubah kebijakan penghematan daya ke \"Tidak Terbatas\".';
-
-  @override
-  String get trayReadings => 'Pembacaan';
-
-  @override
-  String get trayChart => 'Grafik';
-
-  @override
-  String get trayChartNone => 'Tidak ada';
-
-  @override
-  String get trayCompact => 'Baris ringkas';
-
-  @override
-  String get trayCompactTip =>
-      'Satu baris per server, tanpa grafik. Linux selalu menggunakan tata letak satu baris karena menu panelnya dikirim melalui D-Bus, yang membawa label alih-alih tata letak khusus; grafik yang dipilih tetap dapat disertakan sebagai gambar.';
-
-  @override
-  String get trayKeepRunning => 'Tetap berjalan di baki sistem';
-
-  @override
-  String get trayKeepRunningTip =>
-      'Menutup jendela akan membiarkan aplikasi tetap berjalan di bilah menu atau area notifikasi, dan tetap memantau server Anda. Nonaktifkan ini agar tombol tutup mengakhiri aplikasi.';
 
   @override
   String get bgRunNeedsNotification =>
@@ -387,12 +357,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get dirEmpty => 'Pastikan dir kosong.';
-
-  @override
-  String get discoverSshServers => 'Temukan server SSH';
-
-  @override
-  String get discoveryFailed => 'Penemuan gagal';
 
   @override
   String get distro => 'Distribusi';
@@ -484,19 +448,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get image => 'Gambar';
-
-  @override
-  String get macDmgImportDenied =>
-      'macOS tidak mengizinkan membaca data versi sebelumnya';
-
-  @override
-  String get macDmgImported => 'Data versi sebelumnya diimpor';
-
-  @override
-  String get macDmgImportFailed => 'Tidak bisa membaca data versi sebelumnya';
-
-  @override
-  String get macDmgTitle => 'Versi DMG';
 
   @override
   String get showHiddenFiles => 'Tampilkan berkas tersembunyi';
@@ -805,17 +756,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get pushToken => 'Dorong token';
 
   @override
-  String get liveActivity => 'Aktivitas Live';
-
-  @override
-  String get liveActivityTip =>
-      'Tampilkan sesi terminal di Layar Terkunci dan Dynamic Island. Nama server dan status koneksi dapat dilihat tanpa membuka kunci perangkat.';
-
-  @override
-  String get liveActivitySystemDisabled =>
-      'iOS tidak mengizinkannya. Sakelarnya ada di Pengaturan › ServerBox › Aktivitas Live dan Pengaturan › Face ID & Kode Sandi › Aktivitas Live.';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand berjalan di lingkungan Linux perangkat ini. Pasang sistem Linux terlebih dahulu.';
 
@@ -1086,18 +1026,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get sshConfigFound => 'Konfigurasi SSH ditemukan di sistem Anda.';
-
-  @override
   String get sshConfigImport => 'Impor Konfigurasi SSH';
-
-  @override
-  String get sshConfigImportPermission =>
-      'Izinkan pembacaan ~/.ssh/config dan impor otomatis setelan server di dalamnya?';
-
-  @override
-  String get sshConfigImportTip =>
-      'Prompt untuk membaca ~/.ssh/config saat pembuatan server pertama';
 
   @override
   String sshHostKeyChangedDesc(String serverName) {
@@ -1126,14 +1055,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get sshVerificationCode => 'Kode verifikasi';
-
-  @override
-  String get sshConfigManualSelect =>
-      'Apakah Anda ingin memilih file konfigurasi SSH secara manual?';
-
-  @override
-  String get sshConfigPermissionDenied =>
-      'Tidak dapat mengakses file konfigurasi SSH karena izin macOS.';
 
   @override
   String get sshTermHelp =>
@@ -1268,9 +1189,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get wakeLock => 'Tetap terjaga';
-
-  @override
-  String get watchNotPaired => 'Tidak ada Apple Watch yang dipasangkan';
 
   @override
   String get webdavSettingEmpty => 'Pengaturan webdav kosong';
@@ -1438,17 +1356,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get processThreads => 'Thread';
-
-  @override
-  String get watchServers => 'Server di jam tangan';
-
-  @override
-  String get watchServersTip =>
-      'Jam mengambil data sendiri dari Monitor, jadi hanya server yang punya Monitor yang bisa dipilih.';
-
-  @override
-  String get watchNoMonitorServer =>
-      'Monitor belum dikonfigurasikan untuk server mana pun.';
 
   @override
   String get legacyStatusGoneTitle => 'URL status tidak berfungsi lagi';
@@ -1625,11 +1532,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get agentRedact => 'Samarkan rahasia sebelum dikirim';
-
-  @override
-  String macDmgImportedPartly(String path) {
-    return 'Data dari versi yang terpasang sebelumnya telah diimpor. Berkas unduhan tetap berada di $path.';
-  }
 
   @override
   String get bmcAccount => 'Akun';
@@ -2318,12 +2220,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get thisDevice => 'Perangkat ini';
 
   @override
-  String get localServerTip =>
-      'Membaca perangkat ini secara langsung dengan menjalankan skrip status di sini. SSH dan Monitor tidak digunakan, dan pengaturannya tetap disimpan.';
-
-  @override
   String get localServerUnsupported =>
-      'Platform ini tidak dapat membaca perangkat ini sebagai server. Linux, Windows, dan versi DMG macOS mendukungnya.';
+      'Siapkan koneksi SSH atau Monitor untuk menggunakan profil ini.';
 
   @override
   String get transportSectionOff =>
@@ -6999,48 +6897,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get syncKeyRotate => 'Ganti kunci sinkronisasi';
 
   @override
-  String get discoverIntro => 'Temukan mesin untuk ditambahkan sebagai server.';
-
-  @override
   String get lan => 'LAN';
-
-  @override
-  String get discoveryScan => 'Pindai';
-
-  @override
-  String get discoveryScanAgain => 'Pindai lagi';
-
-  @override
-  String get discoveryScanning => 'Memindai…';
-
-  @override
-  String discoveryFound(int count) {
-    return '$count ditemukan';
-  }
-
-  @override
-  String discoverySelected(int count) {
-    return '$count dipilih';
-  }
-
-  @override
-  String discoveryAddN(int count) {
-    return 'Tambah $count';
-  }
-
-  @override
-  String discoveryAddedN(int count) {
-    return '$count ditambahkan';
-  }
-
-  @override
-  String get discoveryAdded => 'Ditambahkan';
-
-  @override
-  String get discoveryExists => 'Sudah ada';
-
-  @override
-  String get localServerNoSsh => 'Tanpa SSH';
 
   @override
   String get introWelcome =>
@@ -7048,47 +6905,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get security => 'Keamanan';
-
-  @override
-  String get sshConfig => 'Konfigurasi SSH';
-
-  @override
-  String get tailscaleStopped => 'Tailscale tidak berjalan';
-
-  @override
-  String get tailscaleStoppedTip =>
-      'Terpasang di perangkat ini, tetapi tidak terhubung ke tailnet.';
-
-  @override
-  String get cloudflareApiToken => 'Token API';
-
-  @override
-  String get cloudflareApiTokenTip =>
-      'Memerlukan Account · Cloudflare Tunnel · Read.';
-
-  @override
-  String get discoveryChooseFile => 'Pilih file';
-
-  @override
-  String get discoveryOnline => 'Online';
-
-  @override
-  String get discoveryOffline => 'Offline';
-
-  @override
-  String get discoverySelectAll => 'Pilih semua';
-
-  @override
-  String get discoveryFilter => 'Saring menurut nama atau alamat';
-
-  @override
-  String get discoverySameMachine => 'Mesin yang sama, beberapa alamat';
-
-  @override
-  String get discoveryPrimaryAddress => 'Alamat utama';
-
-  @override
-  String get discoveryAlternateAddress => 'Alamat cadangan';
 
   @override
   String get agentPermsGroup => 'Agent';

@@ -359,51 +359,7 @@ void main() {
     });
   });
 
-  group('MetricKit', () {
-    test('a crash payload marks the run and keeps its call stack', () async {
-      report.applyDiagnostics([
-        {
-          'kind': 'crash',
-          'appVersion': '1538',
-          'signal': 11,
-          'terminationReason': 'Namespace SIGNAL',
-          'callStack': '{"callStacks":[]}',
-        },
-      ]);
 
-      expect(CrashLog.lastRunEndedBadly, isTrue);
-      final log = await logged();
-      expect(log, contains('signal=11'));
-      expect(log, contains('{"callStacks":[]}'));
-    });
-
-    test('a hang is recorded but is not a crash', () async {
-      // The app was alive and unresponsive, which is a different bug with
-      // different causes. Prompting for one would call a slow frame a crash.
-      report.applyDiagnostics([
-        {'kind': 'hang', 'appVersion': '1538', 'duration': 3.5},
-      ]);
-
-      expect(CrashLog.lastRunEndedBadly, isFalse);
-      expect(await logged(), contains('metrickit hang'));
-    });
-
-    test('a crash among hangs still marks the run', () {
-      report.applyDiagnostics([
-        {'kind': 'hang', 'appVersion': '1538'},
-        {'kind': 'crash', 'appVersion': '1538'},
-        {'kind': 'hang', 'appVersion': '1538'},
-      ]);
-
-      expect(CrashLog.lastRunEndedBadly, isTrue);
-    });
-
-    test('nothing delivered changes nothing', () {
-      report.applyDiagnostics([]);
-
-      expect(CrashLog.lastRunEndedBadly, isFalse);
-    });
-  });
 
   test('a record with no usable timestamp is ignored rather than throwing', () {
     // The map crosses a platform channel, so its shape is not guaranteed by

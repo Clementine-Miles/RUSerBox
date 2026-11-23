@@ -445,12 +445,6 @@ abstract class AppLocalizations {
   /// **'Backup password'**
   String get backupPassword;
 
-  /// Confirmation before removing the backup password on iOS or macOS, where it is in iCloud Keychain and so removed from the person's other Apple devices too.
-  ///
-  /// In en, this message translates to:
-  /// **'This will remove the backup password from all devices using the same iCloud Keychain. Sync will pause on those devices until a new password is set.'**
-  String get backupPasswordRemoveSynced;
-
   /// User-facing label or message for backup password removed.
   ///
   /// In en, this message translates to:
@@ -619,12 +613,6 @@ abstract class AppLocalizations {
   /// **'Read this server\'s status from the **Monitor**\'s HTTP API instead of running commands over SSH.\n\nThe Monitor has to be installed on the server first, and it is what makes trends, the watch app and the home-screen widgets possible.\n\n[Setting up the Monitor]({url})'**
   String monitorHttpTip(String url);
 
-  /// User-facing label or message for iCloud backup state conflict.
-  ///
-  /// In en, this message translates to:
-  /// **'Conflict detected'**
-  String get icloudBackupStateConflict;
-
   /// User-facing label or message for bg run.
   ///
   /// In en, this message translates to:
@@ -636,48 +624,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This switch only means the program will try to run in the background. Whether it can run in the background depends on whether the permission is enabled or not. For AOSP-based Android ROMs, please disable \"Battery Optimization\" in this app. For MIUI / HyperOS, please change the power saving policy to \"Unlimited\".'**
   String get bgRunTip;
-
-  /// User-facing label or message for tray readings.
-  ///
-  /// In en, this message translates to:
-  /// **'Readings'**
-  String get trayReadings;
-
-  /// User-facing label or message for tray chart.
-  ///
-  /// In en, this message translates to:
-  /// **'Chart'**
-  String get trayChart;
-
-  /// Empty-state message for tray chart none.
-  ///
-  /// In en, this message translates to:
-  /// **'None'**
-  String get trayChartNone;
-
-  /// User-facing label or message for tray compact.
-  ///
-  /// In en, this message translates to:
-  /// **'Compact rows'**
-  String get trayCompact;
-
-  /// Help text for the tray compact setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'One line per server, without the chart. Linux always uses a single-line layout because its panel menu is sent over D-Bus, which carries a label rather than a custom layout; it may still include the selected chart as an image.'**
-  String get trayCompactTip;
-
-  /// Status message shown while tray keep running.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep running in the tray'**
-  String get trayKeepRunning;
-
-  /// Help text for the tray keep running setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Closing the window leaves the app in the menu bar or notification area, still watching your servers. Turn this off to have the close button end the app.'**
-  String get trayKeepRunningTip;
 
   /// User-facing label or message for bg run needs notification.
   ///
@@ -798,18 +744,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Make sure the folder is empty.'**
   String get dirEmpty;
-
-  /// User-facing label or message for discover SSH servers.
-  ///
-  /// In en, this message translates to:
-  /// **'Discover SSH Servers'**
-  String get discoverSshServers;
-
-  /// Error message shown when discovery failed.
-  ///
-  /// In en, this message translates to:
-  /// **'Discovery failed'**
-  String get discoveryFailed;
 
   /// User-facing label or message for distro.
   ///
@@ -966,30 +900,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Image'**
   String get image;
-
-  /// User-facing label or message for mac DMG import denied.
-  ///
-  /// In en, this message translates to:
-  /// **'macOS would not let this read the previous build’s data'**
-  String get macDmgImportDenied;
-
-  /// User-facing label or message for mac DMG imported.
-  ///
-  /// In en, this message translates to:
-  /// **'Imported the previous build’s data'**
-  String get macDmgImported;
-
-  /// Error message shown when mac DMG import failed.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not read the previous build’s data'**
-  String get macDmgImportFailed;
-
-  /// Title shown for the mac DMG dialog or section.
-  ///
-  /// In en, this message translates to:
-  /// **'DMG build'**
-  String get macDmgTitle;
 
   /// User-facing label or message for show hidden files.
   ///
@@ -1519,24 +1429,6 @@ abstract class AppLocalizations {
   /// **'Push token'**
   String get pushToken;
 
-  /// User-facing label or message for live activity.
-  ///
-  /// In en, this message translates to:
-  /// **'Live Activity'**
-  String get liveActivity;
-
-  /// Help text for the live activity setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Show terminal sessions on the Lock Screen and Dynamic Island. Without unlocking, the server name and connection state are visible there.'**
-  String get liveActivityTip;
-
-  /// User-facing label or message for live activity system disabled.
-  ///
-  /// In en, this message translates to:
-  /// **'iOS is not allowing one. The switches are at Settings › ServerBox › Live Activities and Settings › Face ID & Passcode › Live Activities.'**
-  String get liveActivitySystemDisabled;
-
   /// Shown when a ProxyCommand is used on a phone with no Linux system installed to run it in.
   ///
   /// In en, this message translates to:
@@ -1980,29 +1872,11 @@ abstract class AppLocalizations {
   /// **'Spent time: {time}'**
   String spentTime(String time);
 
-  /// User-facing label or message for SSH config found.
-  ///
-  /// In en, this message translates to:
-  /// **'We found SSH configuration on your system.'**
-  String get sshConfigFound;
-
   /// User-facing label or message for SSH config import.
   ///
   /// In en, this message translates to:
   /// **'SSH Config Import'**
   String get sshConfigImport;
-
-  /// User-facing label or message for SSH config import permission.
-  ///
-  /// In en, this message translates to:
-  /// **'Would you like to give permission to read ~/.ssh/config and automatically import server settings?'**
-  String get sshConfigImportPermission;
-
-  /// Help text for the SSH config import setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Prompt to read ~/.ssh/config on first server creation'**
-  String get sshConfigImportTip;
 
   /// Description of the SSH host key changed desc feature or option.
   ///
@@ -2045,18 +1919,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verification code'**
   String get sshVerificationCode;
-
-  /// User-facing label or message for SSH config manual select.
-  ///
-  /// In en, this message translates to:
-  /// **'Would you like to select the SSH config file manually?'**
-  String get sshConfigManualSelect;
-
-  /// User-facing label or message for SSH config permission denied.
-  ///
-  /// In en, this message translates to:
-  /// **'Cannot access SSH config file due to macOS permissions.'**
-  String get sshConfigPermissionDenied;
 
   /// User-facing label or message for SSH term help.
   ///
@@ -2291,12 +2153,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keep awake'**
   String get wakeLock;
-
-  /// User-facing label or message for watch not paired.
-  ///
-  /// In en, this message translates to:
-  /// **'No paired Apple Watch'**
-  String get watchNotPaired;
 
   /// Empty-state message for webdav setting empty.
   ///
@@ -2561,24 +2417,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Threads'**
   String get processThreads;
-
-  /// User-facing label or message for watch servers.
-  ///
-  /// In en, this message translates to:
-  /// **'Servers on the watch'**
-  String get watchServers;
-
-  /// Help text for the watch servers setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'The watch fetches from the Monitor on its own, so only servers with the Monitor can be picked.'**
-  String get watchServersTip;
-
-  /// User-facing label or message for watch no monitor server.
-  ///
-  /// In en, this message translates to:
-  /// **'No server has the Monitor configured'**
-  String get watchNoMonitorServer;
 
   /// Title shown for the legacy status gone dialog or section.
   ///
@@ -2855,12 +2693,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Redact secrets before sending'**
   String get agentRedact;
-
-  /// User-facing label or message for mac DMG imported partly.
-  ///
-  /// In en, this message translates to:
-  /// **'Imported the data of the previously installed build. Downloaded files were left where they were, in {path}.'**
-  String macDmgImportedPartly(String path);
 
   /// User-facing label or message for BMC account.
   ///
@@ -4014,16 +3846,10 @@ abstract class AppLocalizations {
   /// **'This device'**
   String get thisDevice;
 
-  /// Help text for the local server setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Reads this device directly, by running the status script here. SSH and the Monitor are not used, and their settings are kept.'**
-  String get localServerTip;
-
   /// User-facing label or message for local server unsupported.
   ///
   /// In en, this message translates to:
-  /// **'This platform cannot read this device as a server. Linux, Windows and the macOS DMG build can.'**
+  /// **'Set up an SSH or Monitor connection to use this profile.'**
   String get localServerUnsupported;
 
   /// User-facing label or message for transport section off.
@@ -11933,77 +11759,11 @@ abstract class AppLocalizations {
   /// **'Replace sync key'**
   String get syncKeyRotate;
 
-  /// Intro / server discovery: Find machines to add as servers.
-  ///
-  /// In en, this message translates to:
-  /// **'Find machines to add as servers.'**
-  String get discoverIntro;
-
   /// Intro / server discovery: LAN
   ///
   /// In en, this message translates to:
   /// **'LAN'**
   String get lan;
-
-  /// Intro / server discovery: Scan
-  ///
-  /// In en, this message translates to:
-  /// **'Scan'**
-  String get discoveryScan;
-
-  /// Intro / server discovery: Scan again
-  ///
-  /// In en, this message translates to:
-  /// **'Scan again'**
-  String get discoveryScanAgain;
-
-  /// Intro / server discovery: Scanning…
-  ///
-  /// In en, this message translates to:
-  /// **'Scanning…'**
-  String get discoveryScanning;
-
-  /// Intro / server discovery: Found {count}
-  ///
-  /// In en, this message translates to:
-  /// **'Found {count}'**
-  String discoveryFound(int count);
-
-  /// Intro / server discovery: {count} selected
-  ///
-  /// In en, this message translates to:
-  /// **'{count} selected'**
-  String discoverySelected(int count);
-
-  /// Intro / server discovery: Add {count}
-  ///
-  /// In en, this message translates to:
-  /// **'Add {count}'**
-  String discoveryAddN(int count);
-
-  /// Intro / server discovery: {count} added
-  ///
-  /// In en, this message translates to:
-  /// **'{count} added'**
-  String discoveryAddedN(int count);
-
-  /// Intro / server discovery: Added
-  ///
-  /// In en, this message translates to:
-  /// **'Added'**
-  String get discoveryAdded;
-
-  /// Intro / server discovery: Exists
-  ///
-  /// In en, this message translates to:
-  /// **'Exists'**
-  String get discoveryExists;
-
-  /// Intro / server discovery: Runs without SSH
-  ///
-  /// In en, this message translates to:
-  /// **'Runs without SSH'**
-  String get localServerNoSsh;
 
   /// Intro / server discovery: Status, terminal, files and containers for Linux, Unix and Windows servers, over SSH or the Monitor.
   ///
@@ -12016,84 +11776,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Security'**
   String get security;
-
-  /// Server discovery: SSH config
-  ///
-  /// In en, this message translates to:
-  /// **'SSH config'**
-  String get sshConfig;
-
-  /// Server discovery: Tailscale is not running
-  ///
-  /// In en, this message translates to:
-  /// **'Tailscale is not running'**
-  String get tailscaleStopped;
-
-  /// Server discovery: Installed on this device, but not connected to a tailnet.
-  ///
-  /// In en, this message translates to:
-  /// **'Installed on this device, but not connected to a tailnet.'**
-  String get tailscaleStoppedTip;
-
-  /// Server discovery: API token
-  ///
-  /// In en, this message translates to:
-  /// **'API token'**
-  String get cloudflareApiToken;
-
-  /// Server discovery: the permission the Cloudflare API token needs.
-  ///
-  /// In en, this message translates to:
-  /// **'Needs Account · Cloudflare Tunnel · Read.'**
-  String get cloudflareApiTokenTip;
-
-  /// Server discovery: Choose file
-  ///
-  /// In en, this message translates to:
-  /// **'Choose file'**
-  String get discoveryChooseFile;
-
-  /// Server discovery: Online
-  ///
-  /// In en, this message translates to:
-  /// **'Online'**
-  String get discoveryOnline;
-
-  /// Server discovery: Offline
-  ///
-  /// In en, this message translates to:
-  /// **'Offline'**
-  String get discoveryOffline;
-
-  /// Server discovery: Select all
-  ///
-  /// In en, this message translates to:
-  /// **'Select all'**
-  String get discoverySelectAll;
-
-  /// Server discovery: Filter by name or address
-  ///
-  /// In en, this message translates to:
-  /// **'Filter by name or address'**
-  String get discoveryFilter;
-
-  /// Server discovery: Same machine, more than one address
-  ///
-  /// In en, this message translates to:
-  /// **'Same machine, more than one address'**
-  String get discoverySameMachine;
-
-  /// Server discovery: Primary address
-  ///
-  /// In en, this message translates to:
-  /// **'Primary address'**
-  String get discoveryPrimaryAddress;
-
-  /// Server discovery: Alternate address
-  ///
-  /// In en, this message translates to:
-  /// **'Alternate address'**
-  String get discoveryAlternateAddress;
 
   /// Agent command permissions: Agent
   ///

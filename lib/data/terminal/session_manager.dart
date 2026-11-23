@@ -9,7 +9,6 @@ import 'package:server_box/core/chan.dart';
 import 'package:server_box/core/utils/coalesced.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/terminal/android_service_policy.dart';
-import 'package:server_box/data/terminal/ios_live_activity_policy.dart';
 import 'package:xterm/core.dart' show ProgramState;
 
 enum TermSessionStatus {
@@ -23,8 +22,7 @@ enum TermSessionStatus {
   }
 }
 
-/// A running SSH terminal session shown in Android notifications and iOS Live
-/// Activities.
+/// A running SSH terminal session shown in Android notifications.
 class TermSessionInfo {
   final String id;
   final String title; // Usually the server name.
@@ -80,7 +78,7 @@ class TermSessionInfo {
 /// state alone, with nothing of the platforms it is pushed to.
 ///
 /// Each change answers whether anything changed, which is what decides that
-/// the notification and the Live Activity are told.
+/// the notification is updated.
 final class TermSessionRegistry {
   final _entries = <String, TermSessionEntry>{};
   String? _activeId;
@@ -88,7 +86,7 @@ final class TermSessionRegistry {
   /// Every session, by id, in the order they were added.
   Map<String, TermSessionEntry> get entries => UnmodifiableMapView(_entries);
 
-  /// The session on screen, for the iOS Live Activity.
+  /// The session on screen.
   String? get activeId => _activeId;
 
   void add(
@@ -124,7 +122,7 @@ final class TermSessionRegistry {
     return true;
   }
 
-  /// What the notification and the Live Activity list: one per server, its
+  /// One notification entry per server, with its
   /// status connection and its terminals merged. Each session of this device
   /// is its own.
   List<TermSessionInfo> get shown {
@@ -219,8 +217,6 @@ abstract final class TermSessionManager {
   static TermSessionRegistry get registry => _registry;
 
   static Map<String, TermSessionEntry> get _entries => _registry.entries;
-  static String? get _activeId => _registry.activeId;
-  static Timer? _updateTimer; // Timer for iOS Live Activity updates
   static var _syncs = Coalesced(() => _push());
 
   /// What a drain pushes each time: the platforms, outside tests.
@@ -233,8 +229,6 @@ abstract final class TermSessionManager {
   @visibleForTesting
   static void reset() {
     _registry = TermSessionRegistry();
-    _updateTimer?.cancel();
-    _updateTimer = null;
     _syncs.cancelPending();
     _syncs = Coalesced(() => _push());
     _push = _syncLatest;
@@ -243,10 +237,6 @@ abstract final class TermSessionManager {
     _transferring = false;
     _hasServers = false;
   }
-  static const _updateInterval = Duration(
-    seconds: 5,
-  ); // 5-second update interval
-
   static Future<void> init() async {
     if (isAndroid) {
       MethodChans.registerHandler(
@@ -259,20 +249,6 @@ abstract final class TermSessionManager {
       );
       _pushKeepAlive();
       Stores.setting.bgRun.listenable().addListener(_pushKeepAlive);
-    }
-    if (isIOS) {
-      // A Live Activity can outlive a killed process. Clear any orphan left
-      // by the previous app run before new sessions can be registered.
-      await MethodChans.stopLiveActivity();
-      // Turning the switch off has to take the activity off the lock screen
-      // now, not at the next five-second tick — it is a switch about what is
-      // readable without unlocking the phone.
-      //
-      // Listened to here rather than acted on in the settings page, because
-      // `StoreSwitch` runs its `callback` *before* writing the new value:
-      // anything reading the setting from there reads the old one. A store
-      // listener fires on the write.
-      Stores.setting.liveActivity.listenable().addListener(syncLiveActivity);
     }
   }
 
@@ -338,8 +314,7 @@ abstract final class TermSessionManager {
     if (_registry.updateStatus(id, status)) _sync();
   }
 
-  /// What session [id]'s programs report, for the notification and the Live
-  /// Activity: a program waiting is worth reading off the lock screen.
+  /// Updates what the terminal's programs report in the notification.
   static void updateProgram(String id, ProgramState? state, String? text) {
     if (_registry.updateProgram(id, state, text)) _sync();
   }
@@ -351,18 +326,6 @@ abstract final class TermSessionManager {
 
   static void _sync() {
     unawaited(_syncs());
-  }
-
-  /// Re-decides whether a Live Activity should be up, after the setting that
-  /// says so has changed.
-  ///
-  /// The sessions themselves are untouched, so nothing else here notices the
-  /// switch moving — and the wrong half of that is the one that matters:
-  /// turning it off with a terminal open would otherwise leave the activity on
-  /// the lock screen until the session ended.
-  static void syncLiveActivity() {
-    if (!isIOS) return;
-    _sync();
   }
 
   /// Whether the activity is paused, from its native `onPause`/`onResume`.
@@ -474,75 +437,9 @@ abstract final class TermSessionManager {
       }
     }
 
-    // iOS: manage Live Activity timer
-    if (isIOS) {
-      switch (decideIosLiveActivityAction(
-        hasSessions: _entries.isNotEmpty,
-        enabled: Stores.setting.liveActivity.fetch(),
-      )) {
-        case IosLiveActivityAction.stop:
-          _updateTimer?.cancel();
-          _updateTimer = null;
-          await MethodChans.stopLiveActivity();
-        case IosLiveActivityAction.update:
-          // Start timer if not already running
-          _updateTimer ??= Timer.periodic(_updateInterval, (_) => _sync());
-          // Immediately update for immediate feedback
-          await _updateLiveActivity();
-      }
-    }
   }
 
-  static Future<void> _updateLiveActivity() async {
-    if (!isIOS || _entries.isEmpty) return;
-
-    final shown = _registry.shown;
-    final connectionCount = shown.length;
-    // The one on screen, for whether a terminal is.
-    final entry = _entries[_activeId] ?? _entries.values.first;
-
-    if (connectionCount == 1) {
-      // Single connection: show hostname
-      final info = shown.single;
-      final program = info.program;
-      final payload = jsonEncode({
-        ...info.toJson(),
-        // In place of the address: what the session is doing is the more
-        // useful line on a lock screen, and the widget has one.
-        'subtitle': ?program,
-        'hasTerminal': entry.hasTerminalUI,
-        'connectionCount': connectionCount,
-      });
-      await MethodChans.updateLiveActivity(payload);
-    } else {
-      // Several at once: the count in the title, and which ones under it.
-      //
-      // The subtitle used to be a fixed "Multiple SSH sessions active", which
-      // said SSH about whatever was open — two shells inside the Linux
-      // userland on this device included, where nothing is connected to
-      // anything. Their names say what they are without having to classify
-      // them, and the widget holds them to one line.
-      //
-      // The title here is ignored: `LiveActivityManager` localizes it, so that
-      // it follows the language the widget renders in rather than the one the
-      // app was in when this ran.
-      final payload = jsonEncode({
-        'id': 'multi_connections',
-        'title': '$connectionCount',
-        'subtitle': switch (_registry.mostUrgentProgram) {
-          final urgent? => '${urgent.title}: ${urgent.program}',
-          null => shown.map((e) => e.title).join(' · '),
-        },
-        'startTimeMs': shown.map((e) => e.startTimeMs).reduce(math.min),
-        'status': TermSessionStatus.connected.toString(),
-        'hasTerminal': entry.hasTerminalUI,
-        'connectionCount': connectionCount,
-      });
-      await MethodChans.updateLiveActivity(payload);
-    }
-  }
-
-  /// Mark which session is actively displayed in UI (for iOS Live Activity).
+  /// Mark which session is actively displayed in UI.
   static void setActive(String id, {bool hasTerminal = true}) {
     if (_registry.setActive(id, hasTerminal: hasTerminal)) _sync();
   }

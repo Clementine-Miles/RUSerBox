@@ -57,10 +57,7 @@
 
 | 平台 | 下载 |
 | --- | --- |
-| iOS | [AppStore](https://apps.apple.com/app/id1586449703) / [GitHub](https://github.com/lollipopkit/flutter_server_box/releases)（`_NoSign.ipa`，未签名，需自行签名后安装） |
-| macOS | [GitHub](https://github.com/lollipopkit/flutter_server_box/releases)（按架构分别提供 `.dmg`） / `brew install --cask server-box` |
-| Android | [GitHub](https://github.com/lollipopkit/flutter_server_box/releases) / [F-Droid](https://f-droid.org/packages/tech.lolli.toolbox) / [OpenAPK](https://www.openapk.net/serverbox/tech.lolli.toolbox/) |
-| Linux / Windows | [GitHub](https://github.com/lollipopkit/flutter_server_box/releases) |
+| Android | [GitHub](https://github.com/Clementine-Miles/ru_serbox/releases) |
 
 请只从可信来源下载。
 
@@ -69,13 +66,13 @@
 **连接**
 
 - 支持 SSH 直连、经跳板机连接或使用 `ProxyCommand`；也可通过 [Monitor](https://serverbox.lollipopkit.com/docs/zh/advanced/monitor-agent/) 使用 HTTP 连接，适用于不希望暴露 SSH 端口的主机。
-- 在支持的平台上，可打开本机 shell，或安装 Linux 用户空间（[本机终端](https://serverbox.lollipopkit.com/docs/zh/advanced/local-terminal/)）。
+- 在 Android 上可打开本机 shell，或安装 Linux 用户空间（[本机终端](https://serverbox.lollipopkit.com/docs/zh/advanced/local-terminal/)）。
 
 **查看状态**
 
 - CPU、内存、交换分区、磁盘、磁盘 I/O 和网络的实时与历史图表，以及传感器、GPU（NVIDIA、AMD）、电池和磁盘 S.M.A.R.T.。
 - 一览所有服务器，可按标签筛选，也可在[地球视图](https://serverbox.lollipopkit.com/docs/zh/advanced/globe/)中查看。
-- 推送提醒、[桌面小组件](https://serverbox.lollipopkit.com/docs/zh/advanced/widgets/)和 watchOS App；App 关闭后，Monitor 仍会为这些功能提供支持。
+- 推送提醒、[桌面小组件](https://serverbox.lollipopkit.com/docs/zh/advanced/widgets/)；App 关闭后，Monitor 仍会为这些功能提供支持。
 
 **管理服务器**
 
@@ -90,12 +87,12 @@
 **个性化**
 
 - Gruvbox Material 和 Gruvbox 提供浅色和深色外观，并保留内置图标样式。
-- 生物识别应用锁；可将备份保存到 iCloud 或 WebDAV，并使用你设置的密码加密。
-- 支持 iOS、Android、macOS、Linux 和 Windows，16 种语言。
+- 生物识别应用锁；可将备份保存到 WebDAV，并使用你设置的密码加密。
+- Android 客户端支持 17 种语言。
 
 ## 帮助
 
-- [ServerBox Monitor](https://github.com/lollipopkit/flutter_server_box/tree/main/monitor) 是安装在你服务器上的服务端组件。不打开 ServerBox app 时仍需工作的功能都依赖它 —— **推送通知**、**桌面小部件** 和 **手表 app**；它同时也是添加服务器的第二种方式：app 可以经 HTTP 而不是 SSH 访问它，适用于不便暴露 SSH 端口的主机，并且图表在 app 首次连接前就已有历史数据。
+- [ServerBox Monitor](https://github.com/Clementine-Miles/ru_serbox/tree/main/monitor) 是安装在你服务器上的服务端组件。不打开 ServerBox app 时仍需工作的功能都依赖它 —— **推送通知**和 **桌面小部件**；它同时也是添加服务器的第二种方式：app 可以经 HTTP 而不是 SSH 访问它，适用于不便暴露 SSH 端口的主机，并且图表在 app 首次连接前就已有历史数据。
 - **Agent skills：** 本仓库包含三份供 AI agent 使用的 skill。使用下面的命令添加：
 
   ```sh

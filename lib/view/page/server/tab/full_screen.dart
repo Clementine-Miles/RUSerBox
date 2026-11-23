@@ -305,25 +305,11 @@ extension _FullScreenActions on _ServerPageState {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _fsKeys.requestFocus();
     });
-    if (!isDesktop) return;
-    try {
-      _fsWindowWasFull = await windowManager.isFullScreen();
-      if (!_fsWindowWasFull) await windowManager.setFullScreen(true);
-    } catch (e, s) {
-      Loggers.app.warning('Window full screen', e, s);
-    }
   }
 
-  /// Leaves full screen; [window] is false when the window has already left.
-  Future<void> _exitFullScreen({bool window = true}) async {
+  Future<void> _exitFullScreen() async {
     if (!_fsManual.value) return;
     _fsManual.value = false;
-    if (!isDesktop || !window || _fsWindowWasFull) return;
-    try {
-      await windowManager.setFullScreen(false);
-    } catch (e, s) {
-      Loggers.app.warning('Window full screen', e, s);
-    }
   }
 
   /// One server at a time, from [id] or from the one last shown.

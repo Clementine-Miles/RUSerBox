@@ -58,23 +58,6 @@ List<SettingsNode> _buildNodes() {
           icon: Icons.keyboard_outlined,
           page: () => const KeybindingsPage(embedded: true),
         ),
-        if (isIOS)
-          SettingsNode.leaf(
-            id: 'app.ios',
-            title: 'iOS',
-            icon: MingCute.apple_fill,
-            page: () => const IosSettingsPage(embedded: true),
-          ),
-        // Named after the desktop it is running on, like the iOS page above:
-        // what is in there is about the platform rather than about the app.
-        if (isDesktop)
-          SettingsNode.leaf(
-            id: 'app.desktop',
-            title: DesktopSettingsPage.platformName,
-            icon: DesktopSettingsPage.platformIcon,
-            page: () => const DesktopSettingsPage(embedded: true),
-          ),
-
         // Full screen lets a device serve as a dedicated status display.
         SettingsNode.leaf(
           id: 'app.fullScreen',

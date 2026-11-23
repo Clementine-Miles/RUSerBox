@@ -4,13 +4,9 @@ import 'package:fl_lib/fl_lib.dart';
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmL10nX;
 import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/app_navigator.dart';
-import 'package:server_box/core/chan.dart';
 import 'package:server_box/core/extension/context/locale.dart';
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/core/motion.dart';
 import 'package:server_box/core/service/diagnostics_upload.dart';
-import 'package:server_box/core/service/ssh_discovery.dart';
-import 'package:server_box/core/service/ssh_discovery_sources.dart';
 import 'package:server_box/data/res/app_theme.dart';
 import 'package:server_box/data/res/build_data.dart';
 import 'package:server_box/data/res/chart_palette.dart';
@@ -26,14 +22,10 @@ import 'package:server_box/view/page/setting/tiles.dart';
 import 'package:server_box/view/page/ssh/widget/session_keep_alive_notice.dart';
 import 'package:server_box/view/widget/column_inset.dart';
 import 'package:server_box/view/widget/diagnostics_level_picker.dart';
-import 'package:server_box/view/widget/ssh_discovery/view.dart';
 import 'package:server_box/view/widget/theme_mode_tile.dart';
 
 part 'intro.dart';
 
-Widget _buildHomeWithWindowFrame() {
-  return VirtualWindowFrame(title: BuildData.name, child: const HomePage());
-}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -78,19 +70,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  /// Hand the theme to the app name drawn behind the Dynamic Island, which is
-  /// a native view and cannot read it. Deduplicated in [MethodChans].
-  void _syncIslandBrandColors(BuildContext ctx) {
-    if (!isIOS) return;
-    final scheme = Theme.of(ctx).colorScheme;
-    unawaited(
-      MethodChans.setIslandBrandColors(
-        scheme.primary.toARGB32(),
-        scheme.onPrimary.toARGB32(),
-      ),
-    );
-  }
-
   Widget _buildApp(
     BuildContext ctx, {
     required ThemeData light,
@@ -111,7 +90,6 @@ class _MyAppState extends State<MyApp> {
       // Outside the breakpoints builder: a toast is sized against the window,
       // not against the scaled layout the breakpoints hand to the pages.
       builder: (ctx, child) {
-        _syncIslandBrandColors(ctx);
         final accent = Theme.of(ctx).colorScheme.primary;
         UIs.colorSeed = accent;
         UIs.primaryColor = accent;
@@ -153,24 +131,13 @@ class _MyAppState extends State<MyApp> {
           final appL10n = AppLocalizations.of(context);
           if (appL10n != null) l10n = appL10n;
 
-          Widget child;
-          var hasWindowFrame = false;
           if (snapshot.connectionState == ConnectionState.waiting) {
-            child = const Scaffold(
+            return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
-          } else {
-            final intros = snapshot.data ?? [];
-            if (intros.isNotEmpty) {
-              child = _IntroPage(intros);
-            } else {
-              child = _buildHomeWithWindowFrame();
-              hasWindowFrame = true;
-            }
           }
-
-          if (hasWindowFrame) return child;
-          return VirtualWindowFrame(title: BuildData.name, child: child);
+          final intros = snapshot.data ?? [];
+          return intros.isEmpty ? const HomePage() : _IntroPage(intros);
         },
       ),
     );

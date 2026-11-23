@@ -4,7 +4,7 @@ Flutter app for managing servers, in a Rust workspace monorepo. Feature notes li
 
 ## Commands
 
-`make help` lists everything: `make deps`, `make run`, `make analyze`, `make gen` (build_runner + gen-l10n), `make build PLATFORM=<android|ios|macos|linux|windows>`, `make monitor-dev` (API :3770 + panel :3000).
+`make help` lists everything: `make deps`, `make run`, `make analyze`, `make gen` (build_runner + gen-l10n), `make build-android`, `make monitor-dev` (API :3770 + panel :3000).
 
 ### Development
 
@@ -103,4 +103,4 @@ A server is reached over SSH, the Monitor (HTTP), both, or is this device (`Spi.
 
 ## Feature notes
 
-`crates/sbm_ffi/CLAUDE.md` (SSH crypto) · `ios/CLAUDE.md` · `macos/CLAUDE.md` · `android/CLAUDE.md` · `lib/data/store/CLAUDE.md` · `lib/data/model/file/CLAUDE.md` (SFTP/SCP) · `lib/data/model/server/benchmark/CLAUDE.md` · `lib/core/service/CLAUDE.md` (watch, home widgets) · `lib/view/page/server/monitor_settings/CLAUDE.md` · `monitor/CLAUDE.md` · `monitor/frontend/src/desk/CLAUDE.md` (the panel's desk). Monitor API and access: `docs/src/content/docs/development/monitor-agent.md`; desk apps: `docs/src/content/docs/development/desk-app-reference.md`.
+`crates/sbm_ffi/CLAUDE.md` (SSH crypto) · `android/CLAUDE.md` · `lib/data/store/CLAUDE.md` · `lib/data/model/file/CLAUDE.md` (SFTP/SCP) · `lib/data/model/server/benchmark/CLAUDE.md` · `lib/core/service/CLAUDE.md` (watch, home widgets) · `lib/view/page/server/monitor_settings/CLAUDE.md` · `monitor/CLAUDE.md` · `monitor/frontend/src/desk/CLAUDE.md` (the panel's desk). Monitor API and access: `docs/src/content/docs/development/monitor-agent.md`; desk apps: `docs/src/content/docs/development/desk-app-reference.md`.

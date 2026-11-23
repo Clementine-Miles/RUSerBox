@@ -2,13 +2,11 @@ import 'dart:async';
 
 import 'package:dartssh2/dartssh2.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_tty/fl_tty.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/scheduler.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:server_box/core/extension/ssh_client.dart';
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/core/monitor/exec.dart';
 import 'package:server_box/core/ssh/auth.dart';
 import 'package:server_box/core/ssh/client.dart';
@@ -47,7 +45,6 @@ import 'package:server_box/src/rust/api/script.dart' as ffi;
 part 'single.g.dart';
 part 'single.freezed.dart';
 part 'single_history.dart';
-part 'single_local.dart';
 part 'single_monitor.dart';
 part 'single_script.dart';
 part 'single_ssh.dart';
@@ -162,7 +159,6 @@ class ServerNotifier extends _$ServerNotifier
         _ScriptStatus,
         _MonitorStatus,
         _History,
-        _LocalStatus,
         _SshStatus {
   @override
   int _operationGeneration = 0;
@@ -539,7 +535,13 @@ class ServerNotifier extends _$ServerNotifier
       case ServerConnectCredentialMonitorHttp(:final monitor):
         await _refreshStatusMonitorHttp(monitor, operation);
       case ServerConnectCredentialLocal():
-        await _refreshStatusLocal(interactive: interactive, operation: operation);
+        _setFailedState(
+          _copyStatus(
+            state.status,
+            err: const LocalServerErr(type: LocalServerErrType.unsupported),
+            setErr: true,
+          ),
+        );
     }
   }
 
@@ -626,10 +628,7 @@ class ServerNotifier extends _$ServerNotifier
         if (probe) await source.capabilities();
         return source.exec;
       case ServerConnectCredentialLocal():
-        if (!LocalServer.isSupported) {
-          throw const LocalServerErr(type: LocalServerErrType.unsupported);
-        }
-        return LocalServer.exec();
+        throw const LocalServerErr(type: LocalServerErrType.unsupported);
     }
   }
 
@@ -643,9 +642,6 @@ class ServerNotifier extends _$ServerNotifier
       return currentExec is MonitorExec &&
           identical(currentExec.client, exec.client);
     }
-    // Nothing is held open, so the only way one stops being current is the
-    // server stopping being this device — which the check above already saw.
-    if (exec is ProcessExec) return spi.local;
     return false;
   }
 

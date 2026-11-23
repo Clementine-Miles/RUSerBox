@@ -18,24 +18,17 @@ import 'package:server_box/data/store/stores.dart';
 /// Every server with a `monitor` agent is published, with no selection step:
 /// a widget is configured on the home screen, by picking from what this
 /// publishes, and a second list to curate first would only be somewhere to
-/// forget a server. What the user picks *there* is which one a given widget
-/// shows. That is the difference from [WatchSync], where the selection decides
-/// which servers a second device gets credentials for at all.
+/// forget a server. What the user picks there is which one a given widget shows.
 ///
 /// The split between what goes where is the point of this class:
 ///
-/// - The **list** — name, address, certificate handling — is not secret and
-///   goes to a container the widget process can read directly: the iOS App
-///   Group, and Android's shared preferences. A widget that cannot read this
-///   has nothing to offer the configuration screen.
-/// - The **token** never touches either. It goes to the platform's credential
-///   store — the shared Keychain on iOS, a Keystore-wrapped file on Android —
+/// - The list (name, address, and certificate handling) goes to shared
+///   preferences so the widget can show it on the configuration screen.
+/// - The token goes to a Keystore-wrapped file
 ///   through [MethodChans.publishWidgetServers], and comes back only as
 ///   metadata (see [MethodChans.widgetTokenState]).
 ///
-/// The token is a [ScopedToken], the same read-only credential the watch
-/// carries and scoped to its own `client_id` so revoking one surface leaves
-/// the other alone.
+/// The read-only [ScopedToken] is scoped to the widget's `client_id`.
 final class WidgetSync {
   WidgetSync._() : _issueToken = null, _revokeToken = null, _writePayload = null;
 
@@ -76,7 +69,7 @@ final class WidgetSync {
   final _deletedDuringPush = <String>{};
   final _invalidatedTokens = <String>{};
 
-  bool get _supported => _issueToken != null || isIOS || isAndroid;
+  bool get _supported => _issueToken != null || isAndroid;
 
   bool _canPublish(Spi spi) =>
       !_deletions.containsKey(spi.id) &&
@@ -91,7 +84,7 @@ final class WidgetSync {
 
   /// Rebuilds the payload and hands it to the native side.
   ///
-  /// Coalesced the same way [WatchSync.push] is: issuing tokens is a request
+  /// Coalesced because issuing tokens is a request
   /// per server, and a burst of store events must not turn into a burst of
   /// those.
   Future<void> push() {
@@ -218,7 +211,7 @@ final class WidgetSync {
 
   /// The agent-side `client_id` a widget token is scoped to.
   ///
-  /// Distinct from [WatchSync.watchClientId] on purpose. The agent keys
+  /// A distinct client identifier. The agent keys
   /// `watch_tokens` by `(subject, client_id)`, so two client ids are two rows:
   /// unpairing a watch revokes one and leaves the widgets working, and a
   /// widget removed from the home screen does not log a watch out.

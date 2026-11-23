@@ -44,7 +44,7 @@ enum BackupSection { sync, import }
 class BackupPage extends ConsumerStatefulWidget {
   /// Null shows both, side by side, under one heading each.
   ///
-  /// That is the standalone [route], which the DMG notice opens directly: there
+  /// That is the standalone [route]. There
   /// is no menu around it to say which half you are looking at, so it says so
   /// itself. Inside the settings page the row that opened it already has.
   final BackupSection? section;
@@ -59,7 +59,7 @@ class BackupPage extends ConsumerStatefulWidget {
 
 final class _BackupPageState extends ConsumerState<BackupPage>
     with AutomaticKeepAliveClientMixin {
-  /// A restore from or a backup to the remote (WebDAV, iCloud) running.
+  /// A restore from or a backup to WebDAV running.
   final remoteLoading = false.vn;
   final lkcOps = PendingOps();
   ValueListenable<bool> get lkcLoading => lkcOps.loading;
@@ -69,7 +69,6 @@ final class _BackupPageState extends ConsumerState<BackupPage>
 
   /// The WebDAV settings saved here, which name the server shown.
   final _webdavEdited = 0.vn;
-  late Future<bool> _icloudConflict;
 
   /// The backup password, read again when it is set or removed here.
   late Future<String?> _bakPwd = SecureStoreProps.bakPwd.read();
@@ -79,15 +78,6 @@ final class _BackupPageState extends ConsumerState<BackupPage>
 
   /// A channel being switched to.
   bool _selectingDest = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _icloudConflict = Future.value(false);
-    if (isICloudSupported) {
-      _refreshIcloudStatus(notify: false);
-    }
-  }
 
   @override
   void dispose() {
@@ -164,16 +154,6 @@ final class _BackupPageState extends ConsumerState<BackupPage>
     if (_hasEnabledRemoteSync) {
       Toast.show(l10n.remoteBackupPasswordRequired);
       return;
-    }
-    // In iCloud Keychain: gone from every device.
-    if (await SecureStoreProps.bakPwd.inSyncedStore()) {
-      if (!mounted) return;
-      final ok = await context.showSheet<bool>(
-        title: libL10n.delete,
-        child: Text(l10n.backupPasswordRemoveSynced),
-        actions: Btnx.cancelRedOk,
-      );
-      if (ok != true) return;
     }
     await SecureStoreProps.bakPwd.write(null);
     Toast.show(l10n.backupPasswordRemoved);
@@ -314,21 +294,6 @@ final class _BackupPageState extends ConsumerState<BackupPage>
     );
   }
 
-  void _refreshIcloudStatus({bool notify = true}) {
-    // Also after a sync that outlived the page.
-    if (!isICloudSupported || !mounted) return;
-
-    final future = _loadIcloudConflict();
-    if (!notify) {
-      _icloudConflict = future;
-      return;
-    }
-
-    setState(() {
-      _icloudConflict = future;
-    });
-  }
-
   /// The other half of the share button on a server's page.
   ///
   /// Separate from [_buildBulkImportServers], which takes a plain JSON array
@@ -461,13 +426,6 @@ extension on _BackupPageState {
     if (isBackup != true) return true;
     await BackupService.restoreFromText(context, text);
     return false;
-  }
-
-  /// Whether iCloud holds versions of the backup it could not reconcile.
-  Future<bool> _loadIcloudConflict() async {
-    if (!isICloudSupported) return false;
-    final files = await icloud.list();
-    return files.any((file) => file.relativePath == Paths.bakName && file.hasUnresolvedConflicts);
   }
 
   Future<void> _onTapWebdavDl(BuildContext context) async {

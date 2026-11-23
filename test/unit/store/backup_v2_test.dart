@@ -610,7 +610,7 @@ void main() {
       // state of a connection to it are readable without unlocking. Restoring
       // one phone's backup onto a second would otherwise start putting them on
       // that phone's lock screen with nobody having decided it.
-      Stores.setting.liveActivity.put(true);
+      Stores.setting.set('liveActivity', true);
 
       final backup = await BackupV2.loadFromStore();
 
@@ -622,7 +622,7 @@ void main() {
       // Android carries the untouched default, and letting that land would
       // switch it *off* on an iPhone that had it on.
       for (final (before, inFile) in [(false, true), (true, false)]) {
-        Stores.setting.liveActivity.put(before);
+        Stores.setting.set('liveActivity', before);
 
         final backup = BackupV2(
           version: BackupV2.formatVer,
@@ -641,7 +641,7 @@ void main() {
         await backup.merge(force: true);
 
         expect(
-          Stores.setting.liveActivity.fetch(),
+          Stores.setting.get('liveActivity'),
           before,
           reason: 'a backup holding $inFile changed a device answering $before',
         );

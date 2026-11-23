@@ -244,14 +244,6 @@ type RootTranslation = {
 		 * N​o​ ​j​u​g​g​l​i​n​g​ ​s​e​p​a​r​a​t​e​ ​S​S​H​ ​c​l​i​e​n​t​s​,​ ​S​F​T​P​ ​t​o​o​l​s​,​ ​a​n​d​ ​m​o​n​i​t​o​r​i​n​g​ ​d​a​s​h​b​o​a​r​d​s​.
 		 */
 		subtitle: string
-		/**
-		 * #​ ​i​O​S
-		 */
-		installIosPrompt: string
-		/**
-		 * #​ ​A​n​d​r​o​i​d​,​ ​L​i​n​u​x​,​ ​a​n​d​ ​W​i​n​d​o​w​s
-		 */
-		installReleasePrompt: string
 	}
 	os: {
 		/**
@@ -481,23 +473,15 @@ type RootTranslation = {
 	}
 	download: {
 		/**
-		 * N​a​t​i​v​e​ ​o​n​ ​e​v​e​r​y​ ​p​l​a​t​f​o​r​m​.
+		 * D​o​w​n​l​o​a​d​ ​f​o​r​ ​A​n​d​r​o​i​d
 		 */
 		title: string
 		/**
-		 * P​i​c​k​ ​y​o​u​r​ ​p​l​a​t​f​o​r​m​ ​a​n​d​ ​p​r​e​f​e​r​r​e​d​ ​p​a​c​k​a​g​e​ ​s​o​u​r​c​e​ ​b​e​l​o​w​.
+		 * C​h​o​o​s​e​ ​t​h​e​ ​A​P​K​ ​f​o​r​ ​y​o​u​r​ ​d​e​v​i​c​e​ ​a​r​c​h​i​t​e​c​t​u​r​e​.
 		 */
 		subtitle: string
 		/**
-		 * C​o​m​m​a​n​d​ ​c​o​p​i​e​d
-		 */
-		copied: string
-		/**
-		 * C​o​p​y​ ​i​n​s​t​a​l​l​ ​c​o​m​m​a​n​d​:
-		 */
-		copyPrompt: string
-		/**
-		 * F​o​r​ ​p​u​s​h​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​,​ ​h​o​m​e​ ​s​c​r​e​e​n​ ​w​i​d​g​e​t​s​,​ ​a​n​d​ ​h​i​s​t​o​r​i​c​a​l​ ​c​h​a​r​t​s​ ​w​i​t​h​o​u​t​ ​k​e​e​p​i​n​g​ ​S​S​H​ ​o​p​e​n​,​ ​p​a​i​r​ ​t​h​e​ ​a​p​p​ ​w​i​t​h​ ​S​e​r​v​e​r​B​o​x​ ​O​S​.
+		 * S​e​r​v​e​r​B​o​x​ ​M​o​n​i​t​o​r​ ​s​u​p​p​l​i​e​s​ ​h​i​s​t​o​r​i​c​a​l​ ​c​h​a​r​t​s​,​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​ ​a​n​d​ ​h​o​m​e​-​s​c​r​e​e​n​ ​w​i​d​g​e​t​s​.
 		 */
 		note: string
 	}
@@ -510,10 +494,6 @@ type RootTranslation = {
 		 * I​n​s​p​e​c​t​ ​t​h​e​ ​c​o​d​e​,​ ​c​o​n​t​r​i​b​u​t​e​ ​o​n​ ​G​i​t​H​u​b​,​ ​o​r​ ​g​r​a​b​ ​t​h​e​ ​l​a​t​e​s​t​ ​r​e​l​e​a​s​e​ ​f​o​r​ ​y​o​u​r​ ​d​e​v​i​c​e​.
 		 */
 		subtitle: string
-		/**
-		 * A​p​p​ ​S​t​o​r​e
-		 */
-		appStoreAction: string
 		/**
 		 * G​i​t​H​u​b​ ​R​e​l​e​a​s​e​s
 		 */
@@ -835,14 +815,6 @@ export type TranslationFunctions = {
 		 * No juggling separate SSH clients, SFTP tools, and monitoring dashboards.
 		 */
 		subtitle: () => LocalizedString
-		/**
-		 * # iOS
-		 */
-		installIosPrompt: () => LocalizedString
-		/**
-		 * # Android, Linux, and Windows
-		 */
-		installReleasePrompt: () => LocalizedString
 	}
 	os: {
 		/**
@@ -1072,23 +1044,15 @@ export type TranslationFunctions = {
 	}
 	download: {
 		/**
-		 * Native on every platform.
+		 * Download for Android
 		 */
 		title: () => LocalizedString
 		/**
-		 * Pick your platform and preferred package source below.
+		 * Choose the APK for your device architecture.
 		 */
 		subtitle: () => LocalizedString
 		/**
-		 * Command copied
-		 */
-		copied: () => LocalizedString
-		/**
-		 * Copy install command:
-		 */
-		copyPrompt: () => LocalizedString
-		/**
-		 * For push notifications, home screen widgets, and historical charts without keeping SSH open, pair the app with ServerBox OS.
+		 * ServerBox Monitor supplies historical charts, notifications and home-screen widgets.
 		 */
 		note: () => LocalizedString
 	}
@@ -1101,10 +1065,6 @@ export type TranslationFunctions = {
 		 * Inspect the code, contribute on GitHub, or grab the latest release for your device.
 		 */
 		subtitle: () => LocalizedString
-		/**
-		 * App Store
-		 */
-		appStoreAction: () => LocalizedString
 		/**
 		 * GitHub Releases
 		 */

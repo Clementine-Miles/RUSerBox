@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:dartssh2/dartssh2.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/core/monitor/http.dart';
 import 'package:server_box/core/monitor/tunnel.dart';
 import 'package:server_box/core/ssh/local_tunnel.dart';
@@ -52,7 +51,6 @@ class ServerTcpChannel implements SshTunnelChannel {
 /// - SSH: a direct-tcpip channel (`SSHClient.forwardLocal`).
 /// - monitor agent: `MonitorTunnelChannel`, dialled by the agent from its own
 ///   machine — only when its `access` is not refused.
-/// - local: `Socket.connect` from this device, which is the server.
 ///
 /// So a host name resolves on the far end, and `localhost` means the server
 /// in all three.
@@ -103,15 +101,13 @@ class ServerTcpDialer {
   /// A `dart:io` [Socket] to [host]:[port], for what needs one — an
   /// `HttpClient.connectionFactory`, or `SecureSocket.secure` on top.
   ///
-  /// Local is a direct socket. Otherwise a loopback socket pair whose far end
-  /// is bridged to the channel: `SecureSocket` only wraps a socket `dart:io`
-  /// made itself, so a channel cannot be handed over as one.
-  Future<Socket> connect(String host, int port) => _either((credential) async {
-    if (credential is ServerConnectCredentialLocal) {
-      return Socket.connect(host, port, timeout: openTimeout);
-    }
-    return _socketPair(await _channelOver(credential, host, port));
-  });
+  /// Bridges a loopback socket to the channel: `SecureSocket` wraps a socket
+  /// from `dart:io`.
+  Future<Socket> connect(String host, int port) => _either(
+    (credential) async => _socketPair(
+      await _channelOver(credential, host, port),
+    ),
+  );
 
   /// [connect] in the shape `HttpClient.connectionFactory` returns.
   ///
@@ -271,12 +267,7 @@ class ServerTcpDialer {
         }
         return null;
       case ServerConnectCredentialLocal():
-        if (LocalServer.isSupported) return null;
-        return ServerTcpErr(
-          type: ServerTcpErrType.localUnsupported,
-          transport: transport,
-          message: 'This device cannot stand for a local server',
-        );
+        return _localUnsupported();
     }
   }
 
@@ -297,9 +288,7 @@ class ServerTcpDialer {
           timeout: openTimeout,
         );
       case ServerConnectCredentialLocal():
-        return _SocketChannel(
-          await Socket.connect(host, port, timeout: openTimeout),
-        );
+        throw _localUnsupported();
     }
   }
 
@@ -332,10 +321,7 @@ class ServerTcpDialer {
         done = Completer<void>().future;
         release = lease.release;
       case ServerConnectCredentialLocal():
-        dial = () async => _SocketChannel(
-          await Socket.connect(host, port, timeout: openTimeout),
-        );
-        done = Completer<void>().future;
+        throw _localUnsupported();
     }
 
     SshTunnelChannel? held;
@@ -443,29 +429,16 @@ class ServerTcpDialer {
         other: other,
       );
 
+  static ServerTcpErr _localUnsupported() => const ServerTcpErr(
+    type: ServerTcpErrType.localUnsupported,
+    transport: ServerTransport.local,
+    message: 'This device cannot stand for a local server',
+  );
+
   static ServerTransport _transportOf(ServerConnectCredential credential) =>
       switch (credential) {
         ServerConnectCredentialSsh() => ServerTransport.ssh,
         ServerConnectCredentialMonitorHttp() => ServerTransport.monitorHttp,
         ServerConnectCredentialLocal() => ServerTransport.local,
       };
-}
-
-/// A plain socket as a tunnel channel: the local case, where this device is
-/// the server and there is nothing to tunnel through.
-class _SocketChannel implements SshTunnelChannel {
-  _SocketChannel(this._socket);
-
-  final Socket _socket;
-
-  // Typed as `Stream<List<int>>` at runtime too, or piping it into another
-  // socket fails: a `Stream<Uint8List>` wants a `StreamConsumer<Uint8List>`.
-  @override
-  Stream<List<int>> get stream => _socket.cast<List<int>>();
-
-  @override
-  StreamSink<List<int>> get sink => _socket;
-
-  @override
-  Future<void> close() async => _socket.destroy();
 }

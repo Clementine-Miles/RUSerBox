@@ -69,8 +69,7 @@ extension _Widgets on _ServerEditPageState {
   /// refused. What it produces is a server with no way in, which the save
   /// refuses through `Spix.validate` — a switch that will not move leaves the
   /// user guessing which of the two the app objected to.
-  /// [otherIsLocal] is whether another server already is this device.
-  Widget _buildConnectionGroup({required bool otherIsLocal}) {
+  Widget _buildConnectionGroup() {
     return ListenableBuilder(
       listenable: Listenable.merge([
         _useSsh,
@@ -79,26 +78,14 @@ extension _Widgets on _ServerEditPageState {
         _local,
       ]),
       builder: (_, _) {
-        // Offered where this build can read this device and no other server
-        // already is it — two would be one machine polled twice under two
-        // names. Kept on screen wherever this record already says it is one:
-        // a server synced from a desktop has to be switchable back on a phone.
-        final localRow =
-            (LocalServer.isSupported && !otherIsLocal) || _local.value
-            ? _buildLocalRow()
-            : null;
         if (_local.value) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildGroupTitle(l10n.connection),
-              ?localRow,
-              _buildGroupNote(
-                LocalServer.isSupported
-                    ? l10n.localServerTip
-                    : l10n.localServerUnsupported,
-              ),
+              _buildLocalRow(),
+              _buildGroupNote(l10n.localServerUnsupported),
             ],
           );
         }
@@ -110,7 +97,6 @@ extension _Widgets on _ServerEditPageState {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildGroupTitle(l10n.connection),
-            ?localRow,
             _buildGroupNote(l10n.connectionTip),
             ReorderableListView(
               shrinkWrap: true,
@@ -850,7 +836,7 @@ extension _Widgets on _ServerEditPageState {
     );
     // On a phone the command runs in the Linux system, where `nc` and the
     // like have to be installed before anything can.
-    final tip = isAndroid || isIOS ? l10n.proxyCommandMobileTip : null;
+    final tip = isAndroid ? l10n.proxyCommandMobileTip : null;
     if (tip == null) return input;
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -1637,14 +1623,6 @@ extension _Widgets on _ServerEditPageState {
       title: Text(l10n.jumpServer),
       children: [choice],
     ).cardx;
-  }
-
-  Widget _buildDiscoverBtn() {
-    return IconButton(
-      tooltip: l10n.discoverSshServers,
-      onPressed: _onTapDiscover,
-      icon: const Icon(Icons.radar),
-    );
   }
 
   Widget _buildWriteScriptTip() {

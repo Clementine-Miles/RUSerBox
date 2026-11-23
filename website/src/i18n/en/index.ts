@@ -97,8 +97,6 @@ const en: BaseTranslation = {
     title: 'One native workflow.',
     subtitle:
       'No juggling separate SSH clients, SFTP tools, and monitoring dashboards.',
-    installIosPrompt: '# iOS',
-    installReleasePrompt: '# Android, Linux, and Windows',
   },
   os: {
     metaTitle: 'ServerBox OS (formerly ServerBox Monitor) — The server companion for ServerBox',
@@ -186,19 +184,14 @@ const en: BaseTranslation = {
     appAction: 'Get the app',
   },
   download: {
-    title: 'Native on every platform.',
-    subtitle:
-      'Pick your platform and preferred package source below.',
-    copied: 'Command copied',
-    copyPrompt: 'Copy install command:',
-    note:
-      'For push notifications, home screen widgets, and historical charts without keeping SSH open, pair the app with ServerBox OS.',
+    title: 'Download for Android',
+    subtitle: 'Choose the APK for your device architecture.',
+    note: 'ServerBox Monitor supplies historical charts, notifications and home-screen widgets.',
   },
   cta: {
     title: 'Free & open source under AGPLv3.',
     subtitle:
       'Inspect the code, contribute on GitHub, or grab the latest release for your device.',
-    appStoreAction: 'App Store',
     githubAction: 'GitHub Releases',
   },
   otherApps: {

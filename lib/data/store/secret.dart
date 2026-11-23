@@ -15,7 +15,7 @@ final class KeyPassphraseStore extends SqliteStore {
   static final instance = KeyPassphraseStore._();
 }
 
-/// Where the backup syncs to besides iCloud and LK Cloud: WebDAV's address,
+/// Where the backup syncs to besides LK Cloud: WebDAV's address,
 /// user and password (`SyncRemotes`).
 final class SyncRemoteStore extends SqliteStore {
   SyncRemoteStore._() : super('syncRemote');

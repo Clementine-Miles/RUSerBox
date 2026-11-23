@@ -173,10 +173,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get backupPassword => '백업 비밀번호';
 
   @override
-  String get backupPasswordRemoveSynced =>
-      '동일한 iCloud 키체인을 사용하는 모든 기기에서 백업 비밀번호가 삭제됩니다. 새 비밀번호를 설정할 때까지 동기화가 일시 중지됩니다.';
-
-  @override
   String get backupPasswordRemoved => '백업 비밀번호가 제거되었습니다';
 
   @override
@@ -274,37 +270,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get icloudBackupStateConflict => '충돌 감지됨';
-
-  @override
   String get bgRun => '백그라운드 실행';
 
   @override
   String get bgRunTip =>
       '이 스위치는 프로그램이 백그라운드에서 실행을 시도한다는 의미입니다. 실제 백그라운드 실행 가능 여부는 권한 활성화 여부에 따라 다릅니다. AOSP 기반 Android ROM의 경우, 이 앱의 \"배터리 최적화\"를 비활성화해 주세요. MIUI / HyperOS의 경우, 절전 정책을 \"무제한\"으로 변경해 주세요.';
-
-  @override
-  String get trayReadings => '측정값';
-
-  @override
-  String get trayChart => '차트';
-
-  @override
-  String get trayChartNone => '없음';
-
-  @override
-  String get trayCompact => '간결한 행';
-
-  @override
-  String get trayCompactTip =>
-      '차트 없이 서버당 한 줄로 표시합니다. Linux는 패널 메뉴를 D-Bus로 전송하며 사용자 지정 레이아웃 대신 레이블을 전달하므로 항상 한 줄 레이아웃을 사용하지만, 선택한 차트를 이미지로 포함할 수 있습니다.';
-
-  @override
-  String get trayKeepRunning => '트레이에서 계속 실행';
-
-  @override
-  String get trayKeepRunningTip =>
-      '창을 닫아도 앱이 메뉴 막대 또는 알림 영역에 남아 서버를 계속 모니터링합니다. 끄면 닫기 버튼으로 앱이 종료됩니다.';
 
   @override
   String get bgRunNeedsNotification =>
@@ -373,12 +343,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dirEmpty => '폴더가 비어 있는지 확인해 주세요.';
-
-  @override
-  String get discoverSshServers => 'SSH 서버 검색';
-
-  @override
-  String get discoveryFailed => '검색 실패';
 
   @override
   String get distro => '배포판';
@@ -468,18 +432,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get image => '이미지';
-
-  @override
-  String get macDmgImportDenied => 'macOS가 이전 버전의 데이터를 읽도록 허용하지 않았습니다';
-
-  @override
-  String get macDmgImported => '이전 버전의 데이터를 가져왔습니다';
-
-  @override
-  String get macDmgImportFailed => '이전 버전의 데이터를 읽지 못했습니다';
-
-  @override
-  String get macDmgTitle => 'DMG 버전';
 
   @override
   String get showHiddenFiles => '숨김 파일 표시';
@@ -770,17 +722,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pushToken => '푸시 토큰';
 
   @override
-  String get liveActivity => '실시간 활동';
-
-  @override
-  String get liveActivityTip =>
-      '잠금 화면과 Dynamic Island에 터미널 세션을 표시합니다. 기기를 잠금 해제하지 않아도 서버 이름과 연결 상태를 확인할 수 있습니다.';
-
-  @override
-  String get liveActivitySystemDisabled =>
-      'iOS에서 허용하지 않습니다. 스위치는 설정 › ServerBox › 실시간 활동과 설정 › Face ID 및 암호 › 실시간 활동에 있습니다.';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand는 이 기기의 Linux 환경에서 실행됩니다. 먼저 Linux 시스템을 설치하세요.';
 
@@ -1031,17 +972,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get sshConfigFound => '시스템에서 SSH 설정을 찾았습니다.';
-
-  @override
   String get sshConfigImport => 'SSH 설정 가져오기';
-
-  @override
-  String get sshConfigImportPermission =>
-      '~/.ssh/config를 읽고 서버 설정을 자동으로 가져오도록 허용할까요?';
-
-  @override
-  String get sshConfigImportTip => '첫 서버 생성 시 ~/.ssh/config 읽기 안내';
 
   @override
   String sshHostKeyChangedDesc(String serverName) {
@@ -1069,13 +1000,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get sshVerificationCode => '인증 코드';
-
-  @override
-  String get sshConfigManualSelect => 'SSH 설정 파일을 수동으로 선택하시겠습니까?';
-
-  @override
-  String get sshConfigPermissionDenied =>
-      'macOS 권한으로 인해 SSH 설정 파일에 접근할 수 없습니다.';
 
   @override
   String get sshTermHelp =>
@@ -1203,9 +1127,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get wakeLock => '화면 깨우기 유지';
-
-  @override
-  String get watchNotPaired => '페어링된 Apple Watch가 없습니다';
 
   @override
   String get webdavSettingEmpty => 'WebDav 설정이 비어 있습니다';
@@ -1357,16 +1278,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get processThreads => '스레드';
-
-  @override
-  String get watchServers => '워치에 표시할 서버';
-
-  @override
-  String get watchServersTip =>
-      '시계는 스스로 Monitor에서 가져오므로 Monitor가 설정된 서버만 고를 수 있습니다.';
-
-  @override
-  String get watchNoMonitorServer => 'Monitor가 설정된 서버가 없습니다.';
 
   @override
   String get legacyStatusGoneTitle => '상태 URL이 더 이상 작동하지 않습니다';
@@ -1528,11 +1439,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get agentRedact => '보내기 전에 비밀값 가리기';
-
-  @override
-  String macDmgImportedPartly(String path) {
-    return '이전에 설치된 빌드의 데이터를 가져왔습니다. 다운로드한 파일은 $path에 그대로 있습니다.';
-  }
 
   @override
   String get bmcAccount => '계정';
@@ -2194,12 +2100,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get thisDevice => '이 기기';
 
   @override
-  String get localServerTip =>
-      '상태 스크립트를 이 기기에서 실행해 직접 읽습니다. SSH와 Monitor는 사용하지 않으며 해당 설정은 유지됩니다.';
-
-  @override
-  String get localServerUnsupported =>
-      '이 플랫폼에서는 이 기기를 서버로 읽을 수 없습니다. Linux, Windows, macOS DMG 버전에서 지원됩니다.';
+  String get localServerUnsupported => '이 프로필을 사용하려면 SSH 또는 Monitor 연결을 설정하세요.';
 
   @override
   String get transportSectionOff => '꺼져 있습니다. 다시 켤 때를 위해 아래 항목은 그대로 보관됩니다.';
@@ -6711,48 +6612,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncKeyRotate => '동기화 키 교체';
 
   @override
-  String get discoverIntro => '서버로 추가할 수 있는 머신을 찾습니다.';
-
-  @override
   String get lan => 'LAN';
-
-  @override
-  String get discoveryScan => '스캔';
-
-  @override
-  String get discoveryScanAgain => '다시 스캔';
-
-  @override
-  String get discoveryScanning => '스캔 중…';
-
-  @override
-  String discoveryFound(int count) {
-    return '$count대 발견';
-  }
-
-  @override
-  String discoverySelected(int count) {
-    return '$count대 선택됨';
-  }
-
-  @override
-  String discoveryAddN(int count) {
-    return '$count대 추가';
-  }
-
-  @override
-  String discoveryAddedN(int count) {
-    return '$count대 추가됨';
-  }
-
-  @override
-  String get discoveryAdded => '추가됨';
-
-  @override
-  String get discoveryExists => '이미 있음';
-
-  @override
-  String get localServerNoSsh => 'SSH 없이 실행';
 
   @override
   String get introWelcome =>
@@ -6760,46 +6620,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get security => '보안';
-
-  @override
-  String get sshConfig => 'SSH 설정';
-
-  @override
-  String get tailscaleStopped => 'Tailscale이 실행 중이 아닙니다';
-
-  @override
-  String get tailscaleStoppedTip => '이 기기에 설치되어 있지만 tailnet에 연결되어 있지 않습니다.';
-
-  @override
-  String get cloudflareApiToken => 'API 토큰';
-
-  @override
-  String get cloudflareApiTokenTip =>
-      'Account · Cloudflare Tunnel · Read 권한이 필요합니다.';
-
-  @override
-  String get discoveryChooseFile => '파일 선택';
-
-  @override
-  String get discoveryOnline => '온라인';
-
-  @override
-  String get discoveryOffline => '오프라인';
-
-  @override
-  String get discoverySelectAll => '모두 선택';
-
-  @override
-  String get discoveryFilter => '이름 또는 주소로 필터';
-
-  @override
-  String get discoverySameMachine => '같은 머신, 여러 주소';
-
-  @override
-  String get discoveryPrimaryAddress => '기본 주소';
-
-  @override
-  String get discoveryAlternateAddress => '대체 주소';
 
   @override
   String get agentPermsGroup => 'Agent';

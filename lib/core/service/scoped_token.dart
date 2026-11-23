@@ -147,13 +147,11 @@ Map<String, ScopedToken> reusableScopedTokens({
 /// - its address changes, so the new token is minted somewhere else;
 /// - it is renamed, so the new token is scoped to another `client_id`.
 ///
-/// Each surface queues the revoke ahead of its next mint for the server, so
-/// an old address reaching the same agent cannot revoke the replacement.
-/// Neither delays saving the edit if the agent is offline.
+/// Queue the revoke before the next mint so an old address reaching the same
+/// agent cannot revoke the replacement.
 void revokeScopedTokensLeftBehind(
   Spi old,
   Spi next, {
-  required void Function(Spi) queueWatchRevoke,
   required void Function(Spi) queueWidgetRevoke,
 }) {
   final previous = old.monitor;
@@ -167,6 +165,5 @@ void revokeScopedTokensLeftBehind(
           normalizeAgentEndpoint(previous.addr);
   if (!movedOn) return;
 
-  queueWatchRevoke(old);
   queueWidgetRevoke(old);
 }

@@ -69,7 +69,6 @@ final class CheckUpdateTile extends StatelessWidget {
           context: context,
           build: BuildData.build,
           githubReleasesUrl: Urls.githubReleasesApi,
-          storeUrl: Urls.appStore,
           force: BuildMode.isDebug,
         ),
       ),

@@ -702,7 +702,7 @@ class SSHPageState extends ConsumerState<SSHPage>
     );
     if (floating) return _buildFloatedAway();
 
-    Widget child = PopScope(
+    return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
@@ -719,17 +719,9 @@ class SSHPageState extends ConsumerState<SSHPage>
               )
             : null,
         body: _buildBody(),
-        bottomNavigationBar: isDesktop ? null : _buildBottom(),
+        bottomNavigationBar: _buildBottom(),
       ),
     );
-
-    if (isIOS) {
-      child = AnnotatedRegion(
-        value: _isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
-        child: child,
-      );
-    }
-    return child;
   }
 
   /// Back to the bottom, where the view follows what arrives.

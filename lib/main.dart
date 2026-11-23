@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:computer/computer.dart';
 import 'package:dartssh2/dartssh2.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:fl_lib/fl_lib.dart';
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show StoreCredentials;
 import 'package:fl_tty/fl_tty.dart';
@@ -20,7 +19,6 @@ import 'package:server_box/core/motion.dart';
 import 'package:server_box/core/service/crash_report.dart';
 import 'package:server_box/core/service/diagnostics_upload.dart';
 import 'package:server_box/core/service/native_exit.dart';
-import 'package:server_box/core/service/watch_sync.dart';
 import 'package:server_box/core/service/widget_sync.dart';
 import 'package:server_box/core/ssh/key_passphrase.dart';
 import 'package:server_box/core/ssh/native_crypto.dart';
@@ -30,7 +28,6 @@ import 'package:server_box/core/sync/lkc_log.dart';
 import 'package:server_box/core/sync/remotes.dart';
 import 'package:server_box/core/sync/sync.dart';
 import 'package:server_box/core/tty.dart';
-import 'package:server_box/core/utils/sandbox_import.dart';
 import 'package:server_box/core/utils/store_recovery.dart';
 import 'package:server_box/core/utils/sudo_password.dart';
 import 'package:server_box/data/model/server/dist_license.dart';
@@ -72,16 +69,10 @@ Future<void> main() async {
       // after `_migrateStorage` may run: the refusal is only worth anything while
       // nothing has been written. See [SchemaTooNewException].
       Loggers.app.severe('Storage is newer than this build', e);
-      await _showRescueWindow();
       runApp(RescueApp(page: SchemaTooNewPage(err: e)));
       return;
     } catch (e, s) {
-      // Anything else. Left to the zone, it was recorded and the launch
-      // stopped with the window still hidden: a process and nothing on
-      // screen, which is what a zero-filled preferences file looked like on
-      // Windows (#1633).
       _onUncaught(e, s);
-      await _showRescueWindow();
       runApp(RescueApp(page: LaunchFailedPage(err: e, stack: s, logDir: _logDir())));
       return;
     }
@@ -131,34 +122,6 @@ void _onUncaught(Object e, StackTrace s) {
   if (CrashReport.isAppFault(e)) CrashLog.markUnhandled(e, s);
 }
 
-/// Shows the window a launch that stopped early never showed.
-///
-/// On desktop the window is created hidden — `hiddenWindowAtLaunch()` on
-/// macOS, no `WS_VISIBLE` on Windows, no `gtk_widget_show` on Linux — and
-/// the only `windowManager.show()` at launch is inside `_initWindow`,
-/// which is *after* the throw. Without this the rescue screen is drawn
-/// into a window nobody ever sees: still no window, still no message,
-/// which is the failure it exists to fix.
-///
-/// Measured, by running a build with this call commented out against a
-/// v25 database: the widget tree was there, and `window_manager` had no
-/// window at all. Asking it anything is then fatal rather than false —
-/// `WindowManager.mainWindow` force-unwraps, so `isVisible()` took the
-/// process down with `EXC_BREAKPOINT` in `WindowManager.swift:60`. So this
-/// is not only about the user seeing the screen; without it the plugin is
-/// a landmine for anything that later asks about the window.
-///
-/// Not `_initWindow`, which reads the size and the title-bar preference
-/// out of the database this build has just refused to touch. Fixed
-/// arguments instead: this window holds one screen of text.
-Future<void> _showRescueWindow() async {
-  try {
-    await SystemUIs.initDesktopWindow(hideTitleBar: false);
-  } catch (e, s) {
-    Loggers.app.warning('Could not show the rescue window', e, s);
-  }
-}
-
 /// Where the logs are, if the launch got as far as `Paths.init`.
 String? _logDir() {
   try {
@@ -173,9 +136,6 @@ Future<void> _initApp(ProviderContainer container) async {
   // framework's animations — see [AppBinding].
   AppBinding();
 
-  // As early as there is a binding: until the first report arrives, a bar is
-  // laid out as if nothing covered it.
-  MethodChans.watchWindowControls();
   // Before anything connects: a host key question with no dialog is refused.
   installHostKeyDialog();
   // Before anything restores or syncs so providers can reload changed data.
@@ -202,11 +162,9 @@ Future<void> _initApp(ProviderContainer container) async {
   // likely to take the process down, and precisely the ones whose failure went
   // unrecorded. Nothing here needs Rust: both are platform channels.
   //
-  // `iosFilesApp`: the device's files are what the Files app lists under On My
-  // iPhone (`UIFileSharingEnabled`), so the app's own data is not there.
   //
   // `bakName` is versioned on purpose. Sync is a single shared file on
-  // iCloud/WebDAV/LK Cloud, and a build that cannot read the
+  // WebDAV/LK Cloud, and a build that cannot read the
   // remote copy must never overwrite it. `SyncIface._sync` returns before
   // uploading when the merge fails, but a release that predates a format has
   // no version check and cannot be given one: the only thing certain to stop
@@ -220,7 +178,6 @@ Future<void> _initApp(ProviderContainer container) async {
     bakName: Miscs.bakFileName,
     dirs: const {},
     fileInUserDocuments: false,
-    iosFilesApp: true,
   );
   await CrashLog.attach(Paths.doc.joinPath('logs'));
   // Which release a report came from is the first thing asked about one and
@@ -245,59 +202,32 @@ Future<void> _initApp(ProviderContainer container) async {
   await LlmHost.init(container);
   // After the settings are open, and before the first frame is drawn with a
   // preference it has not read.
-  await AppMotion.init();
-  await _initWindow();
-  // No macOS build is sandboxed (#1943), so file_picker's check for the
-  // sandbox's user-selected file entitlements refused every dialog.
-  if (isMacOS) await FilePicker.skipEntitlementsChecks();
-
+  AppMotion.init();
   await _startBackgroundServices();
 
-  // Initialize platform session notifications and Live Activities.
+  // Initialize Android session notifications.
   await TermSessionManager.init();
 }
 
 /// `Stores.init`, and what to do when the database there does not open.
-Future<void> _openStores({required bool fromImport}) async {
+Future<void> _openStores() async {
   try {
     await Stores.init();
   } catch (e, s) {
-    // A newer build's data is neither an import to undo nor a lost key.
-    if (e is SchemaTooNewException) rethrow;
-    if (!fromImport && e is! StoreUnreadableException) rethrow;
+    if (e is! StoreUnreadableException) rethrow;
 
-    // Closed before the files are deleted or moved. `Stores.init` may have got
-    // as far as opening the database, or several boxes, before the one that
-    // threw, and unlinking a file out from under a live handle is undefined at
-    // best: on Windows the delete fails outright and the copy stays, so the
-    // retry below reopens exactly the data that just failed to open.
+    // Close every store before recovering the encrypted database.
     await closeTables();
     await SqliteDb.close();
     await Hive.close();
     await getIt.reset();
 
-    if (fromImport) {
-      // The copied data does not open. It was only ever a copy, so drop it and
-      // start empty — an app that opens with nothing in it can still be told
-      // what happened, one that does not open cannot.
-      Loggers.app.warning('Stores.init after sandbox import', e, s);
-      await SandboxImport.undo();
-    } else {
-      // The vault has no key for the file, or cannot read the one it has
-      // (#1784): it may be gone, or only unavailable this once (a keyring not
-      // yet unlocked). Starting empty would make a new key over the old one,
-      // so that is the user's call.
-      final err = e as StoreUnreadableException;
-      final ask = switch (err.reason) {
-        StoreUnreadableReason.keyLost || StoreUnreadableReason.vaultFailed => true,
-        StoreUnreadableReason.keyRejected => false,
-      };
-      if (ask && await _askKeyLost(err)) return _openStores(fromImport: false);
-      // The vault's key does not open the database (#1780). The same reasoning,
-      // except this file is the only copy: kept aside, not deleted, and the
-      // reason is shown once there is a screen — see [StoreUnreadableNotice].
-      await StoreRecovery.recover(err, s);
-    }
+    final ask = switch (e.reason) {
+      StoreUnreadableReason.keyLost || StoreUnreadableReason.vaultFailed => true,
+      StoreUnreadableReason.keyRejected => false,
+    };
+    if (ask && await _askKeyLost(e)) return _openStores();
+    await StoreRecovery.recover(e, s);
     await Stores.init();
   }
 }
@@ -306,7 +236,6 @@ Future<void> _openStores({required bool fromImport}) async {
 Future<bool> _askKeyLost(StoreUnreadableException e) async {
   Loggers.app.warning('Store key missing', e);
   final choice = Completer<bool>();
-  await _showRescueWindow();
   // The first tap decides; a second one before the page is replaced is ignored.
   void onChoice(bool retry) {
     if (!choice.isCompleted) choice.complete(retry);
@@ -317,14 +246,6 @@ Future<bool> _askKeyLost(StoreUnreadableException e) async {
 }
 
 Future<void> _initData() async {
-  // `extended_image` caches under `getTemporaryDirectory()` and makes its own
-  // folder there with a plain `create()`, no `recursive`. On macOS that
-  // directory is `~/Library/Caches/<bundle id>`, which nothing has to have
-  // made yet — a fresh install, or a machine whose caches were swept. Every
-  // image then failed with `PathNotFoundException` and no fallback, which is
-  // what a server logo turning into an error in the log was.
-  //
-  // TODO: drop once extended_image_library creates its folder recursively.
   await (await getTemporaryDirectory()).create(recursive: true);
 
   // Only so `HiveImport` can read the boxes an upgrading install still has.
@@ -339,12 +260,7 @@ Future<void> _initData() async {
   await PrefStore.shared.init(); // Call this before accessing any store
   await SecureStoreProps.migrateLegacyPrefs();
 
-  // Before a box is opened, because it rewrites the files they are made of.
-  // After the preferences, because the data it copies may be encrypted with a
-  // key that old installs keep there. See [SandboxImport].
-  final imported = await SandboxImport.run();
-  await _openStores(fromImport: imported == SandboxImportResult.imported);
-
+  await _openStores();
   await _migrateStorage();
   await SyncRemotes.adopt();
   await SyncRemotes.dropRetired();
@@ -445,9 +361,7 @@ Future<void> _startBackgroundServices() async {
     CrashReport.report();
   }());
 
-  // Where the Linux userland is, and whether there is one — proot and an
-  // unpacked rootfs on Android, the engine and its filesystem on iOS. A few
-  // file checks, and the terminal tab reads the answer while building.
+  // Prepare the Android proot userland before the terminal is opened.
   configFlTty();
   try {
     await Rootfs.prepare();
@@ -463,10 +377,6 @@ Future<void> _startBackgroundServices() async {
   // `prepare` just adopted already works, and this only ever replaces it with
   // something newer that verified.
   //
-  // Gated on the build carrying an engine at all. Most do not — iOS ships with
-  // the switch off and Android needs a proot this repository does not contain —
-  // and a request per launch for a feature that cannot be used is one nobody
-  // asked for.
   if (Rootfs.isAvailable) {
     unawaited(
       (() async {
@@ -496,7 +406,7 @@ Future<void> _startBackgroundServices() async {
             }
           },
           bakFileName: Miscs.bakFileName,
-          inBackground: isDesktop,
+          inBackground: false,
         ).start();
       }),
     );
@@ -507,27 +417,11 @@ Future<void> _startBackgroundServices() async {
   unawaited(KeyPassphrases.init());
   unawaited(SudoPassword.adoptKeychain());
 
-  // The watch app used to learn about servers only while the user sat on the
-  // iOS settings page. Pushing at launch is what makes a freshly installed or
-  // restored watch configure itself.
-  if (isIOS) {
-    MethodChans.listenPastes();
-    unawaited(
-      (() async {
-        try {
-          await WatchSync.instance.init();
-        } catch (e, s) {
-          Loggers.app.warning('WatchSync init failed', e, s);
-        }
-      })(),
-    );
-  }
-
-  // Same reasoning, for the home-screen widgets: the list they offer on their
+  // For the home-screen widgets, the list they offer on their
   // configuration screen is whatever this last published, and the container
   // holding it goes away with the app — so a reinstall has to re-publish
   // before a widget can be configured at all.
-  if (isIOS || isAndroid) {
+  if (isAndroid) {
     unawaited(
       (() async {
         try {
@@ -539,9 +433,9 @@ Future<void> _startBackgroundServices() async {
     );
   }
 
-  // Both platforms keep their own copy of this, which a reinstall or a restored
+  // Android keeps its own copy of this, which a reinstall or a restored
   // backup leaves disagreeing with the settings store.
-  if (isIOS || isAndroid) {
+  if (isAndroid) {
     unawaited(
       (() async {
         try {
@@ -611,19 +505,5 @@ Future<void> _migrateStorage() async {
         Loggers.app.warning('inheritLegacyRemote failed', e, s);
       }
     })(),
-  );
-}
-
-Future<void> _initWindow() async {
-  if (!isDesktop) return;
-  final windowStateProp = Stores.setting.windowState;
-  final windowState = windowStateProp.fetch();
-  final hideTitleBar = Stores.setting.hideTitleBar.fetch();
-  WindowFrameConfig.setShowCaption(hideTitleBar);
-  await SystemUIs.initDesktopWindow(
-    hideTitleBar: hideTitleBar,
-    size: windowState?.size ?? Size(1323, 817),
-    position: windowState?.position,
-    listener: WindowStateListener(windowStateProp),
   );
 }

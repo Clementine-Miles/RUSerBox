@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:fl_lib/fl_lib.dart';
@@ -28,14 +27,10 @@ import 'package:server_box/view/page/home/app_link.dart';
 import 'package:server_box/view/page/home/incoming.dart';
 import 'package:server_box/view/page/home_tab.dart';
 import 'package:server_box/view/page/home_tab_page.dart';
-import 'package:server_box/view/page/macos_menu_bar.dart';
-import 'package:server_box/view/page/notice/sandbox_import_notice.dart';
 import 'package:server_box/view/page/notice/store_unreadable_notice.dart';
 import 'package:server_box/view/page/server/widget/legacy_status_notice.dart';
-import 'package:server_box/view/page/server/widget/server_share.dart';
 import 'package:server_box/view/page/setting/entries/home_tabs.dart';
 import 'package:server_box/view/page/setting/entry.dart';
-import 'package:server_box/view/tray.dart';
 import 'package:server_box/view/widget/app_icon.dart';
 import 'package:server_box/view/widget/nav_bar.dart';
 import 'package:server_box/view/widget/nav_rail.dart';
@@ -82,7 +77,7 @@ class _HomePageState extends ConsumerState<HomePage>
   /// once.
   ///
   /// The launch path and a resume can both fire while the first is still
-  /// waiting on the passphrase dialog, and `takeOpenedShare` clearing the
+  /// waiting on the passphrase dialog, and `takeIncoming` clearing the
   /// native side is not enough on its own — the second call would find nothing
   /// and return, but only after the first had already been asked twice on
   /// platforms where opening a file also resumes the app.
@@ -317,7 +312,6 @@ class _HomePageState extends ConsumerState<HomePage>
       unawaited(_consumePending());
     }
 
-    if (isDesktop) return;
     _handleMobileLifecycle(state);
   }
 
@@ -338,11 +332,6 @@ class _HomePageState extends ConsumerState<HomePage>
       _openSettings();
       ref.read(settingsRequestProvider.notifier).done();
     });
-    // Watched, and from here, because this page outlives everything else the
-    // app builds: the tray has to go on reporting while the window is hidden,
-    // and a provider kept alive only by a page that comes and goes would take
-    // the icon with it. Off desktop the service does nothing.
-    ref.watch(trayServiceProvider);
     // A tab asking for the window — the globe, and nothing else so far. Read
     // here because a build is where a provider is watched; what it means is
     // decided in [_wantsWindow], which also has to know *which* tab is on
@@ -487,28 +476,16 @@ class _HomePageState extends ConsumerState<HomePage>
       ),
     );
 
-    // The shortcuts, on every desktop. macOS additionally gets a menu bar,
-    // which is where a shortcut is *discovered* — but the menu bar is a macOS
-    // API, and until now it was also the only thing that bound the keys, so
-    // Linux and Windows had no way to switch tabs from the keyboard at all.
-    // And on Android, for a hardware keyboard and the desktop mode.
-    final withKeys = !isDesktop && !isAndroid
-        ? withShell
-        : CallbackShortcuts(
-            bindings: desktopShortcuts(
-              tabCount: _tabs.length,
-              onTab: _onDestinationSelected,
-              onSettings: _openSettings,
-              // As changed on the shortcuts page.
-              settingsChord: (_) => ref
-                  .watch(keybindingsProvider)
-                  .activatorOf(KbCommand.appSettings),
-            ),
-            // Focused so the bindings are reachable without clicking
-            // something first, and skipping traversal so Tab still walks the
-            // actual controls.
-            child: Focus(autofocus: true, skipTraversal: true, child: withShell),
-          );
+    final withKeys = CallbackShortcuts(
+      bindings: desktopShortcuts(
+        tabCount: _tabs.length,
+        onTab: _onDestinationSelected,
+        onSettings: _openSettings,
+        settingsChord: (_) =>
+            ref.watch(keybindingsProvider).activatorOf(KbCommand.appSettings),
+      ),
+      child: Focus(autofocus: true, skipTraversal: true, child: withShell),
+    );
     // The same chords as asked for by a terminal, which takes every key it
     // is given and hands the app's on as intents rather than letting them
     // reach the bindings above.
@@ -524,19 +501,6 @@ class _HomePageState extends ConsumerState<HomePage>
       child: withKeys,
     );
 
-    if (Platform.isMacOS) {
-      return PlatformMenuBar(
-        menus: MacOSMenuBarManager.buildMenuBar(
-          context,
-          _onDestinationSelected,
-          onSettings: _openSettings,
-          settingsShortcut: ref
-              .watch(keybindingsProvider)
-              .activatorOf(KbCommand.appSettings),
-        ),
-        child: withActions,
-      );
-    }
     return withActions;
   }
 
@@ -568,7 +532,6 @@ class _HomePageState extends ConsumerState<HomePage>
         AppUpdateIface.doUpdate(
           build: BuildData.build,
           githubReleasesUrl: Urls.githubReleasesApi,
-          storeUrl: Urls.appStore,
           context: context,
         ),
       );

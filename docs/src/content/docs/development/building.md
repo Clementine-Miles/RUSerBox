@@ -1,6 +1,6 @@
 ---
 title: Building
-description: Build Server Box and Monitor for different platforms
+description: Build Server Box for Android and build the Monitor service
 ---
 
 Build the Flutter App with the repository's `fl_build` tool. The Monitor
@@ -9,7 +9,7 @@ is a separate Rust service and has its own build steps.
 ## Prerequisites
 
 - Flutter SDK on the stable channel
-- Platform SDKs: Xcode for iOS, Android Studio and Android SDK for Android, or Visual Studio for Windows
+- Android SDK, NDK, and JDK
 - Rust toolchain: the App builds `crates/sbm_ffi` using a Dart build hook, `flutter_rust_bridge_hooks`, and native assets
 
 Initialize the Git submodules before fetching Dart packages:
@@ -30,28 +30,6 @@ flutter run -d <device-id>
 
 ## Release build
 
-Pass the target platform to `fl_build`:
-
-```bash
-dart run fl_build -p <platform>
-```
-
-Supported platform names are `ios`, `android`, `macos`, `linux`, and
-`windows`.
-
-## Platform requirements
-
-### iOS
-
-```bash
-dart run fl_build -p ios
-```
-
-Builds require macOS and Xcode. Signing also requires an Apple Developer
-account.
-
-### Android
-
 ```bash
 make build-android
 ```
@@ -63,27 +41,6 @@ verification only, pass `-PallowDebugReleaseSigning=true` explicitly to use
 debug signing. Reproducible and F-Droid builds use
 `-PallowUnsignedRelease=true`, which omits signing configuration;
 `scripts/release/android-build-env.sh` exports this option.
-
-### macOS
-
-```bash
-dart run fl_build -p macos
-```
-
-### Linux
-
-```bash
-dart run fl_build -p linux
-```
-
-### Windows
-
-```bash
-dart run fl_build -p windows
-```
-
-Requires Visual Studio with the **Desktop development with C++** workload and
-ATL support.
 
 ## Build the Monitor
 
@@ -105,8 +62,7 @@ from App releases. For a Docker build, see `monitor/Dockerfile`.
 ## Build hooks
 
 On every build, `fl_build` regenerates `lib/data/res/build_data.dart`, derives
-the build number from Git history, and writes the version to the Xcode
-configuration. Set the App name in the `fl_build:` section of `pubspec.yaml`.
+the build number from Git history. Set the App name in the `fl_build:` section of `pubspec.yaml`.
 
 ## Troubleshooting
 
@@ -117,10 +73,6 @@ flutter clean
 flutter pub get
 dart run build_runner build
 ```
-
-The iOS Linux engine's libraries live in `packages/fl_tty/build/iul`, outside
-what `flutter clean` removes, and fl_tty's build hook fetches them again when
-they are missing.
 
 ### Dependency version conflict
 
@@ -137,6 +89,6 @@ After changing an annotated model, run code generation as well; see [Code Genera
 1. Update the version in `pubspec.yaml`.
 2. Run code generation and localization generation.
 3. Run Dart, Flutter, and Rust tests.
-4. Build every target platform.
+4. Build the Android APKs.
 5. Verify key features on real devices.
 6. Create the GitHub release.

@@ -181,10 +181,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get backupPassword => 'Пароль резервного копіювання';
 
   @override
-  String get backupPasswordRemoveSynced =>
-      'Пароль резервної копії буде видалено з усіх пристроїв, що використовують ту саму в\'язку ключів iCloud. Синхронізацію на них буде призупинено, доки не буде встановлено новий пароль.';
-
-  @override
   String get backupPasswordRemoved => 'Пароль резервного копіювання видалено';
 
   @override
@@ -285,37 +281,11 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String get icloudBackupStateConflict => 'Виявлено конфлікт';
-
-  @override
   String get bgRun => 'Запуск у фоновому режимі';
 
   @override
   String get bgRunTip =>
       'Цей перемикач лише вказує на те, що програма намагатиметься працювати у фоновому режимі. Чи може вона працювати у фоновому режимі, залежить від прав доступу. Для AOSP-орієнтованих Android ROM, будь ласка, вимкніть \"Оптимізацію акумулятора\" в цьому додатку. Для MIUI / HyperOS, будь ласка, змініть політику економії енергії на \"Нескінченна\".';
-
-  @override
-  String get trayReadings => 'Показники';
-
-  @override
-  String get trayChart => 'Графік';
-
-  @override
-  String get trayChartNone => 'Немає';
-
-  @override
-  String get trayCompact => 'Компактні рядки';
-
-  @override
-  String get trayCompactTip =>
-      'По одному рядку на сервер, без графіка. Linux завжди використовує однорядковий макет, оскільки меню панелі передається через D-Bus, який передає мітку замість довільного макета; водночас вибраний графік може бути доданий як зображення.';
-
-  @override
-  String get trayKeepRunning => 'Продовжувати роботу в треї';
-
-  @override
-  String get trayKeepRunningTip =>
-      'Після закриття вікна програма залишається в рядку меню або області сповіщень і продовжує стежити за серверами. Вимкніть цей параметр, щоб кнопка закриття завершувала роботу програми.';
 
   @override
   String get bgRunNeedsNotification =>
@@ -387,12 +357,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get dirEmpty => 'Переконайтеся, що директорія пуста.';
-
-  @override
-  String get discoverSshServers => 'Пошук SSH-серверів';
-
-  @override
-  String get discoveryFailed => 'Виявлення не вдалось';
 
   @override
   String get distro => 'Дистрибутив';
@@ -484,20 +448,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get image => 'Зображення';
-
-  @override
-  String get macDmgImportDenied =>
-      'macOS не дозволив прочитати дані попередньої версії';
-
-  @override
-  String get macDmgImported => 'Дані попередньої версії імпортовано';
-
-  @override
-  String get macDmgImportFailed =>
-      'Не вдалося прочитати дані попередньої версії';
-
-  @override
-  String get macDmgTitle => 'Збірка DMG';
 
   @override
   String get showHiddenFiles => 'Показувати приховані файли';
@@ -806,17 +756,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get pushToken => 'Надіслати токен';
 
   @override
-  String get liveActivity => 'Активність у реальному часі';
-
-  @override
-  String get liveActivityTip =>
-      'Показує сеанси термінала на екрані блокування та в Dynamic Island. Ім’я сервера й стан підключення видно без розблокування пристрою.';
-
-  @override
-  String get liveActivitySystemDisabled =>
-      'iOS не дозволяє. Перемикачі розташовані в розділах Налаштування › ServerBox › Активності в реальному часі та Налаштування › Face ID і код-пароль › Активності в реальному часі.';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand виконується в середовищі Linux на цьому пристрої. Спочатку встановіть систему Linux.';
 
@@ -1088,18 +1027,7 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String get sshConfigFound => 'У системі знайдено конфігурацію SSH.';
-
-  @override
   String get sshConfigImport => 'Імпорт SSH Конфігурації';
-
-  @override
-  String get sshConfigImportPermission =>
-      'Дозволити застосунку читати ~/.ssh/config і автоматично імпортувати звідти налаштування серверів?';
-
-  @override
-  String get sshConfigImportTip =>
-      'Пропозиція прочитати ~/.ssh/config при створенні першого сервера';
 
   @override
   String sshHostKeyChangedDesc(String serverName) {
@@ -1127,14 +1055,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get sshVerificationCode => 'Код підтвердження';
-
-  @override
-  String get sshConfigManualSelect =>
-      'Чи хочете ви вручну вибрати файл конфігурації SSH?';
-
-  @override
-  String get sshConfigPermissionDenied =>
-      'Неможливо отримати доступ до файлу конфігурації SSH через дозволи macOS.';
 
   @override
   String get sshTermHelp =>
@@ -1269,9 +1189,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get wakeLock => 'Залишити активним';
-
-  @override
-  String get watchNotPaired => 'Немає спарованого Apple Watch';
 
   @override
   String get webdavSettingEmpty => 'Налаштування WebDav порожнє';
@@ -1452,16 +1369,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get processThreads => 'Потоки';
 
   @override
-  String get watchServers => 'Сервери на годиннику';
-
-  @override
-  String get watchServersTip =>
-      'Годинник сам звертається до Monitor, тому доступні лише сервери з Monitor.';
-
-  @override
-  String get watchNoMonitorServer => 'Немає серверів із налаштованим Monitor.';
-
-  @override
   String get legacyStatusGoneTitle => 'URL-адреси стану більше не працюють';
 
   @override
@@ -1637,11 +1544,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get agentRedact => 'Приховувати секрети перед надсиланням';
-
-  @override
-  String macDmgImportedPartly(String path) {
-    return 'Дані раніше встановленої збірки імпортовано. Завантажені файли залишилися в $path.';
-  }
 
   @override
   String get bmcAccount => 'Обліковий запис';
@@ -2327,12 +2229,8 @@ class AppLocalizationsUk extends AppLocalizations {
   String get thisDevice => 'Цей пристрій';
 
   @override
-  String get localServerTip =>
-      'Зчитує цей пристрій напряму, запускаючи тут скрипт стану. SSH і Monitor не використовуються, їхні налаштування зберігаються.';
-
-  @override
   String get localServerUnsupported =>
-      'На цій платформі не можна читати цей пристрій як сервер. Підтримуються Linux, Windows і DMG-збірка для macOS.';
+      'Щоб використовувати цей профіль, налаштуйте підключення через SSH або Monitor.';
 
   @override
   String get transportSectionOff =>
@@ -7048,48 +6946,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get syncKeyRotate => 'Замінити ключ синхронізації';
 
   @override
-  String get discoverIntro => 'Пошук машин, які можна додати як сервери.';
-
-  @override
   String get lan => 'Локальна мережа';
-
-  @override
-  String get discoveryScan => 'Сканувати';
-
-  @override
-  String get discoveryScanAgain => 'Сканувати знову';
-
-  @override
-  String get discoveryScanning => 'Сканування…';
-
-  @override
-  String discoveryFound(int count) {
-    return 'Знайдено: $count';
-  }
-
-  @override
-  String discoverySelected(int count) {
-    return 'Вибрано: $count';
-  }
-
-  @override
-  String discoveryAddN(int count) {
-    return 'Додати: $count';
-  }
-
-  @override
-  String discoveryAddedN(int count) {
-    return 'Додано: $count';
-  }
-
-  @override
-  String get discoveryAdded => 'Додано';
-
-  @override
-  String get discoveryExists => 'Уже є';
-
-  @override
-  String get localServerNoSsh => 'Без SSH';
 
   @override
   String get introWelcome =>
@@ -7097,47 +6954,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get security => 'Безпека';
-
-  @override
-  String get sshConfig => 'Конфіг SSH';
-
-  @override
-  String get tailscaleStopped => 'Tailscale не запущено';
-
-  @override
-  String get tailscaleStoppedTip =>
-      'Встановлено на цьому пристрої, але не підключено до tailnet.';
-
-  @override
-  String get cloudflareApiToken => 'API-токен';
-
-  @override
-  String get cloudflareApiTokenTip =>
-      'Потрібне право Account · Cloudflare Tunnel · Read.';
-
-  @override
-  String get discoveryChooseFile => 'Вибрати файл';
-
-  @override
-  String get discoveryOnline => 'У мережі';
-
-  @override
-  String get discoveryOffline => 'Не в мережі';
-
-  @override
-  String get discoverySelectAll => 'Вибрати все';
-
-  @override
-  String get discoveryFilter => 'Фільтр за назвою або адресою';
-
-  @override
-  String get discoverySameMachine => 'Одна машина, кілька адрес';
-
-  @override
-  String get discoveryPrimaryAddress => 'Основна адреса';
-
-  @override
-  String get discoveryAlternateAddress => 'Резервна адреса';
 
   @override
   String get agentPermsGroup => 'Agent';

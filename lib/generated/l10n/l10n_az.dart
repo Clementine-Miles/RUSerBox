@@ -181,10 +181,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String get backupPassword => 'Ehtiyat nüsxə parolu';
 
   @override
-  String get backupPasswordRemoveSynced =>
-      'Eyni iCloud Açar Zəncirindən istifadə edən bütün cihazlardan ehtiyat nüsxə parolu silinəcək. Yeni parol təyin edilənə qədər sinxronlaşdırma dayandırılacaq.';
-
-  @override
   String get backupPasswordRemoved => 'Ehtiyat nüsxə parolu silindi';
 
   @override
@@ -285,37 +281,11 @@ class AppLocalizationsAz extends AppLocalizations {
   }
 
   @override
-  String get icloudBackupStateConflict => 'Ziddiyyət aşkarlandı';
-
-  @override
   String get bgRun => 'Arxa planda işlət';
 
   @override
   String get bgRunTip =>
       'Bu keçid yalnız proqramın arxa planda işləməyə cəhd edəcəyini bildirir. Arxa planda işləyə bilməsi müvafiq icazənin aktiv olub-olmamasından asılıdır. AOSP əsaslı Android ROM sistemlərində bu tətbiq üçün \"Batareya optimallaşdırması\" funksiyasını söndür. MIUI / HyperOS üçün enerjiyə qənaət siyasətini \"Məhdudiyyətsiz\" olaraq dəyiş.';
-
-  @override
-  String get trayReadings => 'Göstəricilər';
-
-  @override
-  String get trayChart => 'Qrafik';
-
-  @override
-  String get trayChartNone => 'Yoxdur';
-
-  @override
-  String get trayCompact => 'Yığcam sətirlər';
-
-  @override
-  String get trayCompactTip =>
-      'Hər server üçün bir sətir, qrafiksiz. Linux həmişə birsətirli düzülüşdən istifadə edir, çünki onun panel menyusu xüsusi düzülüş deyil, mətn etiketi ötürən D-Bus vasitəsilə göndərilir; seçilmiş qrafik yenə də şəkil kimi daxil edilə bilər.';
-
-  @override
-  String get trayKeepRunning => 'Sistem panelində işləməyə davam et';
-
-  @override
-  String get trayKeepRunningTip =>
-      'Pəncərəni bağladıqda tətbiq menyu sətrində və ya bildiriş sahəsində qalaraq serverlərini izləməyə davam edir. Bağlama düyməsinin tətbiqi sonlandırması üçün bunu söndür.';
 
   @override
   String get bgRunNeedsNotification =>
@@ -387,12 +357,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get dirEmpty => 'Qovluğun boş olduğuna əmin ol.';
-
-  @override
-  String get discoverSshServers => 'SSH serverlərini tap';
-
-  @override
-  String get discoveryFailed => 'Aşkarlama uğursuz oldu';
 
   @override
   String get distro => 'Distributiv';
@@ -484,20 +448,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get image => 'Obraz';
-
-  @override
-  String get macDmgImportDenied =>
-      'macOS əvvəlki buraxılışın məlumatlarını oxumağa icazə vermədi';
-
-  @override
-  String get macDmgImported => 'Əvvəlki buraxılışın məlumatları idxal edildi';
-
-  @override
-  String get macDmgImportFailed =>
-      'Əvvəlki buraxılışın məlumatlarını oxumaq mümkün olmadı';
-
-  @override
-  String get macDmgTitle => 'DMG buraxılışı';
 
   @override
   String get showHiddenFiles => 'Gizli faylları göstər';
@@ -805,17 +755,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String get pushToken => 'Push tokeni';
 
   @override
-  String get liveActivity => 'Canlı fəaliyyət';
-
-  @override
-  String get liveActivityTip =>
-      'Terminal seanslarını kilid ekranında və Dynamic Island-da göstərir. Serverin adı və bağlantı vəziyyəti kilidi açmadan görünür.';
-
-  @override
-  String get liveActivitySystemDisabled =>
-      'iOS buna icazə vermir. Açarlar «Settings › ServerBox › Live Activities» və «Settings › Face ID & Passcode › Live Activities» bölmələrindədir.';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand bu cihazın Linux mühitində işləyir. Əvvəlcə bir Linux sistemi quraşdırın.';
 
@@ -1083,18 +1022,7 @@ class AppLocalizationsAz extends AppLocalizations {
   }
 
   @override
-  String get sshConfigFound => 'Sistemdə SSH konfiqurasiyası tapıldı.';
-
-  @override
   String get sshConfigImport => 'SSH konfiqurasiyasını idxal et';
-
-  @override
-  String get sshConfigImportPermission =>
-      '~/.ssh/config faylını oxuyub server ayarlarını avtomatik idxal etməyə icazə verirsən?';
-
-  @override
-  String get sshConfigImportTip =>
-      'İlk server yaradılarkən ~/.ssh/config faylını oxumaq üçün sorğu göstər';
 
   @override
   String sshHostKeyChangedDesc(String serverName) {
@@ -1122,14 +1050,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get sshVerificationCode => 'Təsdiqləmə kodu';
-
-  @override
-  String get sshConfigManualSelect =>
-      'SSH konfiqurasiya faylını əl ilə seçmək istəyirsən?';
-
-  @override
-  String get sshConfigPermissionDenied =>
-      'macOS icazələrinə görə SSH konfiqurasiya faylına daxil olmaq mümkün deyil.';
 
   @override
   String get sshTermHelp =>
@@ -1264,9 +1184,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get wakeLock => 'Oyaq saxla';
-
-  @override
-  String get watchNotPaired => 'Cütləşdirilmiş Apple Watch yoxdur';
 
   @override
   String get webdavSettingEmpty => 'WebDav parametri boşdur';
@@ -1440,17 +1357,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get processThreads => 'Threads';
-
-  @override
-  String get watchServers => 'Saatdakı serverlər';
-
-  @override
-  String get watchServersTip =>
-      'Saat məlumatları Monitor-dan özü alır, buna görə yalnız Monitor-u olan serverləri seçmək mümkündür.';
-
-  @override
-  String get watchNoMonitorServer =>
-      'Heç bir serverdə Monitor konfiqurasiya edilməyib.';
 
   @override
   String get legacyStatusGoneTitle => 'Vəziyyət URL ünvanları artıq işləmir';
@@ -1627,11 +1533,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get agentRedact => 'Göndərməzdən əvvəl sirləri gizlət';
-
-  @override
-  String macDmgImportedPartly(String path) {
-    return 'Əvvəllər quraşdırılmış versiyanın məlumatları idxal edildi. Endirilmiş fayllar əvvəlki yerində, $path qovluğunda saxlanıldı.';
-  }
 
   @override
   String get bmcAccount => 'Hesab';
@@ -2320,12 +2221,8 @@ class AppLocalizationsAz extends AppLocalizations {
   String get thisDevice => 'Bu cihaz';
 
   @override
-  String get localServerTip =>
-      'Status skriptini burada işlədərək bu cihazı birbaşa oxuyur. SSH və Monitor istifadə olunmur, onların ayarları saxlanılır.';
-
-  @override
   String get localServerUnsupported =>
-      'Bu platforma bu cihazı server kimi oxuya bilmir. Linux, Windows və macOS DMG versiyası dəstəkləyir.';
+      'Bu profili istifadə etmək üçün SSH və ya Monitor bağlantısı qurun.';
 
   @override
   String get transportSectionOff =>
@@ -6988,48 +6885,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get syncKeyRotate => 'Sinxronizasiya açarını əvəz et';
 
   @override
-  String get discoverIntro => 'Server kimi əlavə ediləcək maşınları tapın.';
-
-  @override
   String get lan => 'Yerli şəbəkə';
-
-  @override
-  String get discoveryScan => 'Skan et';
-
-  @override
-  String get discoveryScanAgain => 'Yenidən skan et';
-
-  @override
-  String get discoveryScanning => 'Skan edilir…';
-
-  @override
-  String discoveryFound(int count) {
-    return '$count tapıldı';
-  }
-
-  @override
-  String discoverySelected(int count) {
-    return '$count seçildi';
-  }
-
-  @override
-  String discoveryAddN(int count) {
-    return '$count əlavə et';
-  }
-
-  @override
-  String discoveryAddedN(int count) {
-    return '$count əlavə edildi';
-  }
-
-  @override
-  String get discoveryAdded => 'Əlavə edildi';
-
-  @override
-  String get discoveryExists => 'Artıq var';
-
-  @override
-  String get localServerNoSsh => 'SSH olmadan';
 
   @override
   String get introWelcome =>
@@ -7037,47 +6893,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get security => 'Təhlükəsizlik';
-
-  @override
-  String get sshConfig => 'SSH konfiqurasiyası';
-
-  @override
-  String get tailscaleStopped => 'Tailscale işləmir';
-
-  @override
-  String get tailscaleStoppedTip =>
-      'Bu cihazda quraşdırılıb, lakin tailnet-ə qoşulmayıb.';
-
-  @override
-  String get cloudflareApiToken => 'API tokeni';
-
-  @override
-  String get cloudflareApiTokenTip =>
-      'Account · Cloudflare Tunnel · Read icazəsi lazımdır.';
-
-  @override
-  String get discoveryChooseFile => 'Fayl seç';
-
-  @override
-  String get discoveryOnline => 'Onlayn';
-
-  @override
-  String get discoveryOffline => 'Oflayn';
-
-  @override
-  String get discoverySelectAll => 'Hamısını seç';
-
-  @override
-  String get discoveryFilter => 'Ad və ya ünvana görə süz';
-
-  @override
-  String get discoverySameMachine => 'Eyni maşın, bir neçə ünvan';
-
-  @override
-  String get discoveryPrimaryAddress => 'Əsas ünvan';
-
-  @override
-  String get discoveryAlternateAddress => 'Ehtiyat ünvan';
 
   @override
   String get agentPermsGroup => 'Agent';

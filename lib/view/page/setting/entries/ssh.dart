@@ -4,7 +4,6 @@ extension _SSH on _AppSettingsPageState {
   List<SettingsGroup> _buildSSH() {
     return [
       SettingsGroup(libL10n.general, [
-        if (isDesktop) _buildSSHConfigImport(),
         _buildLetterCache(),
         _buildSSHWakeLock(),
         _buildSSHVirtualKeyAutoOff(),
@@ -26,28 +25,6 @@ extension _SSH on _AppSettingsPageState {
       ]),
     ];
   }
-
-  SettingsRow _buildSSHConfigImport() {
-    final label = l10n.sshConfigImport;
-    return SettingsRow(
-      label,
-      () => ListTile(
-        leading: const Icon(MingCute.file_import_line),
-        title: Text(label),
-        trailing: const Icon(Icons.keyboard_arrow_right),
-        onTap: () => showSshDiscoverySheet(
-          context,
-          sources: const [SshConfigDiscovery()],
-        ),
-      ),
-    );
-  }
-
-  // Scanning a shared code used to be a row here, mobile-only and under SSH
-  // *preferences*, while importing the same server from a file was under
-  // Backup. Both are ways of acquiring a server, and which one a person needs
-  // depends on what the sender picked — so they now sit together behind the
-  // server list's add button. See `_onTapAddServer`.
 
   SettingsRow _buildSSHVirtualKeyAutoOff() {
     final label = l10n.sshVirtualKeyAutoOff;

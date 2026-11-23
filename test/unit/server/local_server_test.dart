@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/data/model/server/capabilities.dart';
 import 'package:server_box/data/model/server/connect_credential.dart';
 import 'package:server_box/data/model/server/monitor/monitor_access.dart';
@@ -136,7 +135,7 @@ void main() {
 
     test('follow this platform', () {
       final caps = ServerCapabilities.ofSpi(local(parked: true));
-      expect(caps, LocalCapabilities(supported: LocalServer.isSupported));
+      expect(caps, const LocalCapabilities(supported: false));
     });
   });
 }

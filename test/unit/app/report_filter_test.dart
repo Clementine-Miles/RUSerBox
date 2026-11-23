@@ -5,7 +5,6 @@ import 'package:dartssh2/dartssh2.dart';
 import 'package:dio/dio.dart';
 import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show McpError, UnauthorizedError;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:icloud_storage_plus/models/exceptions.dart';
 import 'package:server_box/core/service/report_filter.dart';
 import 'package:server_box/data/model/app/error.dart';
 
@@ -26,11 +25,6 @@ void main() {
       const RemoteBackupPasswordMissing(),
       dio(DioExceptionType.connectionTimeout),
       dio(DioExceptionType.connectionError),
-      const ICloudContainerAccessException(
-        operation: 'download',
-        retryable: false,
-        message: 'not signed in',
-      ),
       UnauthorizedError('Authentication required'),
       McpError(0, 'Error POSTing to endpoint (HTTP 401): {}'),
     ];

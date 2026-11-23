@@ -181,10 +181,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get backupPassword => 'گذرواژه پشتیبان‌گیری';
 
   @override
-  String get backupPasswordRemoveSynced =>
-      'گذرواژهٔ پشتیبان از تمام دستگاه‌هایی که از همان iCloud Keychain استفاده می‌کنند حذف خواهد شد. همگام‌سازی در آن دستگاه‌ها تا زمان تنظیم گذرواژهٔ جدید متوقف می‌ماند.';
-
-  @override
   String get backupPasswordRemoved => 'گذرواژه پشتیبان‌گیری حذف شد';
 
   @override
@@ -286,37 +282,11 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get icloudBackupStateConflict => 'تداخل شناسایی شد';
-
-  @override
   String get bgRun => 'اجرا در پس‌زمینه';
 
   @override
   String get bgRunTip =>
       'این گزینه صرفاً به این معناست که برنامه برای اجرا در پس‌زمینه تلاش خواهد کرد. امکان اجرای برنامه در پس‌زمینه به فعال بودن مجوز مربوطه بستگی دارد. در ROMهای Android مبتنی بر AOSP، لطفاً «بهینه‌سازی باتری» را برای این برنامه غیرفعال کنید. برای MIUI / HyperOS، لطفاً خط‌مشی ذخیره انرژی را روی «نامحدود» قرار دهید.';
-
-  @override
-  String get trayReadings => 'شاخص‌ها';
-
-  @override
-  String get trayChart => 'نمودار';
-
-  @override
-  String get trayChartNone => 'هیچ‌کدام';
-
-  @override
-  String get trayCompact => 'ردیف‌های فشرده';
-
-  @override
-  String get trayCompactTip =>
-      'یک خط برای هر سرور، بدون نمودار. سیستم‌عامل Linux همیشه از طرح‌بندی تک‌خطی استفاده می‌کند زیرا منوی پنل آن از طریق D-Bus ارسال می‌شود که به جای طرح‌بندی سفارشی، فقط یک برچسب حمل می‌کند؛ البته ممکن است همچنان نمودار انتخاب‌شده را به‌صورت تصویر نمایش دهد.';
-
-  @override
-  String get trayKeepRunning => 'ادامه اجرا در سینی سیستم (Tray)';
-
-  @override
-  String get trayKeepRunningTip =>
-      'بستن پنجره، برنامه را در نوار منو یا ناحیه اعلان نگه می‌دارد تا همچنان وضعیت سرورهای شما را بررسی کند. با غیرفعال کردن این گزینه، دکمه بستن باعث خروج کامل از برنامه می‌شود.';
 
   @override
   String get bgRunNeedsNotification =>
@@ -387,12 +357,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get dirEmpty => 'مطمئن شوید که پوشه خالی است.';
-
-  @override
-  String get discoverSshServers => 'یافتن سرورهای SSH';
-
-  @override
-  String get discoveryFailed => 'شناسایی ناموفق بود';
 
   @override
   String get distro => 'توزیع';
@@ -484,19 +448,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get image => 'ایمیج';
-
-  @override
-  String get macDmgImportDenied =>
-      'سیستم‌عامل macOS اجازه خواندن داده‌های نسخه قبلی را نداد';
-
-  @override
-  String get macDmgImported => 'داده‌های نسخه قبلی وارد شد';
-
-  @override
-  String get macDmgImportFailed => 'امکان خواندن داده‌های نسخه قبلی وجود نداشت';
-
-  @override
-  String get macDmgTitle => 'نسخه DMG';
 
   @override
   String get showHiddenFiles => 'نمایش فایل‌های مخفی';
@@ -803,17 +754,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get pushToken => 'توکن Push';
 
   @override
-  String get liveActivity => 'فعالیت زنده (Live Activity)';
-
-  @override
-  String get liveActivityTip =>
-      'نمایش نشست‌های ترمینال در Lock Screen و Dynamic Island. بدون باز کردن قفل، نام سرور و وضعیت اتصال در آنجا قابل مشاهده خواهد بود.';
-
-  @override
-  String get liveActivitySystemDisabled =>
-      'سیستم‌عامل iOS این اجازه را نمی‌دهد. کلیدهای فعال‌سازی در مسیر Settings › ServerBox › Live Activities و Settings › Face ID & Passcode › Live Activities قرار دارند.';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'دستور ProxyCommand در محیط Linux این دستگاه اجرا می‌شود. ابتدا یک سیستم Linux نصب کنید.';
 
@@ -1082,18 +1022,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get sshConfigFound => 'پیکربندی SSH در این سیستم پیدا شد.';
-
-  @override
   String get sshConfigImport => 'وارد کردن پیکربندی SSH';
-
-  @override
-  String get sshConfigImportPermission =>
-      'اجازه می‌دهید فایل ~/.ssh/config خوانده و تنظیمات سرورهای داخل آن خودکار وارد شوند؟';
-
-  @override
-  String get sshConfigImportTip =>
-      'درخواست خواندن ~/.ssh/config در زمان ایجاد نخستین سرور';
 
   @override
   String sshHostKeyChangedDesc(String serverName) {
@@ -1122,14 +1051,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get sshVerificationCode => 'کد تأیید';
-
-  @override
-  String get sshConfigManualSelect =>
-      'آیا مایلید فایل پیکربندی SSH را به‌صورت دستی انتخاب کنید؟';
-
-  @override
-  String get sshConfigPermissionDenied =>
-      'به دلیل مجوزهای macOS دسترسی به فایل پیکربندی SSH امکان‌پذیر نیست.';
 
   @override
   String get sshTermHelp =>
@@ -1263,9 +1184,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get wakeLock => 'روشن نگه داشتن صفحه';
-
-  @override
-  String get watchNotPaired => 'هیچ Apple Watch جفت‌شده‌ای وجود ندارد';
 
   @override
   String get webdavSettingEmpty => 'تنظیمات WebDav خالی است';
@@ -1441,17 +1359,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get processThreads => 'رشته‌ها';
 
   @override
-  String get watchServers => 'سرورهای روی ساعت';
-
-  @override
-  String get watchServersTip =>
-      'ساعت اطلاعات را به‌طور مستقل از Monitor دریافت می‌کند، بنابراین تنها سرورهایی که Monitor دارند قابل انتخاب هستند.';
-
-  @override
-  String get watchNoMonitorServer =>
-      'برای هیچ سروری Monitor پیکربندی نشده است.';
-
-  @override
   String get legacyStatusGoneTitle => 'نشانی‌های URL وضعیت دیگر کار نمی‌کنند';
 
   @override
@@ -1625,11 +1532,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get agentRedact => 'پنهان‌سازی اسرار پیش از ارسال';
-
-  @override
-  String macDmgImportedPartly(String path) {
-    return 'داده‌های نسخه نصب‌شده قبلی وارد شد. فایل‌های دانلودشده در همان محل در $path باقی ماندند.';
-  }
 
   @override
   String get bmcAccount => 'حساب کاربری';
@@ -2329,12 +2231,8 @@ class AppLocalizationsFa extends AppLocalizations {
   String get thisDevice => 'این دستگاه';
 
   @override
-  String get localServerTip =>
-      'این دستگاه را با اجرای اسکریپت وضعیت در همین‌جا به‌صورت مستقیم می‌خواند. SSH و Monitor HTTP استفاده نمی‌شوند و تنظیمات آن‌ها حفظ می‌شود.';
-
-  @override
   String get localServerUnsupported =>
-      'این پلتفرم نمی‌تواند این دستگاه را به‌عنوان سرور بخواند. لینوکس، ویندوز و نسخه DMG در macOS این قابلیت را دارند.';
+      'برای استفاده از این نمایه، یک اتصال SSH یا Monitor تنظیم کنید.';
 
   @override
   String get transportSectionOff =>
@@ -7045,49 +6943,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get syncKeyRotate => 'جایگزینی کلید همگام‌سازی';
 
   @override
-  String get discoverIntro =>
-      'ماشین‌هایی را که می‌توان به‌عنوان سرور افزود پیدا کنید.';
-
-  @override
   String get lan => 'شبکه محلی';
-
-  @override
-  String get discoveryScan => 'اسکن';
-
-  @override
-  String get discoveryScanAgain => 'اسکن دوباره';
-
-  @override
-  String get discoveryScanning => 'در حال اسکن…';
-
-  @override
-  String discoveryFound(int count) {
-    return '$count مورد پیدا شد';
-  }
-
-  @override
-  String discoverySelected(int count) {
-    return '$count مورد انتخاب شد';
-  }
-
-  @override
-  String discoveryAddN(int count) {
-    return 'افزودن $count';
-  }
-
-  @override
-  String discoveryAddedN(int count) {
-    return '$count مورد افزوده شد';
-  }
-
-  @override
-  String get discoveryAdded => 'افزوده شد';
-
-  @override
-  String get discoveryExists => 'موجود است';
-
-  @override
-  String get localServerNoSsh => 'بدون SSH';
 
   @override
   String get introWelcome =>
@@ -7095,47 +6951,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get security => 'امنیت';
-
-  @override
-  String get sshConfig => 'پیکربندی SSH';
-
-  @override
-  String get tailscaleStopped => 'Tailscale در حال اجرا نیست';
-
-  @override
-  String get tailscaleStoppedTip =>
-      'روی این دستگاه نصب است، اما به tailnet متصل نیست.';
-
-  @override
-  String get cloudflareApiToken => 'توکن API';
-
-  @override
-  String get cloudflareApiTokenTip =>
-      'به مجوز Account · Cloudflare Tunnel · Read نیاز دارد.';
-
-  @override
-  String get discoveryChooseFile => 'انتخاب فایل';
-
-  @override
-  String get discoveryOnline => 'آنلاین';
-
-  @override
-  String get discoveryOffline => 'آفلاین';
-
-  @override
-  String get discoverySelectAll => 'انتخاب همه';
-
-  @override
-  String get discoveryFilter => 'فیلتر بر اساس نام یا نشانی';
-
-  @override
-  String get discoverySameMachine => 'یک ماشین، چند نشانی';
-
-  @override
-  String get discoveryPrimaryAddress => 'نشانی اصلی';
-
-  @override
-  String get discoveryAlternateAddress => 'نشانی جایگزین';
 
   @override
   String get agentPermsGroup => 'Agent';

@@ -77,11 +77,6 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
       }
-      expect(find.text(en.discoverIntro), findsOneWidget);
-
-      // The real sources read this device's interfaces with a timeout.
-      await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pump(const Duration(seconds: 10));
     });
   }
 }

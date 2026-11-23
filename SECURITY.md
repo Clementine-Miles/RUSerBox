@@ -2,15 +2,15 @@
 
 ## Supported versions
 
-Fixes go into the latest release only, of both the app and the ServerBox Monitor agent. Before reporting, check that the issue still happens on the [latest release](https://github.com/lollipopkit/flutter_server_box/releases/latest).
+Fixes go into the latest release only, of both the app and the ServerBox Monitor agent. Before reporting, check that the issue still happens on the [latest release](https://github.com/Clementine-Miles/ru_serbox/releases/latest).
 
 ## Reporting a vulnerability
 
-Report it privately through GitHub: **[Report a vulnerability](https://github.com/lollipopkit/flutter_server_box/security/advisories/new)** (the repository's Security tab). Do not open a public issue, pull request or discussion for it.
+Report it privately through GitHub: **[Report a vulnerability](https://github.com/Clementine-Miles/ru_serbox/security/advisories/new)** (the repository's Security tab). Do not open a public issue, pull request or discussion for it.
 
 Include:
 
-- the affected component: the app (and platform), the Monitor agent, or the website;
+- the affected component: the Android app, the Monitor agent, or the website;
 - the version, and how the server is reached (SSH, Monitor agent or both);
 - steps to reproduce, and what an attacker gains;
 - a proof of concept, if you have one.

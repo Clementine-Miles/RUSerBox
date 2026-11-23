@@ -16,11 +16,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/sync_key.dart';
 
-/// A WebDAV or iCloud folder, in memory.
+/// A shared remote folder, in memory.
 final class _Folder implements SyncFiles {
   final files = <String, ({Uint8List body, DateTime at})>{};
 
-  /// Written, and not here yet for the other devices (iCloud's delivery).
+  /// Written, with delivery to other devices pending.
   final hidden = <String>{};
 
   var writes = 0;

@@ -17,28 +17,6 @@ Choose between two layouts: **Small** displays current readings, and
 **Medium** displays charts for several metrics. During setup, select a server
 and its leading metric. The widget gets its URL from the server configuration.
 
-## iOS widgets
-
-iOS 17 or later is required.
-
-### Setup
-
-1. Touch and hold the Home Screen, then tap **+**.
-2. Search for “Server Box”.
-3. Choose the **Small** or **Medium** widget.
-4. After the widget appears, touch and hold it, then tap **Edit Widget**.
-5. Select the server to display.
-
-Each iOS widget displays one server. Small widgets show its current readings;
-Medium widgets show charts for several metrics.
-
-### Notes
-
-- Add the server to the App with the Monitor configured.
-- The App applies that server's `allowInsecure` setting. Use HTTPS unless you intentionally need plaintext HTTP for a non-loopback connection.
-- iOS chooses when widgets refresh; it does not guarantee a fixed interval.
-- Add multiple widgets to show different servers.
-
 ## Android widgets
 
 ### Setup
@@ -53,33 +31,13 @@ Every Android widget instance keeps its own server and metric selection, so
 widgets can show different information. The App supplies the server list. If
 it is empty, add a server configured with the Monitor first.
 
-## Watch app
-
-The Watch app requires watchOS 10 or later and reads data directly from
-the Monitor. It can show only servers configured with the Monitor in the
-App. Those servers sync by default. To exclude one, open **iOS Settings → App
-→ iOS → Watch app**.
-
-### Setup
-
-1. Open Server Box on the iPhone.
-2. Open **Settings → Application → iOS → Watch app**.
-3. Exclude any servers you do not want on the Watch; the remaining Monitor servers will sync.
-4. Wait for synchronization to finish.
-
-The Watch app sorts its server pages by name, regardless of the order in the
-App. To add a **Lock screen widget**, use the system widget gallery and select
-a server there; it has no separate setting in Server Box.
-
 ## Troubleshooting
 
-### Widgets or the Watch app do not update
+### Widgets do not update
 
 - Make sure the Monitor is running and reachable at the configured address.
 - Check the Monitor password, certificate, and `allowInsecure` setting in the App.
-- iOS controls the refresh schedule. Wait for another refresh, or remove and add the widget again.
 - Tap an Android widget to refresh it. Open its configuration to confirm the selected server and metric.
-- Pair the Watch with an iPhone. After changing server settings, open Server Box on the iPhone and wait for sync.
 
 ### A widget shows an error or no servers
 

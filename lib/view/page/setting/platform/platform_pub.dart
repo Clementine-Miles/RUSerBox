@@ -13,9 +13,6 @@ import 'package:server_box/data/store/stores.dart';
 typedef SettingsRowSpec = ({String label, Widget Function() build});
 
 abstract final class PlatformPublicSettings {
-  /// Mobile only: there is no app switcher card to hide on a desktop, and
-  /// neither platform channel implements this there.
-  ///
   /// The native side keeps its own copy, so the switch has to push as well as
   /// store.
   ///
@@ -24,7 +21,7 @@ abstract final class PlatformPublicSettings {
   /// Written the other way the preference was stored anyway, and the user was
   /// left reading "on" off a switch that had covered nothing.
   static SettingsRowSpec? get privacyBlur {
-    if (!isIOS && !isAndroid) return null;
+    if (!isAndroid) return null;
     final label = l10n.privacyBlur;
     return (
       label: label,
@@ -50,7 +47,6 @@ abstract final class PlatformPublicSettings {
   /// group the row is in has to know whether to exist, and a row that appears
   /// a frame later left a hairline with nothing under it.
   static Future<bool> get bioAuthAvailable async {
-    if (!isIOS && !isAndroid && !isWindows) return false;
     return await LocalAuth.isAvail;
   }
 

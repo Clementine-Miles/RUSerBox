@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:server_box/core/app_navigator.dart';
 import 'package:server_box/core/diag.dart';
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/core/monitor/http.dart';
 import 'package:server_box/core/monitor/terminal.dart';
 import 'package:server_box/core/ssh/auth.dart';
@@ -212,14 +211,9 @@ class TerminalSession {
       _ownsBackend = true;
       return;
     }
-    // A server that is this device holds no connection either. Left for
-    // [connect] where the platform cannot run one, so the refusal is said.
-    if (spi?.local == true) {
-      if (!LocalServer.isSupported) return;
-      _backend = LocalShellBackend();
-      _ownsBackend = true;
-      return;
-    }
+    // Imported profiles for a desktop host require converting to a remote
+    // connection before they can open a terminal.
+    if (spi?.local == true) return;
     if (client != null && !client.isClosed) {
       _backend = SshShellBackend(client);
       _ownsBackend = false;
@@ -266,15 +260,7 @@ class TerminalSession {
     }
 
     if (source case final LocalSource local) {
-      // Which of the three this is, is what a report saying "the terminal
-      // crashed" leaves out, and the three fail in entirely different places:
-      // an interpreter linked into the app, proot over the platform's shell,
-      // and the platform's shell itself.
-      final kind = !local.rootfs
-          ? 'host'
-          : isIOS
-          ? 'iul'
-          : 'proot';
+      final kind = local.rootfs ? 'proot' : 'host';
       Diag.crumb(
         SbDiag.terminal,
         'open local shell',
@@ -284,18 +270,8 @@ class TerminalSession {
     }
 
     final server = spi!;
-    // The host's own shell, never a userland: the machine this server stands
-    // for is the one the app runs on.
     if (server.local) {
-      if (!LocalServer.isSupported) {
-        throw const LocalServerErr(type: LocalServerErrType.unsupported);
-      }
-      Diag.crumb(
-        SbDiag.terminal,
-        'open local server shell',
-        data: {'session': session},
-      );
-      return install(LocalShellBackend());
+      throw const LocalServerErr(type: LocalServerErrType.unsupported);
     }
 
     var currentGrant = granted;
@@ -344,21 +320,11 @@ class TerminalSession {
     return install(SshShellBackend(client));
   }
 
-  /// A shell on this device, in its Linux userland or on the host.
-  ///
-  /// Two mechanisms behind one source: Android enters a real rootfs with proot
-  /// through the same pty a host shell uses, and iOS has no process to start at
-  /// all, so its guest is an interpreter with a console of its own. The page
-  /// above knows neither.
-  ShellBackend _localBackend(LocalSource local) {
-    if (local.rootfs && isIOS) {
-      return IulShellBackend(profileId: local.profileId);
-    }
-    return LocalShellBackend(
-      inRootfs: local.rootfs,
-      profileId: local.profileId,
-    );
-  }
+  /// Opens a PTY in the Android userland or on the device.
+  ShellBackend _localBackend(LocalSource local) => LocalShellBackend(
+    inRootfs: local.rootfs,
+    profileId: local.profileId,
+  );
 
   /// The agent's own shell, when [serverShellUsesAgent] says it is the one.
   ShellBackend? _grantedBackend(MonitorAccess? granted) {

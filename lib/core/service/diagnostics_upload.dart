@@ -29,7 +29,7 @@ const kDiagnosticsConsentVer = 1;
 /// package has no native half to disable — nothing to get wrong.
 ///
 /// What that gives up, this app already had: native crashes come from
-/// `ApplicationExitInfo` and MetricKit, and breadcrumbs are placed by hand
+/// `ApplicationExitInfo`, and breadcrumbs are placed by hand
 /// where they are worth having. It also costs nothing in dependencies — the
 /// package pulls in no transitive additions at all, which is the difference
 /// between a reviewable diff and an Android SDK for F-Droid to vet.

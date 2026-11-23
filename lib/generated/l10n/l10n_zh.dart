@@ -170,10 +170,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupPassword => '备份密码';
 
   @override
-  String get backupPasswordRemoveSynced =>
-      '这将移除同一 iCloud 钥匙串下所有设备的备份密码。重新设置密码前，这些设备将暂停同步。';
-
-  @override
   String get backupPasswordRemoved => '备份密码已移除';
 
   @override
@@ -267,37 +263,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get icloudBackupStateConflict => '检测到冲突';
-
-  @override
   String get bgRun => '后台运行';
 
   @override
   String get bgRunTip =>
       '此开关只代表程序会尝试在后台运行，具体能否后台运行取决于是否开启了权限。原生 Android 请关闭本 App 的“电池优化”，MIUI / HyperOS 请将省电策略改为“无限制”。';
-
-  @override
-  String get trayReadings => '读数';
-
-  @override
-  String get trayChart => '图表';
-
-  @override
-  String get trayChartNone => '无';
-
-  @override
-  String get trayCompact => '紧凑行';
-
-  @override
-  String get trayCompactTip =>
-      '每台服务器仅显示单行摘要，不展开图表。Linux 系统托盘受限于 D-Bus 菜单协议，固定使用单行文本，但仍可将所选图表渲染为图片项。';
-
-  @override
-  String get trayKeepRunning => '在托盘中继续运行';
-
-  @override
-  String get trayKeepRunningTip =>
-      '关闭窗口后，App 会留在菜单栏或通知区域中，并继续监控服务器。关闭此选项后，关闭按钮会退出 App。';
 
   @override
   String get bgRunNeedsNotification => '后台运行需要显示常驻通知，但 App 尚未获得通知权限。点击授权。';
@@ -363,12 +333,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get dirEmpty => '请确保目录为空';
-
-  @override
-  String get discoverSshServers => '发现 SSH 服务器';
-
-  @override
-  String get discoveryFailed => '发现失败';
 
   @override
   String get distro => '发行版';
@@ -456,18 +420,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get image => '镜像';
-
-  @override
-  String get macDmgImportDenied => 'macOS 拒绝了读取旧版本数据的权限请求';
-
-  @override
-  String get macDmgImported => '已导入旧版本数据';
-
-  @override
-  String get macDmgImportFailed => '无法读取旧版本数据';
-
-  @override
-  String get macDmgTitle => 'DMG 版';
 
   @override
   String get showHiddenFiles => '显示隐藏文件';
@@ -755,16 +707,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pushToken => '消息推送 Token';
 
   @override
-  String get liveActivity => '实时活动';
-
-  @override
-  String get liveActivityTip => '在锁屏和灵动岛上显示终端会话。无需解锁即可看到服务器名称和连接状态。';
-
-  @override
-  String get liveActivitySystemDisabled =>
-      'iOS 未允许显示。开关位于「设置 › ServerBox › 实时活动」和「设置 › 面容 ID 与密码 › 实时活动」。';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand 在本机的 Linux 环境中运行，请先安装一个 Linux 系统。';
 
@@ -1012,16 +954,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get sshConfigFound => '在系统中发现了 SSH 配置。';
-
-  @override
   String get sshConfigImport => 'SSH 配置导入';
-
-  @override
-  String get sshConfigImportPermission => '是否允许读取 ~/.ssh/config 并自动导入其中的服务器设置？';
-
-  @override
-  String get sshConfigImportTip => '首次创建服务器时提示读取 ~/.ssh/config';
 
   @override
   String sshHostKeyChangedDesc(String serverName) {
@@ -1049,12 +982,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sshVerificationCode => '验证码';
-
-  @override
-  String get sshConfigManualSelect => '是否要手动选择 SSH 配置文件？';
-
-  @override
-  String get sshConfigPermissionDenied => '由于 macOS 权限限制，无法访问 SSH 配置文件。';
 
   @override
   String get sshTermHelp =>
@@ -1176,9 +1103,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wakeLock => '保持唤醒';
-
-  @override
-  String get watchNotPaired => '没有已配对的 Apple Watch';
 
   @override
   String get webdavSettingEmpty => 'WebDav 设置项为空';
@@ -1323,15 +1247,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get processThreads => '线程';
-
-  @override
-  String get watchServers => '手表上的服务器';
-
-  @override
-  String get watchServersTip => '手表独立从 Monitor 获取数据，所以只能选择已配置 Monitor 的服务器。';
-
-  @override
-  String get watchNoMonitorServer => '没有服务器配置了 Monitor';
 
   @override
   String get legacyStatusGoneTitle => '状态链接已失效';
@@ -1491,11 +1406,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get agentRedact => '发送前遮蔽机密';
-
-  @override
-  String macDmgImportedPartly(String path) {
-    return '已导入此前安装版本的数据。下载的文件仍保留在 $path。';
-  }
 
   @override
   String get bmcAccount => '账户';
@@ -2147,12 +2057,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get thisDevice => '本机';
 
   @override
-  String get localServerTip =>
-      '直接在本机执行采集脚本获取系统状态，不使用 SSH 或 Monitor（原有连接配置仍会保留）。';
-
-  @override
-  String get localServerUnsupported =>
-      '当前平台不支持添加本机作为服务器（仅支持 Linux、Windows 及 macOS DMG 版）。';
+  String get localServerUnsupported => '请配置 SSH 或 Monitor 连接以使用此配置。';
 
   @override
   String get transportSectionOff => '当前未启用，下方配置将保留以便日后重新开启。';
@@ -6601,48 +6506,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get syncKeyRotate => '更换同步密钥';
 
   @override
-  String get discoverIntro => '找到可以添加为服务器的机器。';
-
-  @override
   String get lan => '局域网';
-
-  @override
-  String get discoveryScan => '扫描';
-
-  @override
-  String get discoveryScanAgain => '重新扫描';
-
-  @override
-  String get discoveryScanning => '正在扫描…';
-
-  @override
-  String discoveryFound(int count) {
-    return '找到 $count 台';
-  }
-
-  @override
-  String discoverySelected(int count) {
-    return '已选 $count 台';
-  }
-
-  @override
-  String discoveryAddN(int count) {
-    return '添加 $count 台';
-  }
-
-  @override
-  String discoveryAddedN(int count) {
-    return '已添加 $count 台';
-  }
-
-  @override
-  String get discoveryAdded => '已添加';
-
-  @override
-  String get discoveryExists => '已存在';
-
-  @override
-  String get localServerNoSsh => '无需 SSH';
 
   @override
   String get introWelcome =>
@@ -6650,46 +6514,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get security => '安全';
-
-  @override
-  String get sshConfig => 'SSH 配置';
-
-  @override
-  String get tailscaleStopped => 'Tailscale 未运行';
-
-  @override
-  String get tailscaleStoppedTip => '本机已安装 Tailscale，但未连接到 tailnet。';
-
-  @override
-  String get cloudflareApiToken => 'API 令牌';
-
-  @override
-  String get cloudflareApiTokenTip =>
-      '需要 Account · Cloudflare Tunnel · Read 权限。';
-
-  @override
-  String get discoveryChooseFile => '选择文件';
-
-  @override
-  String get discoveryOnline => '在线';
-
-  @override
-  String get discoveryOffline => '离线';
-
-  @override
-  String get discoverySelectAll => '全选';
-
-  @override
-  String get discoveryFilter => '按名称或地址筛选';
-
-  @override
-  String get discoverySameMachine => '同一台机器，多个地址';
-
-  @override
-  String get discoveryPrimaryAddress => '主地址';
-
-  @override
-  String get discoveryAlternateAddress => '备用地址';
 
   @override
   String get agentPermsGroup => 'Agent';
@@ -7091,10 +6915,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get backupPassword => '備份密碼';
 
   @override
-  String get backupPasswordRemoveSynced =>
-      '這將移除同一 iCloud 鑰匙圈下所有裝置的備份密碼。重新設定密碼前，這些裝置將暫停同步。';
-
-  @override
   String get backupPasswordRemoved => '備份密碼已移除';
 
   @override
@@ -7188,37 +7008,11 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String get icloudBackupStateConflict => '偵測到衝突';
-
-  @override
   String get bgRun => '背景執行';
 
   @override
   String get bgRunTip =>
       '此開關僅代表程式會嘗試於背景執行，能否成功取決於系統權限。在原生 Android 上，請關閉本應用的「電池最佳化」；在 MIUI / HyperOS 上，請將省電策略調整為「無限制」。';
-
-  @override
-  String get trayReadings => '讀數';
-
-  @override
-  String get trayChart => '圖表';
-
-  @override
-  String get trayChartNone => '無';
-
-  @override
-  String get trayCompact => '精簡列';
-
-  @override
-  String get trayCompactTip =>
-      '每部伺服器顯示一行，不顯示圖表。Linux 的面板選單透過 D-Bus 傳送標籤而非自訂版面配置，因此一律使用單行版面配置，但仍可將所選圖表顯示為圖片。';
-
-  @override
-  String get trayKeepRunning => '在系統匣中繼續執行';
-
-  @override
-  String get trayKeepRunningTip =>
-      '關閉視窗後，App 會留在選單列或通知區域中，並繼續監控伺服器。關閉此選項後，關閉按鈕會結束 App。';
 
   @override
   String get bgRunNeedsNotification => '背景執行需要顯示常駐通知，但 App 尚未取得通知權限。點一下即可授權。';
@@ -7284,12 +7078,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get dirEmpty => '請確保目錄為空';
-
-  @override
-  String get discoverSshServers => '發現 SSH 伺服器';
-
-  @override
-  String get discoveryFailed => '發現失敗';
 
   @override
   String get distro => '發行版';
@@ -7377,18 +7165,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get image => '映像檔';
-
-  @override
-  String get macDmgImportDenied => 'macOS 不允許讀取此前安裝版本的資料';
-
-  @override
-  String get macDmgImported => '已匯入此前安裝版本的資料';
-
-  @override
-  String get macDmgImportFailed => '讀不到此前安裝版本的資料';
-
-  @override
-  String get macDmgTitle => 'DMG 版';
 
   @override
   String get showHiddenFiles => '顯示隱藏檔案';
@@ -7676,16 +7452,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get pushToken => '消息推送 Token';
 
   @override
-  String get liveActivity => '即時動態';
-
-  @override
-  String get liveActivityTip => '在鎖定畫面和動態島上顯示終端機工作階段。無需解鎖即可查看伺服器名稱與連線狀態。';
-
-  @override
-  String get liveActivitySystemDisabled =>
-      'iOS 未允許顯示。開關位於「設定 › ServerBox › 即時動態」和「設定 › 面容 ID 與密碼 › 即時動態」。';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand 在本機的 Linux 環境中執行，請先安裝一個 Linux 系統。';
 
@@ -7933,16 +7699,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String get sshConfigFound => '在系統中發現了 SSH 設定。';
-
-  @override
   String get sshConfigImport => '匯入SSH設定';
-
-  @override
-  String get sshConfigImportPermission => '是否允許讀取 ~/.ssh/config 並自動導入其中的伺服器設定？';
-
-  @override
-  String get sshConfigImportTip => '在建立第一個伺服器時提示讀取 ~/.ssh/config';
 
   @override
   String sshHostKeyChangedDesc(String serverName) {
@@ -7970,12 +7727,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sshVerificationCode => '驗證碼';
-
-  @override
-  String get sshConfigManualSelect => '是否要手動選擇 SSH 設定檔案？';
-
-  @override
-  String get sshConfigPermissionDenied => '由於 macOS 權限限制，無法存取 SSH 設定檔案。';
 
   @override
   String get sshTermHelp =>
@@ -8097,9 +7848,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get wakeLock => '保持喚醒';
-
-  @override
-  String get watchNotPaired => '沒有已配對的 Apple Watch';
 
   @override
   String get webdavSettingEmpty => 'WebDav 設定項爲空';
@@ -8244,15 +7992,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get processThreads => '執行緒';
-
-  @override
-  String get watchServers => '手錶上的伺服器';
-
-  @override
-  String get watchServersTip => '手錶獨立從 Monitor 取得資料，所以只能選擇已設定 Monitor 的伺服器。';
-
-  @override
-  String get watchNoMonitorServer => '沒有伺服器設定了 Monitor';
 
   @override
   String get legacyStatusGoneTitle => '狀態連結已失效';
@@ -8411,11 +8150,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get agentRedact => '傳送前遮蔽機密';
-
-  @override
-  String macDmgImportedPartly(String path) {
-    return '已匯入先前安裝版本的資料。下載的檔案仍保留在 $path。';
-  }
 
   @override
   String get bmcAccount => '帳戶';
@@ -9067,11 +8801,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get thisDevice => '本機';
 
   @override
-  String get localServerTip => '直接在本機執行狀態腳本讀取本機資訊，不使用 SSH 和 Monitor，兩者的設定會保留。';
-
-  @override
-  String get localServerUnsupported =>
-      '目前平台無法將本機作為伺服器讀取。Linux、Windows 和 macOS DMG 版本支援。';
+  String get localServerUnsupported => '請設定 SSH 或 Monitor 連線以使用此設定檔。';
 
   @override
   String get transportSectionOff => '已關閉。下面的欄位會保留，供你再次開啟時使用。';
@@ -13525,48 +13255,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get syncKeyRotate => '更換同步金鑰';
 
   @override
-  String get discoverIntro => '找到可以新增為伺服器的機器。';
-
-  @override
   String get lan => '區域網路';
-
-  @override
-  String get discoveryScan => '掃描';
-
-  @override
-  String get discoveryScanAgain => '重新掃描';
-
-  @override
-  String get discoveryScanning => '正在掃描…';
-
-  @override
-  String discoveryFound(int count) {
-    return '找到 $count 台';
-  }
-
-  @override
-  String discoverySelected(int count) {
-    return '已選 $count 台';
-  }
-
-  @override
-  String discoveryAddN(int count) {
-    return '新增 $count 台';
-  }
-
-  @override
-  String discoveryAddedN(int count) {
-    return '已新增 $count 台';
-  }
-
-  @override
-  String get discoveryAdded => '已新增';
-
-  @override
-  String get discoveryExists => '已存在';
-
-  @override
-  String get localServerNoSsh => '無需 SSH';
 
   @override
   String get introWelcome =>
@@ -13574,46 +13263,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get security => '安全性';
-
-  @override
-  String get sshConfig => 'SSH 設定';
-
-  @override
-  String get tailscaleStopped => 'Tailscale 未執行';
-
-  @override
-  String get tailscaleStoppedTip => '本機已安裝 Tailscale，但未連線到 tailnet。';
-
-  @override
-  String get cloudflareApiToken => 'API 權杖';
-
-  @override
-  String get cloudflareApiTokenTip =>
-      '需要 Account · Cloudflare Tunnel · Read 權限。';
-
-  @override
-  String get discoveryChooseFile => '選擇檔案';
-
-  @override
-  String get discoveryOnline => '線上';
-
-  @override
-  String get discoveryOffline => '離線';
-
-  @override
-  String get discoverySelectAll => '全選';
-
-  @override
-  String get discoveryFilter => '依名稱或位址篩選';
-
-  @override
-  String get discoverySameMachine => '同一台機器，多個位址';
-
-  @override
-  String get discoveryPrimaryAddress => '主要位址';
-
-  @override
-  String get discoveryAlternateAddress => '備用位址';
 
   @override
   String get agentPermsGroup => 'Agent';

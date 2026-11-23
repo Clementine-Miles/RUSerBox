@@ -4,8 +4,7 @@ part of '../home.dart';
 /// share opened from outside, what a launch has to say, the server
 /// refresh cycle, and the system UI a fullscreen tab hides.
 extension _HomePageLifecycle on _HomePageState {
-  /// What a lifecycle edge means on a phone. A desktop never gets here —
-  /// see [_HomePageState.didChangeAppLifecycleState].
+  /// Updates the app when Android pauses or resumes it.
   void _handleMobileLifecycle(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
@@ -65,10 +64,6 @@ extension _HomePageLifecycle on _HomePageState {
     // [StoreRecovery].
     await StoreUnreadableNotice.showIfNeeded(context);
     if (!mounted) return;
-    // Says so when this launch took over the sandboxed build's data, or
-    // when it could not — see [SandboxImport].
-    await SandboxImportNotice.showIfNeeded(context);
-    if (!mounted) return;
     // Says so when this upgrade took a feature away — see
     // [LegacyStatusUrlsMigration].
     await LegacyStatusNotice.showIfNeeded(context);
@@ -79,10 +74,6 @@ extension _HomePageLifecycle on _HomePageState {
     // report is now kept and waits under **Settings → Privacy** — see
     // [CrashReportDialog]. The two notices above stay: both are about data
     // this launch changed, which is not something to find out about later.
-    // A share opened from AirDrop or the Files app while this app was not
-    // running: the platform launched it with the URL, and the native side
-    // has been holding the bytes since before the first frame.
-    //
     // **Before the guide, not after.** The guide is an overlay above every
     // route and skips itself when something else is up — which only works if
     // the something else is already there. With this second, a launch that
@@ -95,7 +86,7 @@ extension _HomePageLifecycle on _HomePageState {
   }
 
   /// Takes in what the platform handed this app, if anything is waiting: a
-  /// `.sbxsrv`, then a `serverbox://` link, then what another app shared.
+  /// `serverbox://` link followed by anything another app shared.
   ///
   /// One method for both because they share every constraint below — the
   /// lock screen, the launch ordering, the re-entry guard — and two copies
@@ -107,8 +98,7 @@ extension _HomePageLifecycle on _HomePageState {
     }
     // Before the launch path has decided whether there is a lock, [_authed] is
     // null and awaiting it waits for nothing — so a `resumed` edge arriving
-    // first (a cold launch on macOS, where opening the file is what activates
-    // the app) would put the passphrase prompt on the same root navigator as
+    // first would put the passphrase prompt on the same root navigator as
     // the lock page, over it. Returning costs nothing: the launch path calls
     // this itself once it has assigned it, and taking the guard below would
     // have made that call a no-op instead.
@@ -118,11 +108,9 @@ extension _HomePageLifecycle on _HomePageState {
     // discarded on any way out that did not get that far.
     Map<String, Object?>? incoming;
     try {
-      final text = await MethodChans.takeOpenedShare();
       final link = await MethodChans.takeOpenedLink();
       incoming = await MethodChans.takeIncoming();
-      final hasText = text != null && text.isNotEmpty;
-      if ((!hasText && link == null && incoming == null) || !mounted) return;
+      if ((link == null && incoming == null) || !mounted) return;
       // Behind the lock screen for the same reason the launch notices are: it
       // is a root-navigator dialog, and the lock page is on that navigator.
       //
@@ -133,9 +121,6 @@ extension _HomePageLifecycle on _HomePageState {
       // the new [_authed] — has run by the time this line does.
       await _authed;
       if (!mounted) return;
-      if (hasText) {
-        await ServerShareUi.consume(context, ref, text, digitsOnly: false);
-      }
       if (link != null && mounted) await AppLinkRouter.open(context, ref, link);
       if (incoming != null && mounted) {
         final taken = incoming;
@@ -170,12 +155,6 @@ extension _HomePageLifecycle on _HomePageState {
   /// spells out, defeated by the one branch that does not go through it.
   /// Resuming has no such sequence and is where this still has to happen.
   Future<void> _goAuth({bool showGuide = true}) async {
-    // First, and on every path out of here. On iOS the cover is a view over the
-    // Flutter window, so it is *above* every route drawn inside it — left up it
-    // would hide the lock screen instead of protecting it. Releasing it before
-    // the push costs at most the frames until the route appears, and in
-    // practice the channel round trip outlasts the push.
-    //
     // The path that matters is the early return below. Backgrounding *from* the
     // lock screen and coming back re-locks the cover and lands here, where
     // `alreadyIn` is true — and skipping this left the cover over that screen
@@ -205,7 +184,6 @@ extension _HomePageLifecycle on _HomePageState {
   }
 
   bool get _canRefreshServers {
-    if (isDesktop) return true;
     final lifecycle = WidgetsBinding.instance.lifecycleState;
     if (lifecycle == null || lifecycle == AppLifecycleState.resumed) {
       return true;

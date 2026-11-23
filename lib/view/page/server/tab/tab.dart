@@ -49,7 +49,6 @@ import 'package:server_box/view/page/server/widget/server_side_tile.dart';
 import 'package:server_box/view/widget/pane_settings.dart';
 import 'package:server_box/view/widget/server_sort_rows.dart';
 import 'package:server_box/view/widget/tag_switcher.dart';
-import 'package:window_manager/window_manager.dart';
 
 part 'bar.dart';
 part 'bulk.dart';
@@ -143,8 +142,7 @@ const _kBurnInShift = 7.0;
 class _ServerPageState extends ConsumerState<ServerPage>
     with
         AutomaticKeepAliveClientMixin,
-        TickerProviderStateMixin,
-        WindowListener {
+        TickerProviderStateMixin {
   final _offsetNotifier = ValueNotifier(Offset.zero);
   PageController? _landscapeController;
   String? _landscapeSeenId;
@@ -162,10 +160,6 @@ class _ServerPageState extends ConsumerState<ServerPage>
 
   /// Full screen's key bindings, focused on entering it.
   final _fsKeys = FocusNode(debugLabel: 'server full screen');
-
-  /// Whether the window was full screen before the button made it so, and so
-  /// stays that way after.
-  bool _fsWindowWasFull = false;
 
   /// What [ServerFullScreen] has last been told.
   bool _fsPublished = false;
@@ -259,11 +253,6 @@ class _ServerPageState extends ConsumerState<ServerPage>
     }
     setState(() {});
   }
-
-  /// The window left full screen some other way: the page follows it.
-  @override
-  void onWindowLeaveFullScreen() =>
-      unawaited(_exitFullScreen(window: false));
 
   /// What the globe guide points at: the globe button in the tag bar's
   /// [_Bar._listActions]. Null context when that button is not built — the
@@ -477,10 +466,6 @@ class _ServerPageState extends ConsumerState<ServerPage>
     Stores.setting.fullScreenJitter.listenable().removeListener(
       _burnInListener,
     );
-    if (isDesktop) windowManager.removeListener(this);
-    if (_fsManual.value && isDesktop && !_fsWindowWasFull) {
-      unawaited(windowManager.setFullScreen(false));
-    }
     _fsKeys.dispose();
     _fsManual.dispose();
     _fsBar.dispose();
@@ -507,7 +492,6 @@ class _ServerPageState extends ConsumerState<ServerPage>
     Stores.setting.globeEnabled.listenable().addListener(_globeEnabledListener);
     Stores.setting.collapseUIDefault.listenable().addListener(_uiFoldListener);
     Stores.setting.fullScreenJitter.listenable().addListener(_burnInListener);
-    if (isDesktop) windowManager.addListener(this);
     _startAvoidJitterTimer();
     _scheduleGlobeGuide();
   }

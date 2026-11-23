@@ -28,7 +28,6 @@ final class _IntroPage extends StatelessWidget {
       ),
     ),
     (applies: _needsDiagnosticsConsent, build: _buildDiagnostics),
-    (applies: _offersDiscovery, build: _buildDiscovery),
   ];
 
   /// The steps this launch should show.
@@ -55,11 +54,6 @@ final class _IntroPage extends StatelessWidget {
     if (!DiagnosticsUpload.availableInBuild) return false;
     return _setting.diagnosticsConsentVer.fetch() < kDiagnosticsConsentVer;
   }
-
-  /// A first launch, on a device with something to discover.
-  static Future<bool> _offersDiscovery() async =>
-      await _isFirstLaunch() &&
-      (LocalServer.isSupported || (await availableSshDiscoveries()).isNotEmpty);
 
   // — Widget build ——————————————————————————————————————————————————
 
@@ -96,7 +90,7 @@ final class _IntroPage extends StatelessWidget {
     // refuses to start until the consent counter above is written.
     unawaited(DiagnosticsUpload.sync());
     Navigator.of(ctx).pushReplacement(
-      AppPageRoute(builder: (_) => _buildHomeWithWindowFrame()),
+      AppPageRoute(builder: (_) => const HomePage()),
     );
   }
 
@@ -243,25 +237,6 @@ final class _IntroPage extends StatelessWidget {
     );
   }
 
-  /// This device and every [SshDiscovery] this build has, to add as servers.
-  static Widget _buildDiscovery(BuildContext ctx, double padTop) {
-    final l10n = ctx.l10n;
-    return SafeArea(
-      bottom: false,
-      child: SshDiscoveryView.batch(
-        columnWidth: PageColumns.columnWidth,
-        header: [
-          _head(
-            ctx,
-            padTop,
-            glyph: Icons.radar,
-            title: l10n.discoverSshServers,
-            lead: l10n.discoverIntro,
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 /// The intro this launch would show, or null when none applies.

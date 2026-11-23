@@ -38,14 +38,11 @@ abstract final class ProgramStatusAlerts {
 
   static const _channelId = 'program_status';
 
-  static bool get _supported =>
-      !kIsWeb &&
-      (isAndroid || isIOS || isMacOS || isLinux || isWindows);
+  static bool get _supported => isAndroid;
 
   /// Initializes the plugin once, and asks whether notifications are allowed
   /// — again on a later call while they are not, at most once per
-  /// [_askInterval]. Called while the app is in front: on iOS a request made
-  /// from the background is not shown.
+  /// [_askInterval].
   static Future<bool> prepare() async {
     if (!_supported) return false;
     if (!await (_ready ??= _init())) return false;
@@ -75,24 +72,8 @@ abstract final class ProgramStatusAlerts {
   static Future<bool> _init() async {
     try {
       await _plugin.initialize(
-        settings: InitializationSettings(
-          android: const AndroidInitializationSettings('ic_notification'),
-          iOS: const DarwinInitializationSettings(
-            requestAlertPermission: false,
-            requestBadgePermission: false,
-            requestSoundPermission: false,
-          ),
-          macOS: const DarwinInitializationSettings(
-            requestAlertPermission: false,
-            requestBadgePermission: false,
-            requestSoundPermission: false,
-          ),
-          linux: LinuxInitializationSettings(defaultActionName: libL10n.open),
-          windows: const WindowsInitializationSettings(
-            appName: 'ServerBox',
-            appUserModelId: 'Lollipopkit.ServerBox',
-            guid: '5f3c4d6e-0b8a-4c51-9a2e-7d1f6b0c8e93',
-          ),
+        settings: const InitializationSettings(
+          android: AndroidInitializationSettings('ic_notification'),
         ),
         onDidReceiveNotificationResponse: (response) {
           final key = response.payload;
@@ -107,33 +88,13 @@ abstract final class ProgramStatusAlerts {
   }
 
   static Future<bool> _requestPermission() async {
-    if (isAndroid) {
-      final android = _plugin
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >();
-      if (android == null) return false;
-      // What the system settings say now, on every Android version; asking
-      // only adds a prompt from 13 on.
-      if (await android.areNotificationsEnabled() ?? false) return true;
-      return await android.requestNotificationsPermission() ?? false;
-    }
-    if (isIOS) {
-      final ios = _plugin
-          .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin
-          >();
-      return await ios?.requestPermissions(alert: true, sound: true) ?? false;
-    }
-    if (isMacOS) {
-      final macos = _plugin
-          .resolvePlatformSpecificImplementation<
-            MacOSFlutterLocalNotificationsPlugin
-          >();
-      return await macos?.requestPermissions(alert: true, sound: true) ??
-          false;
-    }
-    return true;
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android == null) return false;
+    if (await android.areNotificationsEnabled() ?? false) return true;
+    return await android.requestNotificationsPermission() ?? false;
   }
 
   /// Shows (or replaces) terminal [key]'s notification. [reveal] is run when
@@ -209,8 +170,6 @@ abstract final class ProgramStatusAlerts {
             priority: Priority.high,
             category: AndroidNotificationCategory.status,
           ),
-          iOS: const DarwinNotificationDetails(threadIdentifier: _channelId),
-          macOS: const DarwinNotificationDetails(threadIdentifier: _channelId),
         ),
       );
     } catch (e, s) {

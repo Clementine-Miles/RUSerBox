@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:fl_lib/fl_lib.dart';
 
 /// A sync key's file, in memory, with the version a write must name. While
-/// [blind], a device that does not see the one there yet (iCloud's
+/// [blind], a device that does not see the one there yet (delayed
 /// delivery, a write at the same moment); while [offline], one that cannot
 /// reach it.
 final class MemoryKeyFile implements SyncKeyFile {

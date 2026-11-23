@@ -9,10 +9,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/diag.dart';
 import 'package:server_box/core/extension/bmc.dart';
 import 'package:server_box/core/extension/context/locale.dart';
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/core/route.dart';
-import 'package:server_box/core/service/ssh_discovery_sources.dart';
-import 'package:server_box/core/service/ssh_discovery_ssh_config.dart';
 import 'package:server_box/core/ssh/agent.dart';
 import 'package:server_box/core/ssh/control_master.dart';
 import 'package:server_box/core/ssh/jump_chain.dart';
@@ -44,7 +41,6 @@ import 'package:server_box/view/page/private_key/edit.dart';
 import 'package:server_box/view/page/server/custom_cmds.dart';
 import 'package:server_box/view/widget/cert_sheet.dart';
 import 'package:server_box/view/widget/group_title.dart';
-import 'package:server_box/view/widget/ssh_discovery/view.dart';
 
 part 'actions.dart';
 part 'widget.dart';
@@ -190,10 +186,6 @@ class _ServerEditPageState extends ConsumerState<ServerEditPage>
   final _autoConnect = ValueNotifier(true);
   final _jumpServers = <String>[].vn;
 
-  /// Whether this device has a discovery source at all.
-  late final _discoverable = availableSshDiscoveries().then(
-    (sources) => sources.isNotEmpty,
-  );
   /// `MonitorHttpCredential.certSha256`: the agent's own certificate,
   /// accepted here or on connecting.
   final _monitorCert = ValueNotifier<String?>(null);
@@ -355,15 +347,6 @@ class _ServerEditPageState extends ConsumerState<ServerEditPage>
     // belongs beside the other page-level action rather than inside the
     // scrolling content, where it took a row of its own and moved away.
     final actions = <Widget>[
-      // Only while adding. Sweeping the network for hosts is how someone with
-      // an empty form finds what to put in it; on a server that already exists
-      // it answers a question nobody is asking.
-      if (spi == null)
-        FutureBuilder(
-          future: _discoverable,
-          builder: (_, snap) =>
-              snap.data == true ? _buildDiscoverBtn() : UIs.placeholder,
-        ),
       _buildWriteScriptTip(),
       if (spi != null) _buildDelBtn(),
       // In the bar, beside the rest of what is done to this page rather than
@@ -400,11 +383,6 @@ class _ServerEditPageState extends ConsumerState<ServerEditPage>
       allTags: servers.tags,
       onEdit: _onEditTags,
     ).cardx;
-    // Here for the same reason as the tags: the group is rebuilt by notifiers.
-    final otherIsLocal = servers.servers.values.any(
-      (e) => e.local && e.id != _serverId,
-    );
-
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(13, 7, 13, 34),
       child: Center(
@@ -427,7 +405,7 @@ class _ServerEditPageState extends ConsumerState<ServerEditPage>
                 suggestion: true,
               ),
               tagTile,
-              _buildConnectionGroup(otherIsLocal: otherIsLocal),
+              _buildConnectionGroup(),
               // In the order they are dialled, which is the order the list
               // above is in: a section that stayed put while its row moved
               // would make the drag look like it had done nothing.
@@ -470,11 +448,7 @@ class _ServerEditPageState extends ConsumerState<ServerEditPage>
       _initWithSpi(spi!);
       if (widget.args?.section case final section?) _openSection(section);
     } else if (widget.args?.draft case final draft?) {
-      // A form someone else started; the SSH config offer below would
-      // replace what it brought.
       _initWithDraft(draft);
-    } else if (isDesktop && Stores.setting.firstTimeReadSSHCfg.fetch()) {
-      _checkSSHConfigImport();
     }
   }
 }

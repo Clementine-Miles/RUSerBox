@@ -1,6 +1,6 @@
 ---
 title: 构建指南
-description: 在不同平台构建 Server Box 和 Monitor
+description: 构建 Android 版 Server Box 和 Monitor
 ---
 
 Flutter App 使用仓库提供的 `fl_build` 工具构建。Monitor 是独立的 Rust 服务，需要单独构建。
@@ -8,7 +8,7 @@ Flutter App 使用仓库提供的 `fl_build` 工具构建。Monitor 是独立的
 ## 前置条件
 
 - stable channel 的 Flutter SDK
-- 平台 SDK：iOS 需要 Xcode，Android 需要 Android Studio 和 Android SDK，Windows 需要 Visual Studio
+- Android SDK、NDK 和 JDK
 - Rust toolchain：App 通过 Dart build hook、`flutter_rust_bridge_hooks` 和 native assets 构建 `crates/sbm_ffi`
 
 获取 Dart packages 前先初始化 Git submodule：
@@ -29,51 +29,11 @@ flutter run -d <device-id>
 
 ## 发布版构建
 
-将目标平台传给 `fl_build`：
-
-```bash
-dart run fl_build -p <platform>
-```
-
-支持的平台名称为 `ios`、`android`、`macos`、`linux` 和 `windows`。
-
-## 平台要求
-
-### iOS
-
-```bash
-dart run fl_build -p ios
-```
-
-需要 macOS 构建机和 Xcode。进行签名时还需要 Apple Developer 账号。
-
-### Android
-
 ```bash
 make build-android
 ```
 
 需要 Android SDK、JDK 和 1Password CLI：release build 使用 `scripts/release/android-signing.sh` 从 1Password 读取的签名 key。仅本地验证时，才显式传入 `-PallowDebugReleaseSigning=true` 使用 debug signing。可重现构建和 F-Droid 构建使用 `-PallowUnsignedRelease=true`，不配置任何签名；`scripts/release/android-build-env.sh` 会导出此选项。
-
-### macOS
-
-```bash
-dart run fl_build -p macos
-```
-
-### Linux
-
-```bash
-dart run fl_build -p linux
-```
-
-### Windows
-
-```bash
-dart run fl_build -p windows
-```
-
-需要安装 Visual Studio，并选择 **Desktop development with C++** workload 和 ATL 支持。
 
 ## 构建 Monitor
 
@@ -90,7 +50,7 @@ release 产物由 `monitor-release.yml` workflow 构建，目前只能通过 `wo
 
 ## 构建前后处理
 
-每次构建时，`fl_build` 都会重新生成 `lib/data/res/build_data.dart`，根据 Git 历史计算 build number，并将版本写入 Xcode 配置。App 名称在 `pubspec.yaml` 的 `fl_build:` 段中设置。
+每次构建时，`fl_build` 都会重新生成 `lib/data/res/build_data.dart`，根据 Git 历史计算 build number。App 名称在 `pubspec.yaml` 的 `fl_build:` 段中设置。
 
 ## 故障排除
 
@@ -101,8 +61,6 @@ flutter clean
 flutter pub get
 dart run build_runner build
 ```
-
-iOS Linux engine 的 libraries 位于 `packages/fl_tty/build/iul`，不在 `flutter clean` 删除的范围内；缺失时 fl_tty 的 build hook 会重新获取。
 
 ### 依赖版本不匹配
 
@@ -119,6 +77,6 @@ flutter pub upgrade
 1. 更新 `pubspec.yaml` 中的版本号。
 2. 运行代码生成和本地化生成。
 3. 运行 Dart、Flutter 和 Rust 测试。
-4. 为所有目标平台构建。
+4. 构建 Android APK。
 5. 在真实设备上验证关键功能。
 6. 创建 GitHub Release。

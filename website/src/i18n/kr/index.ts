@@ -97,8 +97,6 @@ const kr: Translation = {
     title: '모든 도구를 하나의 흐름으로.',
     subtitle:
       '터미널, SFTP 클라이언트, 모니터링 대시보드를 따로 오갈 필요가 없습니다.',
-    installIosPrompt: '# iOS',
-    installReleasePrompt: '# Android, Linux, Windows',
   },
   os: {
     metaTitle: 'ServerBox OS (구 ServerBox Monitor) — 브라우저 데스크톱과 서버 모니터링 엔진',
@@ -186,19 +184,14 @@ const kr: Translation = {
     appAction: '앱 다운로드',
   },
   download: {
-    title: '모든 플랫폼 네이티브 지원.',
-    subtitle:
-      '사용 중인 운영체제와 선호하는 설치 경로를 선택하세요.',
-    copied: '설치 명령 복사됨',
-    copyPrompt: '설치 명령을 복사하세요:',
-    note:
-      '팁: 서버에 ServerBox OS를 함께 설치하면 푸시 알림, 홈 위젯, 이력 차트를 사용할 수 있습니다.',
+    title: 'Android용 다운로드',
+    subtitle: '기기의 아키텍처에 맞는 APK를 선택하세요.',
+    note: 'ServerBox Monitor는 기록 그래프, 알림, 홈 화면 위젯을 제공합니다.',
   },
   cta: {
     title: 'AGPLv3 기반 무료 오픈소스.',
     subtitle:
       'GitHub에서 코드를 확인하고 기여하거나 지금 바로 최신 버전을 다운로드하세요.',
-    appStoreAction: 'App Store',
     githubAction: 'GitHub Releases',
   },
   otherApps: {

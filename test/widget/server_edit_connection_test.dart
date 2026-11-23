@@ -6,7 +6,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/extension/context/locale.dart' as app_locale;
-import 'package:server_box/core/local/server.dart';
 import 'package:server_box/data/model/server/monitor/monitor_http_credential.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/model/server/ssh_credential.dart';
@@ -227,25 +226,15 @@ void main() {
 
   group('this device', () {
     const me = Spi(name: 'me', id: 'me-id', local: true);
-    // Nothing to offer where this build cannot read this device.
-    final unsupported = !LocalServer.isSupported;
-
-    testWidgets('is offered while no server is it', (tester) async {
+    testWidgets('does not offer new local profiles', (tester) async {
       await pumpEditor(tester, both);
-      expect(find.text(app_locale.l10n.thisDevice), findsOneWidget);
-    }, skip: unsupported);
-
-    testWidgets('is not offered once another server is it', (tester) async {
-      // Two would be one machine polled twice under two names.
-      await pumpEditor(tester, both, others: [me]);
       expect(find.text(app_locale.l10n.thisDevice), findsNothing);
-    }, skip: unsupported);
+    });
 
-    testWidgets('stays on the server that is it', (tester) async {
-      // Its own switch, or it could never be turned back into a remote one.
+    testWidgets('can convert an imported local profile', (tester) async {
       await pumpEditor(tester, me);
       expect(find.text(app_locale.l10n.thisDevice), findsWidgets);
-    }, skip: unsupported);
+    });
   });
 }
 

@@ -22,10 +22,6 @@ import 'package:server_box/data/store/sync_recorder.dart';
 
 final bakSync = BakSyncer._();
 
-final icloud = ICloud(containerId: 'iCloud.tech.lolli.serverbox');
-
-bool get isICloudSupported => isMacOS || isIOS;
-
 final class BakSyncer extends SyncIface {
   BakSyncer._() : super();
 
@@ -74,7 +70,7 @@ final class BakSyncer extends SyncIface {
   /// The sync an edit starts, which nobody waits for.
   ///
   /// Its failures are nearly all the remote's — a WebDAV server that does not
-  /// answer, iCloud signed out — and with no caller they reached the zone as
+  /// answer, LK Cloud signed out — and with no caller they reached the zone as
   /// uncaught errors (SERVERBOX-8B). Handled here instead: logged, and
   /// reported only when [ReportFilter] says it is a defect of this app.
   void syncSoon({
@@ -170,7 +166,7 @@ final class BakSyncer extends SyncIface {
       } else {
         plain = await BackupV2.unlock(content, pwd);
       }
-      return await _read(plain, pwd);
+      return await _read(plain);
     } on SchemaTooNewException catch (e) {
       // Recorded so `backup` refuses to upload over data this build cannot
       // read.
@@ -179,20 +175,8 @@ final class BakSyncer extends SyncIface {
     }
   }
 
-  /// [plain], the remote backup, read; [pwd] is the password here.
-  Future<Mergeable> _read(Uint8List plain, String? pwd) async {
-    // It opens what the devices share, so it is theirs: one kept on this
-    // device only (set by an older build) goes to iCloud Keychain now,
-    // where it cannot be replacing another device's newer one.
-    if (pwd != null &&
-        pwd.isNotEmpty &&
-        await SecureStoreProps.bakPwd.inLegacyOnly()) {
-      try {
-        await SecureStoreProps.bakPwd.write(pwd);
-      } catch (e, s) {
-        Loggers.app.warning('Backup password not moved to iCloud', e, s);
-      }
-    }
+  /// Reads [plain], the decrypted remote backup.
+  Future<Mergeable> _read(Uint8List plain) async {
     final mergeable = await compute(_parse, plain);
     if (mergeable is BackupV2) {
       _remote = mergeable.copyWith(
@@ -432,9 +416,6 @@ final class BakSyncer extends SyncIface {
 
   @override
   RemoteStorage? get remoteStorage {
-    final icloudEnabled = PrefProps.icloudSync.get();
-    if (icloudEnabled && isICloudSupported) return icloud;
-
     final webdavEnabled = PrefProps.webdavSync.get();
     if (webdavEnabled) return SyncRemotes.webdav;
 

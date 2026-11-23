@@ -11,7 +11,6 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/core/service/scoped_token.dart';
-import 'package:server_box/core/service/watch_sync.dart';
 import 'package:server_box/core/service/widget_sync.dart';
 import 'package:server_box/data/model/server/monitor/monitor_http_credential.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
@@ -199,16 +198,14 @@ void main() {
     revokeScopedTokensLeftBehind(
       old,
       monitorSpi(id: 's2', name: 'S'),
-      queueWatchRevoke: (spi) => queued.add('watch ${spi.id}'),
       queueWidgetRevoke: (spi) => queued.add('widget ${spi.id}'),
     );
-    expect(queued, ['watch s1', 'widget s1']);
+    expect(queued, ['widget s1']);
 
     queued.clear();
     revokeScopedTokensLeftBehind(
       old,
       monitorSpi(id: 's1', name: 'Renamed'),
-      queueWatchRevoke: (spi) => queued.add('watch ${spi.id}'),
       queueWidgetRevoke: (spi) => queued.add('widget ${spi.id}'),
     );
     expect(queued, isEmpty);
@@ -393,15 +390,5 @@ void main() {
       expect(WidgetSync.widgetClientId('abc'), 'widget:abc');
     });
 
-    test('is not the watch app\'s', () {
-      // The agent keys `watch_tokens` by (subject, client_id), so these being
-      // different strings is the whole reason unpairing a watch leaves the
-      // widgets working, and removing a widget does not log a watch out. One
-      // shared id would make either action revoke both.
-      expect(
-        WidgetSync.widgetClientId('abc'),
-        isNot(WatchSync.watchClientId('abc')),
-      );
-    });
   });
 }

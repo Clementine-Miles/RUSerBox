@@ -9,7 +9,7 @@ import 'package:server_box/data/store/stores.dart';
 /// Reads why the process died last time, from the system.
 ///
 /// The half of crash reporting Dart cannot do. A SIGSEGV in the Rust FFI, in
-/// proot, in the iOS Linux engine or in sqlite takes the process with it: no
+/// proot or in sqlite takes the process with it: no
 /// Dart handler runs, nothing is written, and [CrashLog]'s marker is never set.
 /// The next launch has no idea anything happened. Android has kept the record
 /// since API 30 and this is what asks for it.
@@ -68,8 +68,7 @@ final class NativeExitReport {
   /// a level that does not upload simply never calls it.
   ///
   /// Cleared as it is read, so one crash is reported once. `apply` already
-  /// refuses a record it has seen, but MetricKit's path has no timestamp to
-  /// deduplicate by and relies on the platform clearing what it hands over.
+  /// refuses a record it has seen.
   ///
   /// **Persisted, because in memory it was lost by the launch that most needed
   /// it.** `apply` writes `lastExitInfoTs` before this is set, so the record
@@ -101,8 +100,7 @@ final class NativeExitReport {
 
   /// The previous run's native stack or ANR trace, when the platform had one.
   ///
-  /// Separate from [lastExit] because it is large — a MetricKit call stack is
-  /// capped at 16 KB, an ANR trace is a full thread dump, and a decoded
+  /// Separate from [lastExit] because an ANR trace is a full thread dump and a decoded
   /// tombstone is a signal line and a stack — and because it belongs in a
   /// report as a block rather than as a field. Held for the same reason: it
   /// describes the run that died and is only learned about after that run's
@@ -119,87 +117,6 @@ final class NativeExitReport {
       if (info != null) apply(info);
     } catch (e, s) {
       Loggers.app.warning('NativeExitReport.collect', e, s);
-    }
-    try {
-      applyDiagnostics(await MethodChans.takeCrashDiagnostics());
-    } catch (e, s) {
-      Loggers.app.warning('NativeExitReport.collect (metrickit)', e, s);
-    }
-  }
-
-  /// Folds MetricKit's records in, on iOS.
-  ///
-  /// No de-duplication here, unlike [apply]: the platform side clears what it
-  /// hands over, so a record arrives exactly once. Nor is there a timestamp to
-  /// order them by — delivery is on the system's schedule, and a payload
-  /// arriving now can describe a crash from several sessions ago. The prompt
-  /// says "last time" and will occasionally be wrong about *when*; it will not
-  /// be wrong about *whether*, which is the part that matters.
-  @visibleForTesting
-  void applyDiagnostics(List<Map<String, Object?>> records) {
-    if (records.isEmpty) return;
-    var crashed = false;
-
-    for (final record in records) {
-      final kind = '${record['kind']}';
-      // A hang is not a crash: the app was alive and unresponsive, which is a
-      // different bug with different causes, and prompting for one would call
-      // a slow frame a crash.
-      if (kind == 'crash') crashed = true;
-
-      // Same reason as the Android path: what a report is built from is the
-      // previous run's file, and this describes that run without being in it.
-      // A crash wins over a hang when both were delivered.
-      if (kind == 'crash' || lastExit == null) {
-        lastExit = {
-          'reason': 'metrickit $kind',
-          if (record['signal'] != null) 'signal': '${record['signal']}',
-          if (record['exceptionType'] != null)
-            'exceptionType': '${record['exceptionType']}',
-          if (record['terminationReason'] != null)
-            'terminationReason': '${record['terminationReason']}',
-          'appVersion': '${record['appVersion'] ?? '-'}',
-        };
-      }
-
-      Diag.crumb(
-        DiagCategory.lifecycle,
-        'metrickit $kind',
-        level: kind == 'crash' ? DiagLevel.error : DiagLevel.warning,
-        data: {
-          // Both come off the diagnostic's own metadata rather than this run:
-          // delivery lags the crash by up to a day, so the app and the OS may
-          // both have moved on since.
-          'appVersion': '${record['appVersion'] ?? '-'}',
-          'osVersion': '${record['osVersion'] ?? '-'}',
-          if (record['signal'] != null) 'signal': '${record['signal']}',
-          if (record['exceptionType'] != null)
-            'exceptionType': '${record['exceptionType']}',
-          if (record['terminationReason'] != null)
-            'terminationReason': '${record['terminationReason']}',
-          if (record['duration'] != null) 'duration': '${record['duration']}',
-        },
-      );
-
-      final stack = record['callStack'];
-      if (stack is String && stack.isNotEmpty) {
-        // A crash's stack wins over a hang's when both arrived, matching how
-        // [lastExit] is chosen.
-        if (kind == 'crash' || lastExitTrace == null) lastExitTrace = stack;
-        CrashLog.write('--- metrickit $kind call stack ---\n$stack');
-      }
-    }
-
-    if (crashed) {
-      CrashLog.reportPreviousRunCrashed();
-      // `lastExitTrace` rather than a local: the loop above has already picked
-      // the crash's call stack over any hang's, which is the one worth
-      // reporting when both were delivered together.
-      _holdCrash(
-        'metrickit crash',
-        lastExit?['signal'],
-        lastExitTrace,
-      );
     }
   }
 

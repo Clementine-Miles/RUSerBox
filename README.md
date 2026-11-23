@@ -53,27 +53,20 @@ Thanks to <a href="https://openai.com">OpenAI</a> for providing six months of Ch
 
 ## Installation
 
-| Platform | Download |
-| --- | --- |
-| iOS | [AppStore](https://apps.apple.com/app/id1586449703) / [GitHub](https://github.com/lollipopkit/flutter_server_box/releases) (`_NoSign.ipa`, unsigned, you need to sign it yourself) |
-| macOS | [GitHub](https://github.com/lollipopkit/flutter_server_box/releases) (architecture-specific `.dmg`) / `brew install --cask server-box` |
-| Android | [GitHub](https://github.com/lollipopkit/flutter_server_box/releases) / [F-Droid](https://f-droid.org/packages/tech.lolli.toolbox) / [OpenAPK](https://www.openapk.net/serverbox/tech.lolli.toolbox/) |
-| Linux / Windows | [GitHub](https://github.com/lollipopkit/flutter_server_box/releases) |
-
-Download packages only from sources you trust.
+Download an Android APK from [GitHub Releases](https://github.com/Clementine-Miles/ru_serbox/releases).
 
 ## Features
 
 **Connecting**
 
 - Connect directly over SSH, through a jump host or with a `ProxyCommand`. You can also connect over HTTP through the [Monitor](https://serverbox.lollipopkit.com/docs/advanced/monitor-agent/) when you do not want to expose a host's SSH port. A server can use both methods, with automatic fallback if one is unavailable.
-- Open a shell on this device or install a Linux userland ([local terminal](https://serverbox.lollipopkit.com/docs/advanced/local-terminal/)) on supported platforms.
+- Open a shell on this device or install a Linux userland ([local terminal](https://serverbox.lollipopkit.com/docs/advanced/local-terminal/)) on Android.
 
 **Watching**
 
 - Live and historical charts for CPU, memory, swap, disks, disk I/O and network, plus sensors, GPUs (NVIDIA, AMD), batteries and disk S.M.A.R.T.
 - See all servers at a glance, filter them by tag or view them on a [globe](https://serverbox.lollipopkit.com/docs/advanced/globe/).
-- Push alerts, [home-screen widgets](https://serverbox.lollipopkit.com/docs/advanced/widgets/) and a watchOS app. The Monitor keeps these features working while the app is closed.
+- Push alerts and [home-screen widgets](https://serverbox.lollipopkit.com/docs/advanced/widgets/). The Monitor keeps these features working while the app is closed.
 
 **Working on a server**
 
@@ -88,12 +81,12 @@ Download packages only from sources you trust.
 **Making it yours**
 
 - Gruvbox Material and Gruvbox, each in light and dark, with built-in icon styles.
-- Biometric app lock, and backups to iCloud or WebDAV, encrypted with a password you choose.
-- iOS, Android, macOS, Linux and Windows, in 17 languages.
+- Biometric app lock and WebDAV backups, encrypted with a password you choose.
+- Android app in 17 languages.
 
 ## Help
 
-- [ServerBox Monitor](https://github.com/lollipopkit/flutter_server_box/tree/main/monitor) is a component you install on your servers. It is required for features that need to work while the app is closed — **push notifications**, **home-screen widgets**, and the **watch app**. It also offers another way to add a server: the app can connect to it over HTTP instead of SSH, which suits hosts whose SSH port you prefer not to expose, and gives charts historical data from before the app's first connection.
+- [ServerBox Monitor](https://github.com/Clementine-Miles/ru_serbox/tree/main/monitor) is a component you install on your servers. It is required for features that need to work while the app is closed — **push notifications** and **home-screen widgets**. It also offers another way to add a server: the app can connect to it over HTTP instead of SSH, which suits hosts whose SSH port you prefer not to expose, and gives charts historical data from before the app's first connection.
 - **Agent skills:** This repository includes three skills for AI agents. Add them with
 
   ```sh

@@ -1,34 +1,18 @@
 import 'dart:convert';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:server_box/core/utils/drop_zones.dart';
 import 'package:server_box/data/res/misc.dart';
 import 'package:server_box/data/store/stores.dart';
-import 'package:xterm/xterm.dart' show CustomTextEditState;
 
 abstract final class MethodChans {
   static const _channel = MethodChannel('${Miscs.pkgName}/main_chan');
 
-  /// iOS tells of every paste, and what it holds, before the text view
-  /// inserts it (the app's `sendAction`), so the terminal sends it as one.
-  static void listenPastes() {
-    const MethodChannel(
-      '${Miscs.pkgName}/text_input',
-    ).setMethodCallHandler((call) async {
-      final text = call.arguments;
-      if (call.method == 'paste' && text is String) {
-        CustomTextEditState.expectPaste(text);
-      }
-    });
-  }
-
   /// Tells the system file picker the installed Linux systems changed, so the
-  /// roots it lists for them follow (`LinuxDocumentsProvider`, and the Files
-  /// app's `ios/LinuxFiles`).
+  /// roots listed by `LinuxDocumentsProvider` follow.
   static Future<void> linuxSystemsChanged() async {
-    if (!isAndroid && !isIOS) return;
+    if (!isAndroid) return;
     try {
       await _channel.invokeMethod('linuxSystemsChanged');
     } catch (e, s) {
@@ -60,7 +44,7 @@ abstract final class MethodChans {
   }
 
   static Future<void> updateHomeWidget() async {
-    if (!isIOS && !isAndroid) return;
+    if (!isAndroid) return;
     if (!Stores.setting.autoUpdateHomeWidget.fetch()) return;
     try {
       await _channel.invokeMethod('updateHomeWidget');
@@ -73,12 +57,11 @@ abstract final class MethodChans {
   /// read-only credential for each.
   ///
   /// The native side splits the payload: the list goes to a container the
-  /// widget process reads directly (the iOS App Group, Android's shared
-  /// preferences), and every `token` is moved into the platform credential
+  /// widget process reads directly, and each `token` goes into the credential
   /// store instead — see `WidgetSync` for why. It is a full replacement, so a
   /// server absent from [payload] has its stored token dropped as well.
   static Future<void> publishWidgetServers(String payload) async {
-    if (!isIOS && !isAndroid) return;
+    if (!isAndroid) return;
     await _channel.invokeMethod('publishWidgetServers', payload);
   }
 
@@ -90,55 +73,18 @@ abstract final class MethodChans {
   /// channel to answer that would undo the point of storing it natively.
   ///
   /// Answers from the *platform*, not from a copy kept here, because those two
-  /// come apart exactly where it matters: a reinstall empties the Keychain
+  /// come apart exactly where it matters: a reinstall empties the Android Keystore
   /// while a restored backup refills this app's own database, and a renewal
   /// decision made from the latter would skip every server whose credential no
   /// longer exists.
   static Future<String?> widgetTokenState() async {
-    if (!isIOS && !isAndroid) return null;
+    if (!isAndroid) return null;
     return await _channel.invokeMethod<String>('widgetTokenState');
   }
 
-  /// Last pair pushed by [setIslandBrandColors], so that rebuilding the theme —
-  /// which happens on every `MaterialApp` build — does not cross the channel
-  /// each time.
-  static (int, int)? _islandBrandColors;
-
-  /// Colors for the app name drawn behind the Dynamic Island, as ARGB.
-  ///
-  /// Follows the theme rather than being fixed, so the badge in a screenshot
-  /// matches the app the screenshot is of.
-  static Future<void> setIslandBrandColors(int bg, int fg) async {
-    if (!isIOS) return;
-    if (_islandBrandColors == (bg, fg)) return;
-    _islandBrandColors = (bg, fg);
-    try {
-      await _channel.invokeMethod('setIslandBrandColors', {'bg': bg, 'fg': fg});
-    } catch (e, s) {
-      _islandBrandColors = null;
-      Loggers.app.warning('Failed to set island brand colors', e, s);
-    }
-  }
-
-  /// Tell the native side whether to cover the app once it leaves the
-  /// foreground, hiding its content from the app switcher.
-  ///
-  /// What "cover" means differs by platform, and deliberately so. iOS lays a
-  /// real blur over the Flutter window. Android sets `FLAG_SECURE` instead:
-  /// Flutter draws into a `SurfaceView` that `RenderEffect` cannot reach, and
-  /// anything that has to render a frame races the system's recents capture,
-  /// which the flag does not.
-  ///
-  /// Pushed on change *and* at launch: the native side answers this from its
-  /// own persisted copy, which a reinstall or a restored backup leaves saying
-  /// something different from the (synced) settings store.
-  ///
-  /// Answers whether the native side took it, rather than throwing, so that the
-  /// launch-time push can ignore a failure while the switch does not. Storing a
-  /// preference the platform never received would leave the user told they are
-  /// covered when they are not.
+  /// Hide the app's content from the Android app switcher.
   static Future<bool> setPrivacyBlur(bool enabled) async {
-    if (!isIOS && !isAndroid) return true;
+    if (!isAndroid) return true;
     try {
       await _channel.invokeMethod('setPrivacyBlur', enabled);
       return true;
@@ -148,31 +94,16 @@ abstract final class MethodChans {
     }
   }
 
-  /// Tells iOS whether work is in flight that suspension would cut off, so it
-  /// asks for background time to finish it. See [InFlightWork].
-  static Future<void> setInFlightWork(bool inFlight) async {
-    if (!isIOS) return;
-    try {
-      await _channel.invokeMethod('setInFlightWork', inFlight);
-    } catch (e, s) {
-      Loggers.app.warning('Failed to set in-flight work', e, s);
-    }
-  }
-
   /// Hold the cover in place after the app comes forward, until Flutter has
   /// decided whether a biometric lock is coming.
   ///
   /// Without it the cover comes off the moment the app is frontmost, and the
   /// real UI is on screen for however many frames it takes Flutter to hear
   /// about the lifecycle change at all.
-  ///
-  /// Cleared just before the lock screen is pushed — on iOS the cover is a view
-  /// over the whole Flutter window, so it would otherwise hide that screen
-  /// rather than protect it.
   static bool? _privacyBlurLocked;
 
   static Future<void> setPrivacyBlurLocked(bool locked) async {
-    if (!isIOS && !isAndroid) return;
+    if (!isAndroid) return;
     if (_privacyBlurLocked == locked) return;
     _privacyBlurLocked = locked;
     try {
@@ -263,33 +194,6 @@ abstract final class MethodChans {
     }
   }
 
-  /// What MetricKit has reported since this was last asked, on iOS and macOS.
-  ///
-  /// The counterpart to [lastExitInfo], for the platform that has no equivalent
-  /// of it. Delivery is on the system's schedule — a payload arrives somewhere
-  /// between the next launch and about a day later — so these accumulate and
-  /// this hands over whatever has arrived, rather than answering "the last
-  /// run". Cleared by the read.
-  ///
-  /// Each entry has `kind` (`crash` or `hang`), `appVersion`, `callStack`, and
-  /// for a crash whichever of `signal`, `exceptionType`, `exceptionCode` and
-  /// `terminationReason` the payload carried.
-  static Future<List<Map<String, Object?>>> takeCrashDiagnostics() async {
-    if (!isIOS && !isMacOS) return const [];
-    try {
-      final res = await _channel.invokeListMethod<Object?>(
-        'takeCrashDiagnostics',
-      );
-      return [
-        for (final e in res ?? const [])
-          if (e is Map) e.cast<String, Object?>(),
-      ];
-    } catch (e, s) {
-      Loggers.app.warning('Failed to read crash diagnostics', e, s);
-      return const [];
-    }
-  }
-
   static Future<bool> isServiceRunning() async {
     if (!isAndroid) return false;
     try {
@@ -305,103 +209,9 @@ abstract final class MethodChans {
     }
   }
 
-  /// Whether this build's APNs tokens are for the development environment,
-  /// read from the provisioning profile it was signed with. Null off iOS, or
-  /// when the native side cannot say.
-  static Future<bool?> apnsSandbox() async {
-    if (!isIOS) return null;
-    try {
-      final env = await _channel.invokeMethod<String>('apsEnvironment');
-      return env == null ? null : env == 'development';
-    } catch (e, s) {
-      Loggers.app.warning('Failed to read the APNs environment', e, s);
-      return null;
-    }
-  }
-
-  // iOS Live Activities controls
-
-  /// Whether iOS would let this app show a Live Activity right now.
-  ///
-  /// A separate answer from [SettingStore.liveActivity]: that is whether the
-  /// app asks, this is whether the system allows. The user can refuse it per
-  /// app in Settings, and can turn it off device-wide, and `Activity.request`
-  /// simply fails when they have — so without asking this, a switch turned on
-  /// here does nothing and says nothing about why.
-  ///
-  /// False off iOS and on anything before 16.2, which is where
-  /// `LiveActivityManager` starts.
-  static Future<bool> liveActivityAvailable() async {
-    if (!isIOS) return false;
-    try {
-      return await _channel.invokeMethod<bool>('liveActivityAvailable') ??
-          false;
-    } catch (e, s) {
-      Loggers.app.warning('Failed to query iOS Live Activity availability', e, s);
-      return false;
-    }
-  }
-
-  static Future<void> updateLiveActivity(String payload) async {
-    if (!isIOS) return;
-    try {
-      Loggers.app.info('Updating iOS Live Activity: $payload');
-      await _channel.invokeMethod('updateLiveActivity', payload);
-    } catch (e, s) {
-      Loggers.app.warning('Failed to update iOS Live Activity', e, s);
-    }
-  }
-
-  static Future<void> stopLiveActivity() async {
-    if (!isIOS) return;
-    try {
-      Loggers.app.info('Stopping iOS Live Activity');
-      await _channel.invokeMethod('stopLiveActivity');
-    } catch (e, s) {
-      Loggers.app.warning('Failed to stop iOS Live Activity', e, s);
-    }
-  }
-
-  /// The contents of a share file the platform handed this app, and clears it.
-  ///
-  /// A `.sbxsrv` arrives by AirDrop, from the Files app, or from the Finder,
-  /// and the platform's answer to all three is to launch or foreground this
-  /// app with a URL. The native side reads the bytes — on iOS out of an inbox
-  /// directory the app is expected to empty — and holds them until this asks.
-  ///
-  /// **Apple platforms only.** Android has no file association here: a filter
-  /// narrow enough not to claim every unknown binary matches only `file://`,
-  /// which nothing has been allowed to send since Android 7 and which this app
-  /// could not read without a storage permission anyway. See the note in
-  /// `AndroidManifest.xml`; a shared server comes in through the picker there.
-  ///
-  /// **Pulled, not pushed.** A channel has one handler and `registerHandler`
-  /// already owns it, so a push would have to arrive somewhere nothing is
-  /// listening. The caller asks after the first frame and again on every
-  /// resume, which covers a cold launch and a file opened while the app was
-  /// already running.
-  ///
-  /// Cleared by the read, so a second resume does not raise the same file
-  /// again.
-  static Future<String?> takeOpenedShare() async {
-    if (!isIOS && !isMacOS) return null;
-    try {
-      return await _channel.invokeMethod<String>('takeOpenedShare');
-    } catch (e, s) {
-      Loggers.app.warning('Failed to read the opened share', e, s);
-      return null;
-    }
-  }
-
-  /// The `serverbox://` link this app was last opened with, if one is waiting.
-  ///
-  /// Held natively and pulled, for the same reason as [takeOpenedShare]: on a
-  /// cold launch the link arrives before the engine does. Android too, where a
-  /// link is an ordinary VIEW intent and needs none of the file handling above.
-  ///
-  /// Cleared by the read.
+  /// Reads and clears the `serverbox://` link held after an Android intent.
   static Future<String?> takeOpenedLink() async {
-    if (!isIOS && !isMacOS && !isAndroid) return null;
+    if (!isAndroid) return null;
     try {
       return await _channel.invokeMethod<String>('takeOpenedLink');
     } catch (e, s) {
@@ -525,79 +335,11 @@ abstract final class MethodChans {
 
   /// Runs [onOpened] when the platform hands this app a share or a link while
   /// it is **already frontmost**.
-  ///
-  /// The lifecycle covers the other two ways in — a cold launch, and coming
-  /// forward to answer the open. It does not cover this one: an app that never
-  /// left the foreground gets no `resumed` edge, so nothing would ask, and
-  /// [takeOpenedShare] would keep holding the payload until some later
-  /// unrelated resume raised the prompt out of nowhere. Reachable on iPadOS in
-  /// Split View, where two apps are foreground at once.
-  ///
-  /// Push rather than pull only for the trigger; the payload still comes
-  /// back through [takeOpenedShare] or [takeOpenedLink], so there is one path
-  /// that reads and clears it however the app was told.
   static void onOpened(VoidCallback onOpened) {
-    if (!isIOS && !isMacOS && !isAndroid) return;
+    if (!isAndroid) return;
     _shareChannel.setMethodCallHandler((call) async {
       if (call.method == 'opened') onOpened();
     });
-  }
-
-  static const _windowControlsChannel = MethodChannel(
-    '${Miscs.pkgName}/window_controls',
-  );
-
-  /// Keeps [WindowControls] at what the platform reports — iPadOS, where a
-  /// windowed app has its window controls drawn over it, and iPhone Duo,
-  /// whose bars stand in a column at the side or in the top inset.
-  ///
-  /// Read once as well as listened to: the first report can come before this
-  /// handler is set.
-  static void watchWindowControls() {
-    if (!isIOS) return;
-    Rect? rect(Object? raw) => switch (raw) {
-      [final num l, final num t, final num r, final num b] =>
-        Rect.fromLTRB(l.toDouble(), t.toDouble(), r.toDouble(), b.toDouble()),
-      _ => null,
-    };
-    void apply(Object? raw) {
-      final state = raw as Map? ?? const {};
-      WindowControls.zones.value = [
-        for (final z in (state['zones'] as List?) ?? const []) ?rect(z),
-      ];
-      WindowControls.verticalBar.value = rect(state['bar']);
-      WindowControls.topBar.value = rect(state['topBar']);
-      WindowControls.fold.value = switch (state['fold']) {
-        [final num l, final num t, final num r, final num b, final num a] => (
-          rect: Rect.fromLTRB(l.toDouble(), t.toDouble(), r.toDouble(), b.toDouble()),
-          active: a != 0,
-        ),
-        _ => null,
-      };
-      WindowControls.cornerInsets.value = switch (state['corners']) {
-        [final num l, final num t, final num r, final num b] =>
-          EdgeInsets.fromLTRB(l.toDouble(), t.toDouble(), r.toDouble(), b.toDouble()),
-        _ => EdgeInsets.zero,
-      };
-    }
-
-    // The reply to the read below can arrive after a push sent later, and
-    // would put back what was there before it.
-    var pushed = false;
-    _windowControlsChannel.setMethodCallHandler((call) async {
-      if (call.method == 'changed') {
-        pushed = true;
-        apply(call.arguments);
-      }
-    });
-    _windowControlsChannel
-        .invokeMethod<Object?>('state')
-        .then((raw) {
-          if (!pushed) apply(raw);
-        })
-        .catchError((Object e) {
-          Loggers.app.warning('windowControls', e);
-        });
   }
 
   /// Register a handler for native -> Flutter callbacks.

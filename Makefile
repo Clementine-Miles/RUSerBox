@@ -7,18 +7,9 @@ DART ?= dart
 CARGO ?= cargo
 DEVICE ?=
 TEST ?=
-PLATFORM ?=
-ENV_FILE ?=
-XCARCHIVE_PATH ?=
-APP_PATH ?=
-DMG_ARM64_PATH ?=
-DMG_AMD64_PATH ?=
-TAP_REPO_PATH ?=
 
 .PHONY: help deps pub-get run run-device analyze test test-one coverage \
-	gen gen-build gen-build-clean gen-l10n gen-proto build build-android build-ios \
-	build-ios-nosign build-macos build-linux build-windows clean \
-	release-macos-dmg package-dmg sync-homebrew-cask monitor-dev monitor-deploy
+	gen gen-build gen-build-clean gen-l10n gen-proto build build-android clean monitor-dev monitor-deploy
 
 help:
 	@printf '%s\n' \
@@ -41,32 +32,12 @@ help:
 		'  gen-proto          Regenerate the tombstone protobuf reader (needs protoc)' \
 		'' \
 		'Build targets:' \
-		'  build              Build via fl_build: make build PLATFORM=<android|ios|macos|linux|windows>' \
-		'  build-android      Build Android package' \
-		'  build-ios          Build iOS package' \
-		'  build-ios-nosign   Build an unsigned iOS ipa (_NoSign.ipa, needs re-signing)' \
-		'  build-macos        Build macOS package' \
-		'  build-linux        Build Linux package' \
-		'  build-windows      Build Windows package' \
+		'  build, build-android  Build the Android APK' \
 		'  clean              Run flutter clean' \
 		'' \
 		'Monitor:' \
 		'  monitor-dev        Run the Monitor HTTP API on port 3770' \
-		'  monitor-deploy     Put this checkout on a test machine: make monitor-deploy HOST=<ssh host>' \
-		'' \
-		'Release scripts:' \
-		'  release-macos-dmg  Run scripts/release/release-macos-dmg.sh (one DMG per architecture)' \
-		'                     Optional: make release-macos-dmg ENV_FILE=.env.release' \
-		'                     Optional: RELEASE_ARCHS="arm64" to rebuild one architecture' \
-		'  package-dmg        Run scripts/release/package-dmg-from-xcarchive.sh' \
-		'                     Example: make package-dmg APP_PATH="/path/Server Box.app"' \
-		'                     Example: make package-dmg XCARCHIVE_PATH=/path/Runner.xcarchive' \
-		'  sync-homebrew-cask Generate ~/proj/homebrew-cask/Casks/s/server-box.rb from both DMGs' \
-		'                     Example: make sync-homebrew-cask APP_PATH="/path/Server Box.app"' \
-		'                     Example: make sync-homebrew-cask XCARCHIVE_PATH=/path/Runner.xcarchive' \
-		'                     Example: make sync-homebrew-cask \' \
-		'                       DMG_ARM64_PATH=build/artifacts/ServerBox-1.0.1-arm64.dmg \' \
-		'                       DMG_AMD64_PATH=build/artifacts/ServerBox-1.0.1-amd64.dmg'
+		'  monitor-deploy     Put this checkout on a test machine: make monitor-deploy HOST=<ssh host>'
 
 deps pub-get:
 	$(FLUTTER) pub get
@@ -131,70 +102,11 @@ gen-proto:
 	PATH="$${PUB_CACHE:-$$HOME/.pub-cache}/bin:$$PATH" \
 		protoc --dart_out=lib/src/proto -I third_party/proto third_party/proto/tombstone.proto
 
-build:
-	@if [ -z "$(PLATFORM)" ]; then \
-		echo 'PLATFORM is required. Example: make build PLATFORM=android'; \
-		exit 1; \
-	fi
-	$(if $(findstring android,$(PLATFORM)),scripts/release/android-signing.sh) $(DART) run fl_build -p $(PLATFORM)
-
-build-android:
+build build-android:
 	scripts/release/android-signing.sh $(DART) run fl_build -p android
-
-build-ios:
-	$(DART) run fl_build -p ios
-
-build-ios-nosign:
-	$(FLUTTER) build ios --release --no-codesign
-	bash scripts/release/package-unsigned-ipa.sh
-
-build-macos:
-	$(DART) run fl_build -p macos
-
-build-linux:
-	$(DART) run fl_build -p linux
-
-build-windows:
-	$(DART) run fl_build -p windows
 
 clean:
 	$(FLUTTER) clean
-
-release-macos-dmg:
-	@if [ -n "$(ENV_FILE)" ]; then \
-		SERVERBOX_RELEASE_ENV_FILE="$(ENV_FILE)" bash scripts/release/release-macos-dmg.sh; \
-	else \
-		bash scripts/release/release-macos-dmg.sh; \
-	fi
-
-package-dmg:
-	@if [ -z "$(APP_PATH)" ] && [ -z "$(XCARCHIVE_PATH)" ]; then \
-		echo 'APP_PATH or XCARCHIVE_PATH is required.'; \
-		echo 'Example: make package-dmg APP_PATH="/path/Server Box.app"'; \
-		echo 'Example: make package-dmg XCARCHIVE_PATH=/path/Runner.xcarchive'; \
-		exit 1; \
-	fi
-	@if [ -n "$(APP_PATH)" ]; then \
-		APP_PATH="$(APP_PATH)" bash scripts/release/package-dmg-from-xcarchive.sh; \
-	else \
-		XCARCHIVE_PATH="$(XCARCHIVE_PATH)" bash scripts/release/package-dmg-from-xcarchive.sh; \
-	fi
-
-sync-homebrew-cask:
-	@if [ -z "$(APP_PATH)" ] && [ -z "$(XCARCHIVE_PATH)" ] && [ -z "$(DMG_ARM64_PATH)$(DMG_AMD64_PATH)" ]; then \
-		echo 'APP_PATH, XCARCHIVE_PATH, or DMG_ARM64_PATH + DMG_AMD64_PATH is required.'; \
-		echo 'Example: make sync-homebrew-cask APP_PATH="/path/Server Box.app"'; \
-		echo 'Example: make sync-homebrew-cask XCARCHIVE_PATH=/path/Runner.xcarchive'; \
-		echo 'Example: make sync-homebrew-cask DMG_ARM64_PATH=build/artifacts/ServerBox-1.0.1-arm64.dmg DMG_AMD64_PATH=build/artifacts/ServerBox-1.0.1-amd64.dmg'; \
-		exit 1; \
-	fi
-	@if [ -n "$(APP_PATH)" ]; then \
-		APP_PATH="$(APP_PATH)" DMG_ARM64_PATH="$(DMG_ARM64_PATH)" DMG_AMD64_PATH="$(DMG_AMD64_PATH)" TAP_REPO_PATH="$(TAP_REPO_PATH)" bash scripts/release/sync-homebrew-cask.sh; \
-	elif [ -n "$(XCARCHIVE_PATH)" ]; then \
-		XCARCHIVE_PATH="$(XCARCHIVE_PATH)" DMG_ARM64_PATH="$(DMG_ARM64_PATH)" DMG_AMD64_PATH="$(DMG_AMD64_PATH)" TAP_REPO_PATH="$(TAP_REPO_PATH)" bash scripts/release/sync-homebrew-cask.sh; \
-	else \
-		DMG_ARM64_PATH="$(DMG_ARM64_PATH)" DMG_AMD64_PATH="$(DMG_AMD64_PATH)" TAP_REPO_PATH="$(TAP_REPO_PATH)" bash scripts/release/sync-homebrew-cask.sh; \
-	fi
 
 # Install this checkout's agent on a development host.
 monitor-deploy:

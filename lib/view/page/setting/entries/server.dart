@@ -29,7 +29,6 @@ extension _Server on _AppSettingsPageState {
         _buildRememberPwdInMem(),
         _buildUpdateInterval(),
         _buildMaxRetry(),
-        if (isDesktop) _buildSSHConfigAutoImportToggle(),
       ]),
       _buildGlobe(),
       SettingsGroup(libL10n.servers, [
@@ -387,20 +386,6 @@ extension _Server on _AppSettingsPageState {
         },
       ),
       keywords: l10n.logoUrlTip,
-    );
-  }
-
-  SettingsRow _buildSSHConfigAutoImportToggle() {
-    final label = l10n.sshConfigImport;
-    return SettingsRow(
-      label,
-      () => ListTile(
-        leading: const Icon(MingCute.file_import_line),
-        title: Text(label),
-        subtitle: Text(l10n.sshConfigImportTip, style: UIs.textGrey),
-        trailing: StoreSwitch(prop: _setting.firstTimeReadSSHCfg),
-      ),
-      keywords: l10n.sshConfigImportTip,
     );
   }
 }

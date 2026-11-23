@@ -14,14 +14,6 @@
 	path = packages/fl_build
 	url = https://github.com/lollipopkit/fl_build.git
 	branch = main
-[submodule "plain_notification_token"]
-	path = packages/plain_notification_token
-	url = https://github.com/lollipopkit/plain_notification_token
-	branch = master
-[submodule "watch_connectivity"]
-	path = packages/watch_connectivity
-	url = https://github.com/lollipopkit/watch_connectivity
-	branch = master
 [submodule "third_party/ironrdp"]
 	path = third_party/ironrdp
 	url = https://github.com/lollipopkit/IronRDP.git

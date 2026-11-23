@@ -7,7 +7,6 @@ import 'package:server_box/data/model/app/float_shell_config.dart';
 import 'package:server_box/data/model/app/menu/server_func.dart';
 import 'package:server_box/data/model/app/motion.dart';
 import 'package:server_box/data/model/app/tab.dart';
-import 'package:server_box/data/model/app/tray.dart';
 import 'package:server_box/data/model/server/host_cert_authority.dart';
 import 'package:server_box/data/model/server/server_sort.dart';
 import 'package:server_box/data/model/terminal/typeface.dart';
@@ -87,41 +86,6 @@ class SettingStore extends SqliteStore {
 
   // Whether the app may continue running in the background on Android.
   late final bgRun = propertyDefault('bgRun', isAndroid);
-
-  /// Whether closing the desktop window leaves the app running in the tray.
-  ///
-  /// On by default, because it is what makes the status icon worth having: an
-  /// icon that goes away with the window says nothing at the moment anybody
-  /// would look at it. Off restores what every desktop build did before —
-  /// closing the window ends the app.
-  late final trayKeepRunning = propertyDefault('trayKeepRunning', isDesktop);
-
-  /// Which readings each row of the tray menu carries, by [TrayMetric.name].
-  ///
-  /// A list rather than a set of switches: the order is the order they are
-  /// drawn in, and a row has only so much width.
-  late final trayMetrics = listProperty<String>(
-    'trayMetrics',
-    defaultValue: [TrayMetric.cpu.name, TrayMetric.mem.name],
-  );
-
-  /// Which series the row's chart draws, by [TrayMetric.name]. The empty name
-  /// draws none.
-  ///
-  /// Stored as a name rather than as the enum, and this is the one setting here
-  /// that is: the value it holds has one more member than [TrayMetric] does.
-  /// `propertyDefault` takes a non-nullable element type, so "draws nothing"
-  /// has nowhere to live in one and is spelled as the absent name.
-  /// [TrayMetric.byName] reads the setting back, answering null for that name
-  /// and for one this build does not know alike — both draw nothing, which is
-  /// the same answer either way.
-  late final trayChart = propertyDefault('trayChart', TrayMetric.cpu.name);
-
-  /// One line per server instead of two, and no chart.
-  ///
-  /// What the menu was before it could do better, and what a list of twenty
-  /// servers wants. Also all Linux can draw — see `TrayService`.
-  late final trayCompact = propertyDefault('trayCompact', false);
 
   // Server order
   late final serverOrder = listProperty<String>('serverOrder');
@@ -276,11 +240,7 @@ class SettingStore extends SqliteStore {
     }
   }
 
-  // Only valid on iOS
-  late final autoUpdateHomeWidget = propertyDefault(
-    'autoUpdateHomeWidget',
-    isIOS,
-  );
+  late final autoUpdateHomeWidget = propertyDefault('autoUpdateHomeWidget', false);
 
   /// Hide the app's content once it leaves the foreground, so the app
   /// switcher's card does not leave server names or terminal output readable.
@@ -295,24 +255,6 @@ class SettingStore extends SqliteStore {
   /// before Dart has pushed anything — so a change here has to go through
   /// [MethodChans.setPrivacyBlur], and every launch re-pushes.
   late final privacyBlur = propertyDefault('privacyBlur', false);
-
-  /// Whether this app may put a Live Activity on the lock screen at all.
-  ///
-  /// iOS only, and one switch for every kind rather than one per kind: the user
-  /// question is whether this app appears on the lock screen, not which of its
-  /// features does. What is behind it today is the terminal session activity;
-  /// the monitor status one will sit behind the same switch.
-  ///
-  /// **Off by default, which is a change of behaviour.** A Live Activity used
-  /// to appear whenever a terminal connected, with nothing to stop it. It shows
-  /// a server's name and the state of a connection to it, on a screen that is
-  /// readable without unlocking the phone, and that is not something to opt
-  /// somebody into — least of all silently, on a device they hand to other
-  /// people. An install that wants it turns it on once.
-  ///
-  /// Independent of iOS' own per-app Live Activity permission, which can also
-  /// be off: this says whether the app *asks*.
-  late final liveActivity = propertyDefault('liveActivity', false);
 
   /// Servers the watch app may show, by [Spi.id], in display order.
   ///
@@ -550,14 +492,6 @@ class SettingStore extends SqliteStore {
   /// row, so exporting on a machine where the Agent had been let loose and
   /// restoring on a phone turned it on there with nothing said.
   ///
-  /// [liveActivity] the same, one screen out. It decides whether a server's
-  /// name and the state of a connection to it are readable without unlocking,
-  /// so restoring a phone's backup onto a second phone would start putting
-  /// them on that phone's lock screen without anyone deciding it. It is also
-  /// iOS-only, which makes the other direction wrong too: a backup taken on
-  /// Android carries the untouched default and would switch it off on an iPhone
-  /// that had it on.
-  ///
   /// Handled beside the internal keys rather than by giving them internal
   /// names, so an install that has already answered the question keeps its
   /// answer instead of being quietly reset by a rename.
@@ -755,9 +689,7 @@ class SettingStore extends SqliteStore {
   );
 
   /// Hide title bar on desktop
-  late final hideTitleBar = propertyDefault('hideTitleBar', isDesktop);
-
-  late final editorSoftWrap = propertyDefault('editorSoftWrap', isIOS);
+  late final editorSoftWrap = propertyDefault('editorSoftWrap', false);
 
   late final sshTermHelpShown = propertyDefault('sshTermHelpShown', false);
 

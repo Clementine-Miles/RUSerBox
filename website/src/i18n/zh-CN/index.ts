@@ -96,8 +96,6 @@ const zhCN: Translation = {
     title: '全栈工具，融于一处。',
     subtitle:
       '告别在多个终端、SFTP 客户端与监控面板之间频繁切换。',
-    installIosPrompt: '# iOS',
-    installReleasePrompt: '# Android、Linux 与 Windows',
   },
   os: {
     metaTitle: 'ServerBox OS（原 ServerBox Monitor）— 运行在服务器端的 Web 桌面与监控引擎',
@@ -174,19 +172,14 @@ const zhCN: Translation = {
     appAction: '下载客户端',
   },
   download: {
-    title: '全平台原生支持。',
-    subtitle:
-      '选择你的操作系统与习惯的发行渠道。',
-    copied: '已复制安装命令',
-    copyPrompt: '复制此安装命令：',
-    note:
-      '提示：搭配服务端 ServerBox OS 使用，可解锁离线推送通知、桌面小组件与历史监控图表。',
+    title: '下载 Android 版',
+    subtitle: '选择适合设备架构的 APK。',
+    note: 'ServerBox Monitor 提供历史图表、通知和主屏幕小组件。',
   },
   cta: {
     title: '基于 AGPLv3 免费开源。',
     subtitle:
       '代码完全透明，欢迎在 GitHub 参与共建，或立即下载体验。',
-    appStoreAction: 'App Store 下载',
     githubAction: 'GitHub Releases',
   },
   otherApps: {

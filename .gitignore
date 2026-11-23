@@ -20,7 +20,6 @@ node_modules/
 
 # Flutter/Dart/Pub related
 **/doc/api/
-**/ios/Flutter/.last_build_id
 # .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -28,17 +27,10 @@ node_modules/
 .pub-cache/
 .pub/
 /build/
-ios/build/
 android/build/
-windows/build/
-linux/build/
-macos/build/
 # `make coverage` output. Was committed once and then went stale for a year,
 # naming files that have since moved.
 /coverage/
-
-# Web related
-lib/generated_plugin_registrant.dart
 
 # Symbolication related
 app.*.symbols
@@ -63,10 +55,6 @@ test.dart
 
 .dart_tool
 
-# Linux release
-linux.AppDir
-**/*.AppImage
-
 untranslated.json
 
 # Per-developer overrides merged into BuildData by fl_build's updateBuildData().
@@ -76,7 +64,6 @@ more_build_data.json
 
 trans.txt
 android/app/.cxx
-.env.release
 .env
 
 # Rust workspace
