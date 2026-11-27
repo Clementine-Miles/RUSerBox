@@ -65,10 +65,6 @@ dependencies:
       ref: main
   xterm:
     path: packages/xterm
-  computer:
-    git:
-      url: https://github.com/lollipopkit/dart_computer
-      ref: v1.0.88
   fl_lib:
     path: packages/fl_lib
   # The shell on this device: PTY and proot on Android. Shared
@@ -132,8 +128,6 @@ dev_dependencies:
   pretty_qr_code: ^3.3.0
   flutter_test:
     sdk: flutter
-  fl_build:
-    path: packages/fl_build
   # Imported by tests directly, for the same reason as the block above.
   shared_preferences: ^2.5.5
   vector_graphics_compiler: ^1.3.0
@@ -196,11 +190,3 @@ flutter:
     - family: JetBrainsMono Nerd Font
       fonts:
         - asset: assets/fonts/JetBrainsMonoNLNerdFontMono-Regular.ttf
-
-# What `fl_build` names the artifacts it produces, and the `BuildData.name` it
-# generates — which is the name the app itself draws. Here rather than in an
-# `fl_build.json` of its own, which is a file for one key. CI reads this same
-# line, so the name it publishes assets under cannot drift from the name the
-# build gave them.
-fl_build:
-  appName: ServerBox

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:computer/computer.dart';
 import 'package:fl_lib/fl_lib.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart';
@@ -11,11 +10,9 @@ abstract final class Inits {
   ///
   /// Call this in the main function of the app.
   ///
-  /// - [computerCounts] is the number of workers to run in parallel.
   /// - [appName] is the name of the app.
   /// - [bakName] is the name of the backup file.
   static Future<void> initFlLibMain({
-    int computerCounts = 3,
     required String appName,
     String? bakName,
     List<TypeAdapter<dynamic>> hiveAdapters = const [],
@@ -40,7 +37,6 @@ abstract final class Inits {
     // non-order function.
     final futures = <Future<dynamic>>[];
     futures.add(Hive.initFlutter());
-    futures.add(Computer.shared.turnOn(workersCount: computerCounts));
     await Future.wait(futures);
 
     for (final adapter in hiveAdapters) {

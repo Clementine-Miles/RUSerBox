@@ -24,11 +24,9 @@ p521 = "0.14"
 sbm_parser = { path = "../sbm_parser" }
 sbm_virt = { path = "../sbm_virt" }
 sbm_redfish = { path = "../sbm_redfish" }
-serde = "1.0"
 serde_json = "1.0"
 sha1 = "0.11"
 sha2 = "0.11"
-tokio = { version = "1", features = ["io-util", "macros", "net", "rt-multi-thread", "sync", "time"] }
 x25519-dalek = { version = "3", features = ["static_secrets", "getrandom"] }
 
 [lints.rust]

@@ -1815,11 +1815,9 @@ dependencies = [
  "sbm_parser",
  "sbm_redfish",
  "sbm_virt",
- "serde",
  "serde_json",
  "sha1",
  "sha2",
- "tokio",
  "x25519-dalek",
 ]
 
