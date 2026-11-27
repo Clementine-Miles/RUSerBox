@@ -96,7 +96,9 @@ pub async fn power(
     };
     match perform(&state, body.into_inner(), gated.remote_ip).await {
         Ok(response) => Ok(HttpResponse::Ok().json(&response)),
-        Err(PowerRefused::Script | PowerRefused::Failed(_)) => {
+        Err(PowerRefused::Script) => Ok(HttpResponse::InternalServerError().build()),
+        Err(PowerRefused::Failed(why)) => {
+            tracing::warn!("power action could not run: {why}");
             Ok(HttpResponse::InternalServerError().build())
         }
     }

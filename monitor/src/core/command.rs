@@ -1,7 +1,7 @@
-//! Runs one command for a task: in a shell, as the agent's user (through
+//! Runs one command for a job: in a shell, as the agent's user (through
 //! `sudo` when asked, the password on stdin), its output line by line as it
 //! comes so a page can show it, and the whole process group stopped when the
-//! task is.
+//! job is cancelled.
 //!
 //! The shell is `/bin/sh` on Unix and Windows PowerShell on Windows, where
 //! there is no `sudo` and the process tree is a job object (`utils::job`).
@@ -9,13 +9,46 @@
 use std::process::Stdio;
 use std::time::{Duration, Instant};
 
-use fl_pi_llm::host::Cancel;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+
+use tokio::sync::Notify;
 use tokio::io::{AsyncBufReadExt, AsyncRead, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::process::{Child, Command};
 use tokio::sync::mpsc;
 
 /// The longest line kept; the rest of it is dropped.
 const MAX_LINE: usize = 8 << 10;
+
+/// A cancellation flag shared between a job and the command it runs.
+#[derive(Clone, Default)]
+pub struct Cancel(Arc<(AtomicBool, Notify)>);
+
+impl Cancel {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn is_cancelled(&self) -> bool {
+        self.0.0.load(Ordering::SeqCst)
+    }
+
+    pub fn cancel(&self) {
+        self.0.0.store(true, Ordering::SeqCst);
+        self.0.1.notify_waiters();
+    }
+
+    /// Resolves once cancelled.
+    pub async fn cancelled(&self) {
+        loop {
+            let notified = self.0.1.notified();
+            if self.is_cancelled() {
+                return;
+            }
+            notified.await;
+        }
+    }
+}
 
 /// Which stream a line came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

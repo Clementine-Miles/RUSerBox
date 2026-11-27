@@ -258,8 +258,19 @@ pub async fn get(
     }))
 }
 
+/// Whether the agent runs as root, which updates without a password.
+fn is_root() -> bool {
+    #[cfg(unix)]
+    {
+        // SAFETY: no preconditions.
+        unsafe { libc::geteuid() == 0 }
+    }
+    #[cfg(not(unix))]
+    false
+}
+
 fn needs_password() -> bool {
-    agent::update_needs_password(std::path::Path::new("/run/systemd/system").exists(), crate::agent_mode::prompt::is_root())
+    agent::update_needs_password(std::path::Path::new("/run/systemd/system").exists(), is_root())
 }
 
 #[derive(Deserialize)]

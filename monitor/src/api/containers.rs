@@ -241,20 +241,6 @@ pub async fn list(
     Ok(HttpResponse::Ok().json(&read(part, id, exec).await))
 }
 
-/// One part of the machine's container state. Shared by `/containers` and the
-/// MCP tool; the transport rule is the caller's, asked before this runs.
-pub(crate) async fn listing(
-    state: &AppState,
-    part: ContainerPart,
-    id: Option<&str>,
-) -> Result<ContainerListResponse, ContainerActionError> {
-    if part.needs_id() {
-        let id = id.ok_or(ContainerActionError::Empty)?;
-        sbm_parser::container::validate_identifier(id)?;
-    }
-    Ok(read(part, id, &state.remote_access.exec).await)
-}
-
 #[derive(Debug, Deserialize)]
 pub struct ContainerQuery {
     part: Option<ContainerPart>,

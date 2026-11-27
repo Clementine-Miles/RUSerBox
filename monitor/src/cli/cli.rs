@@ -176,19 +176,12 @@ async fn handle_serve(matches: &clap::ArgMatches) -> anyhow::Result<()> {
         Ok(n) => tracing::info!("blobs: removed {n} unused files"),
         Err(e) => tracing::warn!("blobs: collecting unused files failed: {e:#}"),
     }
-    // Tasks a stopped agent left running are failed; sessions no row names
-    // go.
-    if let Err(e) = app_state.agent.recover().await {
-        tracing::warn!("agent mode: recovering tasks failed: {e:#}");
-    }
     // Unconditional, and cheap while nothing is running: a benchmark outlives
     // the request that started it, so the party that carries it to a terminal
     // state has to be resident. See `api::benchmark::start_poller`.
     crate::api::benchmark::start_poller(app_state.clone());
     // Deployed web apps get their proxies back; a deployment a stop cut
     // short is marked failed.
-    // The model servers already on this machine, for Agent mode.
-    crate::inference::refresh_providers(&app_state);
     tokio::spawn(crate::container_backups::start(app_state.clone()));
     tokio::spawn(crate::storage_watch::start(app_state.clone()));
     tokio::spawn(crate::monitor_backup::start(app_state.clone()));

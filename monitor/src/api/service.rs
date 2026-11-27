@@ -205,8 +205,8 @@ pub async fn list(
     Ok(HttpResponse::Ok().json(&listing(&state, part, key).await))
 }
 
-/// The units, or one unit's own files. Shared by `/services` and the MCP
-/// tool; the transport rule is the caller's, asked before this runs.
+/// The units, or one unit's own files, for `/services`; the transport
+/// rule is the caller's, asked before this runs.
 pub(crate) async fn listing(
     state: &AppState,
     part: ServicePart,

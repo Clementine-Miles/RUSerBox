@@ -602,16 +602,12 @@ async fn migration_032_keeps_the_oldest_admin_and_moves_the_others_work_to_it() 
         .unwrap();
     assert_eq!(roles, 0);
 
-    let flows: Vec<i64> = sqlx::query_scalar("SELECT user_id FROM agent_flow ORDER BY id")
-        .fetch_all(&pool)
+    // The AI Agent mode's tables, rows and all, are dropped (047).
+    let agent_tables: i64 = sqlx::query_scalar("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND (name LIKE 'agent_%' OR name LIKE 'mcp_%' OR name IN ('api_tokens', 'stack_mcp'))")
+        .fetch_one(&pool)
         .await
         .unwrap();
-    assert_eq!(flows, [admin, admin]);
-    let memory: Vec<(String, String)> = sqlx::query_as("SELECT path, content FROM agent_memory ORDER BY path")
-        .fetch_all(&pool)
-        .await
-        .unwrap();
-    assert_eq!(memory, [("MEMORY.md".into(), "mine".into()), ("ops.md".into(), "notes".into())]);
+    assert_eq!(agent_tables, 0);
     let storage: Vec<(String, String)> = sqlx::query_as("SELECT app_id, key FROM desk_app_storage ORDER BY app_id, key")
         .fetch_all(&pool)
         .await
@@ -651,12 +647,6 @@ async fn migration_032_keeps_the_oldest_admin_and_moves_the_others_work_to_it() 
         .await
         .unwrap();
     assert!(broken.is_empty(), "{broken:?}");
-    sqlx::query("DELETE FROM users").execute(&pool).await.unwrap();
-    let flows: i64 = sqlx::query_scalar("SELECT count(*) FROM agent_flow")
-        .fetch_one(&pool)
-        .await
-        .unwrap();
-    assert_eq!(flows, 0, "an account's tasks go with it");
 }
 
 /// The bytes of a migration that has already run somewhere are frozen.
@@ -721,6 +711,8 @@ fn shipped_migrations_keep_their_checksums() {
         (43, "5228911ff9dd6f666f1448846c68e22e2badfc2ce7b8f775ab9ca6de883069e400998b25b0e39788a1fdf7021a9b7fbf"),
         (44, "ed4e3c76599a32b99c3d76ae9a9da16853442302f31ff66e259c0d60c9a0858df6f9b91cd0ee3a1143e985177bbd1fc0"),
         (45, "96c9f1fe5b830f8c381533f59336e303b5bdd98576bad74d40a9803f049333ccb657efeee7c3a4bb6a2f8a6e8bf0063e"),
+        (46, "01c01dffcca29a0eb1a812494e01231133c860746a060a7c8668537a630402c4dc89c7183f62be2c973ca492509548b0"),
+        (47, "fc3185efa5eca0dfe248f54be79cc53c435b2d44ab4cf2ecd4385ba834e3524560d165c2286798c072a957db6b700a14"),
     ];
     let migrator = sqlx::migrate!("./migrations");
     let mut seen = std::collections::BTreeMap::new();

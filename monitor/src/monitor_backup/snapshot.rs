@@ -45,13 +45,6 @@ pub const KEPT: &[Kept] = &[
     kept("desktop_profile"),
     kept("bmc_target"),
     kept("virt_pve"),
-    kept("agent_settings"),
-    kept("agent_provider"),
-    kept("agent_credential"),
-    kept("agent_permissions"),
-    Kept { table: "mcp_policy", volatile: &["updated_at"] },
-    kept("agent_mcp_server"),
-    Kept { table: "mcp_oauth", volatile: &["access_token", "refresh_token", "expires_at", "updated_at"] },
     kept("container_backup_settings"),
     Kept { table: "container_backup_schedule", volatile: &["last_run", "last_error"] },
     Kept { table: "storage_maintenance", volatile: &["last_run", "last_error"] },
@@ -59,8 +52,7 @@ pub const KEPT: &[Kept] = &[
 ];
 
 /// What a backup leaves out: history, what is signed in, what lives in files
-/// of its own (installed apps, deployed web apps, Agent mode's tasks and
-/// skills), and where backups go. A new table goes in one list or the other
+/// of its own (installed apps, deployed web apps), and where backups go. A new table goes in one list or the other
 /// (`every_table_is_kept_or_left_out`).
 pub const LEFT_OUT: &[&str] = &[
     "system_metrics",
@@ -96,15 +88,8 @@ pub const LEFT_OUT: &[&str] = &[
     "desk_notification_read",
     "desk_app_package",
     "desk_app_file",
-    "agent_flow",
-    "agent_memory",
-    "agent_skill",
     "stack",
-    "stack_mcp",
     "watch_tokens",
-    // Minted for a client against one machine, and ended by its password:
-    // a restore elsewhere mints its own, as it does a watch token.
-    "api_tokens",
     "login_device",
     "monitor_backup",
     "push_literal_pending",
@@ -559,9 +544,6 @@ async fn copy_in(conn: &mut SqliteConnection, sealer: &Sealer, blobs: usize) -> 
                 .execute(&mut *conn)
                 .await?;
             conn.execute("DELETE FROM main.watch_tokens").await?;
-            // An API token was minted with the password this restore
-            // replaces, as a backup's own was: neither outlives it (#1681).
-            conn.execute("DELETE FROM main.api_tokens").await?;
             conn.execute("DELETE FROM main.login_device").await?;
             conn.execute("DELETE FROM main.lkc_session").await?;
             id
@@ -673,16 +655,16 @@ mod tests {
         assert_eq!(ran.stable, added.stable, "a run is not a change");
         assert_ne!(ran.full, added.full);
 
-        let set = |value: String| sqlx::query("UPDATE agent_credential SET credential = ?").bind(value).execute(&db);
-        sqlx::query("INSERT INTO agent_credential (provider_id, credential, updated_at) VALUES ('p', '', 'x')").execute(&db).await.unwrap();
-        set(sealer.seal(sealed::AGENT_CREDENTIAL, "k1").unwrap()).await.unwrap();
+        let set = |value: String| sqlx::query("UPDATE virt_pve SET password = ?").bind(value).execute(&db);
+        sqlx::query("INSERT INTO virt_pve (id, addr, auth, username, password, updated_at) VALUES (1, 'https://pve', 'password', 'root@pam', '', 'x')").execute(&db).await.unwrap();
+        set(sealer.seal(sealed::PVE_PASSWORD, "k1").unwrap()).await.unwrap();
         let sealed_once = digest(&db, &sealer, Some(b"a = 1")).await.unwrap();
-        set(sealer.seal(sealed::AGENT_CREDENTIAL, "k1").unwrap()).await.unwrap();
+        set(sealer.seal(sealed::PVE_PASSWORD, "k1").unwrap()).await.unwrap();
         assert_eq!(digest(&db, &sealer, Some(b"a = 1")).await.unwrap(), sealed_once, "sealed again is no change");
-        set(Sealer::temporary().seal(sealed::AGENT_CREDENTIAL, "k1").unwrap()).await.unwrap();
+        set(Sealer::temporary().seal(sealed::PVE_PASSWORD, "k1").unwrap()).await.unwrap();
         let lost = digest(&db, &sealer, Some(b"a = 1")).await.unwrap();
         assert_ne!(lost.stable, sealed_once.stable, "one the key no longer opens is hashed as none");
-        set(sealer.seal(sealed::AGENT_CREDENTIAL, "k2").unwrap()).await.unwrap();
+        set(sealer.seal(sealed::PVE_PASSWORD, "k2").unwrap()).await.unwrap();
         assert_ne!(digest(&db, &sealer, Some(b"a = 1")).await.unwrap().stable, sealed_once.stable);
     }
 
@@ -702,15 +684,15 @@ mod tests {
             .unwrap();
 
         // One sealed under a key since lost: carried as none, not failing the backup.
-        sqlx::query("INSERT INTO agent_credential (provider_id, credential, updated_at) VALUES ('p', ?, 'x')")
-            .bind(Sealer::temporary().seal(sealed::AGENT_CREDENTIAL, "gone").unwrap())
+        sqlx::query("INSERT INTO virt_pve (id, addr, auth, username, password, updated_at) VALUES (1, 'https://pve', 'password', 'root@pam', ?, 'x')")
+            .bind(Sealer::temporary().seal(sealed::PVE_PASSWORD, "gone").unwrap())
             .execute(&src)
             .await
             .unwrap();
 
         let file = dir.path().join("settings.db");
         write_database(&src, &src_key, &file).await.unwrap();
-        let lost: String = sqlx::query_scalar("SELECT credential FROM agent_credential").fetch_one(&single(&file, false).await.unwrap()).await.unwrap();
+        let lost: String = sqlx::query_scalar("SELECT password FROM virt_pve").fetch_one(&single(&file, false).await.unwrap()).await.unwrap();
         assert_eq!(lost, "");
         let carried: String = sqlx::query_scalar("SELECT password FROM bmc_target").fetch_one(&single(&file, false).await.unwrap()).await.unwrap();
         assert_eq!(carried, "calvin", "in clear inside the backup's own encryption");

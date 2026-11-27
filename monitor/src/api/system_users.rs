@@ -198,7 +198,7 @@ pub async fn list(
     Ok(HttpResponse::Ok().json(&listing(&state, part, name).await))
 }
 
-/// `/system-users`'s body, shared with the MCP tool.
+/// `/system-users`.s body.
 pub(crate) async fn listing(state: &AppState, part: UserPart, name: Option<&str>) -> serde_json::Value {
     let name = name.filter(|name| !name.is_empty());
     if part == UserPart::Detail && name.is_none() {

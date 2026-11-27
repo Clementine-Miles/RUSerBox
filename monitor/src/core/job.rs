@@ -6,11 +6,10 @@ use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
-use fl_pi_llm::host::Cancel;
 use serde::Serialize;
 use tokio::sync::{mpsc, watch};
 
-use crate::agent_mode::command::{self, Spec, Stream};
+use crate::core::command::{self, Cancel, Spec, Stream};
 
 /// Lines kept per job; older ones go first.
 const MAX_LINES: usize = 4000;

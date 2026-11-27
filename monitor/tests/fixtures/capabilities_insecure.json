@@ -44,12 +44,10 @@
         "update",
         "notifications",
         "desk",
-        "agent_mode",
         "alerts",
         "audit",
         "live",
-        "lkc",
-        "mcp"
+        "lkc"
     ],
     "access": {
         "ok": false,

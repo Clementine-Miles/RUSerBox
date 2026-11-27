@@ -10,8 +10,6 @@ path = "src/lib.rs"
 [dependencies]
 # Shared status parser (monorepo-wide)
 sbm_parser = { path = "../crates/sbm_parser" }
-# Agent mode's agent loop: pi on QuickJS, hosted from Rust (`agent_mode`).
-fl_pi_llm = { path = "../packages/fl_pi_llm/fl_pi_llm/rust", default-features = false, features = ["reqwest"] }
 sbm_redfish = { path = "../crates/sbm_redfish" }
 sbm_virt = { path = "../crates/sbm_virt" }
 fl_lkc = { path = "../packages/fl_lib/rust/lkc" }
@@ -53,8 +51,6 @@ zeroize = "1.9"
 # read with the XML parser `sbm_parser` already uses.
 age = { version = "0.11", features = ["armor"] }
 roxmltree = "0.21"
-# Agent mode's chat key, derived from the credentials key (`sealed::Sealer::derive_key`).
-blake3 = "1"
 
 tar = { version = "0.4", default-features = false }
 flate2 = "1"
@@ -121,17 +117,9 @@ fs2 = "0.4"
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
 
-# Agent mode tells the model which Windows it is on (`prompt::os_name`).
 [target.'cfg(windows)'.dependencies]
-sysinfo = { version = "0.40", default-features = false, features = ["system"] }
 # A command's process tree as a job object (`utils::job`).
 windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Diagnostics_ToolHelp", "Win32_System_JobObjects", "Win32_System_Threading"] }
-
-[dependencies.async-trait]
-version = "0.1"
-
-[dependencies.sbm_mcp]
-path = "../crates/sbm_mcp"
 
 [dev-dependencies]
 ntex = { version = "4", features = ["no-test-logging"] }
