@@ -5,7 +5,7 @@ import 'package:server_box/data/provider/server/reading_fmt.dart';
 import 'package:server_box/data/provider/server/single.dart';
 import 'package:server_box/data/res/app_theme.dart';
 import 'package:server_box/data/res/chart_palette.dart';
-import 'package:server_box/data/res/gruvbox.dart';
+import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/view/page/server/card/title.dart';
 import 'package:server_box/view/page/server/chart.dart';
 import 'package:server_box/view/page/server/metric_row.dart';
@@ -41,7 +41,7 @@ abstract final class ServerFullScreenTheme {
   static ThemeData _dark(ThemeData current) {
     if (dark case final dark?) return dark;
     if (current.brightness == Brightness.dark) return current;
-    return buildAppTheme(Gruvbox.material, Brightness.dark);
+    return buildAppTheme(Stores.setting.appTheme, Brightness.dark);
   }
 }
 

@@ -232,7 +232,7 @@ class ServerCardNotice extends StatelessWidget {
   /// height stated at both: [TextStyle.lerp] switches a height that only one
   /// end states at the halfway point, which is a jump in the middle of the
   /// movement.
-  static const _title = TextStyle(
+  static final _title = TextStyle(
     fontSize: 12,
     height: 1.3,
     fontWeight: FontWeight.w500,
@@ -525,7 +525,7 @@ class ServerCardStale extends StatelessWidget {
 
   /// The near end of the one style, the line height stated at both ends —
   /// see [ServerCardNotice] for why.
-  static const _text = TextStyle(
+  static final _text = TextStyle(
     fontSize: 11,
     height: 1,
     color: StatePalette.warn,
@@ -676,7 +676,7 @@ class ServerCardFoot extends StatelessWidget {
           Container(
             width: ServerCardSizes.dot,
             height: ServerCardSizes.dot,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: StatePalette.warn,
               shape: BoxShape.circle,
             ),
@@ -685,7 +685,7 @@ class ServerCardFoot extends StatelessWidget {
           Expanded(
             child: Text(
               '${over.label} ${over.value} · ${over.note}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 height: 1.4,
                 color: StatePalette.warn,

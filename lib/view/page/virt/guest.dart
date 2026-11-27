@@ -365,7 +365,7 @@ VirtGuestViewKind.overview => _buildOverview(st, guest, state),
           padding: const EdgeInsets.fromLTRB(13, 7, 7, 7),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.inventory_2_outlined,
                 size: 17,
                 color: StatePalette.warn,
@@ -428,7 +428,7 @@ VirtGuestViewKind.overview => _buildOverview(st, guest, state),
           padding: const EdgeInsets.fromLTRB(13, 3, 5, 3),
           child: Row(
             children: [
-              const Icon(Icons.schedule, size: 17, color: StatePalette.warn),
+              Icon(Icons.schedule, size: 17, color: StatePalette.warn),
               UIs.width7,
               Expanded(
                 child: Text(l10n.virtHwPendingBanner, style: UIs.text12),

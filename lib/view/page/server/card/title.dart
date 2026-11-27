@@ -169,7 +169,7 @@ class ServerCardConnAction extends ConsumerWidget {
       // A certificate to review is answered here, where the card is: asking
       // again is refused the same way.
       ServerConn.failed when srv.certRefusal != null => (
-        const Icon(Icons.verified_user_outlined, size: 19, color: StatePalette.warn),
+        Icon(Icons.verified_user_outlined, size: 19, color: StatePalette.warn),
         () => unawaited(trustMonitorCert(context, ref, srv, srv.certRefusal!)),
         l10n.bmcCert,
       ),

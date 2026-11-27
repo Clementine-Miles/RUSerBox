@@ -9,54 +9,12 @@ ThemeMode appThemeMode(int value) => switch (value) {
   _ => ThemeMode.system,
 };
 
-ThemeData buildAppTheme(Gruvbox theme, Brightness brightness) {
-  final palette = theme.palette(brightness);
-  final background = Color(palette.background);
-  final surface = Color(palette.surface);
-  final raised = Color(palette.raised);
-  final text = Color(palette.foreground);
-  final muted = Color(palette.muted);
-  final accent = Color(palette.blue);
-  final scheme = ColorScheme(
-    brightness: brightness,
-    primary: accent,
-    onPrimary: background,
-    primaryContainer: raised,
-    onPrimaryContainer: text,
-    secondary: Color(palette.green),
-    onSecondary: background,
-    secondaryContainer: raised,
-    onSecondaryContainer: text,
-    tertiary: Color(palette.aqua),
-    onTertiary: background,
-    tertiaryContainer: raised,
-    onTertiaryContainer: text,
-    error: Color(palette.red),
-    onError: background,
-    errorContainer: raised,
-    onErrorContainer: Color(palette.red),
-    surface: background,
-    onSurface: text,
-    surfaceDim: background,
-    surfaceBright: raised,
-    surfaceContainerLowest: background,
-    surfaceContainerLow: surface,
-    surfaceContainer: surface,
-    surfaceContainerHigh: raised,
-    surfaceContainerHighest: raised,
-    onSurfaceVariant: muted,
-    outline: muted,
-    outlineVariant: raised,
-    inverseSurface: text,
-    onInverseSurface: background,
-    inversePrimary: Color(
-      theme
-          .palette(
-            brightness == Brightness.dark ? Brightness.light : Brightness.dark,
-          )
-          .blue,
-    ),
-  );
+/// The app's [ThemeData] for one built-in Gruvbox variant: the generated
+/// [ColorScheme] (`gruvbox_palettes.g.dart`) plus the app's shapes and type.
+ThemeData buildAppTheme(GruvboxTheme theme, Brightness brightness) {
+  final scheme = theme.scheme(brightness);
+  final text = scheme.onSurface;
+  final muted = scheme.onSurfaceVariant;
   final cardShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(13),
   );

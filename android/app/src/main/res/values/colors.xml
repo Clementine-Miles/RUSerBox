@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
-    <color name="colorLaunch">#EEEEEE</color>
-
+    <!-- Gruvbox light surface (bg0), the default theme's. -->
+    <color name="launchBackground">#FBF1C7</color>
 </resources>

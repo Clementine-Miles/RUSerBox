@@ -60,7 +60,7 @@ Future<bool> showCertTrustSheet(
             UIs.height7,
             Text(
               l10n.bmcCertExpired,
-              style: const TextStyle(color: StatePalette.warn),
+              style: TextStyle(color: StatePalette.warn),
             ),
           ],
         ],

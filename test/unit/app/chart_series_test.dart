@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/core/color/oklch.dart';
 import 'package:server_box/data/res/chart_palette.dart';
 import 'package:server_box/data/res/chart_series.dart';
+import 'package:server_box/data/res/gruvbox.dart';
 
 /// The chart palette, against the values the design published.
 ///
@@ -161,75 +162,26 @@ void main() {
   });
 
   group('the palette the app reads', () {
-    tearDown(() => ChartPalette.resolve(seed, dark: true));
+    tearDown(() => ChartPalette.resolve(const GruvboxTheme(), dark: true));
 
-    test('the six move with the seed and with the theme', () {
-      ChartPalette.resolve(seed, dark: true);
-      final wasCpu = ChartPalette.cpu;
-      final wasAccent = ChartPalette.accent;
-
-      ChartPalette.resolve(const Color(0xFF3AA655), dark: true);
-      expect(ChartPalette.cpu, isNot(wasCpu));
-      expect(ChartPalette.accent, isNot(wasAccent));
-
-      // And back, since the same two answers must come from the same two
-      // inputs — this is a cache as much as it is a computation.
-      ChartPalette.resolve(seed, dark: true);
-      expect(ChartPalette.cpu, wasCpu);
-      expect(ChartPalette.accent, wasAccent);
-
-      ChartPalette.resolve(seed, dark: false);
-      expect(ChartPalette.cpu, isNot(wasCpu));
+    test('follows the variant and the brightness', () {
+      ChartPalette.resolve(const GruvboxTheme(), dark: true);
+      final blueCpu = ChartPalette.cpu;
+      ChartPalette.resolve(const GruvboxTheme(accent: GruvboxAccent.green), dark: true);
+      expect(ChartPalette.cpu, isNot(blueCpu));
+      ChartPalette.resolve(const GruvboxTheme(), dark: false);
+      expect(ChartPalette.cpu, isNot(blueCpu));
     });
 
-    test('a reading is drawn in the theme colour', () {
-      // Every reading, not only the one a card is watching. The rest were a
-      // tint barely off grey on a hue 100° from the theme's: olive under a
-      // pink theme, beside cards whose own icons were pink.
-      for (final seed in seeds) {
+    test('six distinct lines, starting at the accent', () {
+      for (final theme in GruvboxTheme.all) {
         for (final dark in [true, false]) {
-          ChartPalette.resolve(seed, dark: dark);
-          final accent = Oklch.of(ChartPalette.accent);
-          expect(hueDistance(accent.h, Oklch.of(seed).h), lessThan(4));
-          // In colour, by as much as this lightness has room for at this
-          // hue: some have 0.086 where the default seed has 0.11.
-          expect(accent.c, greaterThan(0.07));
-          // One colour, not two near ones: a line in this and a stretch of
-          // the bar over the list in the CPU's are the same thing.
-          expect(ChartPalette.accent, ChartPalette.cpu);
-        }
-      }
-    });
-
-    test('the lines of a chart start at the theme colour and stay apart', () {
-      // They were six colours fixed at build time, two of them the red and
-      // the amber a failure and a warning are drawn in. Whatever the seed:
-      // the first is the accent, the second is across the wheel from it, and
-      // no two that are not apart by hue are as light as each other.
-      for (final seed in seeds) {
-        for (final dark in [true, false]) {
-          ChartPalette.resolve(seed, dark: dark);
+          ChartPalette.resolve(theme, dark: dark);
           final lines = ChartPalette.lines;
-          expect(lines, hasLength(6));
-          expect(lines.toSet(), hasLength(6));
+          expect(lines.toSet(), hasLength(6), reason: '$theme');
           expect(lines.first, ChartPalette.accent);
-
-          final hues = [
-            for (final line in lines)
-              ChartPalette.series.hueOf(
-                ChartSeries.values[ChartPalette.series.all.indexOf(line)],
-              ),
-          ];
-          expect(hueDistance(hues[0], hues[1]), closeTo(180, 0.5));
-          for (var a = 0; a < lines.length; a++) {
-            for (var b = a + 1; b < lines.length; b++) {
-              expect(
-                hueDistance(hues[a], hues[b]),
-                greaterThanOrEqualTo(59.5),
-                reason: '$seed $dark: $a vs $b',
-              );
-            }
-          }
+          expect(ChartPalette.accent, ChartPalette.cpu);
+          expect(StatePalette.failed, isNot(StatePalette.running));
         }
       }
     });

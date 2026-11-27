@@ -109,7 +109,6 @@ dependency_overrides:
 dev_dependencies:
   integration_test:
     sdk: flutter
-  flutter_native_splash: ^2.1.6
   # 2.15 is the floor, not the lockfile's opinion: `--delete-conflicting-outputs`
   # was removed there, and every command this repo documents omits it. On an
   # earlier resolution that flag is live, and without it a conflicting output
@@ -160,6 +159,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/app_icon.png
+    - assets/licenses/
     - assets/fonts/Hack-Nerd-Font-LICENSE.txt
     - assets/fonts/JetBrains-Mono-LICENSE.txt
     - assets/fonts/Fira-Code-LICENSE.txt
@@ -208,14 +208,6 @@ flutter:
     - family: Cascadia Code
       fonts:
         - asset: assets/fonts/CascadiaCode-Regular.ttf
-
-flutter_native_splash:
-  color: "#ffffff"
-  image: assets/app_icon.png
-  color_dark: "#121212"
-  ios: false
-  web: false
-  android12: true
 
 # What `fl_build` names the artifacts it produces, and the `BuildData.name` it
 # generates — which is the name the app itself draws. Here rather than in an

@@ -62,10 +62,35 @@ class SettingStore extends SqliteStore {
     toObj: (pref) => pref?.name,
   );
 
+  /// The theme family, stored as `original` or `material` (what earlier
+  /// builds wrote under this key). Anything else — a downloaded theme's id —
+  /// reads as Gruvbox Material.
   late final appThemePreset = propertyDefault(
-    'appThemePreset', Gruvbox.material,
-    fromObj: Gruvbox.fromSetting,
-    toObj: (theme) => theme?.name,
+    'appThemePreset', GruvboxFamily.material,
+    fromObj: GruvboxFamily.fromSetting,
+    toObj: (family) => family?.id,
+  );
+
+  /// The primary accent, by name: `green` or `blue`.
+  late final appThemeAccent = propertyDefault(
+    'appThemeAccent', GruvboxAccent.blue,
+    fromObj: GruvboxAccent.fromSetting,
+    toObj: (accent) => accent?.name,
+  );
+
+  /// Gruvbox Material's background contrast, by name: `medium`, `hard` or
+  /// `soft`. Kept while classic Gruvbox is chosen, and not applied there.
+  late final appThemeContrast = propertyDefault(
+    'appThemeContrast', GruvboxContrast.medium,
+    fromObj: GruvboxContrast.fromSetting,
+    toObj: (contrast) => contrast?.name,
+  );
+
+  /// The variant the three settings above describe.
+  GruvboxTheme get appTheme => GruvboxTheme(
+    family: appThemePreset.fetch(),
+    accent: appThemeAccent.fetch(),
+    contrast: appThemeContrast.fetch(),
   );
 
   /// 0 follows the system, 1 is light, 2 is dark.

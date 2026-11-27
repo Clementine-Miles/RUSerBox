@@ -84,6 +84,16 @@ final class SeriesPalette {
     ], hues);
   }
 
+  /// Six given colours, in [ChartSeries] order: the built-in theme's
+  /// semantic hues rather than a fan around a seed.
+  factory SeriesPalette.fixed(List<Color> colors) {
+    assert(colors.length == ChartSeries.values.length);
+    return SeriesPalette._(
+      List.unmodifiable(colors),
+      [for (final c in colors) Oklch.of(c).h],
+    );
+  }
+
   static double _clampChroma(double c) =>
       math.min(_maxChroma, math.max(_minChroma, c));
 
