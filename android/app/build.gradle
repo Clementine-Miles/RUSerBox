@@ -122,11 +122,14 @@ android {
         }
     }
 
+    // Java 17 bytecode for the app's own Kotlin and Java, whatever JDK runs
+    // Gradle (JDK 27 in CI): explicit, so a newer host JDK never changes the
+    // output. D8/R8 lower it for minSdk 24.
     compileOptions {
         // flutter_local_notifications uses java.time below API 26.
         coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     // Per module since AGP 9, which dropped the project-wide defaults.
@@ -223,7 +226,7 @@ android {
 
 kotlin {
     compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
