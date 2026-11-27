@@ -57,83 +57,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get preReleaseUpdates => 'Receber atualizações de pré-lançamento';
 
   @override
-  String get addSystemPrivateKeyTip =>
-      'Atualmente, não há nenhuma chave privada. Gostaria de adicionar a chave do sistema (~/.ssh/id_rsa)?';
-
-  @override
   String get added2List => 'Adicionado à lista de tarefas';
 
   @override
   String get askAi => 'Perguntar à IA';
 
   @override
-  String get askAiInsertTerminal => 'Inserir no terminal';
-
-  @override
   String get remoteDesktop => 'Área de trabalho remota';
 
   @override
-  String get askAiRiskReadOnly => 'Somente leitura';
-
-  @override
-  String get askAiRiskCaution => 'Altera o sistema';
-
-  @override
-  String get askAiRiskUnvetted => 'Host não verificado';
-
-  @override
-  String get askAiRiskDestructive => 'Alto risco';
-
-  @override
-  String get askAiHistory => 'Histórico de conversas';
-
-  @override
-  String get askAiNewConversation => 'Nova conversa';
-
-  @override
-  String get askAiUntitledConversation => 'Sem título';
-
-  @override
-  String get askAiRenameConversation => 'Renomear conversa';
-
-  @override
-  String get askAiDeleteConversationTitle => 'Excluir esta conversa?';
-
-  @override
-  String get askAiDeleteConversationTip =>
-      'Apaga-a deste dispositivo. Não pode ser desfeito.';
-
-  @override
-  String get agentNoHistory => 'Nenhuma conversa global do Agente salva';
-
-  @override
-  String get agentClearHistoryTitle => 'Limpar o histórico global do Agente?';
-
-  @override
-  String get agentClearHistoryTip =>
-      'Todas as conversas globais do Agente serão removidas deste dispositivo.';
-
-  @override
-  String get agentCommandMayStillRun =>
-      'O comando interrompido pode ainda estar em execução no servidor.';
-
-  @override
-  String get agentToolShell => 'Shell';
-
-  @override
-  String get agentToolReadFile => 'Ler arquivo';
-
-  @override
-  String get agentToolWriteFile => 'Gravar arquivo';
-
-  @override
   String get floatOverTabs => 'Flutuar sobre as outras abas';
-
-  @override
-  String get agentToolSshConnect => 'Conectar por SSH';
-
-  @override
-  String get agentToolSshDisconnect => 'Desconectar SSH';
 
   @override
   String get agentSshConnectTitle => 'Conectar a um novo host';
@@ -144,9 +77,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get agentSshConnectTip =>
       'O Agent solicitou uma conexão SSH. Digite a senha aqui.';
-
-  @override
-  String get agentAdHocSessions => 'Conexões temporárias';
 
   @override
   String get agentSaveServerTitle => 'Salvar como servidor';
@@ -749,9 +679,6 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get pushToken => 'Token de notificação push';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'O ProxyCommand é executado no ambiente Linux deste dispositivo. Instale primeiro um sistema Linux.';
 
@@ -791,9 +718,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get pveMissingAuthTicket =>
       'O login do PVE funcionou, mas nenhum ticket de autenticação foi retornado.';
-
-  @override
-  String get pveLoadingConnect => 'Conectando...';
 
   @override
   String get pvePassword => 'Senha do PVE';
@@ -1081,9 +1005,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get keyPassphrases => 'Frases-senha das chaves';
 
   @override
-  String get syncFiles => 'Habilidades do agente';
-
-  @override
   String get syncRemoteTooNew =>
       'Os dados sincronizados foram criados por uma versão mais recente do ServerBox. Atualize o aplicativo para continuar sincronizando.';
 
@@ -1191,9 +1112,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get webdavSettingEmpty => 'Configurações de Webdav estão vazias';
 
   @override
-  String get whenOpenApp => 'Ao abrir o app';
-
-  @override
   String get wolTip =>
       'Após configurar o WOL (Wake-on-LAN), um pedido de WOL é enviado cada vez que o servidor é conectado.';
 
@@ -1207,9 +1125,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get writeScriptTip =>
       'Após conectar ao servidor, um script será escrito em `~/.config/server_box` \n | `/tmp/server_box` para monitorar o status do sistema. Você pode revisar o conteúdo do script.';
-
-  @override
-  String get menuGitHubRepository => 'Repositório no GitHub';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -1319,14 +1234,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get processParseInvalidRows =>
       'Não foi possível ler algumas entradas de processos.';
-
-  @override
-  String get processParseInvalidWindowsJson =>
-      'Não foi possível ler a resposta de processos do Windows.';
-
-  @override
-  String get processParseInvalidWindowsRows =>
-      'Não foi possível ler algumas entradas de processos do Windows.';
 
   @override
   String get processKillTargetChanged =>
@@ -1515,18 +1422,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get continueInTerminal => 'Continuar no terminal';
 
   @override
-  String get askAiRiskUnknown => 'Não classificado';
-
-  @override
   String get agentLocalExec => 'Executar comandos neste dispositivo';
-
-  @override
-  String get agentLocalExecTip =>
-      'Permite que o Agent trabalhe na máquina que executa o ServerBox. Seus comandos seguem o modo de permissão';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      'Deixa o Agent trabalhar localmente, limitado ao contentor Linux que o ServerBox instalou';
 
   @override
   String get agentRedact => 'Ocultar segredos antes de enviar';
@@ -1937,69 +1833,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String agentRetentionFmt(String kept) {
     return 'O Monitor mantém $kept';
   }
-
-  @override
-  String get agentServerTools => 'Ferramentas de servidor';
-
-  @override
-  String get agentServerToolsTip =>
-      'Execute comandos no servidor, leia e grave arquivos, conecte-se a outros hosts por SSH e use os recursos do ServerBox.';
-
-  @override
-  String get agentTerminalTools => 'Terminal';
-
-  @override
-  String get agentTerminalToolsTip =>
-      'Leia o conteúdo exibido no terminal e execute comandos no servidor correspondente.';
-
-  @override
-  String get agentToolTerminalScreen => 'Ler a tela';
-
-  @override
-  String get agentProviders => 'Provedores';
-
-  @override
-  String get agentProvidersTip =>
-      'Chaves de API, modelos e o modelo de um chat novo';
-
-  @override
-  String get agentTools => 'Ferramentas';
-
-  @override
-  String get agentToolsTip => 'O que o Agent pode usar e seus servidores MCP';
-
-  @override
-  String get agentSnippetToolsTip =>
-      'Liste, adicione, edite e remova snippets.';
-
-  @override
-  String get agentVirtToolsTip =>
-      'Ler as VMs e contêineres carregados pela aba Virtualização.';
-
-  @override
-  String get agentBenchmarkToolsTip =>
-      'Ler resultados de benchmark e, com sua aprovação, executar ou parar um.';
-
-  @override
-  String get agentRemoteDesktopToolsTip =>
-      'Listar perfis de área de trabalho remota e, com sua aprovação, conectar ou desconectar.';
-
-  @override
-  String get agentSkills => 'Competências';
-
-  @override
-  String get agentSkillsTip =>
-      'Instruções para tarefas específicas, instaladas do GitHub ou de um link';
-
-  @override
-  String get agentPermissions => 'Permissões';
-
-  @override
-  String get agentEmptyHint => 'Execute operações no servidor.';
-
-  @override
-  String get agentTerminalEmptyHint =>
-      'Leia o terminal atual e execute comandos nele.';
 
   @override
   String oldestSampleFmt(String time) {
@@ -2632,261 +2465,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get authShort => 'Auth';
 
   @override
-  String get remoteDesktopFitToWindow => 'Ajustar à janela';
-
-  @override
-  String get remoteDesktopActualSize => 'Tamanho real';
-
-  @override
-  String get remoteDesktopZoom => 'Ampliação';
-
-  @override
-  String get remoteDesktopViewOnly => 'Somente visualização';
-
-  @override
-  String get remoteDesktopDisableViewOnly => 'Desativar somente visualização';
-
-  @override
-  String get remoteDesktopSendClipboardText =>
-      'Enviar texto da área de transferência';
-
-  @override
-  String get remoteDesktopShowKeyboard => 'Mostrar teclado';
-
-  @override
-  String get remoteDesktopMoreControls => 'Mais controles';
-
-  @override
-  String get remoteDesktopUseDirectPointer => 'Usar ponteiro direto';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer => 'Usar ponteiro do touchpad';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => 'Enviar Ctrl+Alt+Delete';
-
-  @override
-  String get remoteDesktopReconnect => 'Reconectar';
-
-  @override
-  String get remoteDesktopFullScreen => 'Tela cheia';
-
-  @override
-  String get remoteDesktopExitFullScreen => 'Sair da tela cheia';
-
-  @override
-  String get remoteDesktopCloseSession => 'Fechar sessão';
-
-  @override
-  String get remoteDesktopConnected => 'Conectado';
-
-  @override
-  String get remoteDesktopConnecting => 'Conectando';
-
-  @override
-  String get remoteDesktopReconnecting => 'Reconectando';
-
-  @override
-  String get remoteDesktopDisconnected => 'Desconectado';
-
-  @override
-  String get remoteDesktopGuideTouch => 'Touchpad';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      'Um dedo move o ponteiro como um touchpad e um toque clica. Toque com dois dedos para clique direito, arraste com dois para rolar e faça pinça para zoom. Toque duas vezes e mantenha o dedo para arrastar.';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip =>
-      'Abre o teclado na tela. O que você digitar é enviado para a área de trabalho remota.';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip =>
-      'Para de enviar o ponteiro e as teclas, para você olhar sem clicar por engano.';
-
-  @override
-  String get remoteDesktopGuideMoreTip =>
-      'Ctrl+Alt+Del, reconectar e tela cheia ficam aqui.';
-
-  @override
-  String get remoteDesktopGuidePointerTip =>
-      'Assim como o ponteiro direto, em que o dedo clica onde toca.';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only =>
-      'A área de transferência VNC só aceita texto Latin-1.';
-
-  @override
-  String get remoteDesktopAddProfile => 'Adicionar perfil';
-
-  @override
-  String get remoteDesktopNoProfiles =>
-      'Nenhum perfil de área de trabalho remota';
-
-  @override
-  String get remoteDesktopAdd => 'Adicionar área de trabalho remota';
-
-  @override
-  String get remoteDesktopEdit => 'Editar área de trabalho remota';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      'O destino é resolvido pelo servidor SSH ou pelo Monitor. localhost refere-se a essa máquina.';
-
-  @override
-  String get remoteDesktopDomain => 'Domínio (opcional)';
-
-  @override
-  String get remoteDesktopPassword => 'Senha (opcional)';
-
-  @override
-  String get remoteDesktopSavePassword => 'Salvar senha';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      'Armazenada no banco de dados criptografado. Os backups incluem senhas salvas e só são criptografados quando uma senha de backup é definida.';
-
-  @override
-  String get remoteDesktopShareSession => 'Compartilhar sessão';
-
-  @override
-  String get remoteDesktopProtocol => 'Protocolo';
-
-  @override
-  String get remoteDesktopUniqueName =>
-      'Os nomes de perfil devem ser únicos para este servidor.';
-
-  @override
-  String get remoteDesktopNameRequired => 'Informe um nome de perfil.';
-
-  @override
-  String get remoteDesktopHostRequired => 'Informe um host de destino.';
-
-  @override
-  String get remoteDesktopPortRequired => 'Informe uma porta válida.';
-
-  @override
-  String get remoteDesktopUsernameRequired =>
-      'Informe o nome de usuário do RDP.';
-
-  @override
-  String get remoteDesktopNameInvalid =>
-      'O nome do perfil pode ter até 64 caracteres e não pode conter quebras de linha.';
-
-  @override
-  String get remoteDesktopHostInvalid =>
-      'O host de destino não pode conter espaços nem quebras de linha.';
-
-  @override
-  String get remoteDesktopProtocolInvalid => 'Protocolo não suportado.';
-
-  @override
-  String get remoteDesktopCredentialInvalid =>
-      'O usuário e o domínio podem ter até 256 caracteres e não podem conter quebras de linha.';
-
-  @override
-  String get remoteDesktopVncPasswordHint =>
-      'O VNC clássico usa apenas os primeiros 8 caracteres';
-
-  @override
-  String get remoteDesktopVncPasswordAscii =>
-      'As senhas VNC clássicas podem conter apenas caracteres ASCII.';
-
-  @override
-  String get remoteDesktopCertificateRequired =>
-      'Confirmação do certificado necessária';
-
-  @override
-  String get remoteDesktopWaiting => 'Aguardando a área de trabalho…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      'O servidor oferece apenas Standard RDP Security (RC4), que não é suportado. Em xrdp.ini, defina security_layer=tls (ou negotiate) e verifique se o xrdp consegue ler o seu certificado TLS.';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      'O servidor não tem certificado TLS. Instale um no servidor; no xrdp, defina certificate e key_file em xrdp.ini.';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      'O servidor exige um certificado de cliente (início de sessão com smart card), que não é suportado.';
-
-  @override
-  String get remoteDesktopFailWrongCredentials =>
-      'Nome de utilizador ou palavra-passe incorretos.';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut =>
-      'A conta está bloqueada. Tente novamente mais tarde ou peça a um administrador para a desbloquear.';
-
-  @override
-  String get remoteDesktopFailAccountDisabled => 'A conta está desativada.';
-
-  @override
-  String get remoteDesktopFailAccountExpired => 'A conta expirou.';
-
-  @override
-  String get remoteDesktopFailPasswordExpired =>
-      'A palavra-passe expirou ou tem de ser alterada. Altere-a primeiro no servidor.';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      'A conta não pode iniciar sessão a esta hora ou a partir deste dispositivo, ou a sua palavra-passe vazia não é permitida para início de sessão remoto.';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      'A conta não tem permissão para iniciar sessão através do Ambiente de Trabalho Remoto. Adicione-a ao grupo Remote Desktop Users no servidor.';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      'O servidor não aceita credenciais guardadas. Introduza novamente a palavra-passe.';
-
-  @override
-  String get remoteDesktopFailIdleTimeout =>
-      'A sessão foi desligada após o limite de inatividade do servidor.';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit =>
-      'A sessão atingiu o limite de tempo do servidor.';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection =>
-      'Outra ligação assumiu esta sessão.';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer =>
-      'A sessão foi desligada no servidor.';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator =>
-      'Um administrador terminou a sessão.';
-
-  @override
-  String get remoteDesktopFailLoggedOff => 'A sessão foi terminada.';
-
-  @override
-  String get remoteDesktopFailServerShutdown => 'O servidor está a encerrar.';
-
-  @override
-  String get remoteDesktopFailServerReboot => 'O servidor está a reiniciar.';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection =>
-      'O servidor recusou a ligação.';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      'O licenciamento do Ambiente de Trabalho Remoto falhou no servidor. Verifique o servidor de licenças e as licenças de acesso de cliente (CAL).';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'O servidor VNC não oferece nenhum tipo de segurança suportado; apenas palavra-passe VNC ou nenhum são suportados. No TigerVNC, defina SecurityTypes=VncAuth.';
-
-  @override
-  String get remoteDesktopFailPasswordRequired =>
-      'O servidor VNC requer uma palavra-passe.';
-
-  @override
   String get tcpTargetUnreachable =>
       'O servidor não conseguiu ligar-se a este endereço. Verifique se o serviço está em execução e à escuta nessa porta.';
 
@@ -2897,10 +2475,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get monitorRelayForbidden =>
       'O Monitor recusou esta ligação: a palavra-passe foi alterada ou não aceita ligações por HTTP não cifrado. Inicie sessão novamente ou ligue-se por HTTPS.';
-
-  @override
-  String get remoteDesktopCertificateChanged =>
-      'O certificado da área de trabalho remota mudou';
 
   @override
   String get remoteDesktopTrustCertificate => 'Confiar no certificado?';
@@ -2921,16 +2495,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get certTrust => 'Confiar';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return 'Excluir o perfil de área de trabalho remota “$name”?';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return 'Reconectando ($attempt/3)…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -3079,9 +2643,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get virtConsoleGraphical => 'Gráfico';
-
-  @override
-  String get virtVncPasswordNeeded => 'Esta tela pede uma senha';
 
   @override
   String get virtConsoleSerialTip =>
@@ -6379,80 +5940,6 @@ class AppLocalizationsPt extends AppLocalizations {
       'O gerenciamento de compartilhamento suporta atualmente servidores Linux.';
 
   @override
-  String get agentThisDevice => 'Este dispositivo';
-
-  @override
-  String get agentSource => 'Origem';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return 'A tarefa será eliminada em $server.';
-  }
-
-  @override
-  String get agentPlan => 'Plano';
-
-  @override
-  String get agentRemoteGone => 'Esta tarefa já não está no servidor.';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return 'Responder à tarefa em $server';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': 'Na fila',
-      'running': 'Em execução',
-      'waiting': 'À espera da sua resposta',
-      'done': 'Concluída',
-      'failed': 'Falhou',
-      'cancelled': 'Parada',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return 'Permitir sempre $rule';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return 'Escreva $name para executar';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => 'Executar mesmo assim';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return 'Palavra-passe de $user';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => 'Palavra-passe incorreta';
-
-  @override
-  String get agentRemoteSudoRemember => 'Memorizar durante 15 minutos';
-
-  @override
-  String agentNewOn(String place) {
-    return 'Nova conversa: $place';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return 'Pergunte ao agente em $server ou atribua uma tarefa.';
-  }
-
-  @override
-  String get agentModeBypassWarn =>
-      'Permitir tudo: exclusões, reinicializações e alterações de configuração são executadas sem perguntar.';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array está degradado';
   }
@@ -6569,9 +6056,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String monitorUnread(int count) {
     return '$count por ler';
   }
-
-  @override
-  String get monitorNoUpdates => 'Nenhuma app tem atualização.';
 
   @override
   String get monitorNoticesEmpty => 'Sem notificações.';
@@ -6963,9 +6447,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get security => 'Segurança';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => 'Descartar as alterações não salvas?';
 
   @override
@@ -7030,11 +6511,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get sshAgentUnsupported =>
       'Este dispositivo não pode usar um ssh-agent';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'No Windows, um ssh-agent é acessado por um named pipe, e $path não é um';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -7104,98 +6580,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get average => 'média';
-
-  @override
-  String get monitorMcpAccess => 'Acesso MCP';
-
-  @override
-  String get monitorMcpEndpoint => 'Endpoint';
-
-  @override
-  String get monitorMcpGlobalPolicy => 'Permissões globais';
-
-  @override
-  String get monitorMcpTokens => 'Tokens';
-
-  @override
-  String get monitorMcpNewToken => 'Novo token';
-
-  @override
-  String get monitorMcpDays => 'Dias';
-
-  @override
-  String get monitorMcpCreated => 'Token';
-
-  @override
-  String get monitorMcpRevoke => 'Revogar';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return 'Revogar $name?';
-  }
-
-  @override
-  String get monitorMcpLastUsed => 'Último uso';
-
-  @override
-  String get monitorMcpNeverUsed => 'Nunca usado';
-
-  @override
-  String get monitorMcpExpires => 'Expira';
-
-  @override
-  String get monitorMcpExpired => 'Expirado';
-
-  @override
-  String get monitorMcpNoTokens => 'Sem tokens';
-
-  @override
-  String get monitorMcpAllScopes => 'Todas as permissões';
-
-  @override
-  String get monitorMcpAllowlist => 'Lista de permissões';
-
-  @override
-  String get monitorMcpScopeRead => 'Leituras';
-
-  @override
-  String get monitorMcpScopeFsRead => 'Ler arquivos';
-
-  @override
-  String get monitorMcpScopeFsWrite => 'Gravar arquivos';
-
-  @override
-  String get monitorMcpScopeExec => 'Executar comandos';
-
-  @override
-  String get monitorMcpScopeProcess => 'Processos';
-
-  @override
-  String get monitorMcpScopeService => 'Serviços';
-
-  @override
-  String get monitorMcpScopeContainer => 'Contêineres';
-
-  @override
-  String get monitorMcpScopeCron => 'Cron';
-
-  @override
-  String get monitorMcpScopeVirt => 'Virtualização';
-
-  @override
-  String get monitorMcpScopeStacks => 'Apps web';
-
-  @override
-  String get monitorMcpScopePower => 'Energia';
-
-  @override
-  String get monitorMcpNameRequired => 'Digite um nome.';
-
-  @override
-  String get monitorMcpScopesRequired => 'Escolha pelo menos uma permissão.';
-
-  @override
-  String get monitorMcpPasswordRequired => 'Digite a senha.';
 
   @override
   String get windowsServerUnsupported =>

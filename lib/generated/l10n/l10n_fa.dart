@@ -57,84 +57,16 @@ class AppLocalizationsFa extends AppLocalizations {
   String get preReleaseUpdates => 'دریافت به‌روزرسانی‌های پیش‌انتشار';
 
   @override
-  String get addSystemPrivateKeyTip =>
-      'در حال حاضر کلید خصوصی وجود ندارد؛ آیا می‌خواهید کلید پیش‌فرض سیستم (~/.ssh/id_rsa) را اضافه کنید؟';
-
-  @override
   String get added2List => 'به فهرست وظایف افزوده شد';
 
   @override
   String get askAi => 'پرسش از هوش مصنوعی';
 
   @override
-  String get askAiInsertTerminal => 'درج در ترمینال';
-
-  @override
   String get remoteDesktop => 'دسکتاپ از راه دور';
 
   @override
-  String get askAiRiskReadOnly => 'فقط‌خواندنی';
-
-  @override
-  String get askAiRiskCaution => 'ایجاد تغییرات در سیستم';
-
-  @override
-  String get askAiRiskUnvetted => 'میزبان بررسی‌نشده';
-
-  @override
-  String get askAiRiskDestructive => 'خطر بالا';
-
-  @override
-  String get askAiHistory => 'تاریخچه گفتگو';
-
-  @override
-  String get askAiNewConversation => 'گفتگوی جدید';
-
-  @override
-  String get askAiUntitledConversation => 'بدون عنوان';
-
-  @override
-  String get askAiRenameConversation => 'تغییر نام گفتگو';
-
-  @override
-  String get askAiDeleteConversationTitle => 'این گفتگو حذف شود؟';
-
-  @override
-  String get askAiDeleteConversationTip =>
-      'از این دستگاه حذف می‌شود. این عمل غیرقابل‌بازگشت است.';
-
-  @override
-  String get agentNoHistory =>
-      'هیچ گفتگوی سراسری ذخیره‌شده‌ای برای Agent وجود ندارد';
-
-  @override
-  String get agentClearHistoryTitle => 'پاک کردن تاریخچه سراسری Agent؟';
-
-  @override
-  String get agentClearHistoryTip =>
-      'تمام گفتگوهای سراسری Agent از این دستگاه حذف خواهند شد.';
-
-  @override
-  String get agentCommandMayStillRun =>
-      'دستور متوقف‌شده ممکن است همچنان در سرور در حال اجرا باشد.';
-
-  @override
-  String get agentToolShell => 'پوسته (Shell)';
-
-  @override
-  String get agentToolReadFile => 'خواندن فایل';
-
-  @override
-  String get agentToolWriteFile => 'نوشتن فایل';
-
-  @override
   String get floatOverTabs => 'شناور روی تب‌های دیگر';
-
-  @override
-  String get agentToolSshConnect => 'اتصال SSH';
-
-  @override
-  String get agentToolSshDisconnect => 'قطع اتصال SSH';
 
   @override
   String get agentSshConnectTitle => 'اتصال به میزبان جدید';
@@ -145,9 +77,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get agentSshConnectTip =>
       'Agent درخواست ایجاد اتصال SSH دارد. گذرواژه را اینجا وارد کنید.';
-
-  @override
-  String get agentAdHocSessions => 'اتصال‌های موقت';
 
   @override
   String get agentSaveServerTitle => 'ذخیره به‌عنوان سرور';
@@ -751,9 +680,6 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get pushToken => 'توکن Push';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'دستور ProxyCommand در محیط Linux این دستگاه اجرا می‌شود. ابتدا یک سیستم Linux نصب کنید.';
 
@@ -793,9 +719,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get pveMissingAuthTicket =>
       'ورود به PVE موفقیت‌آمیز بود اما هیچ بلیت احراز هویتی بازگردانده نشد.';
-
-  @override
-  String get pveLoadingConnect => 'در حال اتصال...';
 
   @override
   String get pvePassword => 'گذرواژه PVE';
@@ -1081,9 +1004,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get keyPassphrases => 'عبارت‌های عبور کلید';
 
   @override
-  String get syncFiles => 'مهارت‌های عامل';
-
-  @override
   String get syncRemoteTooNew =>
       'داده‌های همگام‌سازی توسط نسخهٔ جدیدتری از ServerBox ایجاد شده‌اند. برای ادامهٔ همگام‌سازی، برنامه را به‌روزرسانی کنید.';
 
@@ -1189,9 +1109,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get webdavSettingEmpty => 'تنظیمات WebDav خالی است';
 
   @override
-  String get whenOpenApp => 'هنگام باز کردن برنامه';
-
-  @override
   String get wolTip =>
       'پس از پیکربندی WOL (Wake-on-LAN)، با هر بار اتصال به سرور یک درخواست WOL ارسال می‌شود.';
 
@@ -1205,9 +1122,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get writeScriptTip =>
       'پس از اتصال به سرور، اسکریپتی در `~/.config/server_box` \n | `/tmp/server_box` برای پایش وضعیت سیستم نوشته خواهد شد. می‌توانید محتوای اسکریپت را بررسی کنید.';
-
-  @override
-  String get menuGitHubRepository => 'مخزن GitHub';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -1316,14 +1230,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get processParseInvalidRows =>
       'خواندن برخی از ورودی‌های فرایند امکان‌پذیر نبود.';
-
-  @override
-  String get processParseInvalidWindowsJson =>
-      'پاسخ فرایند Windows قابل خواندن نبود.';
-
-  @override
-  String get processParseInvalidWindowsRows =>
-      'برخی از ورودی‌های فرایند Windows قابل خواندن نبود.';
 
   @override
   String get processKillTargetChanged =>
@@ -1511,18 +1417,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get continueInTerminal => 'ادامه در ترمینال';
 
   @override
-  String get askAiRiskUnknown => 'طبقه‌بندی‌نشده';
-
-  @override
   String get agentLocalExec => 'اجرای دستورها روی این دستگاه';
-
-  @override
-  String get agentLocalExecTip =>
-      'به Agent اجازه می‌دهد روی دستگاهی که ServerBox را اجرا می‌کند کار کند. فرمان‌هایش طبق حالت مجوز انجام می‌شوند';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      'به Agent امکان می‌دهد به‌صورت محلی و محدود به کانتینر لینوکسی که ServerBox نصب کرده است کار کند';
 
   @override
   String get agentRedact => 'پنهان‌سازی اسرار پیش از ارسال';
@@ -1933,70 +1828,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String agentRetentionFmt(String kept) {
     return 'Monitor داده‌ها را به‌مدت $kept نگه می‌دارد';
   }
-
-  @override
-  String get agentServerTools => 'ابزارهای سرور';
-
-  @override
-  String get agentServerToolsTip =>
-      'روی سرورها دستور اجرا کنید، فایل‌ها را بخوانید یا بنویسید، از طریق SSH به میزبان‌های دیگر وصل شوید و از قابلیت‌های خود ServerBox استفاده کنید.';
-
-  @override
-  String get agentTerminalTools => 'ترمینال';
-
-  @override
-  String get agentTerminalToolsTip =>
-      'در گفت‌وگوی ترمینال، محتوای روی صفحه را بخوانید و روی سرور مربوطه دستور اجرا کنید.';
-
-  @override
-  String get agentToolTerminalScreen => 'خواندن صفحه';
-
-  @override
-  String get agentProviders => 'ارائه‌دهندگان';
-
-  @override
-  String get agentProvidersTip =>
-      'کلیدهای API، مدل‌ها و مدلی که گفتگوی جدید استفاده می‌کند';
-
-  @override
-  String get agentTools => 'ابزارها';
-
-  @override
-  String get agentToolsTip =>
-      'آنچه Agent می‌تواند استفاده کند و سرورهای MCP آن';
-
-  @override
-  String get agentSnippetToolsTip =>
-      'قطعه‌کدها را فهرست کنید، بیفزایید، ویرایش کنید یا حذف کنید.';
-
-  @override
-  String get agentVirtToolsTip =>
-      'خواندن ماشین‌های مجازی و کانتینرهایی که برگه مجازی‌سازی بارگیری کرده است.';
-
-  @override
-  String get agentBenchmarkToolsTip =>
-      'خواندن نتایج بنچ‌مارک، و اجرا یا توقف بنچ‌مارک با تأیید شما.';
-
-  @override
-  String get agentRemoteDesktopToolsTip =>
-      'فهرست کردن پروفایل‌های دسکتاپ راه دور، و اتصال یا قطع اتصال با تأیید شما.';
-
-  @override
-  String get agentSkills => 'مهارت‌ها';
-
-  @override
-  String get agentSkillsTip =>
-      'دستورالعمل‌ها برای وظایف خاص، نصب‌شده از GitHub یا پیوند';
-
-  @override
-  String get agentPermissions => 'مجوزها';
-
-  @override
-  String get agentEmptyHint => 'روی سرور عملیات انجام دهید.';
-
-  @override
-  String get agentTerminalEmptyHint =>
-      'محتوای ترمینال فعلی را بخوانید و در آن دستور اجرا کنید.';
 
   @override
   String oldestSampleFmt(String time) {
@@ -2620,255 +2451,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get authShort => 'احراز هویت';
 
   @override
-  String get remoteDesktopFitToWindow => 'هم‌اندازه با پنجره';
-
-  @override
-  String get remoteDesktopActualSize => 'اندازه واقعی';
-
-  @override
-  String get remoteDesktopZoom => 'بزرگ‌نمایی';
-
-  @override
-  String get remoteDesktopViewOnly => 'فقط مشاهده';
-
-  @override
-  String get remoteDesktopDisableViewOnly => 'غیرفعال کردن فقط مشاهده';
-
-  @override
-  String get remoteDesktopSendClipboardText => 'ارسال متن کلیپ‌بورد';
-
-  @override
-  String get remoteDesktopShowKeyboard => 'نمایش صفحه‌کلید';
-
-  @override
-  String get remoteDesktopMoreControls => 'کنترل‌های بیشتر';
-
-  @override
-  String get remoteDesktopUseDirectPointer => 'استفاده از اشاره‌گر مستقیم';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer => 'استفاده از اشاره‌گر تاچ‌پد';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => 'ارسال Ctrl+Alt+Delete';
-
-  @override
-  String get remoteDesktopReconnect => 'اتصال مجدد';
-
-  @override
-  String get remoteDesktopFullScreen => 'تمام‌صفحه';
-
-  @override
-  String get remoteDesktopExitFullScreen => 'خروج از تمام‌صفحه';
-
-  @override
-  String get remoteDesktopCloseSession => 'بستن جلسه';
-
-  @override
-  String get remoteDesktopConnected => 'متصل';
-
-  @override
-  String get remoteDesktopConnecting => 'در حال اتصال';
-
-  @override
-  String get remoteDesktopReconnecting => 'در حال اتصال مجدد';
-
-  @override
-  String get remoteDesktopDisconnected => 'قطع‌شده';
-
-  @override
-  String get remoteDesktopGuideTouch => 'تاچ‌پد';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      'یک انگشت نشانگر را مانند تاچ‌پد حرکت می‌دهد و یک ضربه کلیک می‌کند. برای راست‌کلیک با دو انگشت ضربه بزنید، برای پیمایش با دو انگشت بکشید و برای بزرگ‌نمایی دو انگشت را جمع یا باز کنید. برای کشیدن، دو بار ضربه بزنید و انگشت را نگه دارید.';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip =>
-      'صفحه‌کلید مجازی را باز می‌کند. آنچه تایپ می‌کنید به ریموت دسکتاپ ارسال می‌شود.';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip =>
-      'ارسال نشانگر و کلیدها را متوقف می‌کند تا بتوانید بدون کلیک تصادفی، صفحه را مشاهده کنید.';
-
-  @override
-  String get remoteDesktopGuideMoreTip =>
-      'گزینه‌های Ctrl+Alt+Delete، اتصال مجدد و تمام‌صفحه در اینجا قرار دارند.';
-
-  @override
-  String get remoteDesktopGuidePointerTip =>
-      'همچنین اشاره‌گر مستقیم که در آن لمس انگشت روی هر قسمت باعث کلیک می‌شود.';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only =>
-      'کلیپ‌بورد VNC فقط از متن با کدگذاری Latin-1 پشتیبانی می‌کند.';
-
-  @override
-  String get remoteDesktopAddProfile => 'افزودن پروفایل';
-
-  @override
-  String get remoteDesktopNoProfiles => 'هیچ پروفایل ریموت دسکتاپی وجود ندارد';
-
-  @override
-  String get remoteDesktopAdd => 'افزودن ریموت دسکتاپ';
-
-  @override
-  String get remoteDesktopEdit => 'ویرایش ریموت دسکتاپ';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      'مقصد از طریق سرور SSH یا Monitor شناسایی می‌شود. کلمه Localhost به همان دستگاه اشاره دارد.';
-
-  @override
-  String get remoteDesktopDomain => 'دامنه (اختیاری)';
-
-  @override
-  String get remoteDesktopPassword => 'گذرواژه (اختیاری)';
-
-  @override
-  String get remoteDesktopSavePassword => 'ذخیره گذرواژه';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      'در پایگاه داده رمزگذاری‌شده ذخیره می‌شود. پشتیبان‌گیری‌ها شامل گذرواژه‌های ذخیره‌شده هستند و فقط زمانی رمزگذاری می‌شوند که گذرواژه پشتیبان‌گیری تعیین شده باشد.';
-
-  @override
-  String get remoteDesktopShareSession => 'اشتراک‌گذاری جلسه';
-
-  @override
-  String get remoteDesktopProtocol => 'پروتکل';
-
-  @override
-  String get remoteDesktopUniqueName =>
-      'نام‌های پروفایل باید برای این سرور یکتا باشند.';
-
-  @override
-  String get remoteDesktopNameRequired => 'یک نام برای پروفایل وارد کنید.';
-
-  @override
-  String get remoteDesktopHostRequired => 'یک میزبان مقصد وارد کنید.';
-
-  @override
-  String get remoteDesktopPortRequired => 'یک پورت معتبر وارد کنید.';
-
-  @override
-  String get remoteDesktopUsernameRequired => 'نام کاربری RDP را وارد کنید.';
-
-  @override
-  String get remoteDesktopNameInvalid =>
-      'نام پروفایل می‌تواند حداکثر تا ۶۴ نویسه باشد و نباید شامل شکستگی خط باشد.';
-
-  @override
-  String get remoteDesktopHostInvalid =>
-      'میزبان مقصد نمی‌تواند شامل فاصله یا شکستگی خط باشد.';
-
-  @override
-  String get remoteDesktopProtocolInvalid => 'پروتکل پشتیبانی نمی‌شود.';
-
-  @override
-  String get remoteDesktopCredentialInvalid =>
-      'نام کاربری و دامنه می‌توانند حداکثر تا ۲۵۶ نویسه باشند و نباید شامل شکستگی خط باشند.';
-
-  @override
-  String get remoteDesktopVncPasswordHint =>
-      'در VNC کلاسیک فقط از ۸ نویسه اول استفاده می‌شود';
-
-  @override
-  String get remoteDesktopVncPasswordAscii =>
-      'گذرواژه‌های VNC کلاسیک فقط باید شامل نویسه‌های ASCII باشند.';
-
-  @override
-  String get remoteDesktopCertificateRequired => 'تأیید گواهی الزامی است';
-
-  @override
-  String get remoteDesktopWaiting => 'در انتظار دسکتاپ…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      'سرور فقط Standard RDP Security (RC4) را ارائه می‌دهد که پشتیبانی نمی‌شود. در xrdp.ini مقدار security_layer=tls (یا negotiate) را تنظیم کنید و مطمئن شوید xrdp می‌تواند گواهی TLS خود را بخواند.';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      'سرور گواهی TLS ندارد. یک گواهی روی سرور نصب کنید؛ برای xrdp مقادیر certificate و key_file را در xrdp.ini تنظیم کنید.';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      'سرور گواهی کلاینت (ورود با کارت هوشمند) می‌خواهد که پشتیبانی نمی‌شود.';
-
-  @override
-  String get remoteDesktopFailWrongCredentials =>
-      'نام کاربری یا رمز عبور اشتباه است.';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut =>
-      'حساب قفل شده است. بعداً دوباره تلاش کنید یا از مدیر بخواهید قفل آن را باز کند.';
-
-  @override
-  String get remoteDesktopFailAccountDisabled => 'حساب غیرفعال است.';
-
-  @override
-  String get remoteDesktopFailAccountExpired => 'حساب منقضی شده است.';
-
-  @override
-  String get remoteDesktopFailPasswordExpired =>
-      'رمز عبور منقضی شده است یا باید تغییر کند. ابتدا آن را روی سرور تغییر دهید.';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      'این حساب در این زمان یا از این دستگاه اجازه ورود ندارد، یا رمز عبور خالی آن برای ورود از راه دور مجاز نیست.';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      'این حساب اجازه ورود از طریق Remote Desktop را ندارد. آن را روی سرور به گروه Remote Desktop Users اضافه کنید.';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      'سرور اعتبارنامه‌های ذخیره‌شده را نمی‌پذیرد. رمز عبور را دوباره وارد کنید.';
-
-  @override
-  String get remoteDesktopFailIdleTimeout =>
-      'نشست پس از محدودیت زمان بیکاری سرور قطع شد.';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit =>
-      'نشست به محدودیت زمانی سرور رسید.';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection =>
-      'اتصال دیگری این نشست را در اختیار گرفت.';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer => 'نشست روی سرور قطع شد.';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator =>
-      'مدیر از این نشست خارج کرد.';
-
-  @override
-  String get remoteDesktopFailLoggedOff => 'از نشست خارج شد.';
-
-  @override
-  String get remoteDesktopFailServerShutdown => 'سرور در حال خاموش شدن است.';
-
-  @override
-  String get remoteDesktopFailServerReboot =>
-      'سرور در حال راه‌اندازی مجدد است.';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection => 'سرور اتصال را رد کرد.';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      'صدور مجوز Remote Desktop روی سرور ناموفق بود. سرور مجوز و مجوزهای دسترسی کلاینت (CAL) را بررسی کنید.';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'سرور VNC هیچ نوع امنیتی پشتیبانی‌شده‌ای ارائه نمی‌دهد؛ فقط رمز عبور VNC یا بدون امنیت پشتیبانی می‌شود. برای TigerVNC مقدار SecurityTypes=VncAuth را تنظیم کنید.';
-
-  @override
-  String get remoteDesktopFailPasswordRequired => 'سرور VNC رمز عبور می‌خواهد.';
-
-  @override
   String get tcpTargetUnreachable =>
       'سرور نتوانست به این نشانی متصل شود. بررسی کنید سرویس در حال اجرا باشد و روی آن پورت گوش دهد.';
 
@@ -2879,10 +2461,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get monitorRelayForbidden =>
       'Monitor این اتصال را رد کرد: گذرواژه‌اش تغییر کرده یا از طریق HTTP رمزنگاری‌نشده درخواست نمی‌پذیرد. دوباره وارد شوید یا از طریق HTTPS متصل شوید.';
-
-  @override
-  String get remoteDesktopCertificateChanged =>
-      'گواهی ریموت دسکتاپ تغییر کرده است';
 
   @override
   String get remoteDesktopTrustCertificate => 'به گواهی اعتماد شود؟';
@@ -2903,16 +2481,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get certTrust => 'اعتماد';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return 'آیا پروفایل ریموت دسکتاپ «$name» حذف شود؟';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return 'در حال اتصال مجدد ($attempt/3)…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -3060,9 +2628,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get virtConsoleGraphical => 'گرافیکی';
-
-  @override
-  String get virtVncPasswordNeeded => 'این تصویر نیاز به گذرواژه دارد';
 
   @override
   String get virtConsoleSerialTip =>
@@ -6364,80 +5929,6 @@ class AppLocalizationsFa extends AppLocalizations {
       'Sharing management currently supports Linux servers.';
 
   @override
-  String get agentThisDevice => 'This device';
-
-  @override
-  String get agentSource => 'Source';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return 'The task is deleted on $server.';
-  }
-
-  @override
-  String get agentPlan => 'Plan';
-
-  @override
-  String get agentRemoteGone => 'This task is no longer on the server.';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return 'Reply to the task on $server';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': 'Queued',
-      'running': 'Running',
-      'waiting': 'Waiting for you',
-      'done': 'Done',
-      'failed': 'Failed',
-      'cancelled': 'Stopped',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return 'Always allow $rule';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return 'Type $name to run';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => 'Run anyway';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return 'Password of $user';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => 'Wrong password';
-
-  @override
-  String get agentRemoteSudoRemember => 'Remember for 15 minutes';
-
-  @override
-  String agentNewOn(String place) {
-    return 'New in $place';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return 'Ask the agent on $server, or give it a task.';
-  }
-
-  @override
-  String get agentModeBypassWarn =>
-      'Allow all: deleting, restarting and config changes run directly, without asking.';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array is degraded';
   }
@@ -6551,9 +6042,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String monitorUnread(int count) {
     return '$count unread';
   }
-
-  @override
-  String get monitorNoUpdates => 'No app has an update.';
 
   @override
   String get monitorNoticesEmpty => 'No notifications.';
@@ -6944,9 +6432,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get security => 'امنیت';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => 'تغییرات ذخیره‌نشده کنار گذاشته شود؟';
 
   @override
@@ -7011,11 +6496,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get sshAgentUnsupported =>
       'این دستگاه نمی‌تواند از ssh-agent استفاده کند';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'در Windows دسترسی به ssh-agent از طریق named pipe است و $path یک named pipe نیست';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -7084,98 +6564,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get average => 'میانگین';
-
-  @override
-  String get monitorMcpAccess => 'دسترسی MCP';
-
-  @override
-  String get monitorMcpEndpoint => 'نقطه پایانی';
-
-  @override
-  String get monitorMcpGlobalPolicy => 'مجوزهای سراسری';
-
-  @override
-  String get monitorMcpTokens => 'توکن‌ها';
-
-  @override
-  String get monitorMcpNewToken => 'توکن جدید';
-
-  @override
-  String get monitorMcpDays => 'روز';
-
-  @override
-  String get monitorMcpCreated => 'توکن';
-
-  @override
-  String get monitorMcpRevoke => 'لغو';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return '$name لغو شود؟';
-  }
-
-  @override
-  String get monitorMcpLastUsed => 'آخرین استفاده';
-
-  @override
-  String get monitorMcpNeverUsed => 'هرگز استفاده نشده';
-
-  @override
-  String get monitorMcpExpires => 'انقضا';
-
-  @override
-  String get monitorMcpExpired => 'منقضی‌شده';
-
-  @override
-  String get monitorMcpNoTokens => 'توکنی وجود ندارد';
-
-  @override
-  String get monitorMcpAllScopes => 'همه مجوزها';
-
-  @override
-  String get monitorMcpAllowlist => 'فهرست مجاز';
-
-  @override
-  String get monitorMcpScopeRead => 'وضعیت سیستم';
-
-  @override
-  String get monitorMcpScopeFsRead => 'خواندن فایل‌ها';
-
-  @override
-  String get monitorMcpScopeFsWrite => 'نوشتن فایل‌ها';
-
-  @override
-  String get monitorMcpScopeExec => 'اجرای دستورات';
-
-  @override
-  String get monitorMcpScopeProcess => 'پردازش‌ها';
-
-  @override
-  String get monitorMcpScopeService => 'سرویس‌ها';
-
-  @override
-  String get monitorMcpScopeContainer => 'کانتینرها';
-
-  @override
-  String get monitorMcpScopeCron => 'Cron';
-
-  @override
-  String get monitorMcpScopeVirt => 'مجازی‌سازی';
-
-  @override
-  String get monitorMcpScopeStacks => 'برنامه‌های وب';
-
-  @override
-  String get monitorMcpScopePower => 'تغذیه';
-
-  @override
-  String get monitorMcpNameRequired => 'نام را وارد کنید.';
-
-  @override
-  String get monitorMcpScopesRequired => 'حداقل یک مجوز انتخاب کنید.';
-
-  @override
-  String get monitorMcpPasswordRequired => 'گذرواژه را وارد کنید.';
 
   @override
   String get windowsServerUnsupported =>

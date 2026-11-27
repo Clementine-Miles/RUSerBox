@@ -57,83 +57,16 @@ class AppLocalizationsAz extends AppLocalizations {
   String get preReleaseUpdates => 'Önizləmə versiyası yeniləmələrini qəbul et';
 
   @override
-  String get addSystemPrivateKeyTip =>
-      'Hazırda məxfi açar yoxdur. Sistemdəki açarı (~/.ssh/id_rsa) əlavə etmək istəyirsən?';
-
-  @override
   String get added2List => 'Tapşırıq siyahısına əlavə edildi';
 
   @override
   String get askAi => 'AI-dan soruş';
 
   @override
-  String get askAiInsertTerminal => 'Terminala daxil et';
-
-  @override
   String get remoteDesktop => 'Uzaq masaüstü';
 
   @override
-  String get askAiRiskReadOnly => 'Yalnız oxuma';
-
-  @override
-  String get askAiRiskCaution => 'Sistemi dəyişir';
-
-  @override
-  String get askAiRiskUnvetted => 'Yoxlanılmamış host';
-
-  @override
-  String get askAiRiskDestructive => 'Yüksək risk';
-
-  @override
-  String get askAiHistory => 'Söhbət tarixçəsi';
-
-  @override
-  String get askAiNewConversation => 'Yeni söhbət';
-
-  @override
-  String get askAiUntitledConversation => 'Adsız';
-
-  @override
-  String get askAiRenameConversation => 'Söhbətin adını dəyiş';
-
-  @override
-  String get askAiDeleteConversationTitle => 'Bu söhbət silinsin?';
-
-  @override
-  String get askAiDeleteConversationTip =>
-      'Söhbəti bu cihazdan silir. Geri qaytarmaq mümkün deyil.';
-
-  @override
-  String get agentNoHistory => 'Yadda saxlanmış ümumi agent söhbəti yoxdur';
-
-  @override
-  String get agentClearHistoryTitle => 'Ümumi agent tarixçəsi təmizlənsin?';
-
-  @override
-  String get agentClearHistoryTip =>
-      'Bütün ümumi agent söhbətləri bu cihazdan silinəcək.';
-
-  @override
-  String get agentCommandMayStillRun =>
-      'Dayandırılan əmr serverdə hələ də işləyə bilər.';
-
-  @override
-  String get agentToolShell => 'Əmr örtüyü';
-
-  @override
-  String get agentToolReadFile => 'Faylı oxu';
-
-  @override
-  String get agentToolWriteFile => 'Fayla yaz';
-
-  @override
   String get floatOverTabs => 'Digər vərəqlərin üzərində göstər';
-
-  @override
-  String get agentToolSshConnect => 'SSH ilə əlaqə qur';
-
-  @override
-  String get agentToolSshDisconnect => 'SSH əlaqəsini kəs';
 
   @override
   String get agentSshConnectTitle => 'Yeni hostla əlaqə qur';
@@ -144,9 +77,6 @@ class AppLocalizationsAz extends AppLocalizations {
   @override
   String get agentSshConnectTip =>
       'Agent SSH bağlantısı yaratmaq istəyir. Parolu burada daxil et.';
-
-  @override
-  String get agentAdHocSessions => 'Müvəqqəti əlaqələr';
 
   @override
   String get agentSaveServerTitle => 'Server kimi yadda saxla';
@@ -752,9 +682,6 @@ class AppLocalizationsAz extends AppLocalizations {
   }
 
   @override
-  String get pushToken => 'Push tokeni';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand bu cihazın Linux mühitində işləyir. Əvvəlcə bir Linux sistemi quraşdırın.';
 
@@ -794,9 +721,6 @@ class AppLocalizationsAz extends AppLocalizations {
   @override
   String get pveMissingAuthTicket =>
       'PVE girişi uğurlu oldu, lakin autentifikasiya bileti qaytarılmadı.';
-
-  @override
-  String get pveLoadingConnect => 'Əlaqə qurulur...';
 
   @override
   String get pvePassword => 'PVE parolu';
@@ -1080,9 +1004,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String get keyPassphrases => 'Açar parol ifadələri';
 
   @override
-  String get syncFiles => 'Agent bacarıqları';
-
-  @override
   String get syncRemoteTooNew =>
       'Sinxronlaşdırılan məlumatlar ServerBox-un daha yeni versiyasında yaradılıb. Sinxronlaşdırmanı davam etdirmək üçün tətbiqi yeniləyin.';
 
@@ -1188,9 +1109,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String get webdavSettingEmpty => 'WebDav parametri boşdur';
 
   @override
-  String get whenOpenApp => 'Tətbiq açılarkən';
-
-  @override
   String get wolTip =>
       'WOL (Wake-on-LAN) konfiqurasiya edildikdən sonra serverlə hər dəfə əlaqə qurulduqda WOL sorğusu göndərilir.';
 
@@ -1204,9 +1122,6 @@ class AppLocalizationsAz extends AppLocalizations {
   @override
   String get writeScriptTip =>
       'Serverlə əlaqə qurulduqdan sonra sistemin vəziyyətini izləmək üçün `~/.config/server_box` \n | `/tmp/server_box` yoluna skript yazılacaq. Skriptin məzmununa baxa bilərsən.';
-
-  @override
-  String get menuGitHubRepository => 'GitHub repozitoriyası';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -1316,14 +1231,6 @@ class AppLocalizationsAz extends AppLocalizations {
   @override
   String get processParseInvalidRows =>
       'Bəzi proses qeydlərini oxumaq mümkün olmadı.';
-
-  @override
-  String get processParseInvalidWindowsJson =>
-      'Windows prosesləri haqqında cavabı oxumaq mümkün olmadı.';
-
-  @override
-  String get processParseInvalidWindowsRows =>
-      'Bəzi Windows proses qeydlərini oxumaq mümkün olmadı.';
 
   @override
   String get processKillTargetChanged =>
@@ -1512,18 +1419,7 @@ class AppLocalizationsAz extends AppLocalizations {
   String get continueInTerminal => 'Terminalda davam et';
 
   @override
-  String get askAiRiskUnknown => 'Təsnif edilməyib';
-
-  @override
   String get agentLocalExec => 'Bu cihazda əmrlər icra et';
-
-  @override
-  String get agentLocalExecTip =>
-      'Agent-ə ServerBox-un işlədiyi maşında işləməyə icazə verir. Əmrləri icazə rejiminə görə işlənir';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      'Agentin yerli olaraq, ServerBox tərəfindən quraşdırılmış Linux konteyneri daxilində işləməsinə icazə verir';
 
   @override
   String get agentRedact => 'Göndərməzdən əvvəl sirləri gizlət';
@@ -1934,70 +1830,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String agentRetentionFmt(String kept) {
     return 'Monitor məlumatları $kept müddətində saxlayır';
   }
-
-  @override
-  String get agentServerTools => 'Server alətləri';
-
-  @override
-  String get agentServerToolsTip =>
-      'Serverdə əmrləri icra et, faylları oxu və yaz, SSH ilə başqa hostlara qoşul və ServerBox-un öz funksiyalarından istifadə et.';
-
-  @override
-  String get agentTerminalTools => 'Terminal';
-
-  @override
-  String get agentTerminalToolsTip =>
-      'Terminal sessiyasında ekrandakı məzmunu oxu və həmin serverdə əmrlər icra et.';
-
-  @override
-  String get agentToolTerminalScreen => 'Ekranı oxu';
-
-  @override
-  String get agentProviders => 'Provayderlər';
-
-  @override
-  String get agentProvidersTip =>
-      'API açarları, modellər və yeni söhbətin modeli';
-
-  @override
-  String get agentTools => 'Alətlər';
-
-  @override
-  String get agentToolsTip =>
-      'Agent-in istifadə edə bildikləri və onun MCP serverləri';
-
-  @override
-  String get agentSnippetToolsTip =>
-      'Snippet-ləri siyahıya al, əlavə et, redaktə et və sil.';
-
-  @override
-  String get agentVirtToolsTip =>
-      'Virtualizasiya bölməsinin yüklədiyi VM və konteynerləri oxu.';
-
-  @override
-  String get agentBenchmarkToolsTip =>
-      'Benchmark nəticələrini oxu; icazənizlə benchmark başlat və ya dayandır.';
-
-  @override
-  String get agentRemoteDesktopToolsTip =>
-      'Uzaq masaüstü profillərini siyahıla; icazənizlə qoşul və ya ayrıl.';
-
-  @override
-  String get agentSkills => 'Skills';
-
-  @override
-  String get agentSkillsTip =>
-      'Müəyyən tapşırıqlar üçün təlimatlar, GitHub-dan və ya keçiddən quraşdırılır';
-
-  @override
-  String get agentPermissions => 'İcazələr';
-
-  @override
-  String get agentEmptyHint => 'Serverdə əməliyyatlar yerinə yetir.';
-
-  @override
-  String get agentTerminalEmptyHint =>
-      'Cari terminalın məzmununu oxu və orada əmrlər icra et.';
 
   @override
   String oldestSampleFmt(String time) {
@@ -2610,261 +2442,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String get authShort => 'Auth';
 
   @override
-  String get remoteDesktopFitToWindow => 'Pəncərəyə uyğunlaşdır';
-
-  @override
-  String get remoteDesktopActualSize => 'Həqiqi ölçü';
-
-  @override
-  String get remoteDesktopZoom => 'Miqyas';
-
-  @override
-  String get remoteDesktopViewOnly => 'Yalnız baxış';
-
-  @override
-  String get remoteDesktopDisableViewOnly => 'Yalnız baxışı söndür';
-
-  @override
-  String get remoteDesktopSendClipboardText =>
-      'Mübadilə buferinin mətnini göndər';
-
-  @override
-  String get remoteDesktopShowKeyboard => 'Klaviaturanı göstər';
-
-  @override
-  String get remoteDesktopMoreControls => 'Digər idarəetmələr';
-
-  @override
-  String get remoteDesktopUseDirectPointer =>
-      'Birbaşa göstəricidən istifadə et';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer =>
-      'Toxunma paneli göstəricisindən istifadə et';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => 'Ctrl+Alt+Delete göndər';
-
-  @override
-  String get remoteDesktopReconnect => 'Yenidən qoşul';
-
-  @override
-  String get remoteDesktopFullScreen => 'Tam ekran';
-
-  @override
-  String get remoteDesktopExitFullScreen => 'Tam ekrandan çıx';
-
-  @override
-  String get remoteDesktopCloseSession => 'Sessiyanı bağla';
-
-  @override
-  String get remoteDesktopConnected => 'Qoşuldu';
-
-  @override
-  String get remoteDesktopConnecting => 'Qoşulur';
-
-  @override
-  String get remoteDesktopReconnecting => 'Yenidən qoşulur';
-
-  @override
-  String get remoteDesktopDisconnected => 'Bağlantı kəsildi';
-
-  @override
-  String get remoteDesktopGuideTouch => 'Toxunma paneli';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      'Bir barmaq göstəricini toxunma paneli kimi hərəkət etdirir, toxunmaq klikləyir. Sağ klik üçün iki barmaqla toxunun, sürüşdürmək üçün iki barmaqla çəkin, böyütmək üçün sıxın. Sürükləmək üçün iki dəfə toxunun və barmağı qaldırmayın.';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip =>
-      'Ekran klaviaturasını açır. Yazdıqlarınız uzaq masaüstünə göndərilir.';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip =>
-      'Göstərici və düymələrin göndərilməsini dayandırır ki, təsadüfən klikləmədən baxa biləsiniz.';
-
-  @override
-  String get remoteDesktopGuideMoreTip =>
-      'Ctrl+Alt+Delete, yenidən qoşulma və tam ekran buradadır.';
-
-  @override
-  String get remoteDesktopGuidePointerTip =>
-      'Barmağın toxunduğu yeri klikləyən birbaşa göstərici də buradadır.';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only =>
-      'VNC mübadilə buferi yalnız Latin-1 mətnini dəstəkləyir.';
-
-  @override
-  String get remoteDesktopAddProfile => 'Profil əlavə et';
-
-  @override
-  String get remoteDesktopNoProfiles => 'Uzaq masaüstü profili yoxdur';
-
-  @override
-  String get remoteDesktopAdd => 'Uzaq masaüstü əlavə et';
-
-  @override
-  String get remoteDesktopEdit => 'Uzaq masaüstünü redaktə et';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      'Hədəf SSH serveri və ya Monitor tərəfindən tapılır. localhost həmin maşına işarə edir.';
-
-  @override
-  String get remoteDesktopDomain => 'Domen (istəyə bağlı)';
-
-  @override
-  String get remoteDesktopPassword => 'Parol (istəyə bağlı)';
-
-  @override
-  String get remoteDesktopSavePassword => 'Parolu yadda saxla';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      'Şifrələnmiş verilənlər bazasında saxlanılır. Ehtiyat nüsxələr saxlanılmış parolları ehtiva edir və yalnız ehtiyat parolu təyin edildikdə şifrələnir.';
-
-  @override
-  String get remoteDesktopShareSession => 'Sessiyanı paylaş';
-
-  @override
-  String get remoteDesktopProtocol => 'Protokol';
-
-  @override
-  String get remoteDesktopUniqueName =>
-      'Bu server üçün profil adları unikal olmalıdır.';
-
-  @override
-  String get remoteDesktopNameRequired => 'Profil adı daxil et.';
-
-  @override
-  String get remoteDesktopHostRequired => 'Hədəf host daxil et.';
-
-  @override
-  String get remoteDesktopPortRequired => 'Etibarlı port daxil et.';
-
-  @override
-  String get remoteDesktopUsernameRequired => 'RDP istifadəçi adını daxil et.';
-
-  @override
-  String get remoteDesktopNameInvalid =>
-      'Profil adı ən çox 64 simvol ola bilər və sətir sonu ola bilməz.';
-
-  @override
-  String get remoteDesktopHostInvalid =>
-      'Hədəf host boşluq və ya sətir sonu ehtiva edə bilməz.';
-
-  @override
-  String get remoteDesktopProtocolInvalid => 'Dəstəklənməyən protokol.';
-
-  @override
-  String get remoteDesktopCredentialInvalid =>
-      'İstifadəçi adı və domen ən çox 256 simvol ola bilər və sətir sonu ola bilməz.';
-
-  @override
-  String get remoteDesktopVncPasswordHint =>
-      'Klassik VNC yalnız ilk 8 simvoldan istifadə edir';
-
-  @override
-  String get remoteDesktopVncPasswordAscii =>
-      'Klassik VNC parolları yalnız ASCII simvollarından ibarət olmalıdır.';
-
-  @override
-  String get remoteDesktopCertificateRequired =>
-      'Sertifikatın təsdiqi tələb olunur';
-
-  @override
-  String get remoteDesktopWaiting => 'Masaüstü gözlənilir…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      'Server yalnız Standard RDP Security (RC4) təklif edir, bu dəstəklənmir. xrdp.ini faylında security_layer=tls (və ya negotiate) təyin edin və xrdp-nin TLS sertifikatını oxuya bildiyinə əmin olun.';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      'Serverin TLS sertifikatı yoxdur. Serverdə sertifikat quraşdırın; xrdp üçün xrdp.ini faylında certificate və key_file təyin edin.';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      'Server müştəri sertifikatı (smart kartla giriş) tələb edir, bu dəstəklənmir.';
-
-  @override
-  String get remoteDesktopFailWrongCredentials =>
-      'İstifadəçi adı və ya parol yanlışdır.';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut =>
-      'Hesab bloklanıb. Sonra yenidən cəhd edin və ya administratordan bloku açmasını xahiş edin.';
-
-  @override
-  String get remoteDesktopFailAccountDisabled => 'Hesab deaktiv edilib.';
-
-  @override
-  String get remoteDesktopFailAccountExpired => 'Hesabın müddəti bitib.';
-
-  @override
-  String get remoteDesktopFailPasswordExpired =>
-      'Parolun müddəti bitib və ya dəyişdirilməlidir. Əvvəlcə onu serverdə dəyişin.';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      'Hesab bu vaxtda və ya bu cihazdan daxil ola bilməz, ya da onun boş parolu ilə uzaqdan girişə icazə verilmir.';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      'Hesabın Uzaq Masaüstü ilə daxil olmasına icazə verilmir. Serverdə onu Remote Desktop Users qrupuna əlavə edin.';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      'Server saxlanmış giriş məlumatlarını qəbul etmir. Parolu yenidən daxil edin.';
-
-  @override
-  String get remoteDesktopFailIdleTimeout =>
-      'Sessiya serverin boş qalma limitindən sonra kəsildi.';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit =>
-      'Sessiya serverin vaxt limitinə çatdı.';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection =>
-      'Başqa bağlantı bu sessiyanı ələ keçirdi.';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer =>
-      'Sessiya serverdə kəsildi.';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator =>
-      'Administrator sessiyadan çıxış etdi.';
-
-  @override
-  String get remoteDesktopFailLoggedOff => 'Sessiyadan çıxış edildi.';
-
-  @override
-  String get remoteDesktopFailServerShutdown => 'Server söndürülür.';
-
-  @override
-  String get remoteDesktopFailServerReboot => 'Server yenidən başladılır.';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection =>
-      'Server bağlantını rədd etdi.';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      'Serverdə Uzaq Masaüstü lisenziyalaşdırması uğursuz oldu. Lisenziya serverini və Müştəri Giriş Lisenziyalarını (CAL) yoxlayın.';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'VNC serveri dəstəklənən təhlükəsizlik növü təklif etmir; yalnız VNC parolu və ya təhlükəsizliksiz bağlantı dəstəklənir. TigerVNC üçün SecurityTypes=VncAuth təyin edin.';
-
-  @override
-  String get remoteDesktopFailPasswordRequired =>
-      'VNC serveri parol tələb edir.';
-
-  @override
   String get tcpTargetUnreachable =>
       'Server bu ünvana qoşula bilmədi. Xidmətin işlədiyini və həmin portu dinlədiyini yoxlayın.';
 
@@ -2875,10 +2452,6 @@ class AppLocalizationsAz extends AppLocalizations {
   @override
   String get monitorRelayForbidden =>
       'Monitor bu bağlantını rədd etdi: parolu dəyişib və ya HTTP üzərindən işləməyə razı deyil. Yenidən daxil olun və ya HTTPS ilə qoşulun.';
-
-  @override
-  String get remoteDesktopCertificateChanged =>
-      'Uzaq masaüstü sertifikatı dəyişdi';
 
   @override
   String get remoteDesktopTrustCertificate => 'Sertifikata etibar edilsin?';
@@ -2899,16 +2472,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get certTrust => 'Etibar et';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return '“$name” uzaq masaüstü profili silinsin?';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return 'Yenidən qoşulur ($attempt/3)…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -3056,9 +2619,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get virtConsoleGraphical => 'Qrafik';
-
-  @override
-  String get virtVncPasswordNeeded => 'Bu ekran parol tələb edir';
 
   @override
   String get virtConsoleSerialTip =>
@@ -6313,80 +5873,6 @@ class AppLocalizationsAz extends AppLocalizations {
       'Paylaşım idarəetməsi hazırda Linux serverlərini dəstəkləyir.';
 
   @override
-  String get agentThisDevice => 'Bu cihaz';
-
-  @override
-  String get agentSource => 'Mənbə';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return 'Tapşırıq $server serverindən silinəcək.';
-  }
-
-  @override
-  String get agentPlan => 'Plan';
-
-  @override
-  String get agentRemoteGone => 'Bu tapşırıq artıq serverdə yoxdur.';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return '$server serverindəki tapşırığa cavab verin';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': 'Növbədə',
-      'running': 'İcra olunur',
-      'waiting': 'Sizdən cavab gözləyir',
-      'done': 'Tamamlandı',
-      'failed': 'Uğursuz oldu',
-      'cancelled': 'Dayandırıldı',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return '$rule qaydasına həmişə icazə ver';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return 'İcra etmək üçün $name yazın';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => 'Yenə də icra et';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return '$user istifadəçisinin parolu';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => 'Yanlış parol';
-
-  @override
-  String get agentRemoteSudoRemember => '15 dəqiqə yadda saxla';
-
-  @override
-  String agentNewOn(String place) {
-    return 'Yeni söhbət: $place';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return 'Agentə $server serverində sual verin və ya ona tapşırıq verin.';
-  }
-
-  @override
-  String get agentModeBypassWarn =>
-      'Hamısına icazə ver: silmə, yenidən başlatma və konfiqurasiya dəyişiklikləri soruşulmadan icra olunur.';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array zəifləyib';
   }
@@ -6501,9 +5987,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String monitorUnread(int count) {
     return '$count oxunmamış';
   }
-
-  @override
-  String get monitorNoUpdates => 'Yeniləməsi olan tətbiq yoxdur.';
 
   @override
   String get monitorNoticesEmpty => 'Bildiriş yoxdur.';
@@ -6886,9 +6369,6 @@ class AppLocalizationsAz extends AppLocalizations {
   String get security => 'Təhlükəsizlik';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => 'Yadda saxlanmamış dəyişikliklər atılsın?';
 
   @override
@@ -6952,11 +6432,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get sshAgentUnsupported => 'Bu cihaz ssh-agent istifadə edə bilməz';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'Windows-da ssh-agent-ə named pipe vasitəsilə qoşulur, $path isə named pipe deyil';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -7025,98 +6500,6 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get average => 'orta';
-
-  @override
-  String get monitorMcpAccess => 'MCP girişi';
-
-  @override
-  String get monitorMcpEndpoint => 'Son nöqtə';
-
-  @override
-  String get monitorMcpGlobalPolicy => 'Qlobal icazələr';
-
-  @override
-  String get monitorMcpTokens => 'Tokenlər';
-
-  @override
-  String get monitorMcpNewToken => 'Yeni token';
-
-  @override
-  String get monitorMcpDays => 'Gün';
-
-  @override
-  String get monitorMcpCreated => 'Token';
-
-  @override
-  String get monitorMcpRevoke => 'Ləğv et';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return '$name ləğv edilsin?';
-  }
-
-  @override
-  String get monitorMcpLastUsed => 'Son istifadə';
-
-  @override
-  String get monitorMcpNeverUsed => 'Heç istifadə olunmayıb';
-
-  @override
-  String get monitorMcpExpires => 'Bitmə tarixi';
-
-  @override
-  String get monitorMcpExpired => 'Müddəti bitib';
-
-  @override
-  String get monitorMcpNoTokens => 'Token yoxdur';
-
-  @override
-  String get monitorMcpAllScopes => 'Bütün icazələr';
-
-  @override
-  String get monitorMcpAllowlist => 'İcazə siyahısı';
-
-  @override
-  String get monitorMcpScopeRead => 'Göstəricilər';
-
-  @override
-  String get monitorMcpScopeFsRead => 'Faylları oxu';
-
-  @override
-  String get monitorMcpScopeFsWrite => 'Faylları yaz';
-
-  @override
-  String get monitorMcpScopeExec => 'Əmrləri işə sal';
-
-  @override
-  String get monitorMcpScopeProcess => 'Proseslər';
-
-  @override
-  String get monitorMcpScopeService => 'Xidmətlər';
-
-  @override
-  String get monitorMcpScopeContainer => 'Konteynerlər';
-
-  @override
-  String get monitorMcpScopeCron => 'Cron';
-
-  @override
-  String get monitorMcpScopeVirt => 'Virtuallaşdırma';
-
-  @override
-  String get monitorMcpScopeStacks => 'Veb tətbiqlər';
-
-  @override
-  String get monitorMcpScopePower => 'Güc';
-
-  @override
-  String get monitorMcpNameRequired => 'Ad daxil edin.';
-
-  @override
-  String get monitorMcpScopesRequired => 'Ən azı bir icazə seçin.';
-
-  @override
-  String get monitorMcpPasswordRequired => 'Parolu daxil edin.';
 
   @override
   String get windowsServerUnsupported =>
