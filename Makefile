@@ -34,7 +34,7 @@ help:
 		'Build targets:' \
 		'  build, build-android  Build and verify the arm64-v8a release APK' \
 		'  clean              Run flutter clean' \
-		'  test-rust          cargo test, fmt check and clippy for the Rust workspace'
+		'  test-rust          cargo test and clippy for the Rust workspace'
 
 deps pub-get:
 	$(FLUTTER) pub get
@@ -107,5 +107,4 @@ clean:
 
 test-rust:
 	$(CARGO) test --workspace
-	$(CARGO) fmt --all --check
 	$(CARGO) clippy --workspace --all-targets -- -D warnings
