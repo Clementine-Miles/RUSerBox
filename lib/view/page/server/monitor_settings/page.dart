@@ -80,7 +80,7 @@ final class _MonitorSettingsPageState extends State<MonitorSettingsPage> {
                   // uses — `Btn.icon` draws the icon at whatever size it is
                   // given inside 7 points of padding, so at 18 the whole target
                   // was 32 square, under both platforms' minimum. The 18pt rule
-                  // in CLAUDE.md is about a *tab's* bar, which is shorter than
+                  // in docs/ARCHITECTURE.md is about a *tab's* bar, which is shorter than
                   // this one.
                   IconButton(
                     tooltip: libL10n.save,

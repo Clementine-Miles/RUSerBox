@@ -1,6 +1,6 @@
 # Editing the agent's own settings
 
-`MonitorSettingsPage` (`lib/view/page/server/monitor_settings/`) edits a monitor agent's `config.toml` — intervals, alert rules, data retention, CORS origins, notification channels — through `GET/PUT /api/v1/settings` and `GET/PUT /api/v1/push`. The panel edits the same two endpoints, so the two UIs are peers over one contract; `monitor/CLAUDE.md`'s "Editing it over the API" is the authority on what they are allowed to do.
+`MonitorSettingsPage` (`lib/view/page/server/monitor_settings/`) edits a monitor agent's `config.toml` — intervals, alert rules, data retention, CORS origins, notification channels — through `GET/PUT /api/v1/settings` and `GET/PUT /api/v1/push`. The panel edits the same two endpoints, so the two UIs are peers over one contract (contract: `docs/monitor-api.md`).
 
 **One way in: the button in a server's app bar**, beside Edit, which opens `MonitorSettingsPage` — the route, with the bar the save button sits in. Edit is this app's record of the server and this is the agent's own configuration, which is why the two are neighbours and why this is not in the function bar below the cards (that row is things done *to* the machine).
 
@@ -10,14 +10,14 @@
 
 **The form is four groups in a `PageColumns` grid, and each collection is a page of its own.** `view.dart` holds the form, `lists.dart` the three list editors, `widgets.dart` (`MonitorUi`) what both draw, `push_edit.dart` one channel.
 
-- Groups: **Collection** (intervals, idle pause), **Alerts** (two rows), **Storage** (retention), **Network** (CORS), **Agent** (command permissions). A heading names the *category*, not the first row under it. Idle pause is inside Collection because what it pauses is the extended cycle two fields above it.
+- Groups: **Collection** (intervals, idle pause), **Alerts** (two rows), **Storage** (retention), **Network** (CORS). A heading names the *category*, not the first row under it. Idle pause is inside Collection because what it pauses is the extended cycle two fields above it.
 - Alert rules, notification channels and CORS origins are `MonitorRulesPage` / `MonitorPushListPage` / `MonitorCorsPage`, reached from a row whose subtitle is *what is inside* — names, not a count.
   - Each takes the list plus an `onChanged` callback rather than answering with the edited list. A page can be left by a back gesture, which answers `null` and cannot be told apart from "changed nothing", and the form's dirty flag has to be set exactly when something changed.
   - Rows are numbered, not iconed: every row of one list had the same icon, which said what the page had already said. For a channel the position is also what the agent resolves a withheld credential against.
 - **`MonitorUi.effectNote` draws nothing for a field that takes effect on save**, and marks only the ones needing an agent restart. The cost is that `MonitorSettings.isLive` cannot tell "not live" from "this app spelled the field name differently from the agent" — `live_fields` lists what is live, not what exists — so a mistyped name is silent. There is no test covering those names.
-- **Alert rule semantics are documented on the docs site, not in the app** — `Urls.monitorRulesDoc` → `docs/.../monitor-agent.md#alert-rules` (en and zh). What matters about a rule is what a form cannot show: a threshold with no comparator means `<`, a unit that does not fit its metric never fires, and a network rule is quiet for one cycle after the agent starts. Each of those is a rule that silently never alerts. `_kRuleTypes` in `lists.dart` mirrors `RuleKind::parse` (`monitor/src/monitoring/rules.rs`) and keeps a spelling already in a rule that it no longer offers.
+- **Alert rule semantics are documented with the agent, not in the app** (`Urls.monitorRulesDoc`). What matters about a rule is what a form cannot show: a threshold with no comparator means `<`, a unit that does not fit its metric never fires, and a network rule is quiet for one cycle after the agent starts. Each of those is a rule that silently never alerts. `_kRuleTypes` in `lists.dart` mirrors the agent's rule kinds and keeps a spelling already in a rule that it no longer offers.
 
-**Access is the agent's one account** — `docs/dev/monitor-permissions.md`: no usernames, roles or admin, so the form is shown to whoever signed in, with an **Access** group holding "change password" (`password.dart`). The agent re-checks the current password; a refusal is mapped by `monitorPasswordErrText` from the typed `MonitorHttpErrType`.
+**Access is the agent's one account**: no usernames, roles or admin, so the form is shown to whoever signed in, with an **Access** group holding "change password" (`password.dart`). The agent re-checks the current password; a refusal is mapped by `monitorPasswordErrText` from the typed `MonitorHttpErrType`.
 
 - Changing the password calls `onOwnPasswordChanged`, which the host uses to save the new password onto the stored server (`bar_actions.dart`): the app logs in with that, and a stale one locks the app out of its own agent.
 
@@ -25,5 +25,3 @@
 
 - That is also why removing a channel asks first and removing a rule or an origin does not: a rule and an origin are entirely visible in the row that holds them and can be typed back, and a channel's credential was never on screen at all.
 - One Save button, two requests, each sent only if its half changed: the endpoints are separate so that an edit to a collection interval can never be what drops a credential. A failure in one is reported without claiming the other did not happen.
-
-**Command permissions are their own page with their own save**: fl_pi_llm_ui's `PermissionsPage`, pushed by `AgentPermissions.route` (`lib/view/page/agent/permissions.dart`) with a `MonitorPermissionsSource` (`GET/PUT /api/v1/agent/permissions`); the app's own Agent opens the same page with `LocalPermissionsSource`. Both decide by `fl_pi_llm::permissions`. A monitor stores them in its database, not `config.toml`, so they are not part of the form's two requests; the form shows its row only when `/capabilities` lists `agentMode`. A mode or field this app does not know is sent back as the agent gave it. An auto mode list left empty is sent absent, which reads as the built-in list.

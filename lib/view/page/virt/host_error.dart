@@ -129,7 +129,7 @@ Future<void> virtPromptTfa(
             suggestion: false,
             autoFocus: true,
             // `popSheet`: the dialog is on the root navigator and this
-            // context is the tab's — see the dialog rules in CLAUDE.md.
+            // context is the tab's — see the dialog rules in docs/ARCHITECTURE.md.
             onSubmitted: (_) => context.popSheet(true),
           ),
         ],

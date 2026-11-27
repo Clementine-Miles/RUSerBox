@@ -1,10 +1,10 @@
-ServerBox 是一款 Linux 服务器状态监控与管理工具。
+ServerBox（RUSerBox 版本）是一款 Android 上的 Linux 服务器管理与终端应用。
 
 主要功能：
-• 查看 CPU、传感器、GPU 等状态图表
-• 使用 SSH 终端和 SFTP 管理服务器
-• 管理 Docker 容器、软件包和进程
-• 使用生物识别、推送通知、桌面小组件和 watchOS App
-• 支持跟随系统配色和多语言界面
+• CPU、内存、磁盘、网络、传感器和 GPU 的实时与历史图表
+• 支持 Zellij 会话的 SSH 终端、SFTP/SCP 文件管理、跳板机与端口转发
+• Docker/Podman、进程、systemd、用户、防火墙、libvirt 与 Proxmox VE
+• 本机 Shell 与基于 PRoot 的 Linux 环境
+• 内置 Gruvbox 主题、生物识别锁和加密备份
 
 特别感谢 dartssh2 和 xterm.dart。

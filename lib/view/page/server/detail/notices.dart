@@ -276,7 +276,7 @@ ${err.message ?? 'null'}
           TextButton(
             // Closes the dialog itself and leaves the work to the page: an
             // `onPressed` replaces the navigator the button would have
-            // resolved on its own — see the dialog rules in CLAUDE.md.
+            // resolved on its own — see the dialog rules in docs/ARCHITECTURE.md.
             onPressed: () {
               context.popSheet();
               _allowInsecure(srv);

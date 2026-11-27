@@ -5,8 +5,8 @@
   - **Never stop while backgrounded** — the one direction that cannot be undone from there: the process is cached, frozen, and every connection dies with nothing able to restart it. So the service is held even at zero connections, and the session payload carries `keepAlive` (an empty list used to make the native side cancel its notification).
   - No notification permission means no foreground service means no background at all. The settings page says so under `bgRun` rather than leaving connections dropping for no visible reason.
   - Historical trap: `MethodChans.startService`/`stopService` were gated on a `fgService` setting whose switch was commented out of the settings page and later deleted with it, so both calls did nothing for over a year and only `updateSessions`' side effect ever promoted the service.
-- Release signing: the key is in 1Password (vault `ServerBox CI`, read in CI by the service account whose token is `OP_SERVICE_ACCOUNT_TOKEN` of environment `release`, open to `v*` tags only, which only admins may push; off a tag CI signs with a key made for the run); a release build runs through `scripts/release/android-signing.sh` (`make build-android`), which hands Gradle or apksigner the keystore file and its passwords as `SBX_*`. Debug-signing fallback is local verification only, enabled explicitly with `-PallowDebugReleaseSigning=true`, never for release artifacts.
-- CI Android releases are split per ABI. Do not judge release size from a local fat APK; reproduce with `dart run fl_build -p android` or `flutter build apk --release --split-per-abi`.
+- Release signing: `scripts/release/android-signing.sh` reads the keystore from 1Password (`OP_SERVICE_ACCOUNT_TOKEN` in CI) and hands Gradle the keystore file and its passwords as `SBX_*`; keys are never committed. Debug-signing fallback is local verification only, enabled explicitly with `-PallowDebugReleaseSigning=true`, never for release artifacts.
+- **arm64-v8a only.** `android/app/build.gradle` filters and excludes every other ABI, and `hook/build.dart` refuses to build Native Assets for one. Every build gets version code `build * 100 + 3`, the code published arm64 APKs already used. `scripts/release/build-android.sh` is the release entry point and `scripts/release/verify-apk.sh` checks the result (ABI, AArch64 ELF, 16 KB LOAD alignment, zipalign, signature, version code).
 - **Reproducibility is checked by hand, not on release.** `android-reproducible.yml` (`workflow_dispatch` only) builds the unsigned F-Droid APKs twice from source directories of different path lengths and requires them byte-identical. Run it before tagging when a change touches `android/`, the build scripts, or a Flutter/NDK/dependency bump: F-Droid rebuilds from this source and compares against the published APK, so a divergence missed here is found by someone else, after the fact.
   - It runs **weekly on main**, not per pull request — two full Android builds and ~20 minutes is a long time to hold every change touching `lib/`. What breaks reproducibility lands between releases (a Flutter, NDK or Gradle plugin bump), and the tag is the worst moment to find out. `workflow_dispatch` is there for checking a change by hand. If that still leaves too much found late, narrow a `pull_request` trigger to `android/`, `scripts/release/`, `hook/` and the lock files.
   - **It varies one thing: the build path.** Both jobs are `ubuntu-24.04` on the same day with the same NDK and a pinned `SOURCE_DATE_EPOCH`, so it catches path leakage and nondeterministic ordering but not toolchain drift, locale, timezone or umask. Adding `TZ`, `LC_ALL`, `umask` and `HOME` costs no runtime and is the cheapest way to widen it. What it still cannot catch is F-Droid's environment differing from this one, which needs a rebuild elsewhere.
@@ -14,4 +14,27 @@
 - **System surfaces fed from Dart** (`view/page/home/android_system.dart`, `AndroidSystemSync`): launcher shortcuts to the first servers (`AppShortcuts`, pinned ones disabled when their server goes), the transfer Live Update (`TransferNotification`; Android 16 `ProgressStyle` + promoted ongoing, a progress bar before), the system keyboard shortcut list (`KeyboardShortcuts`, from `KbCommand` as rebound), and the per-app language (`locales_config.xml` must list every ARB; `android_locale_test.dart` checks). At launch the app's language setting is pushed to the system; a change made in system settings is adopted on resume. A running transfer holds the foreground service (`TermSessionManager.setTransferring`).
 - **Incoming content is copied, never passed on as a URI.** Shares (`SEND`, `SEND_MULTIPLE`) and `PROCESS_TEXT` land on `IncomingActivity`, never on `MainActivity`: another app starts them in its own task, where `singleTop` would create a second `MainActivity` and a second engine. It copies, leaves the payload in the in-process `IncomingInbox`, and brings the app forward with an action that carries nothing (MainActivity is exported). Drops (`DropListener`, which replaces `desktop_drop`'s listener because that one releases the grant before anything reads) are copied only when Dart says a target is under them (`DropZones`). Both go through `IncomingFiles`: `content://` only, never this package's own providers, into `cache/incoming/<batch>/`, which Dart deletes when the transfers end (`discardIncomingAfter`) and `purgeStale` sweeps after a day. Text opens as a snippet draft; nothing runs on its own.
 - The Quick Settings tile (`SessionsTileService`) shows `ForegroundService.sessionCount`; tapping it while active is the notification's Stop All (behind `unlockAndRun` on the lock screen).
-- Widget picker previews (API 35) are drawn by `HomeWidget.preview` from sample readings, set once per install (`lastUpdateTime`; an update, even of the same version, drops them) and language (`publishPreviews`), since the system rate-limits `setWidgetPreview`.
+
+## PRoot and the local userland
+
+- proot and its loader ship as `libproot.so` / `libproot-loader.so` in
+  `lib/arm64-v8a`, built by `packages/fl_tty/hook/build.dart` (or ahead of
+  time by `packages/fl_tty/scripts/build-proot-android.sh`, which needs GNU
+  awk). They can only be `execve`d from the extracted native library
+  directory, which is why `jniLibs.useLegacyPackaging = true`: do not switch
+  to mapped, uncompressed libraries without proving proot still runs.
+- The rootfs (aarch64 only) comes from a signed manifest
+  (`packages/fl_tty/assets/rootfs_manifest.json`, `RootfsManifestTrust`);
+  archives are verified, extracted without escaping the guest root, and
+  installed atomically.
+- PRoot is not a container or root: no root, Magisk or privileged permission
+  is assumed. Local processes end if Android kills the app process; a remote
+  Zellij session survives on its server and is re-attached.
+
+## Java and Gradle
+
+- Gradle runs on JDK 27 (Temurin, pinned in CI); the app's Java and Kotlin
+  compile to Java 17 bytecode explicitly, and core library desugaring stays on.
+- `android.builtInKotlin=false` / `android.newDsl=false` stay until the Flutter
+  Gradle plugin and the remaining plugins support AGP 9's built-in Kotlin and
+  new DSL (flutter/flutter#181383, #166550).
