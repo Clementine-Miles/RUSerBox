@@ -33,8 +33,7 @@ pub async fn add_owner(db: &SqlitePool) {
 pub async fn owned_state(config: Config) -> Arc<AppState> {
     let db = database().await;
     add_owner(&db).await;
-    let state = AppState::new(Arc::new(config), db);
-    state
+    AppState::new(Arc::new(config), db)
 }
 
 /// For the machine-management endpoints (`api::machine`): an agent with its

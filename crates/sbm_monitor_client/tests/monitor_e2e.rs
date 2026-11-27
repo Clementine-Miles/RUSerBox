@@ -37,7 +37,7 @@ fn start() -> Option<Agent> {
     };
     let dir = tempfile::tempdir().unwrap();
     let port = std::net::TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port();
-    let child = Command::new(bin)
+    let mut child = Command::new(bin)
         .current_dir(dir.path())
         .env("SBM_HOST", "127.0.0.1")
         .env("SBM_PORT", port.to_string())
@@ -56,6 +56,8 @@ fn start() -> Option<Agent> {
         }
         std::thread::sleep(Duration::from_millis(100));
     }
+    let _ = child.kill();
+    let _ = child.wait();
     panic!("the Monitor did not start");
 }
 

@@ -730,7 +730,7 @@ mod tests {
         let back = st.server(&s.id).unwrap().unwrap();
         assert_eq!(back.name, "web");
         assert_eq!(back.ssh.as_ref().unwrap().port, 2222);
-        assert_eq!(back.ssh.as_ref().unwrap().jump_ids, [jump.id.clone()]);
+        assert_eq!(back.ssh.as_ref().unwrap().jump_ids, std::slice::from_ref(&jump.id));
         assert_eq!(back.tags, ["eu", "prod"]);
         assert_eq!(back.monitor.as_ref().unwrap().addr, "https://example.com:3770");
         assert_eq!(back.lead_transport(), Some(Transport::Ssh));

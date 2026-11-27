@@ -96,9 +96,9 @@ pub struct Sealer {
     loading: Mutex<()>,
 }
 
-/// The key as read, and as ring takes it.
+/// The key as ring takes it. The bytes read from the file are zeroized once
+/// it is built.
 struct Keys {
-    raw: Zeroizing<[u8; KEY_LEN]>,
     aead: LessSafeKey,
 }
 
@@ -157,7 +157,7 @@ impl Sealer {
             None => random_key()?,
         };
         let aead = LessSafeKey::new(UnboundKey::new(&AES_256_GCM, &raw[..]).expect("a 32-byte key"));
-        Ok(self.keys.get_or_init(|| Keys { raw, aead }))
+        Ok(self.keys.get_or_init(|| Keys { aead }))
     }
 
     fn key(&self) -> Result<&LessSafeKey, Error> {

@@ -5,7 +5,8 @@
 //! - `config.toml` as it was on disk,
 //! - `settings.db`: a database with this monitor's schema whose [`KEPT`] tables
 //!   are filled from the live one (the account's row only its password), every
-//!   other table empty,
+//!   other table empty.
+//!
 //! Older backups can also contain verified `blobs/<sha256>` entries.
 //!
 //! Restoring brings `settings.db` up to this build's migrations, then replaces

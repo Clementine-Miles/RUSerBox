@@ -52,7 +52,7 @@ fn start() -> Option<Sshd> {
     std::fs::write(d.join("sshd_config"), cfg).unwrap();
     // The privilege separation directory, needed only by an sshd run as root.
     std::fs::create_dir_all("/run/sshd").ok();
-    let child = Command::new(SSHD).arg("-D").arg("-e").arg("-f").arg(d.join("sshd_config")).spawn().unwrap();
+    let mut child = Command::new(SSHD).arg("-D").arg("-e").arg("-f").arg(d.join("sshd_config")).spawn().unwrap();
     for _ in 0..50 {
         if std::net::TcpStream::connect(("127.0.0.1", port)).is_ok() {
             let key = std::fs::read_to_string(d.join("user")).unwrap();
@@ -60,6 +60,8 @@ fn start() -> Option<Sshd> {
         }
         std::thread::sleep(Duration::from_millis(100));
     }
+    let _ = child.kill();
+    let _ = child.wait();
     panic!("sshd did not start");
 }
 
