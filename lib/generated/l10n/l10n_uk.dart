@@ -7177,4 +7177,8 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get monitorMcpPasswordRequired => 'Введіть пароль.';
+
+  @override
+  String get windowsServerUnsupported =>
+      'Сервери Windows не підтримуються. Термінал і файловий браузер і надалі працюють через SSH.';
 }

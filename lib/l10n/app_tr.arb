@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "Güç",
   "monitorMcpNameRequired": "Ad girin.",
   "monitorMcpScopesRequired": "En az bir izin seçin.",
-  "monitorMcpPasswordRequired": "Parolayı girin."
+  "monitorMcpPasswordRequired": "Parolayı girin.",
+  "windowsServerUnsupported": "Windows sunucuları desteklenmiyor. Terminal ve dosya tarayıcı SSH üzerinden çalışmaya devam eder."
 }

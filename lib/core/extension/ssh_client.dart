@@ -45,14 +45,12 @@ Future<void> _collectOutput(
 
 String _decodeOutput(
   List<int> bytes, {
-  required bool isWindows,
   String? logLabel,
   String label = 'output',
 }) {
   try {
     return SSHDecoder.decode(
       bytes,
-      isWindows: isWindows,
       context: logLabel != null ? '$logLabel ($label)' : label,
     );
   } on FormatException catch (e) {
@@ -84,12 +82,7 @@ extension SSHClientX on SSHClient {
     SystemType? systemType,
   }) async {
     final session = await execute(
-      entry ??
-          switch (systemType) {
-            SystemType.windows =>
-              'powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass',
-            _ => 'cat | sh',
-          },
+      entry ?? 'cat | sh',
       pty: pty,
       environment: env,
     );
@@ -154,7 +147,6 @@ extension SSHClientX on SSHClient {
     final result = await run(command);
     return _decodeOutput(
       result,
-      isWindows: systemType == SystemType.windows,
       logLabel: logLabel,
     );
   }
@@ -179,16 +171,13 @@ extension SSHClientX on SSHClient {
     callback(session);
     await done;
 
-    final isWindows = systemType == SystemType.windows;
     final stdout = _decodeOutput(
       stdoutBuilder.takeBytes(),
-      isWindows: isWindows,
       logLabel: logLabel,
       label: 'stdout',
     );
     final stderr = _decodeOutput(
       stderrBuilder.takeBytes(),
-      isWindows: isWindows,
       logLabel: logLabel,
       label: 'stderr',
     );

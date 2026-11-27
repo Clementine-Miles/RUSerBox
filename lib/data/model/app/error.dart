@@ -41,6 +41,10 @@ enum SSHErrType {
   segments,
   writeScript,
   getStatus,
+
+  /// A system this app does not administer (Windows): nothing is installed
+  /// or run on it.
+  unsupportedSystem,
 }
 
 class SSHErr extends Err<SSHErrType> {

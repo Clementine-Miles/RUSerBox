@@ -7114,4 +7114,8 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get monitorMcpPasswordRequired => 'Parolayı girin.';
+
+  @override
+  String get windowsServerUnsupported =>
+      'Windows sunucuları desteklenmiyor. Terminal ve dosya tarayıcı SSH üzerinden çalışmaya devam eder.';
 }

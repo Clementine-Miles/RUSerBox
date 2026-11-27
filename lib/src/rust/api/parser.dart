@@ -898,5 +898,7 @@ enum SystemType {
 
   /// BSD family, including macOS
   bsd,
+
+  /// Recognised and shown as unsupported; never administered.
   windows,
 }

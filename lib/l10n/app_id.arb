@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "Daya",
   "monitorMcpNameRequired": "Masukkan nama.",
   "monitorMcpScopesRequired": "Pilih setidaknya satu izin.",
-  "monitorMcpPasswordRequired": "Masukkan kata sandi."
+  "monitorMcpPasswordRequired": "Masukkan kata sandi.",
+  "windowsServerUnsupported": "Server Windows tidak didukung. Terminal dan penjelajah berkas tetap berfungsi melalui SSH."
 }

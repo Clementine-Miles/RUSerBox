@@ -3,6 +3,9 @@ import 'package:server_box/src/rust/api/parser.dart' as rs show SystemType;
 enum SystemType {
   linux(linuxSign),
   bsd(bsdSign),
+
+  /// A Windows host: kept so a stored server keeps its meaning, shown as
+  /// unsupported, and never sent a command (see `SystemDetector`).
   windows(windowsSign);
 
   final String? value;

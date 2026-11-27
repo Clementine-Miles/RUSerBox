@@ -6845,4 +6845,8 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get monitorMcpPasswordRequired => '비밀번호를 입력하세요.';
+
+  @override
+  String get windowsServerUnsupported =>
+      'Windows 서버는 지원되지 않습니다. 터미널과 파일 탐색기는 SSH로 계속 사용할 수 있습니다.';
 }

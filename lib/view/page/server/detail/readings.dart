@@ -46,11 +46,10 @@ extension on _ServerDetailPageState {
 
 extension on _ServerDetailPageState {
   /// Each thread's share, or null where there is nothing to tell apart: one
-  /// thread, or Windows, whose WMI reports one load per processor and hands
-  /// every thread of it the same.
+  /// thread.
   List<({String id, double? used})>? _cpuCores(ServerStatus ss) {
     final cpu = ss.cpu;
-    if (cpu.coresCount < 2 || ss.system == SystemType.windows) return null;
+    if (cpu.coresCount < 2) return null;
     return [
       for (var i = 1; i <= cpu.coresCount; i++)
         (id: cpu.now[i].id, used: cpu.usedPercent(coreIdx: i)),

@@ -7229,4 +7229,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get monitorMcpPasswordRequired => 'Introduce la contraseña.';
+
+  @override
+  String get windowsServerUnsupported =>
+      'Los servidores Windows no son compatibles. La terminal y el explorador de archivos siguen funcionando por SSH.';
 }

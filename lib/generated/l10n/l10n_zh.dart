@@ -6743,6 +6743,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get monitorMcpPasswordRequired => '请输入密码。';
+
+  @override
+  String get windowsServerUnsupported => '不支持 Windows 服务器。终端和文件浏览仍可通过 SSH 使用。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -13483,4 +13486,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get monitorMcpPasswordRequired => '請輸入密碼。';
+
+  @override
+  String get windowsServerUnsupported => '不支援 Windows 伺服器。終端機與檔案瀏覽仍可透過 SSH 使用。';
 }

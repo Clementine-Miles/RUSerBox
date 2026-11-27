@@ -300,40 +300,6 @@ PID USER %CPU %MEM VSZ RSS TTY STAT START TIME READ_BYTES WRITE_BYTES COMMAND
 }
 
 #[test]
-fn parse_windows_process_json_io_counters() {
-    let first = r#"
-[
-  {"ProcessName":"a","Id":1,"CPUPercent":12.5,"StartId":"100","WorkingSet":1024,"IOReadBytes":100,"IOWriteBytes":200},
-  {"ProcessName":"b","Id":2,"CPUPercent":2.5,"StartId":"200","WorkingSet":512,"IOReadBytes":1000,"IOWriteBytes":1200}
-]
-"#;
-    let second = r#"
-[
-  {"ProcessName":"a","Id":1,"CPUPercent":25.0,"StartId":"100","WorkingSet":1024,"IOReadBytes":1100,"IOWriteBytes":2200},
-  {"ProcessName":"b","Id":2,"CPUPercent":5.0,"StartId":"200","WorkingSet":512,"IOReadBytes":1200,"IOWriteBytes":1600}
-]
-"#;
-    let previous = PsResult::parse(first, ProcSortMode::Cpu, None, None, 1000);
-    let current = PsResult::parse(second, ProcSortMode::Write, None, Some(&previous), 2000);
-    assert_eq!(current.procs[0].pid, 1);
-    assert_eq!(current.procs[0].read_speed, Some(1000.0));
-    assert_eq!(current.procs[0].write_speed, Some(2000.0));
-    assert_eq!(current.procs[0].cpu, Some(25.0));
-    assert_eq!(current.procs[0].start_id.as_deref(), Some("100"));
-    // Windows reports bytes; this is the same unit as `ps`'s RSS.
-    assert_eq!(current.procs[0].rss_kb(), Some(1));
-    assert_eq!(current.procs[1].rss_kb(), Some(1));
-}
-
-#[test]
-fn windows_cumulative_cpu_seconds_are_not_parsed_as_cpu_usage() {
-    let raw = r#"
-{"ProcessName":"legacy","Id":1,"CPU":99.5,"WorkingSet":1024}
-"#;
-    assert_eq!(parse(raw).procs[0].cpu, None);
-}
-
-#[test]
 fn invalid_numeric_metrics_and_negative_rss_are_omitted() {
     let unix_raw = "
 PID %CPU %MEM RSS COMMAND
@@ -344,13 +310,6 @@ PID %CPU %MEM RSS COMMAND
     assert_eq!(unix_proc.mem, None);
     assert_eq!(unix_proc.rss_kb(), None);
 
-    let windows_raw = r#"
-{"Id":2,"WorkingSet":-1,"CPUPercent":"Infinity","IOReadBytes":1.5}
-"#;
-    let windows_proc = &parse(windows_raw).procs[0];
-    assert_eq!(windows_proc.cpu, None);
-    assert_eq!(windows_proc.rss_kb(), None);
-    assert_eq!(windows_proc.read_bytes, None);
 }
 
 #[test]
@@ -362,67 +321,6 @@ PID START_ID READ_BYTES WRITE_BYTES COMMAND
     let proc = &parse(raw).procs[0];
     assert_eq!(proc.read_bytes, None);
     assert_eq!(proc.write_bytes, None);
-}
-
-#[test]
-fn scalar_json_is_classified_as_invalid_windows_json() {
-    for raw in ["null", "123", "true", "\"text\""] {
-        let result = parse(raw);
-        assert!(result.procs.is_empty(), "{raw}");
-        assert_eq!(
-            result.issue.map(|issue| issue.failure),
-            Some(PsParseFailure::InvalidWindowsJson),
-            "{raw}"
-        );
-    }
-}
-
-#[test]
-fn windows_fields_fall_back_after_empty_or_unparsable_values() {
-    let raw = r#"
-{"Id":7,"CommandLine":"","Path":"C:\\app.exe","CPUPercent":"","PercentProcessorTime":12.5,"IOReadBytes":1.5,"ReadTransferCount":100,"WorkingSet":"bad","WorkingSetSize":2048}
-"#;
-    let proc = &parse(raw).procs[0];
-    assert_eq!(proc.command, r"C:\app.exe");
-    assert_eq!(proc.cpu, Some(12.5));
-    assert_eq!(proc.read_bytes, Some(100));
-    assert_eq!(proc.rss_kb(), Some(2));
-}
-
-#[test]
-fn invalid_windows_rows_preserve_typed_diagnostics() {
-    let raw = r#"
-[
-  {"ProcessName":"missing-pid"},
-  {"ProcessName":"fractional-pid","Id":1.5},
-  "not-an-object",
-  {"ProcessName":"valid","Id":7,"CPUPercent":3.0}
-]
-"#;
-    let result = PsResult::parse(raw, ProcSortMode::Cpu, None, None, 1234);
-    assert_eq!(pids(&result), [7]);
-    let issue = result.issue.as_ref().expect("an issue");
-    assert_eq!(issue.failure, PsParseFailure::InvalidWindowsRows);
-    assert_eq!(issue.diagnostics.matches("missing or invalid PID").count(), 2);
-    assert!(issue.diagnostics.contains("expected an object"));
-    assert_eq!(result.sampled_at_millis, 1234);
-}
-
-#[test]
-fn windows_rows_reject_non_positive_process_ids() {
-    let raw = r#"
-[
-  {"ProcessName":"zero","Id":0},
-  {"ProcessName":"negative","Id":-2},
-  {"ProcessName":"string-zero","Id":"0"},
-  {"ProcessName":"valid","Id":3}
-]
-"#;
-    let result = parse(raw);
-    assert_eq!(pids(&result), [3]);
-    let issue = result.issue.as_ref().expect("an issue");
-    assert_eq!(issue.failure, PsParseFailure::InvalidWindowsRows);
-    assert_eq!(issue.diagnostics.matches("missing or invalid PID").count(), 3);
 }
 
 #[test]
@@ -440,28 +338,6 @@ PID COMMAND
     assert_eq!(issue.failure, PsParseFailure::InvalidRows);
     assert!(issue.diagnostics.contains("Invalid process ID"));
     assert!(issue.diagnostics.contains("Duplicate process ID"));
-}
-
-#[test]
-fn windows_rows_reject_duplicate_process_ids() {
-    let raw = r#"
-[{"Id":3,"ProcessName":"first"},{"Id":3,"ProcessName":"second"}]
-"#;
-    let result = parse(raw);
-    assert_eq!(result.procs.len(), 1);
-    let issue = result.issue.as_ref().expect("an issue");
-    assert_eq!(issue.failure, PsParseFailure::InvalidWindowsRows);
-    assert!(issue.diagnostics.contains("duplicate PID 3"));
-}
-
-#[test]
-fn malformed_windows_json_preserves_typed_diagnostics() {
-    let result = PsResult::parse(r#"{"ProcessName":"#, ProcSortMode::Cpu, None, None, 5678);
-    assert!(result.procs.is_empty());
-    let issue = result.issue.as_ref().expect("an issue");
-    assert_eq!(issue.failure, PsParseFailure::InvalidWindowsJson);
-    assert!(issue.diagnostics.contains("Invalid Windows process JSON"));
-    assert_eq!(result.sampled_at_millis, 5678);
 }
 
 #[test]
@@ -725,23 +601,6 @@ fn pid_2_in_a_container_and_its_children_are_not() {
     );
 }
 
-#[test]
-fn windows_rows_carry_parent_threads_and_elapsed_time() {
-    let raw = r#"
-[{"ProcessName":"svc.exe","Id":40,"ParentId":4,"Threads":12,"ElapsedSeconds":90,"StartId":"1","CommandLine":"svc.exe"},
- {"ProcessName":"bad.exe","Id":41,"ElapsedSeconds":-5,"StartId":"2","CommandLine":"bad.exe"}]
-"#;
-    let result = PsResult::parse(raw, ProcSortMode::Pid, None, None, 0);
-    let procs = &result.procs;
-
-    assert_eq!(procs[0].ppid, Some(4));
-    assert_eq!(procs[0].threads, Some(12));
-    assert_eq!(procs[0].elapsed_seconds, Some(90));
-    assert_eq!(procs[0].name(), "svc.exe");
-    assert_eq!(procs[1].elapsed_seconds, None);
-    assert_eq!(procs[1].ppid, None);
-}
-
 // ---------------------------------------------------------------------------
 // Stopping a process
 // ---------------------------------------------------------------------------
@@ -753,9 +612,8 @@ fn a_stop_is_offered_only_where_there_is_an_identity_to_check() {
     assert!(!kill_supported(1, Some("1"), SystemType::Bsd));
 
     assert!(kill_command(1, Some("1"), SystemType::Linux, ProcSignal::Term).is_some());
-    assert!(kill_command(1, Some("1"), SystemType::Windows, ProcSignal::Kill).is_some());
-    // Windows has no polite request.
-    assert!(kill_command(1, Some("1"), SystemType::Windows, ProcSignal::Term).is_none());
+    // A Windows host is not administered.
+    assert!(kill_command(1, Some("1"), SystemType::Windows, ProcSignal::Kill).is_none());
     assert_eq!(signals_for(SystemType::Bsd), &[]);
 }
 

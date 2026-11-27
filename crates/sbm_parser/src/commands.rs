@@ -11,7 +11,7 @@
 pub const SEPARATOR: &str = "SrvBoxSep";
 
 // Command keys (matching the app's `ShellCmdType` enum names)
-/// System-sign echo segment (`__linux` / `__bsd` / `__windows`), used by the app
+/// System-sign echo segment (`__linux` / `__bsd`), used by the app
 /// to detect the remote OS from script output
 pub const ECHO: &str = "echo";
 pub const TIME: &str = "time";
@@ -26,8 +26,6 @@ pub const DISK: &str = "disk";
 pub const MEM: &str = "mem";
 pub const TEMP_TYPE: &str = "tempType";
 pub const TEMP_VAL: &str = "tempVal";
-/// Windows single-segment temperature (InstanceName + Celsius JSON)
-pub const TEMP: &str = "temp";
 pub const DISKIO: &str = "diskio";
 pub const BATTERY: &str = "battery";
 pub const SENSORS: &str = "sensors";
@@ -53,8 +51,7 @@ pub struct CommandSpec {
 ///   spins up / wakes one that is in standby. Polling it every few seconds
 ///   means a disk with spin-down configured never stays spun down, and every
 ///   wake costs a `Start_Stop_Count` / `Load_Cycle_Count` tick.
-/// - Windows' `amd-smi` probe forks through several tools per invocation.
-///   Linux AMD utilization uses the cheap DRM sysfs command in the fast path.
+/// - AMD utilization uses the cheap DRM sysfs command in the fast path.
 ///
 /// - `IP` answers a question whose answer changes when a machine moves or its
 ///   lease does. Asking every few seconds spends a process spawn on a value
@@ -288,86 +285,11 @@ pub const BSD: &[CommandSpec] = &[
     CommandSpec { key: IP, cmd: "ifconfig 2>/dev/null" },
 ];
 
-/// Windows PowerShell(App `WindowsStatusCmdType`)
-pub const WINDOWS: &[CommandSpec] = &[
-    CommandSpec { key: ECHO, cmd: "echo __windows" },
-    CommandSpec { key: TIME, cmd: "[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()" },
-    CommandSpec {
-        key: NET,
-        cmd: r#"$s1 = @(Get-WmiObject Win32_PerfRawData_Tcpip_NetworkInterface | Select-Object Name, BytesReceivedPersec, BytesSentPersec, Timestamp_Sys100NS); Start-Sleep -Seconds 1; $s2 = @(Get-WmiObject Win32_PerfRawData_Tcpip_NetworkInterface | Select-Object Name, BytesReceivedPersec, BytesSentPersec, Timestamp_Sys100NS); @($s1, $s2) | ConvertTo-Json -Depth 5"#,
-    },
-    // `Get-ComputerInfo` emits progress records while it assembles the full
-    // object. Through Windows OpenSSH those records can arrive as CLIXML on
-    // stdout, so the status page displayed `<Objs Version="1.1.0.1" ...>` as
-    // the operating system. The CIM property is the same value without the
-    // progress stream.
-    CommandSpec {
-        key: SYS,
-        cmd: "(Get-CimInstance Win32_OperatingSystem).Caption",
-    },
-    CommandSpec {
-        key: CPU,
-        cmd: "Get-WmiObject -Class Win32_Processor | Select-Object Name, LoadPercentage, NumberOfCores, NumberOfLogicalProcessors | ConvertTo-Json",
-    },
-    CommandSpec {
-        key: UPTIME,
-        cmd: r#"$up = (Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime; if ($up.Days -gt 0) { "$($up.Days) days, $($up.Hours):$($up.Minutes.ToString('00'))" } else { "$($up.Hours):$($up.Minutes.ToString('00'))" }"#,
-    },
-    CommandSpec { key: CONN, cmd: "(netstat -an | findstr ESTABLISHED | Measure-Object -Line).Count" },
-    CommandSpec {
-        key: DISK,
-        cmd: "Get-WmiObject -Class Win32_LogicalDisk | Select-Object DeviceID, Size, FreeSpace, FileSystem | ConvertTo-Json",
-    },
-    CommandSpec {
-        key: MEM,
-        cmd: "Get-WmiObject -Class Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory | ConvertTo-Json",
-    },
-    CommandSpec {
-        key: TEMP,
-        cmd: r#"Get-CimInstance -ClassName MSAcpi_ThermalZoneTemperature -Namespace root/wmi -ErrorAction SilentlyContinue | Select-Object InstanceName, @{Name='Temperature';Expression={[math]::Round(($_.CurrentTemperature - 2732) / 10, 1)}} | ConvertTo-Json"#,
-    },
-    CommandSpec { key: HOST, cmd: r#"Write-Output $env:COMPUTERNAME"# },
-    CommandSpec {
-        key: DISKIO,
-        // PerfRawData fields are cumulative despite their `Persec` names. A
-        // single logical-disk sample therefore has the same semantics as
-        // Linux `/proc/diskstats`, and its `C:` keys line up with the disk
-        // usage command instead of requiring a physical-to-logical mapping.
-        cmd: "Get-WmiObject Win32_PerfRawData_PerfDisk_LogicalDisk | Select-Object Name, DiskReadBytesPersec, DiskWriteBytesPersec | ConvertTo-Json",
-    },
-    CommandSpec {
-        key: BATTERY,
-        cmd: "Get-WmiObject -Class Win32_Battery | Select-Object EstimatedChargeRemaining, BatteryStatus | ConvertTo-Json",
-    },
-    CommandSpec {
-        key: NVIDIA,
-        cmd: r#"if (Get-Command nvidia-smi -ErrorAction SilentlyContinue) { nvidia-smi -q -x } else { echo "NVIDIA driver not found" }"#,
-    },
-    CommandSpec {
-        key: AMD,
-        cmd: r#"if (Get-Command amd-smi -ErrorAction SilentlyContinue) { amd-smi list --json } else { echo "AMD driver not found" }"#,
-    },
-    CommandSpec {
-        key: SENSORS,
-        cmd: "Get-CimInstance -ClassName Win32_TemperatureProbe -ErrorAction SilentlyContinue | Select-Object Name, CurrentReading | ConvertTo-Json",
-    },
-    CommandSpec {
-        key: DISK_SMART,
-        cmd: "Get-PhysicalDisk | Get-StorageReliabilityCounter | Select-Object DeviceId, Temperature, TemperatureMax, Wear, PowerOnHours | ConvertTo-Json",
-    },
-    CommandSpec { key: CPU_BRAND, cmd: "(Get-WmiObject -Class Win32_Processor).Name" },
-    // `-ExpandProperty`, so what comes back is one address per line rather
-    // than a table the parser would have to un-format.
-    CommandSpec {
-        key: IP,
-        cmd: "Get-NetIPAddress | Select-Object -ExpandProperty IPAddress",
-    },
-];
-
 pub fn commands(system: crate::SystemType) -> &'static [CommandSpec] {
     match system {
         crate::SystemType::Linux => LINUX,
         crate::SystemType::Bsd => BSD,
-        crate::SystemType::Windows => WINDOWS,
+        // A Windows host is never sent a command.
+        crate::SystemType::Windows => &[],
     }
 }

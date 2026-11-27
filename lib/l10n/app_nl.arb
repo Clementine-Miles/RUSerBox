@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "Stroom",
   "monitorMcpNameRequired": "Voer een naam in.",
   "monitorMcpScopesRequired": "Kies minstens één recht.",
-  "monitorMcpPasswordRequired": "Voer het wachtwoord in."
+  "monitorMcpPasswordRequired": "Voer het wachtwoord in.",
+  "windowsServerUnsupported": "Windows-servers worden niet ondersteund. De terminal en bestandsbrowser werken nog steeds via SSH."
 }

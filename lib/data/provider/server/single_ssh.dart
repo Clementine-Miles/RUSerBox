@@ -225,6 +225,22 @@ mixin _SshStatus on _ScriptStatus {
         final newStatus = _copyStatus(state.status, system: detectedSystemType);
         updateStatus(newStatus);
 
+        // Never administered: no script, no status commands. The terminal
+        // and SFTP still work, being SSH itself rather than commands of ours.
+        if (detectedSystemType == SystemType.windows) {
+          _setFailedState(
+            _copyStatus(
+              state.status,
+              err: SSHErr(
+                type: SSHErrType.unsupportedSystem,
+                message: l10n.windowsServerUnsupported,
+              ),
+              setErr: true,
+            ),
+          );
+          return false;
+        }
+
         Loggers.app.info(
           'Writing script for ${spi.name} (${detectedSystemType.name})',
         );
@@ -417,11 +433,7 @@ mixin _SshStatus on _ScriptStatus {
         // what is wanted from them is their output.
         run: client == null
             ? null
-            : (cmd) async => (await _runStatusCommandWithExec(
-                client,
-                cmd,
-                isWindows: state.status.system == SystemType.windows,
-              )).raw,
+            : (cmd) async => (await _runStatusCommandWithExec(client, cmd)).raw,
       );
       final status = await _parseScriptStatus(spi, extended, raw);
       // The last two awaits are the longest in this method — the extended
@@ -466,10 +478,6 @@ mixin _SshStatus on _ScriptStatus {
       return (raw: '', elapsedMs: null);
     }
 
-    if (state.status.system == SystemType.windows) {
-      return _runStatusCommandWithExec(client, statusCmd, isWindows: true);
-    }
-
     if (!_usePersistentShellForStatus) {
       return _runStatusCommandWithExec(client, statusCmd);
     }
@@ -498,15 +506,11 @@ mixin _SshStatus on _ScriptStatus {
   /// than of the first one.
   Future<({String raw, int? elapsedMs})> _runStatusCommandWithExec(
     SSHClient client,
-    String statusCmd, {
-    bool isWindows = false,
-  }) async {
+    String statusCmd,
+  ) async {
     final spi = state.spi;
-    // Windows PowerShell serializes progress and information records (including
-    // Write-Host) as CLIXML on stderr when invoked with -EncodedCommand. Status
-    // parsing is a stdout protocol: merging stderr lets those records land in
-    // whichever SrvBoxSep section happened to be current when the SSH chunks
-    // arrived, so an <Objs> document could become the system name or an IP.
+    // Status parsing is a stdout protocol: stderr merged in could land in
+    // whichever SrvBoxSep section happened to be current.
     final elapsed = Stopwatch()..start();
     final execResult = await client
         .run(statusCmd, stderr: false)
@@ -515,7 +519,6 @@ mixin _SshStatus on _ScriptStatus {
     return (
       raw: SSHDecoder.decode(
         execResult,
-        isWindows: isWindows,
         context: 'GetStatus<${spi.name}>',
       ),
       elapsedMs: elapsed.elapsedMilliseconds,

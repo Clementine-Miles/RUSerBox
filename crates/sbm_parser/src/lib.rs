@@ -40,7 +40,6 @@ pub mod sudo;
 pub mod system;
 pub mod types;
 pub mod users;
-pub mod windows;
 pub mod zellij;
 
 use std::collections::HashMap;
@@ -52,6 +51,8 @@ pub enum SystemType {
     Linux,
     /// BSD family, including macOS
     Bsd,
+    /// A Windows host. Recognised, so a stored server keeps its meaning and
+    /// is shown as unsupported; never sent a command or parsed.
     Windows,
 }
 
@@ -77,19 +78,14 @@ pub struct ServerStatus {
     pub net: Vec<NetIface>,
     pub temps: Temperatures,
     pub conn: Option<Conn>,
-    /// KNOWN CROSS-PLATFORM DIFFERENCE (see `monitor/CLAUDE.md`): Linux/Bsd
-    /// go through `common::parse_uptime`, which normalizes the `uptime`
-    /// command's varied output into one string shape; Windows instead
-    /// pre-formats the string in PowerShell and this field just passes it
-    /// through unparsed (reusing `common::parse_hostname` as a generic
-    /// trim-and-pass helper) — the presentation format is not guaranteed
-    /// identical across platforms.
+    /// Normalized by `common::parse_uptime` from the `uptime` command's varied
+    /// output.
     pub uptime: Option<String>,
     /// System version description (PRETTY_NAME / uname / OsName).
     /// KNOWN CROSS-PLATFORM DIFFERENCE: only Linux's `common::parse_sys_version`
-    /// is a real distro/version parser; Bsd/Windows repurpose
+    /// is a real distro/version parser; Bsd repurposes
     /// `common::parse_hostname` (a generic single-line trimmer) against
-    /// `uname -or`/`OsName` output — works today because those happen to be
+    /// `uname -or` output — works today because those happen to be
     /// single clean lines, but this field is not semantically a "hostname
     /// parser" output on those platforms, just reused machinery.
     pub sys: Option<String>,
@@ -97,8 +93,8 @@ pub struct ServerStatus {
     ///
     /// Linux only, and only where that file exists: it is the identifier
     /// os-release defines for programs to match on, as opposed to [`sys`],
-    /// which is the same file's line for a person to read. Bsd and Windows
-    /// have no equivalent and leave this empty.
+    /// which is the same file's line for a person to read. Bsd has no
+    /// equivalent and leave this empty.
     ///
     /// Covered by `capabilities::Capabilities::sys` rather than a field of its
     /// own — it comes out of the same command, so its support is that of
@@ -211,27 +207,8 @@ pub fn parse_status_opts(
             // command produces
             status.disk_smart = smart::parse(get(commands::DISK_SMART));
         }
-        SystemType::Windows => {
-            status.cpu = windows::parse_cpu(get(commands::CPU), &[]);
-            status.cpu_brand = windows::parse_cpu_brand(get(commands::CPU));
-            status.mem = windows::parse_mem(get(commands::MEM));
-            status.disks = windows::parse_disks(get(commands::DISK));
-            status.temps = windows::parse_temps(get(commands::TEMP));
-            status.sys = common::parse_hostname(get(commands::SYS));
-            // Windows uptime is pre-formatted by PowerShell
-            status.uptime = common::parse_hostname(get(commands::UPTIME));
-            status.conn = get(commands::CONN).trim().parse().ok().map(|count| Conn {
-                max_conn: count,
-                fail: 0,
-            });
-            status.batteries = windows::parse_batteries(get(commands::BATTERY));
-            status.sensors = windows::parse_sensors(get(commands::SENSORS));
-            status.disk_smart = windows::parse_disk_smart(get(commands::DISK_SMART));
-            // Cumulative counters, as on the other platforms: the caller derives
-            // rates across polls
-            status.net = windows::parse_net(get(commands::NET));
-            status.diskio = windows::parse_diskio(get(commands::DISKIO));
-        }
+        // Not administered: nothing was sent, so there is nothing to parse.
+        SystemType::Windows => {}
     }
 
     status

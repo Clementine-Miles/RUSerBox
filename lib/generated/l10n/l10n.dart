@@ -12202,6 +12202,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter the password.'**
   String get monitorMcpPasswordRequired;
+
+  /// No description provided for @windowsServerUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Windows servers are not supported. The terminal and file browser still work over SSH.'**
+  String get windowsServerUnsupported;
 }
 
 class _AppLocalizationsDelegate

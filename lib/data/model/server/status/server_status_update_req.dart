@@ -168,15 +168,10 @@ void _noteFailedSections(
     always: true,
   );
   check(const ['disk'], const ['disk'], status.disks.isNotEmpty);
-  // Windows' interface counters are a second parse of the same segment, and
-  // the shared one is empty there by design — asking it would report every
-  // Windows host's network as unreadable.
-  if (system != SystemType.windows) {
-    check(const ['net'], const ['net'], status.net.isNotEmpty);
-  }
+  check(const ['net'], const ['net'], status.net.isNotEmpty);
   check(const ['diskio'], const ['diskio'], status.diskio.isNotEmpty);
   check(
-    const ['tempType', 'tempVal', 'temp'],
+    const ['tempType', 'tempVal'],
     const ['temps'],
     status.temps.isNotEmpty,
   );
@@ -254,19 +249,15 @@ void _applyCpu(ServerStatus ss, ffi.StatusReport status, SystemType system) {
   if (cores.isEmpty) return;
 
   switch (system) {
-    // Both report instantaneous percentages rather than `/proc/stat`'s
+    // BSD reports instantaneous percentages rather than `/proc/stat`'s
     // cumulative ticks, and [Cpus] reads usage off the difference between two
-    // samples. Two percentage snapshots each sum to about 100, so taken as
-    // counters the window's total moves by nothing, or backwards, and the
-    // reading was "none" on most polls. Adding each to the previous
-    // pseudo-counter turns them into ticks.
-    case SystemType.windows:
-      cores = _accumulatePercentCpu(cores.skip(1).toList(), ss.cpu.now);
+    // samples. Adding each to the previous pseudo-counter turns them into
+    // ticks.
     case SystemType.bsd:
       // No summary row here: macOS repeats its one aggregate reading per
       // core, and FreeBSD's `-P` gives the cores alone.
       cores = _accumulatePercentCpu(cores, ss.cpu.now);
-    case SystemType.linux:
+    case SystemType.linux || SystemType.windows:
       break;
   }
   ss.cpu.update(cores);

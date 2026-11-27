@@ -8942,16 +8942,43 @@
   "syncStateUpdate": "Update required",
   "syncStateRunning": "Syncing",
   "syncRefused": "LK Cloud refused the sync ({reason})",
-  "@syncRefused": {"placeholders": {"reason": {"type": "String"}}},
+  "@syncRefused": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "sshAgent": "ssh-agent",
   "sshAgentForward": "Forward to the server",
   "sshAgentUnset": "No ssh-agent socket can be found from {name}",
-  "@sshAgentUnset": {"placeholders": {"name": {"type": "String"}}},
+  "@sshAgentUnset": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "sshAgentUnsupported": "This device cannot use an ssh-agent",
   "sshAgentNotPipe": "On Windows an ssh-agent is reached through a named pipe, and {path} is not one",
-  "@sshAgentNotPipe": {"placeholders": {"path": {"type": "String"}}},
+  "@sshAgentNotPipe": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
   "sshAgentUnreachable": "Cannot reach the ssh-agent at {path}: {reason}",
-  "@sshAgentUnreachable": {"placeholders": {"path": {"type": "String"}, "reason": {"type": "String"}}},
+  "@sshAgentUnreachable": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "bmcLocator": "Locator light",
   "@bmcLocator": {},
   "bmcBoot": "Boot override",
@@ -8979,7 +9006,16 @@
   "bmcNoStorage": "The service reports no storage",
   "@bmcNoStorage": {},
   "bmcClearLogConfirm": "Clear {log} on {server}?",
-  "@bmcClearLogConfirm": {"placeholders": {"log": {"type": "String"}, "server": {"type": "String"}}},
+  "@bmcClearLogConfirm": {
+    "placeholders": {
+      "log": {
+        "type": "String"
+      },
+      "server": {
+        "type": "String"
+      }
+    }
+  },
   "bmcEntriesTruncated": "Only the newest entries are shown",
   "@bmcEntriesTruncated": {},
   "bmcDrivesTruncated": "Only the first drives are shown",
@@ -9001,7 +9037,13 @@
   "monitorMcpCreated": "Token",
   "monitorMcpRevoke": "Revoke",
   "monitorMcpRevokeHint": "Revoke {name}?",
-  "@monitorMcpRevokeHint": {"placeholders": {"name": {"type": "String"}}},
+  "@monitorMcpRevokeHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "monitorMcpLastUsed": "Last used",
   "monitorMcpNeverUsed": "Never used",
   "monitorMcpExpires": "Expires",
@@ -9022,5 +9064,6 @@
   "monitorMcpScopePower": "Power",
   "monitorMcpNameRequired": "Enter a name.",
   "monitorMcpScopesRequired": "Choose at least one permission.",
-  "monitorMcpPasswordRequired": "Enter the password."
+  "monitorMcpPasswordRequired": "Enter the password.",
+  "windowsServerUnsupported": "Windows servers are not supported. The terminal and file browser still work over SSH."
 }

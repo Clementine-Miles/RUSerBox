@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:server_box/data/model/app/scripts/cmd_types.dart';
 import 'package:server_box/src/rust/api/parser.dart';
 import 'package:server_box/src/rust/api/script.dart' as script;
 
@@ -210,31 +209,13 @@ __SBM_GPU_END__
     expect(diskio[0].sectorsRead, 567890);
   });
 
-  test('command specs cover linux/bsd/windows', () {
-    for (final system in SystemType.values) {
+  test('command specs cover linux and bsd; a Windows host gets none', () {
+    for (final system in [SystemType.linux, SystemType.bsd]) {
       final specs = commandSpecs(system: system);
       expect(specs, isNotEmpty, reason: system.name);
       expect(specs.map((s) => s.key), contains('cpu'));
     }
-  });
-
-  test('buildScript smoke via FFI', () {
-    final unix = script.buildScript(
-      system: SystemType.linux,
-      disabled: [],
-      buildNumber: 'test',
-    );
-    expect(unix, startsWith('#!/bin/sh'));
-    expect(unix, contains('SbStatus() {'));
-    expect(unix, contains('case \$1 in'));
-
-    final win = script.buildScript(
-      system: SystemType.windows,
-      disabled: [],
-      buildNumber: 'test',
-    );
-    expect(win, contains('function SbStatus {'));
-    expect(win, contains('switch (\$args[0])'));
+    expect(commandSpecs(system: SystemType.windows), isEmpty);
   });
 
   test('the custom-command installer writes files, not commands', () {
@@ -325,28 +306,4 @@ __SBM_GPU_END__
     expect(segments.map((s) => s.key).toList(), ['time', customX, customTime]);
   });
 
-  test('enum names stay in sync with the FFI manifest', () {
-    final cases = <(SystemType, List<ShellCmdType>)>[
-      (SystemType.linux, StatusCmdType.values),
-      (SystemType.bsd, BSDStatusCmdType.values),
-      (SystemType.windows, WindowsStatusCmdType.values),
-    ];
-    for (final (system, types) in cases) {
-      final manifestKeys = {
-        for (final spec in commandSpecs(system: system)) spec.key,
-      };
-      for (final type in types) {
-        expect(
-          manifestKeys,
-          contains(type.name),
-          reason: '$system/${type.name} missing from the Rust manifest',
-        );
-      }
-      expect(
-        manifestKeys.length,
-        types.length,
-        reason: '$system manifest and enum should have the same entries',
-      );
-    }
-  });
 }

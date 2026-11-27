@@ -40,9 +40,7 @@ abstract final class CustomCmdManager {
     if (!res.succeeded) throw CommandFailed('save custom commands', res);
   }
 
-  /// Unix feeds the script to `sh` on stdin, so a user's command never has to
-  /// survive shell quoting; the Windows form is already a base64-wrapped
-  /// PowerShell command line, for a host whose default shell is cmd.exe.
-  static String? _entry(SystemType system) =>
-      system == SystemType.windows ? null : 'sh';
+  /// The script is fed to `sh` on stdin, so a user's command never has to
+  /// survive shell quoting. (A Windows host gets an empty script.)
+  static String? _entry(SystemType system) => 'sh';
 }

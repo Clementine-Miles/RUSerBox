@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "Güc",
   "monitorMcpNameRequired": "Ad daxil edin.",
   "monitorMcpScopesRequired": "Ən azı bir icazə seçin.",
-  "monitorMcpPasswordRequired": "Parolu daxil edin."
+  "monitorMcpPasswordRequired": "Parolu daxil edin.",
+  "windowsServerUnsupported": "Windows serverləri dəstəklənmir. Terminal və fayl brauzeri SSH üzərindən işləməyə davam edir."
 }

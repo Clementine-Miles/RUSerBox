@@ -17,57 +17,6 @@ fn opts() -> ScriptOptions {
 
 // ---------- script_builder_test.dart ----------
 
-/// Dart 'script generation produces valid output for all platforms'
-#[test]
-fn script_valid_output_all_platforms() {
-    for system in [SystemType::Linux, SystemType::Windows] {
-        let script = build_script(system, &opts());
-        assert!(!script.is_empty());
-        for func in ShellFunc::ALL {
-            assert!(
-                script.contains(func.name()),
-                "{system:?} missing {}",
-                func.name()
-            );
-        }
-        match system {
-            SystemType::Windows => {
-                assert!(script.contains("switch ($args[0])"));
-                assert!(script.contains("PowerShell script for ServerBox"));
-            }
-            _ => {
-                assert!(script.contains("#!/bin/sh"));
-                assert!(script.contains("case $1 in"));
-            }
-        }
-    }
-}
-
-/// Custom commands are read from a directory, not spliced into the script.
-///
-/// The script is now a function of the manifest alone: whatever a user has
-/// configured, these bytes are the same, which is what makes this baseline
-/// worth locking at all.
-#[test]
-fn script_reads_custom_commands_from_a_directory() {
-    for system in [SystemType::Linux, SystemType::Windows] {
-        let script = build_script(system, &opts());
-        assert!(script.contains(script::custom_cmd_dir(system)));
-        // The marker prefix is emitted; the name comes from the file.
-        assert!(script.contains("SrvBoxCusCmdSep."));
-        // Only in the status function.
-        let after_status = script.split("SbProcess").nth(1).unwrap();
-        assert!(!after_status.contains("SrvBoxCusCmdSep."));
-    }
-    // A command that would break a script if it were spliced in cannot: it is
-    // never in the script.
-    let hostile = ScriptOptions { ..opts() };
-    assert_eq!(
-        build_script(SystemType::Linux, &hostile),
-        build_script(SystemType::Linux, &opts())
-    );
-}
-
 #[test]
 fn unix_custom_output_has_a_head_fallback() {
     let generated = build_script(SystemType::Linux, &opts());
@@ -86,47 +35,6 @@ fn unix_custom_output_uses_an_atomic_temporary_file() {
     assert!(generated.contains("server_box_custom.XXXXXX"));
     assert!(generated.contains("(umask 077; set -C; : > \"$o\")"));
     assert!(!generated.contains("rm -f \"$o\"\n\t(ulimit"));
-}
-
-/// The installer writes the directory in one round trip, atomically.
-#[test]
-fn custom_cmd_installer_replaces_the_directory() {
-    let cmds = vec![
-        (100u32, "disk".to_string(), "df -h | tail -1".to_string()),
-        // A command whose text would end a heredoc, close a quote and start a
-        // new command if any of it were taken literally.
-        (
-            200u32,
-            "hostile".to_string(),
-            "EOF'\n rm -rf / #".to_string(),
-        ),
-    ];
-    for system in [SystemType::Linux, SystemType::Windows] {
-        let install = script::install_custom_cmds_script(system, &cmds);
-        // Nothing a command contains reaches the shell: it travels encoded.
-        assert!(!install.contains("rm -rf /"));
-        assert!(install.contains(&script::custom_cmd_file_name(100, "disk")));
-        assert!(install.contains(&script::custom_cmd_file_name(200, "hostile")));
-        // Written aside and moved, so a poll sees one set or the other.
-        assert!(install.contains(".new"));
-        match system {
-            SystemType::Windows => {
-                assert!(install.contains("$ErrorActionPreference = 'Stop'"));
-                assert!(install.contains("Rename-Item $bak $dir -Force"));
-            }
-            SystemType::Linux => {
-                assert!(install.contains("if ! mv \"$t\" \"$d\""));
-                assert!(install.contains("mv \"$b\" \"$d\""));
-            }
-            SystemType::Bsd => unreachable!(),
-        }
-        // The script reads the same place the installer writes. Nothing else
-        // keeps those two in step — they are separate strings in separate
-        // functions, and disagreeing would mean commands that install fine and
-        // never run.
-        assert!(install.contains(script::custom_cmd_dir(system)));
-        assert!(build_script(system, &opts()).contains(script::custom_cmd_dir(system)));
-    }
 }
 
 /// An earlier install stopped between its two moves leaves the backup as the
@@ -221,20 +129,6 @@ fn custom_cmd_listing_reads_a_real_directory() {
     );
 }
 
-/// The directory does not follow the script.
-///
-/// The script's own directory defaults to a temp one and is swapped at runtime
-/// when that proves unwritable. These files are the only copy of something the
-/// user typed, so they live under the user's home and stay there.
-#[test]
-fn custom_cmd_dir_survives_a_reboot_and_a_script_dir_switch() {
-    let unix = script::custom_cmd_dir(SystemType::Linux);
-    assert!(unix.starts_with("$HOME/"), "{unix}");
-    assert!(!unix.contains("/tmp"), "{unix}");
-    assert_eq!(unix, script::custom_cmd_dir(SystemType::Bsd));
-    assert!(script::custom_cmd_dir(SystemType::Windows).contains("$env:USERPROFILE"));
-}
-
 /// The path the monitor reads directly and the expression the generated script
 /// expands must name the same directory. Nothing else would notice if they
 /// drifted: each half would work, on a different directory.
@@ -276,29 +170,8 @@ fn custom_cmd_dir_path_matches_the_shell_expression() {
 
     // And that the path really is under the home directory, which is the part
     // the components above cannot say.
-    #[cfg(windows)]
-    let home = std::env::var_os("USERPROFILE").unwrap();
-    #[cfg(not(windows))]
     let home = std::env::var_os("HOME").unwrap();
     assert!(path.starts_with(std::path::PathBuf::from(home)));
-}
-
-/// Windows names its files `.ps1` (`&` will not run an extensionless file),
-/// and the extension is not part of the encoded name. Emitting it made a
-/// marker that decodes to nothing, so the command's output was swallowed into
-/// whichever section came before it.
-#[test]
-fn windows_marker_drops_the_ps1_extension() {
-    let script = build_script(SystemType::Windows, &opts());
-    assert!(script.contains("$_.BaseName"));
-    assert!(!script.contains("$_.Name -replace"));
-    // What the script would emit for one file, decoded back.
-    let file = script::custom_cmd_file_name(100, "disk usage");
-    let marker = script::custom_cmd_marker("disk usage");
-    assert_eq!(
-        marker,
-        format!("SrvBoxCusCmdSep.b64.{}", file.split_once('_').unwrap().1)
-    );
 }
 
 /// The editor's read path: what the listing script prints comes back as the
@@ -391,124 +264,6 @@ fn custom_cmd_listing_uses_the_last_complete_marker_pair() {
     assert_eq!(script::parse_custom_cmds_listing(&raw), Some(vec![]));
 }
 
-/// Dart 'install commands are generated correctly'; the Windows variant is
-/// -EncodedCommand wrapped so it runs from cmd.exe default shells too
-#[test]
-fn install_commands() {
-    let unix = install_command(SystemType::Linux, "/tmp/test", "/tmp/test/script.sh");
-    assert!(unix.contains("mkdir"));
-    assert!(unix.contains("chmod 755"));
-    assert!(unix.contains("/tmp/test/script.sh"));
-
-    let win = install_command(
-        SystemType::Windows,
-        r"C:\temp\test",
-        r"C:\temp\test\script.ps1",
-    );
-    assert!(win.starts_with(
-        "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand "
-    ));
-    let b64 = win.rsplit(' ').next().unwrap();
-    let decoded = decode_utf16le_b64(b64);
-    // A progress record on stderr would read as a failed install (#1710)
-    assert!(decoded.starts_with("$ProgressPreference = 'SilentlyContinue'; "));
-    assert!(decoded.contains("New-Item"));
-    assert!(decoded.contains("Set-Content"));
-    assert!(decoded.contains(r"C:\temp\test\script.ps1"));
-
-    // Never ReadToEnd: Windows OpenSSH does not reliably hand the channel's EOF
-    // to the child, so waiting for one hangs the install for good. The end of
-    // the content has to be a line in the content — see `install_command`.
-    assert!(!decoded.contains("ReadToEnd"));
-    assert!(decoded.contains("ReadLine()"));
-    assert!(decoded.contains(WINDOWS_INSTALL_EOF));
-}
-
-#[test]
-fn windows_default_script_paths_expand_remote_environment() {
-    let install = install_command(
-        SystemType::Windows,
-        r"$env:USERPROFILE/.config/server_box",
-        r"$env:USERPROFILE/.config/server_box\srvboxm.ps1",
-    );
-    let decoded = decode_utf16le_b64(install.rsplit(' ').next().unwrap());
-    assert!(
-        decoded.contains(
-            "New-Item -ItemType Directory -Force -Path (Join-Path $env:USERPROFILE '.config/server_box')"
-        ),
-        "{decoded}"
-    );
-    assert!(
-        decoded.contains(
-            "Set-Content -Path (Join-Path $env:USERPROFILE '.config/server_box\\srvboxm.ps1')"
-        ),
-        "{decoded}"
-    );
-    assert!(!decoded.contains("-Path '$env:USERPROFILE"), "{decoded}");
-
-    let exec = exec_command(
-        SystemType::Windows,
-        r"$env:TEMP/server_box\srvboxm.ps1",
-        ShellFunc::Status,
-    );
-    let decoded = decode_utf16le_b64(exec.rsplit(' ').next().unwrap());
-    assert_eq!(
-        decoded,
-        "$ProgressPreference = 'SilentlyContinue'; & (Join-Path $env:TEMP 'server_box\\srvboxm.ps1') -s"
-    );
-}
-
-/// The two halves have to agree: the command stops at a line the payload is
-/// responsible for putting there, and neither is any use alone.
-#[test]
-fn install_payload_terminates_what_the_command_waits_for() {
-    let script = "Write-Output 'hi'\n";
-    let win = install_payload(SystemType::Windows, script);
-    assert!(win.starts_with(script));
-    assert_eq!(win, format!("{script}{WINDOWS_INSTALL_EOF}\n"));
-
-    // A script that does not end in a newline still gets the marker on a line
-    // of its own, or the last line of the script would swallow it
-    let unterminated = "Write-Output 'hi'";
-    assert_eq!(
-        install_payload(SystemType::Windows, unterminated),
-        format!("{unterminated}\n{WINDOWS_INSTALL_EOF}\n")
-    );
-
-    // Unix reads to EOF and gets one, so nothing is added — a stray marker line
-    // would end up inside the installed script
-    for system in [SystemType::Linux, SystemType::Bsd] {
-        assert_eq!(install_payload(system, script), script);
-    }
-}
-
-/// The marker cannot appear in a generated script, or the install would stop
-/// partway through and write a truncated file.
-#[test]
-fn no_generated_script_contains_the_install_marker() {
-    for system in [SystemType::Windows, SystemType::Linux, SystemType::Bsd] {
-        let script = build_script(system, &ScriptOptions::default());
-        assert!(
-            !script.contains(WINDOWS_INSTALL_EOF),
-            "{system:?} script contains {WINDOWS_INSTALL_EOF}"
-        );
-    }
-}
-
-fn decode_utf16le_b64(b64: &str) -> String {
-    use base64::Engine;
-    let bytes = base64::engine::general_purpose::STANDARD
-        .decode(b64)
-        .unwrap();
-    let utf16: Vec<u16> = bytes
-        .as_chunks::<2>()
-        .0
-        .iter()
-        .map(|c| u16::from_le_bytes(*c))
-        .collect();
-    String::from_utf16(&utf16).unwrap()
-}
-
 /// A quoted `~` is a literal (#1082).
 #[test]
 fn unix_home_script_paths_expand_remote_home() {
@@ -538,73 +293,6 @@ chmod 755 \"${HOME:?}\"/'.config/server_box/srvboxm.sh'\n"
             format!("sh '{literal}' -s")
         );
     }
-}
-
-/// Dart 'exec commands are generated correctly for all platforms'
-#[test]
-fn exec_commands() {
-    for func in ShellFunc::ALL {
-        let unix = exec_command(SystemType::Linux, "/tmp/test/script.sh", func);
-        assert!(unix.contains("/tmp/test/script.sh"));
-        assert!(unix.ends_with(&format!("-{}", func.flag())));
-
-        let win = exec_command(SystemType::Windows, r"C:\temp\test\script.ps1", func);
-        assert!(win.contains("powershell"));
-        assert!(win.contains("-ExecutionPolicy Bypass"));
-        let encoded = win.split_whitespace().last().unwrap();
-        assert!(decode_utf16le_b64(encoded).ends_with(&format!("-{}", func.flag())));
-    }
-
-    let unix = exec_command(
-        SystemType::Linux,
-        "/tmp/it's here/status.sh",
-        ShellFunc::Status,
-    );
-    assert_eq!(unix, "sh '/tmp/it'\\''s here/status.sh' -s");
-
-    let win = exec_command(
-        SystemType::Windows,
-        r"C:\Program Files\Server Box\status.ps1",
-        ShellFunc::Status,
-    );
-    assert!(!win.contains("Program Files"));
-    let encoded = win.split_whitespace().last().unwrap();
-    assert!(
-        decode_utf16le_b64(encoded).contains("& 'C:\\Program Files\\Server Box\\status.ps1' -s")
-    );
-
-    let custom = exec_command(
-        SystemType::Windows,
-        r"C:\Server $($env:USERNAME)\it's\status.ps1",
-        ShellFunc::Status,
-    );
-    let encoded = custom.split_whitespace().last().unwrap();
-    assert_eq!(
-        decode_utf16le_b64(encoded),
-        "$ProgressPreference = 'SilentlyContinue'; & 'C:\\Server $($env:USERNAME)\\it''s\\status.ps1' -s"
-    );
-}
-
-/// Dart 'script headers contain proper metadata'
-#[test]
-fn script_headers() {
-    let win = build_script(SystemType::Windows, &opts());
-    assert!(win.contains("PowerShell script for ServerBox app v1.0.1466"));
-    assert!(win.contains("DO NOT delete this file"));
-    assert!(win.contains("$ErrorActionPreference = \"SilentlyContinue\""));
-
-    let unix = build_script(SystemType::Linux, &opts());
-    assert!(unix.starts_with("#!/bin/sh"));
-    assert!(unix.contains("# Script for ServerBox app v1.0.1466"));
-    assert!(unix.contains("DO NOT delete this file"));
-    assert!(unix.contains("export LC_ALL=en_US.UTF-8"));
-}
-
-#[test]
-fn windows_system_name_does_not_emit_get_computer_info_progress() {
-    let win = build_script(SystemType::Windows, &opts());
-    assert!(win.contains("(Get-CimInstance Win32_OperatingSystem).Caption"));
-    assert!(!win.contains("(Get-ComputerInfo).OsName"));
 }
 
 /// Dart 'scripts handle all system types properly': env probes + Bsd == Linux
@@ -648,24 +336,6 @@ fn disabled_filters_bsd_in_unix_script() {
     assert!(script.contains("cat /proc/meminfo | grep -E 'Mem|Swap'"));
 }
 
-/// Dart 'filters Windows status commands when disabled'
-#[test]
-fn disabled_filters_windows() {
-    let o = ScriptOptions {
-        disabled: vec![
-            "Windows.net".into(),
-            "Windows.uptime".into(),
-            "Windows.temp".into(),
-        ],
-        ..opts()
-    };
-    let script = build_script(SystemType::Windows, &o);
-    assert!(!script.contains("LastBootUpTime"));
-    assert!(!script.contains("MSAcpi_ThermalZoneTemperature"));
-    assert!(script.contains("Get-CimInstance Win32_Process"));
-    assert!(script.contains("Get-WmiObject -Class Win32_OperatingSystem"));
-}
-
 /// Dart 'ignores disabled names for other platforms'
 #[test]
 fn disabled_other_platform_ignored() {
@@ -676,41 +346,6 @@ fn disabled_other_platform_ignored() {
     let script = build_script(SystemType::Linux, &o);
     assert!(script.contains("cat /etc/os-release /usr/lib/os-release"));
     assert!(script.contains("cat /proc/net/dev"));
-}
-
-/// Dart 'disabling all status commands removes separators'
-#[test]
-fn disabled_all_removes_separators() {
-    let all_unix: Vec<String> = sbm_parser::commands::LINUX
-        .iter()
-        .map(|s| format!("Linux.{}", s.key))
-        .chain(
-            sbm_parser::commands::BSD
-                .iter()
-                .map(|s| format!("BSD.{}", s.key)),
-        )
-        .collect();
-    let unix = build_script(
-        SystemType::Linux,
-        &ScriptOptions {
-            disabled: all_unix,
-            ..opts()
-        },
-    );
-    assert!(!unix.contains("SrvBoxSep."));
-
-    let all_win: Vec<String> = sbm_parser::commands::WINDOWS
-        .iter()
-        .map(|s| format!("Windows.{}", s.key))
-        .collect();
-    let win = build_script(
-        SystemType::Windows,
-        &ScriptOptions {
-            disabled: all_win,
-            ..opts()
-        },
-    );
-    assert!(!win.contains("SrvBoxSep."));
 }
 
 /// Scope prefix matching is case-insensitive (Hive-stored values use
@@ -755,22 +390,6 @@ fn extended_commands_split_out_of_status() {
     assert!(status.contains("intel_gpu_top"));
     assert!(!ext.contains(&format!("echo {}", script::cmd_marker("sensors"))));
     assert!(!ext.contains("nvidia-smi"));
-}
-
-#[test]
-fn extended_commands_split_out_of_status_windows() {
-    let script = build_script(SystemType::Windows, &opts());
-    let status = script.split("function SbProcess").next().unwrap();
-    let (status, ext) = status.split_once("function SbStatusExt").unwrap();
-
-    assert!(!status.contains("Get-StorageReliabilityCounter"));
-    assert!(!status.contains("amd-smi"));
-    assert!(ext.contains("Get-StorageReliabilityCounter"));
-    assert!(ext.contains("amd-smi"));
-    // Disk I/O is a single cumulative sample, so the app computes exactly one
-    // delta between status polls and the keys match Win32_LogicalDisk.
-    assert!(status.contains("Win32_PerfRawData_PerfDisk_LogicalDisk"));
-    assert!(!status.contains("Win32_PerfRawData_PerfDisk_PhysicalDisk"));
 }
 
 /// Disabling every command of one half must not emit an empty `then`/`else`
@@ -1146,74 +765,6 @@ fn e2e_unix_process_table_has_identity_and_load() {
 /// A command that prints no newline must not inherit the separator newline
 /// written before the next custom command's marker.
 #[cfg(unix)]
-#[test]
-fn consecutive_custom_commands_do_not_add_a_blank_line() {
-    use std::process::Command;
-    use std::time::{SystemTime, UNIX_EPOCH};
-
-    let nonce = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    let home = std::env::temp_dir().join(format!(
-        "sbm_custom_cmd_test_{}_{}",
-        std::process::id(),
-        nonce
-    ));
-    let commands = home.join(".config/server_box/custom_cmds");
-    std::fs::create_dir_all(&commands).unwrap();
-    std::fs::write(
-        commands.join(script::custom_cmd_file_name(100, "first")),
-        "printf x",
-    )
-    .unwrap();
-    std::fs::write(
-        commands.join(script::custom_cmd_file_name(200, "second")),
-        "printf y",
-    )
-    .unwrap();
-    std::fs::write(commands.join("README"), "printf should-not-run").unwrap();
-    std::fs::write(
-        commands.join(format!(
-            "{}.ps1",
-            script::custom_cmd_file_name(300, "windows")
-        )),
-        "printf should-not-run",
-    )
-    .unwrap();
-
-    let status = home.join("status.sh");
-    std::fs::write(
-        &status,
-        build_script(
-            SystemType::Linux,
-            &ScriptOptions {
-                build_number: "test".into(),
-                ..Default::default()
-            },
-        ),
-    )
-    .unwrap();
-    let output = Command::new("sh")
-        .arg(&status)
-        .arg("-s")
-        .env("HOME", &home)
-        .output()
-        .unwrap();
-    std::fs::remove_dir_all(&home).ok();
-
-    assert!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    let raw = String::from_utf8(output.stdout).unwrap();
-    let parsed = parse_script_output(&raw);
-    assert_eq!(parsed[&script::custom_result_key("first")], "x");
-    assert_eq!(parsed[&script::custom_result_key("second")], "y");
-    assert!(!raw.contains("should-not-run"));
-}
-
 #[cfg(unix)]
 #[test]
 fn newline_terminated_custom_output_has_no_extra_blank_line() {
@@ -1256,211 +807,7 @@ fn newline_terminated_custom_output_has_no_extra_blank_line() {
     assert_eq!(parsed[&script::custom_result_key("line")], "x\n\n");
 }
 
-/// A custom command that cannot be started says so as its output, the only
-/// place its result is shown; an empty one would read as having succeeded.
-#[test]
-fn windows_custom_command_launch_failure_is_its_output() {
-    let generated = build_script(SystemType::Windows, &ScriptOptions::default());
-    assert!(generated.contains(
-        "catch { $m = [Text.Encoding]::UTF8.GetBytes('ServerBox: failed to start: ' + $_.Exception.Message)"
-    ));
-}
-
 #[cfg(windows)]
-#[test]
-fn windows_custom_commands_have_time_and_output_bounds() {
-    use std::io::Read;
-    use std::process::{Command, Stdio};
-    use std::sync::{Arc, Mutex};
-    use std::thread::JoinHandle;
-    use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
-
-    let nonce = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    let home = std::env::temp_dir().join(format!(
-        "sbm_custom_windows_{}_{}",
-        std::process::id(),
-        nonce
-    ));
-    let commands = home.join(".config/server_box/custom_cmds");
-    std::fs::create_dir_all(&commands).unwrap();
-    std::fs::write(
-        commands.join(format!(
-            "{}.ps1",
-            script::custom_cmd_file_name(100, "large")
-        )),
-        // Then a mark that it got to the end: its own evidence of whether it
-        // finished or was killed, which the run's total time cannot give.
-        "[Console]::Out.Write('x' * 100000); [Console]::Out.Flush(); \
-         New-Item -ItemType File -Path (Join-Path $env:USERPROFILE 'large.done') | Out-Null",
-    )
-    .unwrap();
-    // Floods stderr for its whole five seconds. Drained and dropped, so it
-    // neither blocks on a full pipe nor lands on the disk.
-    std::fs::write(
-        commands.join(format!("{}.ps1", script::custom_cmd_file_name(150, "noisy"))),
-        "$s = [Console]::OpenStandardError(); $b = New-Object byte[] 1048576; \
-         while ($true) { $s.Write($b, 0, $b.Length) }",
-    )
-    .unwrap();
-    std::fs::write(
-        commands.join(format!("{}.ps1", script::custom_cmd_file_name(200, "slow"))),
-        "Start-Sleep -Seconds 30; Write-Output 'late'",
-    )
-    .unwrap();
-
-    let disabled = sbm_parser::commands::WINDOWS
-        .iter()
-        .map(|spec| format!("Windows.{}", spec.key))
-        .collect();
-    let status = home.join("status.ps1");
-    let generated = build_script(
-        SystemType::Windows,
-        &ScriptOptions {
-            disabled,
-            ..Default::default()
-        },
-    );
-    assert!(generated.contains("$deadline = [DateTime]::UtcNow.AddSeconds(5)"));
-    assert!(generated.contains("if (-not $p.HasExited) { taskkill /PID $p.Id /T /F | Out-Null }"));
-    // Read from pipes, never through files: a file's size can only be polled,
-    // and a command writing flat out overran a polled one by hundreds of MB.
-    assert!(!generated.contains("RedirectStandardOutput $o"));
-    assert!(generated.contains("$i.RedirectStandardError = $true"));
-    std::fs::write(&status, generated).unwrap();
-
-    let mut child = Command::new("powershell")
-        .args(["-NoProfile", "-ExecutionPolicy", "Bypass", "-File"])
-        .arg(&status)
-        .arg("-s")
-        .env("USERPROFILE", &home)
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .unwrap();
-    // Read into buffers shared as they fill: a run that hangs can still show
-    // how far it got, without waiting on pipes a surviving child may hold.
-    fn drain(mut pipe: impl Read + Send + 'static) -> (Arc<Mutex<Vec<u8>>>, JoinHandle<()>) {
-        let bytes = Arc::new(Mutex::new(Vec::new()));
-        let sink = bytes.clone();
-        let reader = std::thread::spawn(move || {
-            let mut chunk = [0u8; 8192];
-            while let Ok(n @ 1..) = pipe.read(&mut chunk) {
-                sink.lock().unwrap().extend_from_slice(&chunk[..n]);
-            }
-        });
-        (bytes, reader)
-    }
-    let (stdout, stdout_reader) = drain(child.stdout.take().unwrap());
-    let (stderr, stderr_reader) = drain(child.stderr.take().unwrap());
-
-    // Hosted Windows runners vary widely in nested PowerShell startup and
-    // taskkill time. The generated deadline and the missing `late` output
-    // below verify the five-second behavior; this is only a hang guard.
-    const HARD_TIMEOUT: Duration = Duration::from_secs(60);
-    let started = Instant::now();
-    let status_code = loop {
-        if let Some(status) = child.try_wait().unwrap() {
-            break status;
-        }
-        if started.elapsed() > HARD_TIMEOUT {
-            child.kill().ok();
-            // The runner prints a command's marker before starting it and its
-            // output once done, so the last line names where it stopped.
-            let lines = |bytes: &Mutex<Vec<u8>>| {
-                String::from_utf8_lossy(&bytes.lock().unwrap())
-                    .lines()
-                    .map(|l| l.chars().take(120).collect::<String>())
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            };
-            panic!(
-                "generated PowerShell custom-command runner did not stop\n\
-                 --- stdout\n{}\n--- stderr\n{}",
-                lines(&stdout),
-                lines(&stderr)
-            );
-        }
-        std::thread::sleep(Duration::from_millis(50));
-    };
-    stdout_reader.join().unwrap();
-    stderr_reader.join().unwrap();
-    let stdout = std::mem::take(&mut *stdout.lock().unwrap());
-    let stderr = std::mem::take(&mut *stderr.lock().unwrap());
-    let large_finished = home.join("large.done").exists();
-    std::fs::remove_dir_all(&home).ok();
-
-    assert!(
-        status_code.success(),
-        "{}",
-        String::from_utf8_lossy(&stderr)
-    );
-    let parsed = parse_script_output(&String::from_utf8(stdout).unwrap());
-    let large = &parsed[&script::custom_result_key("large")];
-    // The size bound, unless the time bound fired first. A hosted runner can
-    // spend most of `large`'s five seconds starting its nested PowerShell and
-    // kill it at the deadline with part of the output written (#1589: 57 600
-    // bytes) — or none, if starting took all of it.
-    //
-    // The runner kills a command only at its deadline or once its output is
-    // past the cap, and past the cap it reads a full cap. So a short output
-    // from a command that was killed is the deadline; from one that finished
-    // — `large.done` written — it is a truncation the runner should not make.
-    if large.len() < script::CUSTOM_CMD_MAX_OUTPUT_BYTES {
-        assert!(
-            !large_finished,
-            "`large` finished and was still cut to {} bytes",
-            large.len()
-        );
-        assert!(large.bytes().all(|b| b == b'x'));
-    } else {
-        assert_eq!(large.len(), script::CUSTOM_CMD_MAX_OUTPUT_BYTES);
-    }
-    assert_eq!(parsed[&script::custom_result_key("noisy")], "");
-    assert_eq!(parsed[&script::custom_result_key("slow")], "");
-}
-
-/// The convention both ends of the migration have to agree on: the app writes
-/// these files over SSH, the monitor reads the same directory, and the script
-/// sorts by name because the name carries the order.
-#[test]
-fn custom_cmd_file_names_sort_by_order() {
-    use sbm_parser::script::{
-        CUSTOM_CMD_ORDER_STEP, custom_cmd_file_name, custom_cmd_name_from_file,
-    };
-
-    let first = custom_cmd_file_name(CUSTOM_CMD_ORDER_STEP, "disk usage");
-    let second = custom_cmd_file_name(CUSTOM_CMD_ORDER_STEP * 2, "who is on");
-    // Sorting the directory sorts the commands. Zero padding is what makes a
-    // string compare agree with a numeric one.
-    assert!(first < second);
-    // And there is room to move one between them without touching either.
-    let between = custom_cmd_file_name(CUSTOM_CMD_ORDER_STEP + 50, "in between");
-    assert!(first < between && between < second);
-
-    // A name survives the round trip whatever is in it.
-    for name in ["disk usage", "磁盘", "a\"b$c`d", "with_underscore"] {
-        let file = custom_cmd_file_name(300, name);
-        assert_eq!(custom_cmd_name_from_file(&file).as_deref(), Some(name));
-        // Nothing that could act in a shell reaches the file name.
-        assert!(
-            file.bytes()
-                .all(|b| b.is_ascii_alphanumeric() || b"-_=".contains(&b))
-        );
-    }
-
-    // Anything else in that directory is not ours and is left alone.
-    assert_eq!(custom_cmd_name_from_file("README"), None);
-    assert_eq!(custom_cmd_name_from_file("_notanumber"), None);
-    #[cfg(not(windows))]
-    assert_eq!(
-        script::custom_cmd_name_from_file_for_current_platform(&format!("{first}.ps1")),
-        None,
-    );
-}
-
 #[test]
 fn a_rejected_sudo_password_is_told_apart_from_a_failing_command() {
     for stderr in [

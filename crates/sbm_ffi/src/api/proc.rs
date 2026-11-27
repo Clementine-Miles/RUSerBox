@@ -53,8 +53,6 @@ pub struct _ProcLoad {
 pub enum _PsParseFailure {
     UnsupportedOutput,
     InvalidRows,
-    InvalidWindowsJson,
-    InvalidWindowsRows,
 }
 
 #[frb(mirror(PsParseIssue))]

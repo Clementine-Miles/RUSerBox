@@ -271,12 +271,7 @@ enum ProcSignal { term, kill }
 
 enum ProcSortMode { cpu, mem, rss, read, write, pid, user, name }
 
-enum PsParseFailure {
-  unsupportedOutput,
-  invalidRows,
-  invalidWindowsJson,
-  invalidWindowsRows,
-}
+enum PsParseFailure { unsupportedOutput, invalidRows }
 
 class PsParseIssue {
   final PsParseFailure failure;

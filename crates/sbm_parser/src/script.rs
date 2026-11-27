@@ -43,10 +43,6 @@ const ENCODED_NAME_PREFIX: &str = "b64.";
 /// monitor running as the same user read one set rather than two.
 pub const CUSTOM_CMD_DIR_UNIX: &str = "$HOME/.config/server_box/custom_cmds";
 
-/// The Windows form of [`CUSTOM_CMD_DIR_UNIX`], as a PowerShell expression.
-pub const CUSTOM_CMD_DIR_WINDOWS: &str =
-    "(Join-Path $env:USERPROFILE '.config\\server_box\\custom_cmds')";
-
 /// First line of [`read_custom_cmds_script`]'s output when the directory
 /// exists; [`CUSTOM_CMD_DIR_MISSING_MARKER`] when it does not.
 pub const CUSTOM_CMD_DIR_MARKER: &str = "SrvBoxCusCmdDir";
@@ -54,13 +50,10 @@ pub const CUSTOM_CMD_DIR_END_MARKER: &str = "SrvBoxCusCmdDirEnd";
 pub const CUSTOM_CMD_DIR_MISSING_MARKER: &str = "SrvBoxCusCmdDirMissing";
 const CUSTOM_CMD_OUTPUT_PREFIX: &str = "SrvBoxCusCmdOut.";
 
-/// The custom-command directory for a platform, as an expression the platform's
-/// shell expands.
-pub fn custom_cmd_dir(system: SystemType) -> &'static str {
-    match system {
-        SystemType::Windows => CUSTOM_CMD_DIR_WINDOWS,
-        SystemType::Linux | SystemType::Bsd => CUSTOM_CMD_DIR_UNIX,
-    }
+/// The custom-command directory, as an expression a POSIX shell expands. The
+/// same on every administered system (a Windows host is never sent one).
+pub fn custom_cmd_dir(_system: SystemType) -> &'static str {
+    CUSTOM_CMD_DIR_UNIX
 }
 
 /// The same directory as a path on the machine this process is running on,
@@ -75,9 +68,6 @@ pub fn custom_cmd_dir(system: SystemType) -> &'static str {
 /// Kept here beside the shell expression it must agree with — `script_compat`
 /// checks that they still name the same place.
 pub fn custom_cmd_dir_path() -> Option<std::path::PathBuf> {
-    #[cfg(windows)]
-    let home = std::env::var_os("USERPROFILE").filter(|h| !h.is_empty())?;
-    #[cfg(not(windows))]
     let home = std::env::var_os("HOME").filter(|h| !h.is_empty())?;
     Some(
         std::path::PathBuf::from(home)
@@ -110,20 +100,14 @@ pub fn custom_cmd_file_name(order: u32, name: &str) -> String {
     format!("{order:05}_{}", encode_marker_name(name))
 }
 
-/// The extension the file carries on a platform, empty where it needs none.
-///
-/// Windows names them `.ps1` because `&` will not run an extensionless file.
-/// It is not part of the encoded name — see [`custom_cmd_name_from_file`].
-pub fn custom_cmd_file_ext(system: SystemType) -> &'static str {
-    match system {
-        SystemType::Windows => ".ps1",
-        SystemType::Linux | SystemType::Bsd => "",
-    }
+/// The extension the file carries: none on a POSIX shell, which is every
+/// system the app administers.
+pub fn custom_cmd_file_ext(_system: SystemType) -> &'static str {
+    ""
 }
 
 /// The name back out of a file name, or `None` if it is not one of ours.
 pub fn custom_cmd_name_from_file(file_name: &str) -> Option<String> {
-    let file_name = file_name.strip_suffix(".ps1").unwrap_or(file_name);
     let (order, encoded) = file_name.split_once('_')?;
     if order.is_empty() || !order.bytes().all(|b| b.is_ascii_digit()) {
         return None;
@@ -131,23 +115,9 @@ pub fn custom_cmd_name_from_file(file_name: &str) -> Option<String> {
     decode_marker_name(&format!("{ENCODED_NAME_PREFIX}{encoded}"))
 }
 
-fn custom_cmd_name_from_file_for(system: SystemType, file_name: &str) -> Option<String> {
-    match system {
-        SystemType::Windows => custom_cmd_name_from_file(file_name.strip_suffix(".ps1")?),
-        SystemType::Linux | SystemType::Bsd if !file_name.ends_with(".ps1") => {
-            custom_cmd_name_from_file(file_name)
-        }
-        _ => None,
-    }
-}
-
-/// Validates one custom-command file for the platform this binary runs on.
+/// Validates one custom-command file as a POSIX host stores it.
 pub fn custom_cmd_name_from_file_for_current_platform(file_name: &str) -> Option<String> {
-    #[cfg(windows)]
-    let system = SystemType::Windows;
-    #[cfg(not(windows))]
-    let system = SystemType::Linux;
-    custom_cmd_name_from_file_for(system, file_name)
+    custom_cmd_name_from_file(file_name)
 }
 
 fn encode_marker_name(name: &str) -> String {
@@ -249,7 +219,7 @@ impl ShellFunc {
 #[derive(Debug, Clone, Default)]
 pub struct ScriptOptions {
     /// Disabled command keys in the app's stored displayName format
-    /// ("Linux.net", "BSD.mem", "Windows.cpu"); compared case-insensitively
+    /// ("Linux.net", "BSD.mem"); compared case-insensitively
     pub disabled: Vec<String>,
     /// App build number embedded in the header comment ("v1.0.<build>")
     pub build_number: String,
@@ -279,38 +249,8 @@ pub fn install_custom_cmds_script(system: SystemType, cmds: &[(u32, String, Stri
     let b64 = base64::engine::general_purpose::STANDARD;
 
     match system {
-        SystemType::Windows => {
-            let mut out = format!(
-                "$ErrorActionPreference = 'Stop'\n\
-                 $dir = {CUSTOM_CMD_DIR_WINDOWS}\n\
-                 $tmp = \"$dir.new\"\n\
-                 $bak = \"$dir.bak\"\n\
-                 if (-not (Test-Path $dir) -and (Test-Path $bak)) {{ Rename-Item $bak $dir -Force }}\n\
-                 if (Test-Path $tmp) {{ Remove-Item -Recurse -Force $tmp }}\n\
-                 New-Item -ItemType Directory -Force -Path $tmp | Out-Null\n"
-            );
-            let ext = custom_cmd_file_ext(SystemType::Windows);
-            for (order, name, cmd) in cmds {
-                let file = custom_cmd_file_name(*order, name);
-                out.push_str(&format!(
-                    "[IO.File]::WriteAllBytes((Join-Path $tmp '{file}{ext}'),                      [Convert]::FromBase64String('{}'))\n",
-                    b64.encode(cmd)
-                ));
-            }
-            out.push_str(
-                "if (Test-Path $bak) { Remove-Item -Recurse -Force $bak }\n\
-                 if (Test-Path $dir) { Rename-Item $dir $bak -Force }\n\
-                 try {\n\
-                 \x20 Move-Item $tmp $dir -ErrorAction Stop\n\
-                 } catch {\n\
-                 \x20 if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }\n\
-                 \x20 if (Test-Path $bak) { Rename-Item $bak $dir -Force }\n\
-                 \x20 throw\n\
-                 }\n\
-                 if (Test-Path $bak) { Remove-Item -Recurse -Force $bak }\n",
-            );
-            out
-        }
+        // Never sent to a Windows host.
+        SystemType::Windows => String::new(),
         SystemType::Linux | SystemType::Bsd => {
             let mut out = format!(
                 "set -e\n\
@@ -355,21 +295,7 @@ pub fn install_custom_cmds_script(system: SystemType, cmds: &[(u32, String, Stri
 /// marker: an empty encoding would read as a command with no body.
 pub fn read_custom_cmds_script(system: SystemType) -> String {
     match system {
-        SystemType::Windows => format!(
-            "$d = {CUSTOM_CMD_DIR_WINDOWS}\n\
-             if (-not (Test-Path $d) -and (Test-Path \"$d.bak\")) {{ $d = \"$d.bak\" }}\n\
-             if (Test-Path $d) {{\n\
-             \x20 Write-Host '{CUSTOM_CMD_DIR_MARKER}'\n\
-             \x20 Get-ChildItem -File $d | Sort-Object Name | ForEach-Object {{\n\
-             \x20   if ($_.Name -match '^[0-9]{{5}}_[A-Za-z0-9_=-]+\\.ps1$') {{\n\
-             \x20     Write-Host (\"{{0}} {{1}}\" -f $_.Name, [Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName)))\n\
-             \x20   }}\n\
-             \x20 }}\n\
-             \x20 Write-Host '{CUSTOM_CMD_DIR_END_MARKER}'\n\
-             }} else {{\n\
-             \x20 Write-Host '{CUSTOM_CMD_DIR_MISSING_MARKER}'\n\
-             }}\n"
-        ),
+        SystemType::Windows => String::new(),
         SystemType::Linux | SystemType::Bsd => format!(
             "d=\"{CUSTOM_CMD_DIR_UNIX}\"\n\
              [ -d \"$d\" ] || d=\"$d.bak\"\n\
@@ -450,93 +376,18 @@ pub fn parse_custom_cmds_listing(raw: &str) -> Option<Vec<(u32, String, String)>
 }
 
 /// Build the full script. Linux and Bsd produce the identical Unix script
-/// (the script self-detects the OS at runtime); Windows produces PowerShell.
+/// (the script self-detects the OS at runtime); a Windows host gets none.
 pub fn build_script(system: SystemType, opts: &ScriptOptions) -> String {
     match system {
-        SystemType::Windows => build_windows_script(opts),
+        SystemType::Windows => String::new(),
         SystemType::Linux | SystemType::Bsd => build_unix_script(opts),
     }
 }
 
-/// Wrap a PowerShell snippet as `powershell -EncodedCommand ...` so it runs
-/// unmodified from any Windows default shell (cmd.exe or PowerShell) with no
-/// quoting/expansion ambiguity; stdin stays available to the snippet.
-///
-/// Progress is silenced: with `-EncodedCommand` and no console, PowerShell
-/// serializes progress records to stderr as CLIXML, and the first module
-/// autoload on a host ("Preparing modules for first use") emits one. A
-/// command that succeeded would then look like one that wrote an error.
-pub fn encoded_powershell_command(ps: &str) -> String {
-    use base64::Engine;
-    let ps = format!("$ProgressPreference = 'SilentlyContinue'; {ps}");
-    let utf16le: Vec<u8> = ps.encode_utf16().flat_map(u16::to_le_bytes).collect();
-    format!(
-        "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand {}",
-        base64::engine::general_purpose::STANDARD.encode(utf16le)
-    )
-}
-
-/// The line that ends the piped script content on Windows.
-///
-/// Not a delimiter anyone picked for taste: the Windows install command cannot
-/// read to end-of-input, so the end has to be *in* the input. Carries the
-/// `SrvBoxSep` prefix the rest of this module uses for its markers, so a line
-/// of a generated script can no more collide with it than with a segment
-/// separator.
-pub const WINDOWS_INSTALL_EOF: &str = "SrvBoxSep.__install_eof__";
-
-/// Command that installs the script on the target (script content is piped via
-/// stdin, terminated by [`install_payload`]). The Windows variant is
-/// base64-encoded: the raw PowerShell syntax would fail on hosts whose OpenSSH
-/// default shell is cmd.exe
-///
-/// # Why Windows reads lines instead of reading to the end
-///
-/// It used to be `[System.Console]::In.ReadToEnd()`, which waits for EOF on
-/// stdin, and Windows OpenSSH does not reliably deliver the channel's EOF to
-/// the child process. PowerShell then waits for input that will not arrive
-/// while sshd waits for the command to exit — the install never returns, and
-/// nothing times out, because both ends believe the other owes them something.
-///
-/// It is not deterministic and it is not rare. Measured against a Windows 11
-/// host, one install per attempt: at ~4.5 KiB, the size of the real script, the
-/// app's own client hung in 4 of 5 attempts, and the system `ssh` behaved the
-/// same. The successful attempts finished in ~165ms, so the two outcomes are
-/// "instant" and "forever" — there is no slow case to wait out. Larger input
-/// makes it more likely (256 KiB hung in every attempt), which is what led to
-/// the pipe rather than to PowerShell.
-///
-/// Reading lines until [`WINDOWS_INSTALL_EOF`] needs no EOF: the same 256 KiB
-/// that never once got through goes in every time, in about a second.
-///
-/// `test/platform/windows_install_ssh_e2e_test.dart` is the regression test, over the
-/// same client the app uses.
 pub fn shell_quote_unix(s: &str) -> String {
     format!("'{}'", s.replace('\'', "'\\''"))
 }
-fn shell_quote_ps(s: &str) -> String {
-    format!("'{}'", s.replace('\'', "''"))
-}
-
-/// A remote Windows path is normally user-controlled data and must stay a
-/// literal. The app's two built-in script directories are the exception: they
-/// start with a PowerShell environment expression because the remote user's
-/// actual home/temp directory is not known locally.
-fn shell_path_ps(s: &str) -> String {
-    for env in ["$env:TEMP", "$env:USERPROFILE"] {
-        if s == env {
-            return env.to_owned();
-        }
-        if let Some(tail) = s.strip_prefix(env)
-            && let Some(path) = tail.strip_prefix(['/', '\\'])
-        {
-            return format!("(Join-Path {env} {})", shell_quote_ps(path));
-        }
-    }
-    shell_quote_ps(s)
-}
-
-/// The Unix counterpart of [`shell_path_ps`]: a leading `~` or `$HOME` is
+/// A path for a POSIX shell: a leading `~` or `$HOME` is
 /// expanded, failing when `HOME` is empty; the rest is a literal.
 fn shell_path_unix(s: &str) -> String {
     const HOME: &str = "\"${HOME:?}\"";
@@ -553,19 +404,7 @@ fn shell_path_unix(s: &str) -> String {
 
 pub fn install_command(system: SystemType, script_dir: &str, script_path: &str) -> String {
     match system {
-        SystemType::Windows => {
-            let qdir = shell_path_ps(script_dir);
-            let qpath = shell_path_ps(script_path);
-            encoded_powershell_command(&format!(
-                "New-Item -ItemType Directory -Force -Path {qdir} | Out-Null; \
-$sb = New-Object System.Text.StringBuilder; \
-while (($line = [System.Console]::In.ReadLine()) -ne $null) {{ \
-if ($line -eq '{WINDOWS_INSTALL_EOF}') {{ break }}; \
-[void]$sb.AppendLine($line) \
-}}; \
-Set-Content -Path {qpath} -Value $sb.ToString() -Encoding UTF8"
-            ))
-        }
+        SystemType::Windows => String::new(),
         _ => format!(
             "mkdir -p {}\ncat > {}\nchmod 755 {}\n",
             shell_path_unix(script_dir),
@@ -577,29 +416,15 @@ Set-Content -Path {qpath} -Value $sb.ToString() -Encoding UTF8"
 
 /// What to write to the install command's stdin for `content`.
 ///
-/// Exists so that no caller has to know that Windows needs a terminator, or
-/// which one — the app writes this and closes the stream exactly as before, and
-/// on Unix it is `content` unchanged.
-pub fn install_payload(system: SystemType, content: &str) -> String {
-    match system {
-        // A trailing newline before the marker whether or not the script ends
-        // with one: the marker has to be a line by itself to be recognised
-        SystemType::Windows => {
-            let sep = if content.ends_with('\n') { "" } else { "\n" };
-            format!("{content}{sep}{WINDOWS_INSTALL_EOF}\n")
-        }
-        _ => content.to_owned(),
-    }
+/// `content` unchanged: a POSIX `cat` reads to the end of its input.
+pub fn install_payload(_system: SystemType, content: &str) -> String {
+    content.to_owned()
 }
 
 /// Command that runs one shell function of an installed script
 pub fn exec_command(system: SystemType, script_path: &str, func: ShellFunc) -> String {
     match system {
-        SystemType::Windows => encoded_powershell_command(&format!(
-            "& {} -{}",
-            shell_path_ps(script_path),
-            func.flag()
-        )),
+        SystemType::Windows => String::new(),
         _ => format!("sh {} -{}", shell_path_unix(script_path), func.flag()),
     }
 }
@@ -643,7 +468,7 @@ pub fn sudo_password_rejected(stderr: &str) -> bool {
 /// [`split_marker`].
 ///
 /// A trailing `\r` is stripped from each line before matching, so CRLF output
-/// (monitor running PowerShell locally) parses identically to LF output.
+/// parses identically to LF output.
 pub fn parse_script_output(raw: &str) -> HashMap<String, String> {
     let mut map = HashMap::new();
     for (k, v) in parse_script_segments(raw) {
@@ -792,7 +617,7 @@ pub fn contains_status_segment(raw: &str) -> bool {
 // ---------- internal: shared filtering ----------
 
 /// Whether the user disabled this command for `scope`, the displayName prefix
-/// used by the app ("Linux"/"BSD"/"Windows").
+/// used by the app ("Linux"/"BSD").
 fn enabled(spec: &CommandSpec, scope: &str, opts: &ScriptOptions) -> bool {
     let display_name = format!("{scope}.{}", spec.key);
     !opts
@@ -1054,47 +879,6 @@ else
 	done
 fi"#;
 
-/// Win32_Process rather than `Get-Process`: the latter has no command line and
-/// no parent, and its `CPU` is seconds of processor time since the process
-/// started rather than a share of anything.
-///
-/// `StartId` is the creation time in UTC ticks, which the stop command compares
-/// before it terminates — the same guard `START_ID` is on Unix.
-/// `PercentProcessorTime` counts every core, like `ps`'s `%CPU`.
-const WINDOWS_PROCESS: &str = r#"$cpuByPid = @{}
-try {
-    Get-CimInstance Win32_PerfFormattedData_PerfProc_Process -ErrorAction Stop |
-        Where-Object { $_.IDProcess -gt 0 } |
-        ForEach-Object { $cpuByPid[[int]$_.IDProcess] = [double]$_.PercentProcessorTime }
-} catch {}
-$now = Get-Date
-$processes = @()
-try {
-    $processes = @(Get-CimInstance Win32_Process -ErrorAction Stop | ForEach-Object {
-        $process = $_
-        $startId = $null
-        $elapsed = $null
-        try {
-            $startId = $process.CreationDate.ToUniversalTime().Ticks
-            $elapsed = [long]($now - $process.CreationDate).TotalSeconds
-        } catch {}
-        [PSCustomObject]@{
-            ProcessName = $process.Name
-            Id = $process.ProcessId
-            ParentId = $process.ParentProcessId
-            CPUPercent = $cpuByPid[[int]$process.ProcessId]
-            WorkingSet = $process.WorkingSetSize
-            IOReadBytes = $process.ReadTransferCount
-            IOWriteBytes = $process.WriteTransferCount
-            Threads = $process.ThreadCount
-            StartId = $startId
-            ElapsedSeconds = $elapsed
-            CommandLine = $process.CommandLine
-        }
-    })
-} catch {}
-ConvertTo-Json -InputObject $processes -Compress"#;
-
 fn unix_command(func: ShellFunc, opts: &ScriptOptions) -> String {
     match func {
         ShellFunc::Status | ShellFunc::StatusExt => {
@@ -1134,143 +918,6 @@ fn unix_command(func: ShellFunc, opts: &ScriptOptions) -> String {
     }
 }
 
-// ---------- internal: Windows ----------
-
-fn windows_header(build_number: &str) -> String {
-    format!(
-        "# PowerShell script for ServerBox app v1.0.{build_number}
-# DO NOT delete this file while app is running
-
-$ErrorActionPreference = \"SilentlyContinue\"
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
-"
-    )
-}
-
-fn build_windows_script(opts: &ScriptOptions) -> String {
-    let mut out = windows_header(&opts.build_number);
-
-    for func in ShellFunc::ALL {
-        let body = windows_command(func, opts);
-        // Non-empty lines get a 4-space prefix; the template adds 4 more to the
-        // first line (Dart artifact, kept for byte parity)
-        let indented: String = body
-            .split('\n')
-            .map(|l| {
-                if l.is_empty() {
-                    String::new()
-                } else {
-                    format!("    {l}")
-                }
-            })
-            .collect::<Vec<_>>()
-            .join("\n");
-        let custom = windows_custom_cmds(func);
-        out.push_str(&format!(
-            "function {} {{\n    {indented}{custom}\n}}\n\n",
-            func.name()
-        ));
-    }
-
-    out.push_str("switch ($args[0]) {\n");
-    for func in ShellFunc::ALL {
-        out.push_str(&format!("    \"-{}\" {{ {} }}\n", func.flag(), func.name()));
-    }
-    out.push_str("    default { Write-Host \"Invalid argument $($args[0])\" }\n}\n");
-    out
-}
-
-fn windows_custom_cmds(func: ShellFunc) -> String {
-    if func != ShellFunc::Status {
-        return String::new();
-    }
-    // The same shape as the Unix half: sorted by file name, the marker taken
-    // from that name, and the file run rather than its text spliced in here.
-    //
-    // `BaseName`, not `Name`: these files carry a `.ps1` extension because
-    // `&` will not run an extensionless one, and the extension is not part of
-    // the encoded name — leaving it on produced a marker that decodes to
-    // nothing, so the command's output was swallowed by the section above it.
-    //
-    // Pipes, not files. Windows has no `ulimit -f`, and polling a file's size
-    // bounds nothing: a command writing flat out had put 335 MB in the stdout
-    // file between two polls, and 7.5 GB in the unpolled stderr one within the
-    // 5 seconds. Read from a pipe, stdout stops at the cap because nothing
-    // reads past it; stderr is drained into nothing so a full pipe never
-    // blocks the command; stdin is closed so it cannot read the SSH channel.
-    // A read that outlives the process is not waited on — a child that left
-    // the tree can hold the pipe open for as long as it likes. A command that
-    // cannot be started says why as its output, which is the only place a
-    // custom command's result is shown; empty would read as success.
-    format!(
-        "\n    $d = {CUSTOM_CMD_DIR_WINDOWS}\n\
-         \x20   if (-not (Test-Path $d) -and (Test-Path \"$d.bak\")) {{ $d = \"$d.bak\" }}\n\
-         \x20   if (Test-Path $d) {{\n\
-         \x20     Get-ChildItem -File $d | Sort-Object Name | ForEach-Object {{\n\
-         \x20       if ($_.Name -notmatch '^[0-9]{{5}}_[A-Za-z0-9_=-]+\\.ps1$') {{ return }}\n\
-         \x20       Write-Host \"{CUSTOM_CMD_SEPARATOR}.{ENCODED_NAME_PREFIX}$($_.BaseName -replace '^[0-9]+_','')\"\n\
-         \x20       $i = New-Object System.Diagnostics.ProcessStartInfo 'powershell'\n\
-         \x20       $i.Arguments = '-NoProfile -ExecutionPolicy Bypass -File \"' + $_.FullName + '\"'\n\
-         \x20       $i.UseShellExecute = $false; $i.CreateNoWindow = $true\n\
-         \x20       $i.RedirectStandardInput = $true; $i.RedirectStandardOutput = $true; $i.RedirectStandardError = $true\n\
-         \x20       $b = New-Object byte[] {CUSTOM_CMD_MAX_OUTPUT_BYTES}; $c = 0\n\
-         \x20       $p = $null\n\
-         \x20       try {{ $p = [Diagnostics.Process]::Start($i) }} catch {{ $m = [Text.Encoding]::UTF8.GetBytes('ServerBox: failed to start: ' + $_.Exception.Message); $c = [Math]::Min($m.Length, $b.Length); [Array]::Copy($m, $b, $c) }}\n\
-         \x20       if ($p) {{\n\
-         \x20         $p.StandardInput.Close()\n\
-         \x20         [void]$p.StandardError.BaseStream.CopyToAsync([IO.Stream]::Null)\n\
-         \x20         $s = $p.StandardOutput.BaseStream\n\
-         \x20         $deadline = [DateTime]::UtcNow.AddSeconds(5)\n\
-         \x20         $r = $null\n\
-         \x20         while ($c -lt $b.Length -and [DateTime]::UtcNow -lt $deadline) {{\n\
-         \x20           try {{\n\
-         \x20             if ($null -eq $r) {{ $r = $s.ReadAsync($b, $c, $b.Length - $c) }}\n\
-         \x20             $exited = $p.HasExited\n\
-         \x20             if ($r.Wait(50)) {{ $n = $r.Result; $r = $null; if ($n -le 0) {{ break }}; $c += $n }} elseif ($exited) {{ break }}\n\
-         \x20           }} catch {{ break }}\n\
-         \x20         }}\n\
-         \x20         if (-not $p.HasExited) {{ taskkill /PID $p.Id /T /F | Out-Null }}\n\
-         \x20         [void]$p.WaitForExit(1000)\n\
-         \x20       }}\n\
-         \x20       [Console]::Out.Write('{CUSTOM_CMD_OUTPUT_PREFIX}' + [Convert]::ToBase64String($b, 0, $c))\n\
-         \x20       Write-Host ''\n\
-         \x20     }}\n\
-         \x20   }}\n"
-    )
-}
-
-fn windows_command(func: ShellFunc, opts: &ScriptOptions) -> String {
-    match func {
-        ShellFunc::Status | ShellFunc::StatusExt => segment_list(
-            commands::WINDOWS,
-            "Windows",
-            opts,
-            func == ShellFunc::StatusExt,
-            |key| format!("\n    Write-Host \"{}\"\n    ", cmd_marker(key)),
-        ),
-        ShellFunc::Process => WINDOWS_PROCESS.to_string(),
-        ShellFunc::Shutdown => "Stop-Computer -Force".to_string(),
-        ShellFunc::Reboot => "Restart-Computer -Force".to_string(),
-        ShellFunc::Suspend => {
-            "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Application]::SetSuspendState('Suspend', $false, $false)"
-                .to_string()
-        }
-    }
-}
-
-/// A shell function, `host_running NAME`: whether a process named NAME runs
-/// on this machine itself. `pgrep` on a host also sees the processes of its
-/// containers (an nginx image's nginx), which are not the machine's server;
-/// they are told apart by their cgroup (`/proc/<pid>/cgroup`, readable by
-/// any account): Docker, containerd, Podman, Kubernetes, LXC.
-pub const HOST_RUNNING_FN: &str =
-    r#"host_running() { for p in $(pgrep -x "$1" 2>/dev/null); do grep -qE 'docker|containerd|libpod|kubepods|/lxc' "/proc/$p/cgroup" 2>/dev/null || return 0; done; return 1; }"#;
-
-/// Root's script that writes [content] to [file] (0644, through a staged
-/// file), keeps the previous one while [check] runs and puts it back when
-/// that fails, exiting [refused]. [content] is a quoted heredoc ended by the
-/// line [tag]: the caller keeps that line out of it.
 pub fn replace_file_script(file: &str, content: &str, check: &str, tag: &str, refused: i32) -> String {
     format!(
         "set -e; f={f}; mkdir -p \"$(dirname \"$f\")\"; [ -f \"$f\" ] && cp \"$f\" \"$f.sbm-bak\" || rm -f \"$f.sbm-bak\"; \

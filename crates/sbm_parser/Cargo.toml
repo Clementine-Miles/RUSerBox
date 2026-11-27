@@ -2,14 +2,14 @@
 name = "sbm_parser"
 version = "0.1.0"
 edition = "2024"
-description = "ServerBox shared status parser (pure, no IO) — single source of truth for monitor and app"
+description = "Server command manifest, scripts and output parsers (pure, no IO) for the RUSerBox app"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 regex = "1.10"
 roxmltree = "0.21"
-# -EncodedCommand generation for shell-agnostic Windows install commands
+# Custom commands travel base64-encoded (script::install_custom_cmds_script)
 base64 = "0.23"
 # The monitor agent's release versions (monitor_agent)
 semver = "1.0"

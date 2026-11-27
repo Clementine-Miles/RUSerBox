@@ -29,6 +29,7 @@ pub enum _SystemType {
     Linux,
     /// BSD family, including macOS
     Bsd,
+    /// Recognised and shown as unsupported; never administered.
     Windows,
 }
 

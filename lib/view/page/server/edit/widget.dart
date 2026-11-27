@@ -754,7 +754,6 @@ extension _Widgets on _ServerEditPageState {
               (null, libL10n.auto),
               (SystemType.linux, 'Linux'),
               (SystemType.bsd, 'BSD'),
-              (SystemType.windows, 'Windows'),
             ])
               ContextMenuAction(
                 text: name,

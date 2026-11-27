@@ -7117,4 +7117,8 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get monitorMcpPasswordRequired => 'Parolu daxil edin.';
+
+  @override
+  String get windowsServerUnsupported =>
+      'Windows serverləri dəstəklənmir. Terminal və fayl brauzeri SSH üzərindən işləməyə davam edir.';
 }

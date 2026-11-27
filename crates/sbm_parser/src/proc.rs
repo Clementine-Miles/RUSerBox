@@ -198,10 +198,6 @@ pub enum PsParseFailure {
     UnsupportedOutput,
     /// Rows were dropped: an unreadable PID, a duplicate, a short line.
     InvalidRows,
-    /// Windows: the text was not the JSON the command prints.
-    InvalidWindowsJson,
-    /// Windows: the JSON was an object or array, and rows in it were dropped.
-    InvalidWindowsRows,
 }
 
 /// What one table could not be read as, and where.
@@ -295,17 +291,6 @@ impl PsResult {
             }
             _ => None,
         };
-
-        if let Some(result) = parse_windows_json(
-            raw,
-            &previous_by_pid,
-            elapsed_seconds,
-            sampled_at_millis,
-            sort,
-            ascending,
-        ) {
-            return result;
-        }
 
         let mut lines: Vec<&str> = raw
             .lines()
@@ -573,242 +558,6 @@ fn parse_row(
         command,
         process_name: None,
     })
-}
-
-// ---------------------------------------------------------------------------
-// Windows JSON
-// ---------------------------------------------------------------------------
-
-/// One table of Windows rows, or `None` where the text is not JSON at all and
-/// the Unix path should read it.
-///
-/// Decided by the text: anything that starts with `{` or `[` was *meant* to be
-/// JSON, so a document that does not parse is reported as a broken one rather
-/// than re-read as a table of columns — which would answer a JSON syntax error
-/// with "unsupported header" and hide the real one. Anything else is tried as
-/// JSON too, and only a text that is not JSON at all falls through.
-fn parse_windows_json(
-    raw: &str,
-    previous_by_pid: &HashMap<i64, &Proc>,
-    elapsed_seconds: Option<f64>,
-    sampled_at_millis: i64,
-    sort: ProcSortMode,
-    ascending: Option<bool>,
-) -> Option<PsResult> {
-    let trimmed = raw.trim();
-    if !trimmed.starts_with('{')
-        && !trimmed.starts_with('[')
-        && serde_json::from_str::<serde_json::Value>(trimmed).is_err()
-    {
-        return None;
-    }
-
-    let value: serde_json::Value = match serde_json::from_str(trimmed) {
-        Ok(value) => value,
-        Err(error) => {
-            return Some(invalid_windows_json(
-                format!("Invalid Windows process JSON: {error}"),
-                sampled_at_millis,
-            ));
-        }
-    };
-    let items: Vec<&serde_json::Value> = match &value {
-        serde_json::Value::Array(values) => values.iter().collect(),
-        // The command wraps its list in `@(...)` and `ConvertTo-Json` unwraps
-        // a one-element array into the object itself.
-        serde_json::Value::Object(_) => vec![&value],
-        _ => {
-            return Some(invalid_windows_json(
-                "Invalid Windows process JSON: expected an object or array".to_string(),
-                sampled_at_millis,
-            ));
-        }
-    };
-
-    let mut procs = Vec::new();
-    let mut errors: Vec<String> = Vec::new();
-    let mut seen_pids: HashSet<i64> = HashSet::new();
-    for (index, item) in items.iter().enumerate() {
-        let Some(row) = item.as_object() else {
-            errors.push(format!(
-                "Invalid Windows process row {index}: expected an object"
-            ));
-            continue;
-        };
-        let Some(pid) = process_id(row.get("Id").or_else(|| row.get("ProcessId"))) else {
-            errors.push(format!(
-                "Invalid Windows process row {index}: missing or invalid PID"
-            ));
-            continue;
-        };
-        if !seen_pids.insert(pid) {
-            errors.push(format!(
-                "Invalid Windows process row {index}: duplicate PID {pid}"
-            ));
-            continue;
-        }
-        procs.push(parse_windows_row(
-            row,
-            pid,
-            previous_by_pid,
-            elapsed_seconds,
-        ));
-    }
-
-    sort_procs(&mut procs, sort, ascending);
-    Some(PsResult {
-        procs,
-        issue: (!errors.is_empty()).then(|| PsParseIssue {
-            failure: PsParseFailure::InvalidWindowsRows,
-            diagnostics: errors.join("\n"),
-        }),
-        sampled_at_millis,
-        load: None,
-    })
-}
-
-fn invalid_windows_json(diagnostics: String, sampled_at_millis: i64) -> PsResult {
-    PsResult {
-        procs: Vec::new(),
-        issue: Some(PsParseIssue {
-            failure: PsParseFailure::InvalidWindowsJson,
-            diagnostics,
-        }),
-        sampled_at_millis,
-        load: None,
-    }
-}
-
-fn parse_windows_row(
-    row: &serde_json::Map<String, serde_json::Value>,
-    pid: i64,
-    previous_by_pid: &HashMap<i64, &Proc>,
-    elapsed_seconds: Option<f64>,
-) -> Proc {
-    let name = first_non_empty_string(&[row.get("ProcessName"), row.get("Name")]);
-    let command = first_non_empty_string(&[row.get("CommandLine"), row.get("Path")])
-        .or_else(|| name.clone())
-        .unwrap_or_default();
-    let start_id = process_identity(row.get("StartId").map(json_text));
-    let read_bytes = first_parsed_int(
-        &[row.get("IOReadBytes"), row.get("ReadTransferCount")],
-        true,
-    );
-    let write_bytes = first_parsed_int(
-        &[row.get("IOWriteBytes"), row.get("WriteTransferCount")],
-        true,
-    );
-    let (read_speed, write_speed) = calculate_speeds(
-        read_bytes,
-        write_bytes,
-        matching_previous(previous_by_pid.get(&pid).copied(), None, start_id.as_deref()),
-        elapsed_seconds,
-    );
-    let working_set = first_parsed_int(&[row.get("WorkingSet"), row.get("WorkingSetSize")], true);
-    let elapsed = parse_dynamic_int(row.get("ElapsedSeconds"));
-
-    Proc {
-        user: None,
-        pid,
-        ppid: first_parsed_int(&[row.get("ParentId")], true),
-        cpu: first_parsed_double(&[row.get("CPUPercent"), row.get("PercentProcessorTime")]),
-        mem: None,
-        vsz: None,
-        // Unix `ps` reports RSS in KiB. The Windows byte count is normalized
-        // to the same unit so sorting and display stay consistent across
-        // platforms.
-        rss: working_set.map(|bytes| ((bytes + 1023) / 1024).to_string()),
-        tty: None,
-        stat: None,
-        nice: None,
-        threads: first_parsed_int(&[row.get("Threads")], true),
-        start: None,
-        start_id,
-        time: None,
-        elapsed_seconds: elapsed.filter(|value| *value >= 0 && *value <= MAX_ELAPSED_SECONDS),
-        read_bytes,
-        write_bytes,
-        read_speed,
-        write_speed,
-        command,
-        process_name: name,
-    }
-}
-
-/// A JSON value as the text a column would have carried.
-///
-/// `Get-CimInstance` hands `Id` and `StartId` over as numbers, and the Dart
-/// implementation read them through `toString()`. What this must not do is
-/// treat a number as a different process than the table's own `START_ID`
-/// column: both sides go through here.
-fn json_text(value: &serde_json::Value) -> String {
-    match value {
-        serde_json::Value::String(text) => text.clone(),
-        other => other.to_string(),
-    }
-}
-
-/// A value's integer reading, and `None` where it is not one.
-///
-/// A fractional `1.5` is not rounded into a process ID or a byte count: it is
-/// a value this parser does not understand, and the caller falls back to the
-/// next field name or to nothing.
-fn parse_dynamic_int(value: Option<&serde_json::Value>) -> Option<i64> {
-    match value? {
-        serde_json::Value::Number(number) => {
-            if let Some(integer) = number.as_i64() {
-                return Some(integer);
-            }
-            let float = number.as_f64()?;
-            if !float.is_finite() || float != float.trunc() {
-                return None;
-            }
-            Some(float as i64)
-        }
-        serde_json::Value::String(text) => int_from_str(text),
-        _ => None,
-    }
-}
-
-fn first_parsed_int(values: &[Option<&serde_json::Value>], non_negative: bool) -> Option<i64> {
-    values.iter().find_map(|value| {
-        let parsed = parse_dynamic_int(*value)?;
-        if non_negative && parsed < 0 {
-            return None;
-        }
-        Some(parsed)
-    })
-}
-
-fn parse_dynamic_double(value: Option<&serde_json::Value>) -> Option<f64> {
-    match value? {
-        serde_json::Value::Number(number) => number.as_f64().filter(|value| value.is_finite()),
-        serde_json::Value::String(text) => double_from_str(text),
-        _ => None,
-    }
-}
-
-fn first_parsed_double(values: &[Option<&serde_json::Value>]) -> Option<f64> {
-    values.iter().find_map(|value| parse_dynamic_double(*value))
-}
-
-fn first_non_empty_string(values: &[Option<&serde_json::Value>]) -> Option<String> {
-    values.iter().find_map(|value| {
-        let text = match (*value)? {
-            serde_json::Value::String(text) => text.clone(),
-            other => other.to_string(),
-        };
-        (!text.trim().is_empty()).then_some(text)
-    })
-}
-
-/// Where a value is a number that is not a positive integer, it is not a PID.
-///
-/// `Id: 0` is not process 0: Windows has no such process, and a table that
-/// answered one would be offering to stop something that is not there.
-fn process_id(value: Option<&serde_json::Value>) -> Option<i64> {
-    let parsed = parse_dynamic_int(value)?;
-    (parsed > 0).then_some(parsed)
 }
 
 // ---------------------------------------------------------------------------
@@ -1081,13 +830,11 @@ const KILL_FAILED: &str = "SrvBoxKill.Failed";
 
 /// Which signals mean something on `system`.
 ///
-/// Windows has no polite request: `TerminateProcess` is the only stop there
-/// is, so it is offered once, as what it is. BSD has none implemented here.
+/// BSD has none implemented here; a Windows host is not administered.
 pub fn signals_for(system: SystemType) -> &'static [ProcSignal] {
     match system {
-        SystemType::Windows => &[ProcSignal::Kill],
         SystemType::Linux => &[ProcSignal::Term, ProcSignal::Kill],
-        SystemType::Bsd => &[],
+        SystemType::Bsd | SystemType::Windows => &[],
     }
 }
 
@@ -1114,9 +861,7 @@ pub fn kill_command(
     let start_id = start_id?;
     match system {
         SystemType::Linux => Some(linux_kill_command(pid, start_id, signal)),
-        SystemType::Windows => (signal == ProcSignal::Kill)
-            .then(|| windows_kill_command(pid, start_id)),
-        SystemType::Bsd => None,
+        SystemType::Bsd | SystemType::Windows => None,
     }
 }
 
@@ -1231,35 +976,6 @@ esac
         succeeded = KILL_SUCCEEDED,
         denied = KILL_DENIED,
     )
-}
-
-/// The PowerShell script, with `{pid}` and `{expected}` filled in.
-///
-/// Every `{` and `}` in it is a PowerShell brace and is doubled for `format!`
-/// — the script is mostly braces, so a reader comparing it with the Dart it
-/// was ported from has to read `{{` as `{`.
-///
-/// The handle is opened before the start time is read, which is what makes the
-/// check hold: Windows does not reuse a process ID while a handle to the
-/// process is open. The start time is read from `Win32_Process.CreationDate`,
-/// the same place the table's `StartId` came from — `Get-Process`'s `StartTime`
-/// is the same instant at 100ns, where CIM_DATETIME stops at microseconds, and
-/// comparing the two refused nine stops in ten as a changed target.
-fn windows_kill_command(pid: i64, start_id: &str) -> String {
-    // Single-quoted PowerShell, where a quote is escaped by doubling it.
-    let expected = format!("'{}'", start_id.replace('\'', "''"));
-    let script = format!(
-        r#"Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class SrvBoxNative {{ [DllImport("kernel32.dll", SetLastError=true)] public static extern bool TerminateProcess(IntPtr process, uint exitCode); }}' -ErrorAction SilentlyContinue; $p = Get-Process -Id {pid} -ErrorAction SilentlyContinue; if ($null -eq $p) {{ Write-Output '{target_changed}' }} else {{ try {{ $handle = $p.Handle; $c = Get-CimInstance Win32_Process -Filter 'ProcessId={pid}' -ErrorAction Stop; if ($null -eq $c -or $c.CreationDate.ToUniversalTime().Ticks.ToString() -ne {expected}) {{ Write-Output '{target_changed}' }} elseif ([SrvBoxNative]::TerminateProcess($handle, 1)) {{ $p.WaitForExit(); Write-Output '{succeeded}' }} else {{ Write-Output '{failed}' }} }} catch {{ Write-Output '{failed}' }} }}"#,
-        pid = pid,
-        expected = expected,
-        target_changed = KILL_TARGET_CHANGED,
-        succeeded = KILL_SUCCEEDED,
-        failed = KILL_FAILED,
-    );
-    // `-EncodedCommand` takes UTF-16LE: the script is PowerShell, which is not
-    // restricted to the machine's ANSI code page, and a process's image name
-    // is whatever the writer of it chose.
-    crate::script::encoded_powershell_command(&script)
 }
 
 // ---------------------------------------------------------------------------
@@ -1540,12 +1256,10 @@ mod tests {
             signals_for(SystemType::Linux),
             [ProcSignal::Term, ProcSignal::Kill]
         );
-        // TerminateProcess is the only stop Windows has, and it is not a
-        // request.
-        assert_eq!(signals_for(SystemType::Windows), [ProcSignal::Kill]);
-        assert!(kill_command(1, Some("2"), SystemType::Windows, ProcSignal::Term).is_none());
-        assert!(kill_command(1, Some("2"), SystemType::Windows, ProcSignal::Kill).is_some());
-        assert!(kill_supported(1, Some("2"), SystemType::Windows));
+        // A Windows host is not administered: nothing is offered.
+        assert!(signals_for(SystemType::Windows).is_empty());
+        assert!(kill_command(1, Some("2"), SystemType::Windows, ProcSignal::Kill).is_none());
+        assert!(!kill_supported(1, Some("2"), SystemType::Windows));
 
         assert!(signals_for(SystemType::Bsd).is_empty());
         assert!(!kill_supported(1, Some("2"), SystemType::Bsd));
@@ -1584,51 +1298,6 @@ mod tests {
         // The shell sees one argument: the text, quoted.
         assert!(command.contains(&single_quote(hostile)));
         assert!(!command.contains("expected=1'; touch"));
-
-        let windows =
-            kill_command(7, Some("1' ; Remove-Item x ; '2"), SystemType::Windows, ProcSignal::Kill)
-                .unwrap();
-        // The script travels base64'd, so the check is on what PowerShell will
-        // parse: the quote doubled, inside one single-quoted literal.
-        assert!(decode_powershell(&windows).contains("-ne '1'' ; Remove-Item x ; ''2'"));
-    }
-
-    #[test]
-    fn windows_compares_the_start_time_the_table_was_read_from() {
-        let command =
-            kill_command(12345, Some("4242"), SystemType::Windows, ProcSignal::Kill).unwrap();
-        let script = decode_powershell(&command);
-
-        // CIM's CreationDate, like the table's StartId: Get-Process's StartTime
-        // is the same instant at a finer precision, and never compared equal.
-        assert!(script.contains("Win32_Process -Filter 'ProcessId=12345'"));
-        assert!(script.contains("CreationDate.ToUniversalTime().Ticks"));
-        assert!(!script.contains("StartTime"));
-        // The handle is taken before the check, so the PID cannot be reused
-        // between the two.
-        assert!(
-            script.find("$handle = $p.Handle").unwrap()
-                < script.find("CreationDate").unwrap()
-        );
-        assert!(script.contains("-ne '4242'"));
-    }
-
-    /// The command's last word is the script, little-endian UTF-16 in base64.
-    fn decode_powershell(command: &str) -> String {
-        use base64::Engine;
-        let encoded = command.split(' ').next_back().unwrap();
-        let bytes = base64::engine::general_purpose::STANDARD
-            .decode(encoded)
-            .unwrap();
-        String::from_utf16(
-            &bytes
-                .as_chunks::<2>()
-                .0
-                .iter()
-                .map(|pair| u16::from_le_bytes(*pair))
-                .collect::<Vec<_>>(),
-        )
-        .unwrap()
     }
 
     #[test]

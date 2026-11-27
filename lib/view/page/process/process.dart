@@ -281,10 +281,6 @@ class _ProcessPageState extends ConsumerState<ProcessPage>
     PsParseFailure.unsupportedOutput =>
       context.l10n.processParseUnsupportedOutput,
     PsParseFailure.invalidRows => context.l10n.processParseInvalidRows,
-    PsParseFailure.invalidWindowsJson =>
-      context.l10n.processParseInvalidWindowsJson,
-    PsParseFailure.invalidWindowsRows =>
-      context.l10n.processParseInvalidWindowsRows,
   };
 }
 

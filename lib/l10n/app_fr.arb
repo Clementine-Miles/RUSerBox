@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "Alimentation",
   "monitorMcpNameRequired": "Saisissez un nom.",
   "monitorMcpScopesRequired": "Choisissez au moins une permission.",
-  "monitorMcpPasswordRequired": "Saisissez le mot de passe."
+  "monitorMcpPasswordRequired": "Saisissez le mot de passe.",
+  "windowsServerUnsupported": "Les serveurs Windows ne sont pas pris en charge. Le terminal et le navigateur de fichiers fonctionnent toujours via SSH."
 }
