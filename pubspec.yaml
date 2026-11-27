@@ -161,10 +161,7 @@ flutter:
     - assets/app_icon.png
     - assets/licenses/
     - assets/fonts/Hack-Nerd-Font-LICENSE.txt
-    - assets/fonts/JetBrains-Mono-LICENSE.txt
-    - assets/fonts/Fira-Code-LICENSE.txt
-    - assets/fonts/Iosevka-LICENSE.txt
-    - assets/fonts/Cascadia-Code-LICENSE.txt
+    - assets/fonts/JetBrainsMono-Nerd-Font-LICENSE.txt
     # Yet Another Bench Script, vendored verbatim under WTFPL and pinned by
     # `YabsScript.upstreamCommit`. Shipped rather than piped from the network
     # on the server: `curl | bash` fixes no version and verifies nothing, and
@@ -196,18 +193,9 @@ flutter:
     - family: Hack Nerd Font
       fonts:
         - asset: assets/fonts/HackNerdFontMono-Regular.ttf
-    - family: JetBrains Mono
+    - family: JetBrainsMono Nerd Font
       fonts:
-        - asset: assets/fonts/JetBrainsMono-Regular.ttf
-    - family: Fira Code
-      fonts:
-        - asset: assets/fonts/FiraCode-Regular.ttf
-    - family: Iosevka
-      fonts:
-        - asset: assets/fonts/Iosevka-Terminal-Regular.ttf
-    - family: Cascadia Code
-      fonts:
-        - asset: assets/fonts/CascadiaCode-Regular.ttf
+        - asset: assets/fonts/JetBrainsMonoNLNerdFontMono-Regular.ttf
 
 # What `fl_build` names the artifacts it produces, and the `BuildData.name` it
 # generates — which is the name the app itself draws. Here rather than in an
