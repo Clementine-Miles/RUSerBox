@@ -1129,7 +1129,12 @@ final anySelected = find.textContaining(
 
       // As a mutation would leave it — every one of them ends in `refresh`.
       backend.tree['/'] = [_dir('one'), _dir('other')];
-      await tester.tap(find.byIcon(Icons.refresh));
+      // Pull to refresh.
+      unawaited(
+        tester
+            .state<RefreshIndicatorState>(find.byType(RefreshIndicator))
+            .show(),
+      );
       for (var i = 0; i < 5; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
@@ -1159,7 +1164,12 @@ final anySelected = find.textContaining(
       // As a mutation leaves it: the tree has changed and the listing in
       // flight knows nothing about it.
       backend.tree['/sub'] = [_dir('alpha'), _dir('added')];
-      await tester.tap(find.byIcon(Icons.refresh));
+      // Pull to refresh.
+      unawaited(
+        tester
+            .state<RefreshIndicatorState>(find.byType(RefreshIndicator))
+            .show(),
+      );
       for (var i = 0; i < 5; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }

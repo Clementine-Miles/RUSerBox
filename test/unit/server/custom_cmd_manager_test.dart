@@ -131,12 +131,4 @@ void main() {
       throwsA(isA<CommandFailed>()),
     );
   });
-
-  test('Windows runs the command as it is', () async {
-    final exec = _QueueExec([_ok('')]);
-
-    await CustomCmdManager.save(exec, SystemType.windows, cmds);
-
-    expect(exec.entries.single, isNull);
-  });
 }

@@ -555,9 +555,7 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage>
               // it the focus that makes the arrow keys work.
               onPointerDown: (_) => _listFocus.requestFocus(),
               child: _wrapDropTarget(
-            (isMobile
-                    ? RefreshIndicator(onRefresh: refresh, child: _buildList())
-                    : _buildList())
+            RefreshIndicator(onRefresh: refresh, child: _buildList())
                   // Right-click anywhere in the list, including past the last
                   // entry. An entry's own menu sits in front of this one and
                   // wins, so this is what is left: the directory itself.
