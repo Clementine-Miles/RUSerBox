@@ -50,7 +50,7 @@ void main() {
       'Hack Nerd Font',
     );
 
-    Stores.setting.terminalTypeface.put(TerminalTypeface.firaCode);
+    Stores.setting.terminalTypeface.put(TerminalTypeface.jetBrainsMono);
     Stores.setting.termFontSize.put(18);
 
     Future<void> pumpFonts(List<String> fallback) async {
@@ -60,7 +60,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
       final style = tester.widget<TerminalView>(find.byType(TerminalView)).textStyle;
-      expect(style.fontFamily, 'Fira Code');
+      expect(style.fontFamily, 'JetBrainsMono Nerd Font');
       expect(style.fontSize, 18);
       expect(style.fontFamilyFallback, [
         ...const TerminalStyle().fontFamilyFallback,

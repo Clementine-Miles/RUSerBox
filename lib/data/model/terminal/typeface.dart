@@ -1,13 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// The terminal fonts available without a download or a device-local file.
+/// The two bundled terminal fonts, both Nerd Fonts "Mono" builds (icons one
+/// cell wide). Hack is the default. JetBrains Mono is its no-ligature (NL)
+/// build, so ligatures never merge cells.
+///
+/// Stored by [name]. `jetBrainsMono` keeps the identifier earlier builds wrote
+/// (then the unpatched face); any other stored font — Fira Code, Iosevka,
+/// Cascadia Code, all retired — reads as [hack].
 enum TerminalTypeface {
   hack('Hack Nerd Font', 'Hack-Nerd-Font'),
-  jetBrainsMono('JetBrains Mono', 'JetBrains-Mono'),
-  firaCode('Fira Code', 'Fira-Code'),
-  iosevka('Iosevka', 'Iosevka'),
-  cascadiaCode('Cascadia Code', 'Cascadia-Code');
+  jetBrainsMono('JetBrainsMono Nerd Font', 'JetBrainsMono-Nerd-Font');
 
   const TerminalTypeface(this.family, this._licenseName);
 

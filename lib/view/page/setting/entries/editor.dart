@@ -92,7 +92,7 @@ extension _Editor on _AppSettingsPageState {
       title: libL10n.font,
       initialValue: property.fetch() ?? '',
       label: libL10n.font,
-      hint: 'monospace / Consolas / Fira Code ...',
+      hint: 'monospace / Hack Nerd Font ...',
       icon: Icons.font_download,
       onSave: property.put,
     );
