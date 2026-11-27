@@ -4545,6 +4545,7 @@ dependencies = [
  "rustls-platform-verifier",
  "serde",
  "serde_json",
+ "serde_urlencoded",
  "sync_wrapper",
  "tokio",
  "tokio-rustls",
@@ -4988,6 +4989,26 @@ dependencies = [
  "vnc-rs",
  "x25519-dalek 3.0.0",
  "x509-cert",
+]
+
+[[package]]
+name = "sbm_monitor_client"
+version = "0.1.0"
+dependencies = [
+ "futures-util",
+ "log",
+ "reqwest 0.13.5",
+ "rustls",
+ "sbm_parser",
+ "sbm_redfish",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-tungstenite 0.30.0",
+ "url",
+ "webpki-roots",
 ]
 
 [[package]]
@@ -6217,7 +6238,10 @@ checksum = "17a073bfed563fa236697a068031408a93cd9522e08abf9933ead3e73411bd71"
 dependencies = [
  "futures-util",
  "log",
+ "rustls",
+ "rustls-pki-types",
  "tokio",
+ "tokio-rustls",
  "tungstenite 0.30.0",
 ]
 
@@ -6441,6 +6465,8 @@ dependencies = [
  "httparse",
  "log",
  "rand 0.10.2",
+ "rustls",
+ "rustls-pki-types",
  "sha1 0.11.0",
  "thiserror 2.0.21",
 ]

@@ -1,0 +1,26 @@
+[package]
+name = "sbm_monitor_client"
+version = "0.1.0"
+edition = "2024"
+description = "The app's client for the ServerBox Monitor agent's HTTP and WebSocket API"
+license = "AGPL-3.0-or-later"
+publish = false
+
+[dependencies]
+sbm_parser = { path = "../sbm_parser" }
+sbm_redfish = { path = "../sbm_redfish" }
+reqwest = { version = "0.13", default-features = false, features = ["json", "query", "rustls-no-provider", "http2"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+webpki-roots = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "net", "sync", "time", "macros"] }
+tokio-tungstenite = { version = "0.30", default-features = false, features = ["connect", "handshake", "__rustls-tls"] }
+futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+url = "2"
+log = "0.4"
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
