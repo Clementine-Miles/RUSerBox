@@ -57,83 +57,16 @@ class AppLocalizationsNl extends AppLocalizations {
   String get preReleaseUpdates => 'Pre-release-updates ontvangen';
 
   @override
-  String get addSystemPrivateKeyTip =>
-      'Er is momenteel geen privésleutel, wilt u degene toevoegen die bij het systeem wordt geleverd (~/.ssh/id_rsa)?';
-
-  @override
   String get added2List => 'Toegevoegd aan takenlijst';
 
   @override
   String get askAi => 'AI vragen';
 
   @override
-  String get askAiInsertTerminal => 'In terminal invoegen';
-
-  @override
   String get remoteDesktop => 'Extern bureaublad';
 
   @override
-  String get askAiRiskReadOnly => 'Alleen lezen';
-
-  @override
-  String get askAiRiskCaution => 'Wijzigt het systeem';
-
-  @override
-  String get askAiRiskUnvetted => 'Niet-geverifieerde host';
-
-  @override
-  String get askAiRiskDestructive => 'Hoog risico';
-
-  @override
-  String get askAiHistory => 'Gespreksgeschiedenis';
-
-  @override
-  String get askAiNewConversation => 'Nieuw gesprek';
-
-  @override
-  String get askAiUntitledConversation => 'Naamloos';
-
-  @override
-  String get askAiRenameConversation => 'Gesprek hernoemen';
-
-  @override
-  String get askAiDeleteConversationTitle => 'Dit gesprek verwijderen?';
-
-  @override
-  String get askAiDeleteConversationTip =>
-      'Verwijdert het van dit apparaat. Kan niet ongedaan worden gemaakt.';
-
-  @override
-  String get agentNoHistory => 'Geen opgeslagen globale agentgesprekken';
-
-  @override
-  String get agentClearHistoryTitle => 'Globale agentgeschiedenis wissen?';
-
-  @override
-  String get agentClearHistoryTip =>
-      'Alle globale agentgesprekken worden van dit apparaat verwijderd.';
-
-  @override
-  String get agentCommandMayStillRun =>
-      'De gestopte opdracht draait mogelijk nog op de server.';
-
-  @override
-  String get agentToolShell => 'Shell';
-
-  @override
-  String get agentToolReadFile => 'Bestand lezen';
-
-  @override
-  String get agentToolWriteFile => 'Bestand schrijven';
-
-  @override
   String get floatOverTabs => 'Boven andere tabbladen zweven';
-
-  @override
-  String get agentToolSshConnect => 'SSH verbinden';
-
-  @override
-  String get agentToolSshDisconnect => 'SSH verbreken';
 
   @override
   String get agentSshConnectTitle => 'Met een nieuwe host verbinden';
@@ -144,9 +77,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get agentSshConnectTip =>
       'Agent vraagt om een SSH-verbinding. Voer hier het wachtwoord in.';
-
-  @override
-  String get agentAdHocSessions => 'Tijdelijke verbindingen';
 
   @override
   String get agentSaveServerTitle => 'Als server opslaan';
@@ -752,9 +682,6 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get pushToken => 'Push-token';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand draait in de Linux-omgeving van dit apparaat. Installeer eerst een Linux-systeem.';
 
@@ -794,9 +721,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get pveMissingAuthTicket =>
       'De PVE-aanmelding is gelukt, maar er is geen authenticatieticket teruggegeven.';
-
-  @override
-  String get pveLoadingConnect => 'Verbinden...';
 
   @override
   String get pvePassword => 'PVE-wachtwoord';
@@ -1084,9 +1008,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get keyPassphrases => 'Wachtwoordzinnen van sleutels';
 
   @override
-  String get syncFiles => 'Agentvaardigheden';
-
-  @override
   String get syncRemoteTooNew =>
       'De gesynchroniseerde gegevens zijn afkomstig van een nieuwere versie van ServerBox. Werk de app bij om door te gaan met synchroniseren.';
 
@@ -1194,9 +1115,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get webdavSettingEmpty => 'Webdav-instelling is leeg';
 
   @override
-  String get whenOpenApp => 'Bij het openen van de app';
-
-  @override
   String get wolTip =>
       'Na het configureren van WOL (Wake-on-LAN), wordt elke keer dat de server wordt verbonden een WOL-verzoek verzonden.';
 
@@ -1210,9 +1128,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get writeScriptTip =>
       'Na het verbinden met de server wordt een script geschreven naar `~/.config/server_box` \n | `/tmp/server_box` om de systeemstatus te monitoren. U kunt de inhoud van het script controleren.';
-
-  @override
-  String get menuGitHubRepository => 'GitHub-repository';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -1322,14 +1237,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get processParseInvalidRows =>
       'Sommige procesvermeldingen konden niet worden gelezen.';
-
-  @override
-  String get processParseInvalidWindowsJson =>
-      'Het Windows-procesantwoord kon niet worden gelezen.';
-
-  @override
-  String get processParseInvalidWindowsRows =>
-      'Sommige Windows-procesvermeldingen konden niet worden gelezen.';
 
   @override
   String get processKillTargetChanged =>
@@ -1518,18 +1425,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get continueInTerminal => 'Doorgaan in terminal';
 
   @override
-  String get askAiRiskUnknown => 'Niet ingedeeld';
-
-  @override
   String get agentLocalExec => 'Opdrachten op dit apparaat uitvoeren';
-
-  @override
-  String get agentLocalExecTip =>
-      'Laat de Agent werken op de machine waarop ServerBox draait. Zijn commando\'s volgen de toestemmingsmodus';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      'Laat de Agent lokaal werken, beperkt tot de Linux-container die ServerBox installeerde';
 
   @override
   String get agentRedact => 'Geheimen verbergen voor verzenden';
@@ -1939,69 +1835,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String agentRetentionFmt(String kept) {
     return 'Monitor bewaart $kept';
   }
-
-  @override
-  String get agentServerTools => 'Serverhulpmiddelen';
-
-  @override
-  String get agentServerToolsTip =>
-      'Voer opdrachten uit op de server, lees en schrijf bestanden, maak via SSH verbinding met andere hosts en gebruik ServerBox-functies.';
-
-  @override
-  String get agentTerminalTools => 'Terminal';
-
-  @override
-  String get agentTerminalToolsTip =>
-      'Lees de terminalweergave en voer opdrachten uit op de bijbehorende server.';
-
-  @override
-  String get agentToolTerminalScreen => 'Scherm lezen';
-
-  @override
-  String get agentProviders => 'Providers';
-
-  @override
-  String get agentProvidersTip =>
-      'API-sleutels, modellen en het model van een nieuwe chat';
-
-  @override
-  String get agentTools => 'Hulpmiddelen';
-
-  @override
-  String get agentToolsTip => 'Wat de Agent mag gebruiken, en zijn MCP-servers';
-
-  @override
-  String get agentSnippetToolsTip =>
-      'Snippets weergeven, toevoegen, bewerken en verwijderen.';
-
-  @override
-  String get agentVirtToolsTip =>
-      'De VM’s en containers lezen die het tabblad Virtualisatie heeft geladen.';
-
-  @override
-  String get agentBenchmarkToolsTip =>
-      'Benchmarkresultaten lezen; met je goedkeuring een benchmark starten of stoppen.';
-
-  @override
-  String get agentRemoteDesktopToolsTip =>
-      'Profielen voor extern bureaublad weergeven; met je goedkeuring verbinden of verbreken.';
-
-  @override
-  String get agentSkills => 'Skills';
-
-  @override
-  String get agentSkillsTip =>
-      'Instructies voor bepaalde taken, geïnstalleerd vanaf GitHub of een link';
-
-  @override
-  String get agentPermissions => 'Machtigingen';
-
-  @override
-  String get agentEmptyHint => 'Voer bewerkingen uit op de server.';
-
-  @override
-  String get agentTerminalEmptyHint =>
-      'Lees de huidige terminal en voer hier opdrachten uit.';
 
   @override
   String oldestSampleFmt(String time) {
@@ -2627,260 +2460,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get authShort => 'Auth';
 
   @override
-  String get remoteDesktopFitToWindow => 'Aan venster aanpassen';
-
-  @override
-  String get remoteDesktopActualSize => 'Ware grootte';
-
-  @override
-  String get remoteDesktopZoom => 'Inzoomen';
-
-  @override
-  String get remoteDesktopViewOnly => 'Alleen bekijken';
-
-  @override
-  String get remoteDesktopDisableViewOnly => 'Alleen bekijken uitschakelen';
-
-  @override
-  String get remoteDesktopSendClipboardText => 'Klembordtekst verzenden';
-
-  @override
-  String get remoteDesktopShowKeyboard => 'Toetsenbord tonen';
-
-  @override
-  String get remoteDesktopMoreControls => 'Meer bedieningselementen';
-
-  @override
-  String get remoteDesktopUseDirectPointer => 'Directe aanwijzer gebruiken';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer => 'Touchpad-aanwijzer gebruiken';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => 'Ctrl+Alt+Delete verzenden';
-
-  @override
-  String get remoteDesktopReconnect => 'Opnieuw verbinden';
-
-  @override
-  String get remoteDesktopFullScreen => 'Volledig scherm';
-
-  @override
-  String get remoteDesktopExitFullScreen => 'Volledig scherm afsluiten';
-
-  @override
-  String get remoteDesktopCloseSession => 'Sessie sluiten';
-
-  @override
-  String get remoteDesktopConnected => 'Verbonden';
-
-  @override
-  String get remoteDesktopConnecting => 'Verbinden';
-
-  @override
-  String get remoteDesktopReconnecting => 'Opnieuw verbinden';
-
-  @override
-  String get remoteDesktopDisconnected => 'Verbinding verbroken';
-
-  @override
-  String get remoteDesktopGuideTouch => 'Touchpad';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      'Eén vinger beweegt de aanwijzer als een touchpad en tikken klikt. Tik met twee vingers voor rechtsklikken, sleep met twee om te scrollen en knijp om te zoomen. Tik twee keer en houd je vinger neer om te slepen.';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip =>
-      'Opent het schermtoetsenbord. Wat je typt, wordt naar het externe bureaublad gestuurd.';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip =>
-      'Stopt met het verzenden van aanwijzer en toetsen, zodat je kunt kijken zonder per ongeluk te klikken.';
-
-  @override
-  String get remoteDesktopGuideMoreTip =>
-      'Ctrl+Alt+Del, opnieuw verbinden en volledig scherm staan hier.';
-
-  @override
-  String get remoteDesktopGuidePointerTip =>
-      'Net als de directe aanwijzer, waarbij een vinger klikt waar hij tikt.';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only =>
-      'Het VNC-klembord ondersteunt alleen Latin-1-tekst.';
-
-  @override
-  String get remoteDesktopAddProfile => 'Profiel toevoegen';
-
-  @override
-  String get remoteDesktopNoProfiles => 'Geen profielen voor extern bureaublad';
-
-  @override
-  String get remoteDesktopAdd => 'Extern bureaublad toevoegen';
-
-  @override
-  String get remoteDesktopEdit => 'Extern bureaublad bewerken';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      'Het doel wordt opgelost via de SSH-server of Monitor. localhost verwijst naar die machine.';
-
-  @override
-  String get remoteDesktopDomain => 'Domein (optioneel)';
-
-  @override
-  String get remoteDesktopPassword => 'Wachtwoord (optioneel)';
-
-  @override
-  String get remoteDesktopSavePassword => 'Wachtwoord opslaan';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      'Opgeslagen in de versleutelde database. Back-ups bevatten opgeslagen wachtwoorden en worden alleen versleuteld als er een back-upwachtwoord is ingesteld.';
-
-  @override
-  String get remoteDesktopShareSession => 'Sessie delen';
-
-  @override
-  String get remoteDesktopProtocol => 'Protocol';
-
-  @override
-  String get remoteDesktopUniqueName =>
-      'Profielnamen moeten uniek zijn voor deze server.';
-
-  @override
-  String get remoteDesktopNameRequired => 'Voer een profielnaam in.';
-
-  @override
-  String get remoteDesktopHostRequired => 'Voer een doelhost in.';
-
-  @override
-  String get remoteDesktopPortRequired => 'Voer een geldige poort in.';
-
-  @override
-  String get remoteDesktopUsernameRequired => 'Voer de RDP-gebruikersnaam in.';
-
-  @override
-  String get remoteDesktopNameInvalid =>
-      'De profielnaam mag maximaal 64 tekens bevatten en geen regeleinden.';
-
-  @override
-  String get remoteDesktopHostInvalid =>
-      'De doelhost mag geen spaties of regeleinden bevatten.';
-
-  @override
-  String get remoteDesktopProtocolInvalid => 'Niet-ondersteund protocol.';
-
-  @override
-  String get remoteDesktopCredentialInvalid =>
-      'Gebruikersnaam en domein mogen maximaal 256 tekens bevatten en geen regeleinden.';
-
-  @override
-  String get remoteDesktopVncPasswordHint =>
-      'Klassieke VNC gebruikt alleen de eerste 8 tekens';
-
-  @override
-  String get remoteDesktopVncPasswordAscii =>
-      'Klassieke VNC-wachtwoorden mogen alleen ASCII-tekens bevatten.';
-
-  @override
-  String get remoteDesktopCertificateRequired =>
-      'Bevestiging van certificaat vereist';
-
-  @override
-  String get remoteDesktopWaiting => 'Wachten op bureaublad…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      'De server biedt alleen Standard RDP Security (RC4) aan, wat niet wordt ondersteund. Stel in xrdp.ini security_layer=tls (of negotiate) in en zorg dat xrdp zijn TLS-certificaat kan lezen.';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      'De server heeft geen TLS-certificaat. Installeer er een op de server; stel voor xrdp certificate en key_file in xrdp.ini in.';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      'De server vereist een clientcertificaat (aanmelden met smartcard), wat niet wordt ondersteund.';
-
-  @override
-  String get remoteDesktopFailWrongCredentials =>
-      'Onjuiste gebruikersnaam of onjuist wachtwoord.';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut =>
-      'Het account is vergrendeld. Probeer het later opnieuw of vraag een beheerder het te ontgrendelen.';
-
-  @override
-  String get remoteDesktopFailAccountDisabled =>
-      'Het account is uitgeschakeld.';
-
-  @override
-  String get remoteDesktopFailAccountExpired => 'Het account is verlopen.';
-
-  @override
-  String get remoteDesktopFailPasswordExpired =>
-      'Het wachtwoord is verlopen of moet worden gewijzigd. Wijzig het eerst op de server.';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      'Het account mag zich op dit moment of vanaf dit apparaat niet aanmelden, of het lege wachtwoord is niet toegestaan voor aanmelden op afstand.';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      'Het account mag zich niet aanmelden via Extern bureaublad. Voeg het op de server toe aan de groep Remote Desktop Users.';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      'De server accepteert geen opgeslagen aanmeldgegevens. Voer het wachtwoord opnieuw in.';
-
-  @override
-  String get remoteDesktopFailIdleTimeout =>
-      'De sessie is verbroken na de inactiviteitslimiet van de server.';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit =>
-      'De sessie heeft de tijdslimiet van de server bereikt.';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection =>
-      'Een andere verbinding heeft deze sessie overgenomen.';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer =>
-      'De sessie is op de server verbroken.';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator =>
-      'Een beheerder heeft de sessie afgemeld.';
-
-  @override
-  String get remoteDesktopFailLoggedOff => 'De sessie is afgemeld.';
-
-  @override
-  String get remoteDesktopFailServerShutdown => 'De server wordt afgesloten.';
-
-  @override
-  String get remoteDesktopFailServerReboot =>
-      'De server wordt opnieuw opgestart.';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection =>
-      'De server heeft de verbinding geweigerd.';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      'De licentieverlening voor Extern bureaublad is mislukt op de server. Controleer de licentieserver en de clienttoegangslicenties (CAL\'s).';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'De VNC-server biedt geen ondersteund beveiligingstype; alleen een VNC-wachtwoord of geen wordt ondersteund. Stel voor TigerVNC SecurityTypes=VncAuth in.';
-
-  @override
-  String get remoteDesktopFailPasswordRequired =>
-      'De VNC-server vereist een wachtwoord.';
-
-  @override
   String get tcpTargetUnreachable =>
       'De server kon geen verbinding maken met dit adres. Controleer of de dienst draait en op die poort luistert.';
 
@@ -2891,10 +2470,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get monitorRelayForbidden =>
       'De Monitor heeft deze verbinding geweigerd: het wachtwoord is gewijzigd of verbindingen via onversleutelde HTTP worden niet geaccepteerd. Meld je opnieuw aan of maak verbinding via HTTPS.';
-
-  @override
-  String get remoteDesktopCertificateChanged =>
-      'Certificaat van extern bureaublad is gewijzigd';
 
   @override
   String get remoteDesktopTrustCertificate => 'Certificaat vertrouwen?';
@@ -2915,16 +2490,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get certTrust => 'Vertrouwen';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return 'Profiel “$name” voor extern bureaublad verwijderen?';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return 'Opnieuw verbinden ($attempt/3)…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -3072,9 +2637,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get virtConsoleGraphical => 'Grafisch';
-
-  @override
-  String get virtVncPasswordNeeded => 'Dit scherm vraagt om een wachtwoord';
 
   @override
   String get virtConsoleSerialTip =>
@@ -6380,80 +5942,6 @@ class AppLocalizationsNl extends AppLocalizations {
       'Deelbeheer ondersteunt momenteel Linux-servers.';
 
   @override
-  String get agentThisDevice => 'Dit apparaat';
-
-  @override
-  String get agentSource => 'Bron';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return 'De taak wordt verwijderd op $server.';
-  }
-
-  @override
-  String get agentPlan => 'Planning';
-
-  @override
-  String get agentRemoteGone => 'Deze taak staat niet meer op de server.';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return 'Antwoorden op de taak op $server';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': 'In wachtrij',
-      'running': 'Wordt uitgevoerd',
-      'waiting': 'Wacht op je reactie',
-      'done': 'Voltooid',
-      'failed': 'Mislukt',
-      'cancelled': 'Gestopt',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return '$rule altijd toestaan';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return 'Typ $name om uit te voeren';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => 'Toch uitvoeren';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return 'Wachtwoord van $user';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => 'Onjuist wachtwoord';
-
-  @override
-  String get agentRemoteSudoRemember => '15 minuten onthouden';
-
-  @override
-  String agentNewOn(String place) {
-    return 'Nieuw gesprek: $place';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return 'Stel de agent op $server een vraag of geef hem een taak.';
-  }
-
-  @override
-  String get agentModeBypassWarn =>
-      'Alles toestaan: verwijderen, opnieuw starten en configuratiewijzigingen worden zonder bevestiging uitgevoerd.';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array is gedegradeerd';
   }
@@ -6568,9 +6056,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String monitorUnread(int count) {
     return '$count ongelezen';
   }
-
-  @override
-  String get monitorNoUpdates => 'Geen app heeft een update.';
 
   @override
   String get monitorNoticesEmpty => 'Geen meldingen.';
@@ -6964,9 +6449,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get security => 'Beveiliging';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => 'Niet-opgeslagen wijzigingen verwerpen?';
 
   @override
@@ -7030,11 +6512,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get sshAgentUnsupported => 'Dit apparaat kan geen ssh-agent gebruiken';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'Op Windows bereik je een ssh-agent via een named pipe, en $path is er geen';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -7103,98 +6580,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get average => 'gemiddelde';
-
-  @override
-  String get monitorMcpAccess => 'MCP-toegang';
-
-  @override
-  String get monitorMcpEndpoint => 'Eindpunt';
-
-  @override
-  String get monitorMcpGlobalPolicy => 'Globale rechten';
-
-  @override
-  String get monitorMcpTokens => 'Tokens';
-
-  @override
-  String get monitorMcpNewToken => 'Nieuw token';
-
-  @override
-  String get monitorMcpDays => 'Dagen';
-
-  @override
-  String get monitorMcpCreated => 'Token';
-
-  @override
-  String get monitorMcpRevoke => 'Intrekken';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return '$name intrekken?';
-  }
-
-  @override
-  String get monitorMcpLastUsed => 'Laatst gebruikt';
-
-  @override
-  String get monitorMcpNeverUsed => 'Nooit gebruikt';
-
-  @override
-  String get monitorMcpExpires => 'Verloopt';
-
-  @override
-  String get monitorMcpExpired => 'Verlopen';
-
-  @override
-  String get monitorMcpNoTokens => 'Geen tokens';
-
-  @override
-  String get monitorMcpAllScopes => 'Alle rechten';
-
-  @override
-  String get monitorMcpAllowlist => 'Toestemmingslijst';
-
-  @override
-  String get monitorMcpScopeRead => 'Metingen';
-
-  @override
-  String get monitorMcpScopeFsRead => 'Bestanden lezen';
-
-  @override
-  String get monitorMcpScopeFsWrite => 'Bestanden schrijven';
-
-  @override
-  String get monitorMcpScopeExec => 'Opdrachten uitvoeren';
-
-  @override
-  String get monitorMcpScopeProcess => 'Processen';
-
-  @override
-  String get monitorMcpScopeService => 'Services';
-
-  @override
-  String get monitorMcpScopeContainer => 'Containers';
-
-  @override
-  String get monitorMcpScopeCron => 'Cron';
-
-  @override
-  String get monitorMcpScopeVirt => 'Virtualisatie';
-
-  @override
-  String get monitorMcpScopeStacks => 'Web-apps';
-
-  @override
-  String get monitorMcpScopePower => 'Stroom';
-
-  @override
-  String get monitorMcpNameRequired => 'Voer een naam in.';
-
-  @override
-  String get monitorMcpScopesRequired => 'Kies minstens één recht.';
-
-  @override
-  String get monitorMcpPasswordRequired => 'Voer het wachtwoord in.';
 
   @override
   String get windowsServerUnsupported =>

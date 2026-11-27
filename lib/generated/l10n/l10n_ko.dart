@@ -55,80 +55,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get preReleaseUpdates => '프리릴리스 업데이트 받기';
 
   @override
-  String get addSystemPrivateKeyTip =>
-      '현재 개인 키가 없습니다. 시스템 기본 키(~/.ssh/id_rsa)를 추가하시겠습니까?';
-
-  @override
   String get added2List => '작업 목록에 추가되었습니다';
 
   @override
   String get askAi => 'AI에게 질문';
 
   @override
-  String get askAiInsertTerminal => '터미널에 삽입';
-
-  @override
   String get remoteDesktop => '원격 데스크톱';
 
   @override
-  String get askAiRiskReadOnly => '읽기 전용';
-
-  @override
-  String get askAiRiskCaution => '시스템 변경';
-
-  @override
-  String get askAiRiskUnvetted => '미검증 호스트';
-
-  @override
-  String get askAiRiskDestructive => '높은 위험';
-
-  @override
-  String get askAiHistory => '대화 기록';
-
-  @override
-  String get askAiNewConversation => '새 대화';
-
-  @override
-  String get askAiUntitledConversation => '제목 없음';
-
-  @override
-  String get askAiRenameConversation => '대화 이름 바꾸기';
-
-  @override
-  String get askAiDeleteConversationTitle => '이 대화를 삭제할까요?';
-
-  @override
-  String get askAiDeleteConversationTip => '이 기기에서 삭제합니다. 되돌릴 수 없습니다.';
-
-  @override
-  String get agentNoHistory => '저장된 전역 에이전트 대화가 없습니다';
-
-  @override
-  String get agentClearHistoryTitle => '전역 에이전트 기록을 지울까요?';
-
-  @override
-  String get agentClearHistoryTip => '모든 전역 에이전트 대화가 이 기기에서 삭제됩니다.';
-
-  @override
-  String get agentCommandMayStillRun => '중지한 명령이 서버에서 아직 실행 중일 수 있습니다.';
-
-  @override
-  String get agentToolShell => '셸';
-
-  @override
-  String get agentToolReadFile => '파일 읽기';
-
-  @override
-  String get agentToolWriteFile => '파일 쓰기';
-
-  @override
   String get floatOverTabs => '다른 탭 위에 띄우기';
-
-  @override
-  String get agentToolSshConnect => 'SSH 연결';
-
-  @override
-  String get agentToolSshDisconnect => 'SSH 연결 끊기';
 
   @override
   String get agentSshConnectTitle => '새 호스트에 연결';
@@ -138,9 +74,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get agentSshConnectTip => 'Agent가 SSH 연결을 요청했습니다. 여기에 비밀번호를 입력하세요.';
-
-  @override
-  String get agentAdHocSessions => '임시 연결';
 
   @override
   String get agentSaveServerTitle => '서버로 저장';
@@ -719,9 +652,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get pushToken => '푸시 토큰';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand는 이 기기의 Linux 환경에서 실행됩니다. 먼저 Linux 시스템을 설치하세요.';
 
@@ -756,9 +686,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pveMissingAuthTicket => 'PVE 로그인은 성공했지만 인증 티켓이 반환되지 않았습니다.';
-
-  @override
-  String get pveLoadingConnect => '연결하는 중...';
 
   @override
   String get pvePassword => 'PVE 비밀번호';
@@ -1029,9 +956,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get keyPassphrases => '키 암호';
 
   @override
-  String get syncFiles => '에이전트 스킬';
-
-  @override
   String get syncRemoteTooNew =>
       '상위 버전의 ServerBox에서 생성된 동기화 데이터입니다. 계속 동기화하려면 앱을 업데이트하세요.';
 
@@ -1132,9 +1056,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get webdavSettingEmpty => 'WebDav 설정이 비어 있습니다';
 
   @override
-  String get whenOpenApp => '앱을 열 때';
-
-  @override
   String get wolTip => 'WOL (Wake-on-LAN)을 설정하면 서버에 연결할 때마다 WOL 요청이 전송됩니다.';
 
   @override
@@ -1147,9 +1068,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get writeScriptTip =>
       '서버 연결 후 시스템 상태를 모니터링하기 위한 스크립트가 `~/.config/server_box` \n | `/tmp/server_box`에 작성됩니다. 스크립트 내용을 확인할 수 있습니다.';
-
-  @override
-  String get menuGitHubRepository => 'GitHub 저장소';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -1246,12 +1164,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get processParseInvalidRows => '일부 프로세스 항목을 읽을 수 없습니다.';
-
-  @override
-  String get processParseInvalidWindowsJson => 'Windows 프로세스 응답을 읽을 수 없습니다.';
-
-  @override
-  String get processParseInvalidWindowsRows => '일부 Windows 프로세스 항목을 읽을 수 없습니다.';
 
   @override
   String get processKillTargetChanged =>
@@ -1419,18 +1331,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get continueInTerminal => '터미널에서 계속하기';
 
   @override
-  String get askAiRiskUnknown => '분류되지 않음';
-
-  @override
   String get agentLocalExec => '이 기기에서 명령 실행';
-
-  @override
-  String get agentLocalExecTip =>
-      'ServerBox를 실행하는 기기에서 Agent가 작업하도록 허용합니다. 명령은 권한 모드를 따릅니다';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      'Agent를 로컬에서 동작하게 하며, 범위는 ServerBox가 설치한 Linux 컨테이너 안으로 제한됩니다';
 
   @override
   String get agentRedact => '보내기 전에 비밀값 가리기';
@@ -1824,63 +1725,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String agentRetentionFmt(String kept) {
     return 'Monitor 데이터 보관 기간: $kept';
   }
-
-  @override
-  String get agentServerTools => '서버 도구';
-
-  @override
-  String get agentServerToolsTip =>
-      '서버에서 명령을 실행하고 파일을 읽고 쓰거나, SSH로 다른 호스트에 연결하고 ServerBox 기능을 사용할 수 있습니다.';
-
-  @override
-  String get agentTerminalTools => '터미널';
-
-  @override
-  String get agentTerminalToolsTip => '터미널 세션에서 화면 내용을 읽고 해당 서버에서 명령을 실행합니다.';
-
-  @override
-  String get agentToolTerminalScreen => '화면 읽기';
-
-  @override
-  String get agentProviders => '제공자';
-
-  @override
-  String get agentProvidersTip => 'API 키, 모델, 새 채팅에 쓰는 모델';
-
-  @override
-  String get agentTools => '도구';
-
-  @override
-  String get agentToolsTip => 'Agent가 쓸 수 있는 도구와 MCP 서버';
-
-  @override
-  String get agentSnippetToolsTip => 'snippet을 나열하고 추가, 수정 또는 삭제합니다.';
-
-  @override
-  String get agentVirtToolsTip => '가상화 탭이 불러온 VM과 컨테이너를 읽습니다.';
-
-  @override
-  String get agentBenchmarkToolsTip => '벤치마크 결과를 읽고, 승인 후 벤치마크를 실행하거나 중지합니다.';
-
-  @override
-  String get agentRemoteDesktopToolsTip =>
-      '원격 데스크톱 프로필을 보고, 승인 후 연결하거나 연결을 끊습니다.';
-
-  @override
-  String get agentSkills => '스킬';
-
-  @override
-  String get agentSkillsTip => '특정 작업을 위한 지침, GitHub 또는 링크에서 설치';
-
-  @override
-  String get agentPermissions => '권한';
-
-  @override
-  String get agentEmptyHint => '서버에 대해 묻거나 Agent에게 서버에서 작업을 실행하도록 요청하세요.';
-
-  @override
-  String get agentTerminalEmptyHint =>
-      '이 서버에 대해 물어보세요. Agent는 이 터미널을 읽고 여기에서 명령을 실행할 수 있습니다.';
 
   @override
   String oldestSampleFmt(String time) {
@@ -2477,246 +2321,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get authShort => '인증';
 
   @override
-  String get remoteDesktopFitToWindow => '창에 맞춤';
-
-  @override
-  String get remoteDesktopActualSize => '실제 크기';
-
-  @override
-  String get remoteDesktopZoom => '확대/축소';
-
-  @override
-  String get remoteDesktopViewOnly => '보기 전용';
-
-  @override
-  String get remoteDesktopDisableViewOnly => '보기 전용 해제';
-
-  @override
-  String get remoteDesktopSendClipboardText => '클립보드 텍스트 보내기';
-
-  @override
-  String get remoteDesktopShowKeyboard => '키보드 표시';
-
-  @override
-  String get remoteDesktopMoreControls => '추가 제어';
-
-  @override
-  String get remoteDesktopUseDirectPointer => '직접 포인터 사용';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer => '터치패드 포인터 사용';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => 'Ctrl+Alt+Delete 보내기';
-
-  @override
-  String get remoteDesktopReconnect => '다시 연결';
-
-  @override
-  String get remoteDesktopFullScreen => '전체 화면';
-
-  @override
-  String get remoteDesktopExitFullScreen => '전체 화면 종료';
-
-  @override
-  String get remoteDesktopCloseSession => '세션 닫기';
-
-  @override
-  String get remoteDesktopConnected => '연결됨';
-
-  @override
-  String get remoteDesktopConnecting => '연결 중';
-
-  @override
-  String get remoteDesktopReconnecting => '다시 연결 중';
-
-  @override
-  String get remoteDesktopDisconnected => '연결 끊김';
-
-  @override
-  String get remoteDesktopGuideTouch => '터치패드';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      '한 손가락으로 터치패드처럼 포인터를 움직이고, 탭하면 클릭합니다. 두 손가락 탭은 오른쪽 클릭, 두 손가락 드래그는 스크롤, 핀치는 확대/축소입니다. 두 번 탭한 뒤 손가락을 떼지 않고 움직이면 드래그합니다.';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip =>
-      '화면 키보드를 엽니다. 입력한 내용은 원격 데스크톱으로 전송됩니다.';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip =>
-      '포인터와 키 입력 전송을 멈춰 실수로 클릭하지 않고 화면을 볼 수 있습니다.';
-
-  @override
-  String get remoteDesktopGuideMoreTip =>
-      'Ctrl+Alt+Delete, 다시 연결, 전체 화면은 여기에 있습니다.';
-
-  @override
-  String get remoteDesktopGuidePointerTip =>
-      '손가락이 닿은 곳을 클릭하는 직접 포인터로도 여기서 전환할 수 있습니다.';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only =>
-      'VNC 클립보드는 Latin-1 텍스트만 지원합니다.';
-
-  @override
-  String get remoteDesktopAddProfile => '프로필 추가';
-
-  @override
-  String get remoteDesktopNoProfiles => '원격 데스크톱 프로필이 없습니다';
-
-  @override
-  String get remoteDesktopAdd => '원격 데스크톱 추가';
-
-  @override
-  String get remoteDesktopEdit => '원격 데스크톱 편집';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      '대상은 SSH 서버 또는 Monitor에서 확인됩니다. localhost는 해당 머신을 가리킵니다.';
-
-  @override
-  String get remoteDesktopDomain => '도메인(선택)';
-
-  @override
-  String get remoteDesktopPassword => '비밀번호(선택)';
-
-  @override
-  String get remoteDesktopSavePassword => '비밀번호 저장';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      '암호화된 데이터베이스에 저장됩니다. 백업에는 저장된 비밀번호가 포함되며, 백업 비밀번호를 설정한 경우에만 암호화됩니다.';
-
-  @override
-  String get remoteDesktopShareSession => '세션 공유';
-
-  @override
-  String get remoteDesktopProtocol => '프로토콜';
-
-  @override
-  String get remoteDesktopUniqueName => '이 서버에서는 프로필 이름이 중복될 수 없습니다.';
-
-  @override
-  String get remoteDesktopNameRequired => '프로필 이름을 입력하세요.';
-
-  @override
-  String get remoteDesktopHostRequired => '대상 호스트를 입력하세요.';
-
-  @override
-  String get remoteDesktopPortRequired => '올바른 포트를 입력하세요.';
-
-  @override
-  String get remoteDesktopUsernameRequired => 'RDP 사용자 이름을 입력하세요.';
-
-  @override
-  String get remoteDesktopNameInvalid => '프로필 이름은 64자 이하이며 줄바꿈을 쓸 수 없습니다.';
-
-  @override
-  String get remoteDesktopHostInvalid => '대상 호스트에는 공백이나 줄바꿈을 쓸 수 없습니다.';
-
-  @override
-  String get remoteDesktopProtocolInvalid => '지원하지 않는 프로토콜입니다.';
-
-  @override
-  String get remoteDesktopCredentialInvalid =>
-      '사용자 이름과 도메인은 256자 이하이며 줄바꿈을 쓸 수 없습니다.';
-
-  @override
-  String get remoteDesktopVncPasswordHint => '클래식 VNC는 처음 8자만 사용합니다';
-
-  @override
-  String get remoteDesktopVncPasswordAscii =>
-      '클래식 VNC 비밀번호는 ASCII 문자만 포함할 수 있습니다.';
-
-  @override
-  String get remoteDesktopCertificateRequired => '인증서 확인이 필요합니다';
-
-  @override
-  String get remoteDesktopWaiting => '데스크톱을 기다리는 중…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      '서버가 Standard RDP Security(RC4)만 제공하며, 이는 지원되지 않습니다. xrdp.ini에서 security_layer=tls(또는 negotiate)로 설정하고 xrdp가 TLS 인증서를 읽을 수 있는지 확인하세요.';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      '서버에 TLS 인증서가 없습니다. 서버에 인증서를 설치하세요. xrdp의 경우 xrdp.ini에서 certificate와 key_file을 설정하세요.';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      '서버가 클라이언트 인증서(스마트 카드 로그온)를 요구하며, 이는 지원되지 않습니다.';
-
-  @override
-  String get remoteDesktopFailWrongCredentials => '사용자 이름 또는 비밀번호가 잘못되었습니다.';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut =>
-      '계정이 잠겼습니다. 나중에 다시 시도하거나 관리자에게 잠금 해제를 요청하세요.';
-
-  @override
-  String get remoteDesktopFailAccountDisabled => '계정이 비활성화되었습니다.';
-
-  @override
-  String get remoteDesktopFailAccountExpired => '계정이 만료되었습니다.';
-
-  @override
-  String get remoteDesktopFailPasswordExpired =>
-      '비밀번호가 만료되었거나 변경해야 합니다. 먼저 서버에서 비밀번호를 변경하세요.';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      '이 계정은 현재 시간이나 이 기기에서 로그온할 수 없거나, 빈 비밀번호로는 원격 로그온할 수 없습니다.';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      '이 계정은 원격 데스크톱을 통한 로그온이 허용되지 않습니다. 서버에서 Remote Desktop Users 그룹에 추가하세요.';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      '서버가 저장된 자격 증명을 허용하지 않습니다. 비밀번호를 다시 입력하세요.';
-
-  @override
-  String get remoteDesktopFailIdleTimeout => '서버의 유휴 시간 제한으로 세션 연결이 끊어졌습니다.';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit => '세션이 서버의 시간 제한에 도달했습니다.';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection =>
-      '다른 연결이 이 세션을 가져갔습니다.';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer => '서버에서 세션 연결이 끊어졌습니다.';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator => '관리자가 세션을 로그오프했습니다.';
-
-  @override
-  String get remoteDesktopFailLoggedOff => '세션이 로그오프되었습니다.';
-
-  @override
-  String get remoteDesktopFailServerShutdown => '서버가 종료 중입니다.';
-
-  @override
-  String get remoteDesktopFailServerReboot => '서버가 다시 시작 중입니다.';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection => '서버가 연결을 거부했습니다.';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      '서버의 원격 데스크톱 라이선스 확인에 실패했습니다. 라이선스 서버와 클라이언트 액세스 라이선스(CAL)를 확인하세요.';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'VNC 서버가 지원되는 보안 유형을 제공하지 않습니다. VNC 비밀번호 또는 인증 없음만 지원됩니다. TigerVNC는 SecurityTypes=VncAuth로 설정하세요.';
-
-  @override
-  String get remoteDesktopFailPasswordRequired => 'VNC 서버에 비밀번호가 필요합니다.';
-
-  @override
   String get tcpTargetUnreachable =>
       '서버가 이 주소에 연결할 수 없습니다. 서비스가 실행 중이고 해당 포트에서 수신 대기 중인지 확인하세요.';
 
@@ -2727,9 +2331,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get monitorRelayForbidden =>
       'Monitor가 이 연결을 거부했습니다. 비밀번호가 변경되었거나 암호화되지 않은 HTTP 연결을 받지 않습니다. 다시 로그인하거나 HTTPS로 연결하세요.';
-
-  @override
-  String get remoteDesktopCertificateChanged => '원격 데스크톱 인증서가 변경되었습니다';
 
   @override
   String get remoteDesktopTrustCertificate => '인증서를 신뢰할까요?';
@@ -2750,16 +2351,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get certTrust => '신뢰';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return '원격 데스크톱 프로필 “$name”을(를) 삭제할까요?';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return '다시 연결하는 중 ($attempt/3)…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -2905,9 +2496,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get virtConsoleGraphical => '그래픽';
-
-  @override
-  String get virtVncPasswordNeeded => '이 디스플레이는 암호가 필요합니다';
 
   @override
   String get virtConsoleSerialTip =>
@@ -6052,79 +5640,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sharingConnectionsLinuxOnly => '공유 관리는 현재 Linux 서버만 지원합니다.';
 
   @override
-  String get agentThisDevice => '이 기기';
-
-  @override
-  String get agentSource => '출처';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return '$server에서 작업을 삭제합니다.';
-  }
-
-  @override
-  String get agentPlan => '계획';
-
-  @override
-  String get agentRemoteGone => '이 작업은 더 이상 서버에 없습니다.';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return '$server의 작업에 답장';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': '대기 중',
-      'running': '실행 중',
-      'waiting': '응답 대기 중',
-      'done': '완료',
-      'failed': '실패',
-      'cancelled': '중지됨',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return '$rule 항상 허용';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return '실행하려면 $name 입력';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => '그래도 실행';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return '$user의 비밀번호';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => '비밀번호가 틀렸습니다';
-
-  @override
-  String get agentRemoteSudoRemember => '15분 동안 기억';
-
-  @override
-  String agentNewOn(String place) {
-    return '$place에서 새 대화 시작';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return '$server의 agent에게 질문하거나 작업을 맡기세요.';
-  }
-
-  @override
-  String get agentModeBypassWarn => '모두 허용: 삭제, 재시작, 설정 변경이 확인 없이 실행됩니다.';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array 성능 저하';
   }
@@ -6236,9 +5751,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String monitorUnread(int count) {
     return '읽지 않음 $count개';
   }
-
-  @override
-  String get monitorNoUpdates => '업데이트가 있는 앱이 없습니다.';
 
   @override
   String get monitorNoticesEmpty => '알림이 없습니다.';
@@ -6614,9 +6126,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get security => '보안';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => '저장하지 않은 변경 사항을 버릴까요?';
 
   @override
@@ -6680,11 +6189,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get sshAgentUnsupported => '이 기기에서는 ssh-agent를 사용할 수 없습니다';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'Windows에서는 named pipe로 ssh-agent에 연결하는데, $path은(는) named pipe가 아닙니다';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -6753,98 +6257,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get average => '평균';
-
-  @override
-  String get monitorMcpAccess => 'MCP 액세스';
-
-  @override
-  String get monitorMcpEndpoint => '엔드포인트';
-
-  @override
-  String get monitorMcpGlobalPolicy => '전역 권한';
-
-  @override
-  String get monitorMcpTokens => '토큰';
-
-  @override
-  String get monitorMcpNewToken => '새 토큰';
-
-  @override
-  String get monitorMcpDays => '일수';
-
-  @override
-  String get monitorMcpCreated => '토큰';
-
-  @override
-  String get monitorMcpRevoke => '폐기';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return '$name 토큰을 폐기할까요?';
-  }
-
-  @override
-  String get monitorMcpLastUsed => '마지막 사용';
-
-  @override
-  String get monitorMcpNeverUsed => '사용 안 함';
-
-  @override
-  String get monitorMcpExpires => '만료';
-
-  @override
-  String get monitorMcpExpired => '만료됨';
-
-  @override
-  String get monitorMcpNoTokens => '토큰 없음';
-
-  @override
-  String get monitorMcpAllScopes => '모든 권한';
-
-  @override
-  String get monitorMcpAllowlist => '허용 목록';
-
-  @override
-  String get monitorMcpScopeRead => '상태 읽기';
-
-  @override
-  String get monitorMcpScopeFsRead => '파일 읽기';
-
-  @override
-  String get monitorMcpScopeFsWrite => '파일 쓰기';
-
-  @override
-  String get monitorMcpScopeExec => '명령 실행';
-
-  @override
-  String get monitorMcpScopeProcess => '프로세스';
-
-  @override
-  String get monitorMcpScopeService => '서비스';
-
-  @override
-  String get monitorMcpScopeContainer => '컨테이너';
-
-  @override
-  String get monitorMcpScopeCron => 'Cron';
-
-  @override
-  String get monitorMcpScopeVirt => '가상화';
-
-  @override
-  String get monitorMcpScopeStacks => '웹 앱';
-
-  @override
-  String get monitorMcpScopePower => '전원';
-
-  @override
-  String get monitorMcpNameRequired => '이름을 입력하세요.';
-
-  @override
-  String get monitorMcpScopesRequired => '하나 이상의 권한을 선택하세요.';
-
-  @override
-  String get monitorMcpPasswordRequired => '비밀번호를 입력하세요.';
 
   @override
   String get windowsServerUnsupported =>

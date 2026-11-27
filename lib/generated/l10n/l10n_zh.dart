@@ -53,79 +53,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get preReleaseUpdates => '接收预发布版本更新';
 
   @override
-  String get addSystemPrivateKeyTip => '检测到暂无私钥，是否添加系统默认的私钥（~/.ssh/id_rsa）？';
-
-  @override
   String get added2List => '已添加至任务列表';
 
   @override
   String get askAi => '问 AI';
 
   @override
-  String get askAiInsertTerminal => '插入终端';
-
-  @override
   String get remoteDesktop => '远程桌面';
 
   @override
-  String get askAiRiskReadOnly => '只读';
-
-  @override
-  String get askAiRiskCaution => '会更改系统';
-
-  @override
-  String get askAiRiskUnvetted => '未审核的主机';
-
-  @override
-  String get askAiRiskDestructive => '高风险';
-
-  @override
-  String get askAiHistory => '对话历史';
-
-  @override
-  String get askAiNewConversation => '新建对话';
-
-  @override
-  String get askAiUntitledConversation => '新对话';
-
-  @override
-  String get askAiRenameConversation => '重命名对话';
-
-  @override
-  String get askAiDeleteConversationTitle => '删除这个对话？';
-
-  @override
-  String get askAiDeleteConversationTip => '从本机删除该对话，无法撤销。';
-
-  @override
-  String get agentNoHistory => '暂无全局 Agent 对话';
-
-  @override
-  String get agentClearHistoryTitle => '清空全局 Agent 历史记录？';
-
-  @override
-  String get agentClearHistoryTip => '此设备上的全部全局 Agent 对话都将被删除。';
-
-  @override
-  String get agentCommandMayStillRun => '已停止的命令可能仍在服务器上运行。';
-
-  @override
-  String get agentToolShell => '终端命令';
-
-  @override
-  String get agentToolReadFile => '读取文件';
-
-  @override
-  String get agentToolWriteFile => '写入文件';
-
-  @override
   String get floatOverTabs => '在其他标签页上悬浮';
-
-  @override
-  String get agentToolSshConnect => 'SSH 连接';
-
-  @override
-  String get agentToolSshDisconnect => '断开 SSH';
 
   @override
   String get agentSshConnectTitle => '连接到新主机';
@@ -135,9 +72,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get agentSshConnectTip => 'Agent 请求建立 SSH 连接。请在此输入密码。';
-
-  @override
-  String get agentAdHocSessions => '临时连接';
 
   @override
   String get agentSaveServerTitle => '保存为服务器';
@@ -704,9 +638,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get pushToken => '消息推送 Token';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand 在本机的 Linux 环境中运行，请先安装一个 Linux 系统。';
 
@@ -740,9 +671,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pveMissingAuthTicket => 'PVE 登录成功，但未返回认证票据。';
-
-  @override
-  String get pveLoadingConnect => '正在连接...';
 
   @override
   String get pvePassword => 'PVE 密码';
@@ -1011,9 +939,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get keyPassphrases => '私钥口令';
 
   @override
-  String get syncFiles => 'Agent 技能';
-
-  @override
   String get syncRemoteTooNew => '同步数据来自更高版本的 ServerBox，请更新应用后继续同步。';
 
   @override
@@ -1108,9 +1033,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get webdavSettingEmpty => 'WebDav 设置项为空';
 
   @override
-  String get whenOpenApp => '当打开 App 时';
-
-  @override
   String get wolTip => '配置 WOL 后，每次连接服务器时将自动发送唤醒请求';
 
   @override
@@ -1122,9 +1044,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get writeScriptTip =>
       '在连接服务器后，会向 `~/.config/server_box` \n | `/tmp/server_box` 写入脚本来监测系统状态，你可以审查脚本内容。';
-
-  @override
-  String get menuGitHubRepository => 'GitHub 仓库';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -1221,12 +1140,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get processParseInvalidRows => '部分进程条目无法读取。';
-
-  @override
-  String get processParseInvalidWindowsJson => '无法读取 Windows 进程响应。';
-
-  @override
-  String get processParseInvalidWindowsRows => '部分 Windows 进程条目无法读取。';
 
   @override
   String get processKillTargetChanged => '该进程已变化或退出，请刷新后重试。';
@@ -1392,17 +1305,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get continueInTerminal => '在终端中继续';
 
   @override
-  String get askAiRiskUnknown => '未判定';
-
-  @override
   String get agentLocalExec => '在本机执行命令';
-
-  @override
-  String get agentLocalExecTip => '允许 Agent 在当前设备上执行本地命令，并受权限模式控制';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      '仅允许 Agent 在 ServerBox 内置的本地 Linux 容器中执行命令。';
 
   @override
   String get agentRedact => '发送前遮蔽机密';
@@ -1789,61 +1692,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String agentRetentionFmt(String kept) {
     return 'Monitor 的数据保留时间：$kept';
   }
-
-  @override
-  String get agentServerTools => '服务器工具';
-
-  @override
-  String get agentServerToolsTip =>
-      '在服务器上执行命令、读写文件、通过 SSH 连接其他主机，也可以使用 ServerBox 自身的功能。';
-
-  @override
-  String get agentTerminalTools => '终端';
-
-  @override
-  String get agentTerminalToolsTip => '在终端会话中读取屏幕内容，并在对应服务器上执行命令。';
-
-  @override
-  String get agentToolTerminalScreen => '读取屏幕';
-
-  @override
-  String get agentProviders => '提供商';
-
-  @override
-  String get agentProvidersTip => 'API Key、模型，以及新对话使用的模型';
-
-  @override
-  String get agentTools => '工具';
-
-  @override
-  String get agentToolsTip => 'Agent 可以使用的工具，以及 MCP 服务器';
-
-  @override
-  String get agentSnippetToolsTip => '查看、创建、编辑和删除代码片段。';
-
-  @override
-  String get agentVirtToolsTip => '读取虚拟化标签页已加载的虚拟机和容器。';
-
-  @override
-  String get agentBenchmarkToolsTip => '读取性能测试结果；经你批准后运行或停止测试。';
-
-  @override
-  String get agentRemoteDesktopToolsTip => '列出远程桌面配置；经你批准后连接或断开。';
-
-  @override
-  String get agentSkills => '技能';
-
-  @override
-  String get agentSkillsTip => '特定任务的操作说明，可从 GitHub 或链接安装';
-
-  @override
-  String get agentPermissions => '权限';
-
-  @override
-  String get agentEmptyHint => '询问服务器状态，或让 Agent 协助排查与执行操作。';
-
-  @override
-  String get agentTerminalEmptyHint => '可结合当前终端上下文提问，或让 Agent 在此终端中执行命令。';
 
   @override
   String oldestSampleFmt(String time) {
@@ -2435,236 +2283,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get authShort => '认证';
 
   @override
-  String get remoteDesktopFitToWindow => '适合窗口';
-
-  @override
-  String get remoteDesktopActualSize => '实际大小';
-
-  @override
-  String get remoteDesktopZoom => '缩放';
-
-  @override
-  String get remoteDesktopViewOnly => '仅查看';
-
-  @override
-  String get remoteDesktopDisableViewOnly => '关闭仅查看';
-
-  @override
-  String get remoteDesktopSendClipboardText => '发送剪贴板文本';
-
-  @override
-  String get remoteDesktopShowKeyboard => '显示键盘';
-
-  @override
-  String get remoteDesktopMoreControls => '更多控制';
-
-  @override
-  String get remoteDesktopUseDirectPointer => '使用直接指针';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer => '使用触控板指针';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => '发送 Ctrl+Alt+Delete';
-
-  @override
-  String get remoteDesktopReconnect => '重新连接';
-
-  @override
-  String get remoteDesktopFullScreen => '全屏';
-
-  @override
-  String get remoteDesktopExitFullScreen => '退出全屏';
-
-  @override
-  String get remoteDesktopCloseSession => '关闭会话';
-
-  @override
-  String get remoteDesktopConnected => '已连接';
-
-  @override
-  String get remoteDesktopConnecting => '正在连接';
-
-  @override
-  String get remoteDesktopReconnecting => '正在重新连接';
-
-  @override
-  String get remoteDesktopDisconnected => '已断开连接';
-
-  @override
-  String get remoteDesktopGuideTouch => '触控板';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      '单指像触控板一样移动指针，轻点即单击。双指轻点为右键，双指拖动为滚动，双指捏合为缩放。轻点两下且第二下不松手，即可拖动。';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip => '打开屏幕键盘，输入的内容会发送到远程桌面。';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip => '停止发送指针和按键，只查看画面，不会误点。';
-
-  @override
-  String get remoteDesktopGuideMoreTip => 'Ctrl+Alt+Delete、重新连接和全屏都在这里。';
-
-  @override
-  String get remoteDesktopGuidePointerTip => '这里也可以切换为直接指针：手指点到哪里就点击哪里。';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only => 'VNC 剪贴板仅支持 Latin-1 文本。';
-
-  @override
-  String get remoteDesktopAddProfile => '添加配置';
-
-  @override
-  String get remoteDesktopNoProfiles => '暂无远程桌面配置';
-
-  @override
-  String get remoteDesktopAdd => '添加远程桌面';
-
-  @override
-  String get remoteDesktopEdit => '编辑远程桌面';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      '目标地址由 SSH 服务器或 Monitor 解析，localhost 指向该服务器。';
-
-  @override
-  String get remoteDesktopDomain => '域（可选）';
-
-  @override
-  String get remoteDesktopPassword => '密码（可选）';
-
-  @override
-  String get remoteDesktopSavePassword => '保存密码';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      '保存在加密数据库中。备份会包含已保存的密码，只有设置备份密码时才会加密。';
-
-  @override
-  String get remoteDesktopShareSession => '共享会话';
-
-  @override
-  String get remoteDesktopProtocol => '协议';
-
-  @override
-  String get remoteDesktopUniqueName => '此服务器的配置名称不能重复。';
-
-  @override
-  String get remoteDesktopNameRequired => '请输入配置名称。';
-
-  @override
-  String get remoteDesktopHostRequired => '请输入目标主机。';
-
-  @override
-  String get remoteDesktopPortRequired => '请输入有效的端口。';
-
-  @override
-  String get remoteDesktopUsernameRequired => '请输入 RDP 用户名。';
-
-  @override
-  String get remoteDesktopNameInvalid => '配置名称最多 64 个字符，不能换行。';
-
-  @override
-  String get remoteDesktopHostInvalid => '目标主机不能包含空格或换行。';
-
-  @override
-  String get remoteDesktopProtocolInvalid => '不支持的协议。';
-
-  @override
-  String get remoteDesktopCredentialInvalid => '用户名和域最多 256 个字符，不能换行。';
-
-  @override
-  String get remoteDesktopVncPasswordHint => '传统 VNC 仅使用前 8 个字符';
-
-  @override
-  String get remoteDesktopVncPasswordAscii => '传统 VNC 密码只能包含 ASCII 字符。';
-
-  @override
-  String get remoteDesktopCertificateRequired => '需要确认证书';
-
-  @override
-  String get remoteDesktopWaiting => '正在等待桌面…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      '服务器仅提供 Standard RDP Security（RC4），不受支持。请在 xrdp.ini 中设置 security_layer=tls（或 negotiate），并确保 xrdp 能读取其 TLS 证书。';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      '服务器没有 TLS 证书。请在服务器上安装证书；xrdp 请在 xrdp.ini 中设置 certificate 和 key_file。';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      '服务器要求客户端证书（智能卡登录），不受支持。';
-
-  @override
-  String get remoteDesktopFailWrongCredentials => '用户名或密码错误。';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut => '账户已被锁定。请稍后再试，或请管理员解锁。';
-
-  @override
-  String get remoteDesktopFailAccountDisabled => '账户已被禁用。';
-
-  @override
-  String get remoteDesktopFailAccountExpired => '账户已过期。';
-
-  @override
-  String get remoteDesktopFailPasswordExpired => '密码已过期或必须修改。请先在服务器上修改密码。';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      '该账户在此时间或从此设备不允许登录，或其空密码不允许远程登录。';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      '该账户不允许通过远程桌面登录。请在服务器上将其加入 Remote Desktop Users 组。';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      '服务器不接受已保存的凭据。请重新输入密码。';
-
-  @override
-  String get remoteDesktopFailIdleTimeout => '会话因达到服务器的空闲时间限制而断开。';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit => '会话已达到服务器的时间限制。';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection => '另一个连接接管了此会话。';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer => '会话在服务器上被断开。';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator => '管理员注销了此会话。';
-
-  @override
-  String get remoteDesktopFailLoggedOff => '会话已注销。';
-
-  @override
-  String get remoteDesktopFailServerShutdown => '服务器正在关机。';
-
-  @override
-  String get remoteDesktopFailServerReboot => '服务器正在重启。';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection => '服务器拒绝了连接。';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      '服务器的远程桌面授权失败。请检查其许可证服务器和客户端访问许可证（CAL）。';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'VNC 服务器未提供受支持的安全类型；仅支持 VNC 密码或无认证。TigerVNC 请设置 SecurityTypes=VncAuth。';
-
-  @override
-  String get remoteDesktopFailPasswordRequired => 'VNC 服务器需要密码。';
-
-  @override
   String get tcpTargetUnreachable => '服务器无法连接到此地址。请检查服务是否在运行并监听该端口。';
 
   @override
@@ -2674,9 +2292,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get monitorRelayForbidden =>
       'Monitor 拒绝了此连接：密码已变更，或未允许通过明文 HTTP 执行此操作。请重新验证密码或改用 HTTPS。';
-
-  @override
-  String get remoteDesktopCertificateChanged => '远程桌面证书已更改';
 
   @override
   String get remoteDesktopTrustCertificate => '是否信任此证书？';
@@ -2697,16 +2312,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get certTrust => '信任';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return '是否删除远程桌面配置“$name”？';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return '正在重新连接（$attempt/3）…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -2850,9 +2455,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get virtConsoleGraphical => '图形';
-
-  @override
-  String get virtVncPasswordNeeded => '此控制台需要密码';
 
   @override
   String get virtConsoleSerialTip =>
@@ -5958,79 +5560,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sharingConnectionsLinuxOnly => '共享管理目前仅支持 Linux 服务器。';
 
   @override
-  String get agentThisDevice => '本机';
-
-  @override
-  String get agentSource => '来源';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return '该任务将在 $server 上删除。';
-  }
-
-  @override
-  String get agentPlan => '计划';
-
-  @override
-  String get agentRemoteGone => '服务器上已没有这个任务。';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return '回复 $server 上的任务';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': '排队中',
-      'running': '运行中',
-      'waiting': '等待你操作',
-      'done': '已完成',
-      'failed': '失败',
-      'cancelled': '已停止',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return '始终允许 $rule';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return '输入 $name 以运行';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => '仍然运行';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return '$user 的密码';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => '密码错误';
-
-  @override
-  String get agentRemoteSudoRemember => '记住 15 分钟';
-
-  @override
-  String agentNewOn(String place) {
-    return '新建于 $place';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return '向 $server 上的 agent 提问，或交给它一个任务。';
-  }
-
-  @override
-  String get agentModeBypassWarn => '全部放行：删除、重启和修改配置都会直接执行，不再询问。';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array 已降级';
   }
@@ -6139,9 +5668,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String monitorUnread(int count) {
     return '$count 条未读';
   }
-
-  @override
-  String get monitorNoUpdates => '没有可更新的应用。';
 
   @override
   String get monitorNoticesEmpty => '没有通知。';
@@ -6513,9 +6039,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get security => '安全';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => '放弃未保存的修改？';
 
   @override
@@ -6579,11 +6102,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sshAgentUnsupported => '此设备无法使用 ssh-agent';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'Windows 上需通过 named pipe 连接 ssh-agent，$path 不是 named pipe';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -6653,98 +6171,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get average => '平均';
 
   @override
-  String get monitorMcpAccess => 'MCP 访问';
-
-  @override
-  String get monitorMcpEndpoint => '端点';
-
-  @override
-  String get monitorMcpGlobalPolicy => '全局权限';
-
-  @override
-  String get monitorMcpTokens => 'Token';
-
-  @override
-  String get monitorMcpNewToken => '新建 token';
-
-  @override
-  String get monitorMcpDays => '天数';
-
-  @override
-  String get monitorMcpCreated => 'Token';
-
-  @override
-  String get monitorMcpRevoke => '撤销';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return '撤销 $name？';
-  }
-
-  @override
-  String get monitorMcpLastUsed => '最后使用';
-
-  @override
-  String get monitorMcpNeverUsed => '从未使用';
-
-  @override
-  String get monitorMcpExpires => '到期';
-
-  @override
-  String get monitorMcpExpired => '已过期';
-
-  @override
-  String get monitorMcpNoTokens => '暂无 token';
-
-  @override
-  String get monitorMcpAllScopes => '全部权限';
-
-  @override
-  String get monitorMcpAllowlist => '仅白名单';
-
-  @override
-  String get monitorMcpScopeRead => '状态读取';
-
-  @override
-  String get monitorMcpScopeFsRead => '读取文件';
-
-  @override
-  String get monitorMcpScopeFsWrite => '写入文件';
-
-  @override
-  String get monitorMcpScopeExec => '运行命令';
-
-  @override
-  String get monitorMcpScopeProcess => '进程管理';
-
-  @override
-  String get monitorMcpScopeService => '服务管理';
-
-  @override
-  String get monitorMcpScopeContainer => '容器管理';
-
-  @override
-  String get monitorMcpScopeCron => '计划任务';
-
-  @override
-  String get monitorMcpScopeVirt => '虚拟化';
-
-  @override
-  String get monitorMcpScopeStacks => 'Web 应用';
-
-  @override
-  String get monitorMcpScopePower => '电源控制';
-
-  @override
-  String get monitorMcpNameRequired => '请输入名称。';
-
-  @override
-  String get monitorMcpScopesRequired => '至少选择一项权限。';
-
-  @override
-  String get monitorMcpPasswordRequired => '请输入密码。';
-
-  @override
   String get windowsServerUnsupported => '不支持 Windows 服务器。终端和文件浏览仍可通过 SSH 使用。';
 }
 
@@ -6798,79 +6224,16 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get preReleaseUpdates => '接收預發布版本更新';
 
   @override
-  String get addSystemPrivateKeyTip => '偵測到尚無私鑰，是否要加入系統預設的私鑰（~/.ssh/id_rsa）？';
-
-  @override
   String get added2List => '已新增至任務清單';
 
   @override
   String get askAi => '詢問 AI';
 
   @override
-  String get askAiInsertTerminal => '插入終端機';
-
-  @override
   String get remoteDesktop => '遠端桌面';
 
   @override
-  String get askAiRiskReadOnly => '唯讀';
-
-  @override
-  String get askAiRiskCaution => '會變更系統';
-
-  @override
-  String get askAiRiskUnvetted => '未審核的主機';
-
-  @override
-  String get askAiRiskDestructive => '高風險';
-
-  @override
-  String get askAiHistory => '對話歷史';
-
-  @override
-  String get askAiNewConversation => '新增對話';
-
-  @override
-  String get askAiUntitledConversation => '新對話';
-
-  @override
-  String get askAiRenameConversation => '重新命名對話';
-
-  @override
-  String get askAiDeleteConversationTitle => '刪除這個對話？';
-
-  @override
-  String get askAiDeleteConversationTip => '從本機刪除該對話，無法復原。';
-
-  @override
-  String get agentNoHistory => '暫無全域 Agent 對話';
-
-  @override
-  String get agentClearHistoryTitle => '清除全域 Agent 歷史記錄？';
-
-  @override
-  String get agentClearHistoryTip => '此裝置上的全部全域 Agent 對話都將被刪除。';
-
-  @override
-  String get agentCommandMayStillRun => '已停止的指令可能仍在伺服器上執行。';
-
-  @override
-  String get agentToolShell => '終端指令';
-
-  @override
-  String get agentToolReadFile => '讀取檔案';
-
-  @override
-  String get agentToolWriteFile => '寫入檔案';
-
-  @override
   String get floatOverTabs => '在其他分頁上懸浮';
-
-  @override
-  String get agentToolSshConnect => 'SSH 連線';
-
-  @override
-  String get agentToolSshDisconnect => '中斷 SSH';
 
   @override
   String get agentSshConnectTitle => '連線到新主機';
@@ -6880,9 +6243,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get agentSshConnectTip => 'Agent 請求建立 SSH 連線。請在此輸入密碼。';
-
-  @override
-  String get agentAdHocSessions => '暫時連線';
 
   @override
   String get agentSaveServerTitle => '儲存為伺服器';
@@ -7449,9 +6809,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String get pushToken => '消息推送 Token';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand 在本機的 Linux 環境中執行，請先安裝一個 Linux 系統。';
 
@@ -7485,9 +6842,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get pveMissingAuthTicket => 'PVE 登入成功，但未返回認證票據。';
-
-  @override
-  String get pveLoadingConnect => '正在連接...';
 
   @override
   String get pvePassword => 'PVE 密碼';
@@ -7756,9 +7110,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get keyPassphrases => '私鑰通行密碼';
 
   @override
-  String get syncFiles => 'Agent 技能';
-
-  @override
   String get syncRemoteTooNew => '同步資料來自較新版本的 ServerBox，請更新應用程式以繼續同步。';
 
   @override
@@ -7850,9 +7201,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get webdavSettingEmpty => 'WebDav 設定項爲空';
 
   @override
-  String get whenOpenApp => '當打開 App 時';
-
-  @override
   String get wolTip => '設定 WOL 後，每次連線伺服器時將自動發送喚醒請求';
 
   @override
@@ -7864,9 +7212,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get writeScriptTip =>
       '連線到伺服器後，將會在 `~/.config/server_box` \n | `/tmp/server_box` 中寫入一個腳本來監測系統狀態。你可以審查腳本內容。';
-
-  @override
-  String get menuGitHubRepository => 'GitHub 儲存庫';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -7960,12 +7305,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get processParseInvalidRows => '部分處理程序項目無法讀取。';
-
-  @override
-  String get processParseInvalidWindowsJson => '無法讀取 Windows 處理程序回應。';
-
-  @override
-  String get processParseInvalidWindowsRows => '部分 Windows 處理程序項目無法讀取。';
 
   @override
   String get processKillTargetChanged => '該處理程序已變更或結束，請重新整理後再試。';
@@ -8130,17 +7469,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get continueInTerminal => '在終端機中繼續';
 
   @override
-  String get askAiRiskUnknown => '未判定';
-
-  @override
   String get agentLocalExec => '在本機執行命令';
-
-  @override
-  String get agentLocalExecTip => '允許 Agent 在目前裝置上執行本機指令，並受權限模式控制';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      '讓 Agent 在本機執行，但只能操作 ServerBox 安裝的 Linux 容器。';
 
   @override
   String get agentRedact => '傳送前遮蔽機密';
@@ -8527,61 +7856,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String agentRetentionFmt(String kept) {
     return 'Monitor 的資料保留時間：$kept';
   }
-
-  @override
-  String get agentServerTools => '伺服器工具';
-
-  @override
-  String get agentServerToolsTip =>
-      '在伺服器上執行命令、讀寫檔案、通過 SSH 連線其他主機，也可以使用 ServerBox 自身的功能。';
-
-  @override
-  String get agentTerminalTools => '終端';
-
-  @override
-  String get agentTerminalToolsTip => '在終端會話中讀取屏幕內容，並在對應伺服器上執行命令。';
-
-  @override
-  String get agentToolTerminalScreen => '讀取螢幕';
-
-  @override
-  String get agentProviders => '提供者';
-
-  @override
-  String get agentProvidersTip => 'API Key、模型，以及新對話使用的模型';
-
-  @override
-  String get agentTools => '工具';
-
-  @override
-  String get agentToolsTip => 'Agent 可以使用的工具，以及 MCP 伺服器';
-
-  @override
-  String get agentSnippetToolsTip => '列出、新增、修改和刪除 snippet。';
-
-  @override
-  String get agentVirtToolsTip => '讀取虛擬化分頁已載入的虛擬機和容器。';
-
-  @override
-  String get agentBenchmarkToolsTip => '讀取效能測試結果；經你核准後執行或停止測試。';
-
-  @override
-  String get agentRemoteDesktopToolsTip => '列出遠端桌面設定；經你核准後連線或中斷。';
-
-  @override
-  String get agentSkills => '技能';
-
-  @override
-  String get agentSkillsTip => '特定任務的操作說明，可從 GitHub 或連結安裝';
-
-  @override
-  String get agentPermissions => '權限';
-
-  @override
-  String get agentEmptyHint => '詢問你的伺服器，或讓 Agent 在伺服器上執行操作。';
-
-  @override
-  String get agentTerminalEmptyHint => '詢問此伺服器。Agent 可以讀取此終端機，並在這裡執行命令。';
 
   @override
   String oldestSampleFmt(String time) {
@@ -9173,236 +8447,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get authShort => '認證';
 
   @override
-  String get remoteDesktopFitToWindow => '符合視窗';
-
-  @override
-  String get remoteDesktopActualSize => '實際大小';
-
-  @override
-  String get remoteDesktopZoom => '縮放';
-
-  @override
-  String get remoteDesktopViewOnly => '僅供檢視';
-
-  @override
-  String get remoteDesktopDisableViewOnly => '停用僅供檢視';
-
-  @override
-  String get remoteDesktopSendClipboardText => '傳送剪貼簿文字';
-
-  @override
-  String get remoteDesktopShowKeyboard => '顯示鍵盤';
-
-  @override
-  String get remoteDesktopMoreControls => '更多控制項';
-
-  @override
-  String get remoteDesktopUseDirectPointer => '使用直接指標';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer => '使用觸控板指標';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => '傳送 Ctrl+Alt+Delete';
-
-  @override
-  String get remoteDesktopReconnect => '重新連線';
-
-  @override
-  String get remoteDesktopFullScreen => '全螢幕';
-
-  @override
-  String get remoteDesktopExitFullScreen => '結束全螢幕';
-
-  @override
-  String get remoteDesktopCloseSession => '關閉工作階段';
-
-  @override
-  String get remoteDesktopConnected => '已連線';
-
-  @override
-  String get remoteDesktopConnecting => '正在連線';
-
-  @override
-  String get remoteDesktopReconnecting => '正在重新連線';
-
-  @override
-  String get remoteDesktopDisconnected => '已中斷連線';
-
-  @override
-  String get remoteDesktopGuideTouch => '觸控板';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      '單指像觸控板一樣移動指標，輕點即單擊。雙指輕點為右鍵，雙指拖曳為捲動，雙指捏合為縮放。輕點兩下且第二下不放開，即可拖曳。';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip => '開啟螢幕鍵盤，輸入的內容會傳送到遠端桌面。';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip => '停止傳送指標和按鍵，只檢視畫面，不會誤點。';
-
-  @override
-  String get remoteDesktopGuideMoreTip => 'Ctrl+Alt+Delete、重新連線和全螢幕都在這裡。';
-
-  @override
-  String get remoteDesktopGuidePointerTip => '這裡也可以切換為直接指標：手指點到哪裡就點擊哪裡。';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only => 'VNC 剪貼簿僅支援 Latin-1 文字。';
-
-  @override
-  String get remoteDesktopAddProfile => '新增設定檔';
-
-  @override
-  String get remoteDesktopNoProfiles => '尚無遠端桌面設定檔';
-
-  @override
-  String get remoteDesktopAdd => '新增遠端桌面';
-
-  @override
-  String get remoteDesktopEdit => '編輯遠端桌面';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      '目標由 SSH 伺服器或 Monitor 解析，localhost 指向該伺服器。';
-
-  @override
-  String get remoteDesktopDomain => '網域（選填）';
-
-  @override
-  String get remoteDesktopPassword => '密碼（選填）';
-
-  @override
-  String get remoteDesktopSavePassword => '儲存密碼';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      '儲存於加密資料庫。備份會包含已儲存的密碼，只有在設定備份密碼時才會加密。';
-
-  @override
-  String get remoteDesktopShareSession => '共用工作階段';
-
-  @override
-  String get remoteDesktopProtocol => '通訊協定';
-
-  @override
-  String get remoteDesktopUniqueName => '此伺服器的設定檔名稱不可重複。';
-
-  @override
-  String get remoteDesktopNameRequired => '請輸入設定檔名稱。';
-
-  @override
-  String get remoteDesktopHostRequired => '請輸入目標主機。';
-
-  @override
-  String get remoteDesktopPortRequired => '請輸入有效的連接埠。';
-
-  @override
-  String get remoteDesktopUsernameRequired => '請輸入 RDP 使用者名稱。';
-
-  @override
-  String get remoteDesktopNameInvalid => '設定名稱最多 64 個字元，不能換行。';
-
-  @override
-  String get remoteDesktopHostInvalid => '目標主機不能包含空格或換行。';
-
-  @override
-  String get remoteDesktopProtocolInvalid => '不支援的協定。';
-
-  @override
-  String get remoteDesktopCredentialInvalid => '使用者名稱和網域最多 256 個字元，不能換行。';
-
-  @override
-  String get remoteDesktopVncPasswordHint => '傳統 VNC 僅使用前 8 個字元';
-
-  @override
-  String get remoteDesktopVncPasswordAscii => '傳統 VNC 密碼只能包含 ASCII 字元。';
-
-  @override
-  String get remoteDesktopCertificateRequired => '需要確認憑證';
-
-  @override
-  String get remoteDesktopWaiting => '正在等待桌面…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      '伺服器僅提供 Standard RDP Security（RC4），不受支援。請在 xrdp.ini 中設定 security_layer=tls（或 negotiate），並確保 xrdp 能讀取其 TLS 憑證。';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      '伺服器沒有 TLS 憑證。請在伺服器上安裝憑證；xrdp 請在 xrdp.ini 中設定 certificate 與 key_file。';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      '伺服器要求用戶端憑證（智慧卡登入），不受支援。';
-
-  @override
-  String get remoteDesktopFailWrongCredentials => '使用者名稱或密碼錯誤。';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut => '帳戶已被鎖定。請稍後再試，或請管理員解除鎖定。';
-
-  @override
-  String get remoteDesktopFailAccountDisabled => '帳戶已被停用。';
-
-  @override
-  String get remoteDesktopFailAccountExpired => '帳戶已過期。';
-
-  @override
-  String get remoteDesktopFailPasswordExpired => '密碼已過期或必須變更。請先在伺服器上變更密碼。';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      '此帳戶在此時間或從此裝置不允許登入，或其空白密碼不允許遠端登入。';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      '此帳戶不允許透過遠端桌面登入。請在伺服器上將其加入 Remote Desktop Users 群組。';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      '伺服器不接受已儲存的認證。請重新輸入密碼。';
-
-  @override
-  String get remoteDesktopFailIdleTimeout => '工作階段因達到伺服器的閒置時間限制而中斷。';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit => '工作階段已達到伺服器的時間限制。';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection => '另一個連線接管了此工作階段。';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer => '工作階段在伺服器上被中斷。';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator => '管理員登出了此工作階段。';
-
-  @override
-  String get remoteDesktopFailLoggedOff => '工作階段已登出。';
-
-  @override
-  String get remoteDesktopFailServerShutdown => '伺服器正在關機。';
-
-  @override
-  String get remoteDesktopFailServerReboot => '伺服器正在重新啟動。';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection => '伺服器拒絕了連線。';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      '伺服器的遠端桌面授權失敗。請檢查其授權伺服器與用戶端存取授權（CAL）。';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'VNC 伺服器未提供支援的安全性類型；僅支援 VNC 密碼或無驗證。TigerVNC 請設定 SecurityTypes=VncAuth。';
-
-  @override
-  String get remoteDesktopFailPasswordRequired => 'VNC 伺服器需要密碼。';
-
-  @override
   String get tcpTargetUnreachable => '伺服器無法連線到此位址。請檢查服務是否正在執行並監聽該連接埠。';
 
   @override
@@ -9412,9 +8456,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get monitorRelayForbidden =>
       'Monitor 拒絕了此連線：密碼已變更，或未允許透過明文 HTTP 執行此操作。請重新驗證密碼或改用 HTTPS。';
-
-  @override
-  String get remoteDesktopCertificateChanged => '遠端桌面憑證已變更';
 
   @override
   String get remoteDesktopTrustCertificate => '是否信任此憑證？';
@@ -9435,16 +8476,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get certTrust => '信任';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return '是否刪除遠端桌面設定檔「$name」？';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return '正在重新連線（$attempt/3）…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -9587,9 +8618,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get virtConsoleGraphical => '圖形';
-
-  @override
-  String get virtVncPasswordNeeded => '這個顯示需要密碼';
 
   @override
   String get virtConsoleSerialTip =>
@@ -12701,79 +11729,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get sharingConnectionsLinuxOnly => '共享管理目前僅支援 Linux 伺服器。';
 
   @override
-  String get agentThisDevice => '本機';
-
-  @override
-  String get agentSource => '來源';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return '任務將從 $server 刪除。';
-  }
-
-  @override
-  String get agentPlan => '計畫';
-
-  @override
-  String get agentRemoteGone => '伺服器上已沒有這個任務。';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return '回覆 $server 上的任務';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': '排隊中',
-      'running': '執行中',
-      'waiting': '等待你操作',
-      'done': '已完成',
-      'failed': '失敗',
-      'cancelled': '已停止',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return '一律允許 $rule';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return '輸入 $name 以執行';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => '仍要執行';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return '$user 的密碼';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => '密碼錯誤';
-
-  @override
-  String get agentRemoteSudoRemember => '記住 15 分鐘';
-
-  @override
-  String agentNewOn(String place) {
-    return '在 $place 開始新對話';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return '向 $server 上的 agent 提問，或交給它一項任務。';
-  }
-
-  @override
-  String get agentModeBypassWarn => '全部允許：刪除、重新啟動和設定變更都會直接執行，不再詢問。';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array 已降級';
   }
@@ -12882,9 +11837,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String monitorUnread(int count) {
     return '$count 則未讀';
   }
-
-  @override
-  String get monitorNoUpdates => '沒有可更新的應用程式。';
 
   @override
   String get monitorNoticesEmpty => '沒有通知。';
@@ -13256,9 +12208,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get security => '安全性';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => '放棄未儲存的修改？';
 
   @override
@@ -13322,11 +12271,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sshAgentUnsupported => '此裝置無法使用 ssh-agent';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'Windows 上需透過 named pipe 連線 ssh-agent，$path 不是 named pipe';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -13394,98 +12338,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get average => '平均';
-
-  @override
-  String get monitorMcpAccess => 'MCP 存取';
-
-  @override
-  String get monitorMcpEndpoint => '端點';
-
-  @override
-  String get monitorMcpGlobalPolicy => '全域權限';
-
-  @override
-  String get monitorMcpTokens => 'Token';
-
-  @override
-  String get monitorMcpNewToken => '新增 token';
-
-  @override
-  String get monitorMcpDays => '天數';
-
-  @override
-  String get monitorMcpCreated => 'Token';
-
-  @override
-  String get monitorMcpRevoke => '撤銷';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return '撤銷 $name？';
-  }
-
-  @override
-  String get monitorMcpLastUsed => '最後使用';
-
-  @override
-  String get monitorMcpNeverUsed => '從未使用';
-
-  @override
-  String get monitorMcpExpires => '到期';
-
-  @override
-  String get monitorMcpExpired => '已過期';
-
-  @override
-  String get monitorMcpNoTokens => '尚無 token';
-
-  @override
-  String get monitorMcpAllScopes => '全部權限';
-
-  @override
-  String get monitorMcpAllowlist => '僅白名單';
-
-  @override
-  String get monitorMcpScopeRead => '狀態讀取';
-
-  @override
-  String get monitorMcpScopeFsRead => '讀取檔案';
-
-  @override
-  String get monitorMcpScopeFsWrite => '寫入檔案';
-
-  @override
-  String get monitorMcpScopeExec => '執行命令';
-
-  @override
-  String get monitorMcpScopeProcess => '行程管理';
-
-  @override
-  String get monitorMcpScopeService => '服務管理';
-
-  @override
-  String get monitorMcpScopeContainer => '容器管理';
-
-  @override
-  String get monitorMcpScopeCron => '排程任務';
-
-  @override
-  String get monitorMcpScopeVirt => '虛擬化';
-
-  @override
-  String get monitorMcpScopeStacks => 'Web 應用';
-
-  @override
-  String get monitorMcpScopePower => '電源控制';
-
-  @override
-  String get monitorMcpNameRequired => '請輸入名稱。';
-
-  @override
-  String get monitorMcpScopesRequired => '至少選擇一項權限。';
-
-  @override
-  String get monitorMcpPasswordRequired => '請輸入密碼。';
 
   @override
   String get windowsServerUnsupported => '不支援 Windows 伺服器。終端機與檔案瀏覽仍可透過 SSH 使用。';

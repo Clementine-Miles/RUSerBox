@@ -57,84 +57,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get preReleaseUpdates => 'Terima pembaruan pra-rilis';
 
   @override
-  String get addSystemPrivateKeyTip =>
-      'Saat ini tidak memiliki kunci privat, apakah Anda menambahkan kunci yang disertakan dengan sistem (~/.ssh/id_rsa)?';
-
-  @override
   String get added2List => 'Ditambahkan ke Daftar Tugas';
 
   @override
   String get askAi => 'Tanya AI';
 
   @override
-  String get askAiInsertTerminal => 'Masukkan ke terminal';
-
-  @override
   String get remoteDesktop => 'Desktop jarak jauh';
 
   @override
-  String get askAiRiskReadOnly => 'Hanya baca';
-
-  @override
-  String get askAiRiskCaution => 'Mengubah sistem';
-
-  @override
-  String get askAiRiskUnvetted => 'Host belum diverifikasi';
-
-  @override
-  String get askAiRiskDestructive => 'Risiko tinggi';
-
-  @override
-  String get askAiHistory => 'Riwayat percakapan';
-
-  @override
-  String get askAiNewConversation => 'Percakapan baru';
-
-  @override
-  String get askAiUntitledConversation => 'Tanpa judul';
-
-  @override
-  String get askAiRenameConversation => 'Ganti nama percakapan';
-
-  @override
-  String get askAiDeleteConversationTitle => 'Hapus percakapan ini?';
-
-  @override
-  String get askAiDeleteConversationTip =>
-      'Menghapusnya dari perangkat ini. Tidak bisa dibatalkan.';
-
-  @override
-  String get agentNoHistory =>
-      'Tidak ada percakapan Agent global yang tersimpan';
-
-  @override
-  String get agentClearHistoryTitle => 'Hapus riwayat Agent global?';
-
-  @override
-  String get agentClearHistoryTip =>
-      'Semua percakapan Agent global akan dihapus dari perangkat ini.';
-
-  @override
-  String get agentCommandMayStillRun =>
-      'Perintah yang dihentikan mungkin masih berjalan di server.';
-
-  @override
-  String get agentToolShell => 'Shell';
-
-  @override
-  String get agentToolReadFile => 'Baca berkas';
-
-  @override
-  String get agentToolWriteFile => 'Tulis berkas';
-
-  @override
   String get floatOverTabs => 'Mengambang di atas tab lain';
-
-  @override
-  String get agentToolSshConnect => 'Sambungkan SSH';
-
-  @override
-  String get agentToolSshDisconnect => 'Putuskan SSH';
 
   @override
   String get agentSshConnectTitle => 'Sambungkan ke host baru';
@@ -145,9 +77,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get agentSshConnectTip =>
       'Agent meminta untuk membuat koneksi SSH. Masukkan kata sandi di sini.';
-
-  @override
-  String get agentAdHocSessions => 'Koneksi sementara';
 
   @override
   String get agentSaveServerTitle => 'Simpan sebagai server';
@@ -753,9 +682,6 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get pushToken => 'Dorong token';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand berjalan di lingkungan Linux perangkat ini. Pasang sistem Linux terlebih dahulu.';
 
@@ -795,9 +721,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get pveMissingAuthTicket =>
       'Login PVE berhasil, tetapi tidak ada tiket autentikasi yang dikembalikan.';
-
-  @override
-  String get pveLoadingConnect => 'Menghubungkan...';
 
   @override
   String get pvePassword => 'Kata sandi PVE';
@@ -1085,9 +1008,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get keyPassphrases => 'Frasa sandi kunci';
 
   @override
-  String get syncFiles => 'Keahlian agen';
-
-  @override
   String get syncRemoteTooNew =>
       'Data sinkronisasi dibuat oleh versi ServerBox yang lebih baru. Perbarui aplikasi untuk melanjutkan sinkronisasi.';
 
@@ -1194,9 +1114,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get webdavSettingEmpty => 'Pengaturan webdav kosong';
 
   @override
-  String get whenOpenApp => 'Saat membuka aplikasi';
-
-  @override
   String get wolTip =>
       'Setelah mengonfigurasi WOL (Wake-on-LAN), permintaan WOL dikirim setiap kali server terhubung.';
 
@@ -1210,9 +1127,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get writeScriptTip =>
       'Setelah terhubung ke server, sebuah skrip akan ditulis ke `~/.config/server_box` \n | `/tmp/server_box` untuk memantau status sistem. Anda dapat meninjau konten skrip tersebut.';
-
-  @override
-  String get menuGitHubRepository => 'Repositori GitHub';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -1316,14 +1230,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get processParseInvalidRows =>
       'Beberapa entri proses tidak dapat dibaca.';
-
-  @override
-  String get processParseInvalidWindowsJson =>
-      'Respons proses Windows tidak dapat dibaca.';
-
-  @override
-  String get processParseInvalidWindowsRows =>
-      'Beberapa entri proses Windows tidak dapat dibaca.';
 
   @override
   String get processKillTargetChanged =>
@@ -1512,18 +1418,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get continueInTerminal => 'Lanjutkan di terminal';
 
   @override
-  String get askAiRiskUnknown => 'Tidak terklasifikasi';
-
-  @override
   String get agentLocalExec => 'Jalankan perintah di perangkat ini';
-
-  @override
-  String get agentLocalExecTip =>
-      'Mengizinkan Agent bekerja di mesin yang menjalankan ServerBox. Perintahnya mengikuti mode izin';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      'Membiarkan Agent bekerja lokal, terbatas pada kontainer Linux yang dipasang ServerBox';
 
   @override
   String get agentRedact => 'Samarkan rahasia sebelum dikirim';
@@ -1934,70 +1829,6 @@ class AppLocalizationsId extends AppLocalizations {
   String agentRetentionFmt(String kept) {
     return 'Monitor menyimpan data selama $kept';
   }
-
-  @override
-  String get agentServerTools => 'Alat server';
-
-  @override
-  String get agentServerToolsTip =>
-      'Jalankan perintah, baca atau tulis berkas di server, sambungkan ke host lain melalui SSH, dan gunakan fitur bawaan ServerBox.';
-
-  @override
-  String get agentTerminalTools => 'Terminal';
-
-  @override
-  String get agentTerminalToolsTip =>
-      'Dalam sesi terminal, baca isi layar dan jalankan perintah di server terkait.';
-
-  @override
-  String get agentToolTerminalScreen => 'Baca layar';
-
-  @override
-  String get agentProviders => 'Penyedia';
-
-  @override
-  String get agentProvidersTip =>
-      'Kunci API, model, dan model untuk obrolan baru';
-
-  @override
-  String get agentTools => 'Alat';
-
-  @override
-  String get agentToolsTip =>
-      'Apa yang boleh dipakai Agent, dan server MCP-nya';
-
-  @override
-  String get agentSnippetToolsTip =>
-      'Tampilkan daftar, tambahkan, ubah, dan hapus snippet.';
-
-  @override
-  String get agentVirtToolsTip =>
-      'Membaca VM dan kontainer yang dimuat tab Virtualisasi.';
-
-  @override
-  String get agentBenchmarkToolsTip =>
-      'Membaca hasil benchmark; menjalankan atau menghentikan benchmark dengan persetujuanmu.';
-
-  @override
-  String get agentRemoteDesktopToolsTip =>
-      'Menampilkan profil remote desktop; menghubungkan atau memutus dengan persetujuanmu.';
-
-  @override
-  String get agentSkills => 'Skill';
-
-  @override
-  String get agentSkillsTip =>
-      'Petunjuk untuk tugas tertentu, dipasang dari GitHub atau tautan';
-
-  @override
-  String get agentPermissions => 'Izin';
-
-  @override
-  String get agentEmptyHint => 'Lakukan tindakan di server.';
-
-  @override
-  String get agentTerminalEmptyHint =>
-      'Baca isi terminal saat ini dan jalankan perintah di dalamnya.';
 
   @override
   String oldestSampleFmt(String time) {
@@ -2609,257 +2440,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get authShort => 'Auth';
 
   @override
-  String get remoteDesktopFitToWindow => 'Sesuaikan dengan jendela';
-
-  @override
-  String get remoteDesktopActualSize => 'Ukuran sebenarnya';
-
-  @override
-  String get remoteDesktopZoom => 'Perbesar/perkecil';
-
-  @override
-  String get remoteDesktopViewOnly => 'Hanya lihat';
-
-  @override
-  String get remoteDesktopDisableViewOnly => 'Nonaktifkan hanya lihat';
-
-  @override
-  String get remoteDesktopSendClipboardText => 'Kirim teks papan klip';
-
-  @override
-  String get remoteDesktopShowKeyboard => 'Tampilkan keyboard';
-
-  @override
-  String get remoteDesktopMoreControls => 'Kontrol lainnya';
-
-  @override
-  String get remoteDesktopUseDirectPointer => 'Gunakan penunjuk langsung';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer => 'Gunakan penunjuk touchpad';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => 'Kirim Ctrl+Alt+Delete';
-
-  @override
-  String get remoteDesktopReconnect => 'Hubungkan kembali';
-
-  @override
-  String get remoteDesktopFullScreen => 'Layar penuh';
-
-  @override
-  String get remoteDesktopExitFullScreen => 'Keluar dari layar penuh';
-
-  @override
-  String get remoteDesktopCloseSession => 'Tutup sesi';
-
-  @override
-  String get remoteDesktopConnected => 'Terhubung';
-
-  @override
-  String get remoteDesktopConnecting => 'Menghubungkan';
-
-  @override
-  String get remoteDesktopReconnecting => 'Menghubungkan kembali';
-
-  @override
-  String get remoteDesktopDisconnected => 'Terputus';
-
-  @override
-  String get remoteDesktopGuideTouch => 'Touchpad';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      'Satu jari menggerakkan penunjuk seperti touchpad, dan ketukan mengeklik. Ketuk dengan dua jari untuk klik kanan, seret dengan dua jari untuk menggulir, dan cubit untuk memperbesar. Ketuk dua kali dan tahan jari untuk menyeret.';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip =>
-      'Membuka keyboard layar. Yang Anda ketik dikirim ke desktop jarak jauh.';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip =>
-      'Berhenti mengirim penunjuk dan tombol, sehingga Anda bisa melihat tanpa tidak sengaja mengeklik.';
-
-  @override
-  String get remoteDesktopGuideMoreTip =>
-      'Ctrl+Alt+Delete, sambung ulang, dan layar penuh ada di sini.';
-
-  @override
-  String get remoteDesktopGuidePointerTip =>
-      'Begitu juga penunjuk langsung, di mana jari mengeklik tempat yang disentuhnya.';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only =>
-      'Clipboard VNC hanya mendukung teks Latin-1.';
-
-  @override
-  String get remoteDesktopAddProfile => 'Tambah profil';
-
-  @override
-  String get remoteDesktopNoProfiles => 'Tidak ada profil desktop jarak jauh';
-
-  @override
-  String get remoteDesktopAdd => 'Tambah desktop jarak jauh';
-
-  @override
-  String get remoteDesktopEdit => 'Edit desktop jarak jauh';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      'Target diresolusikan dari server SSH atau Monitor. localhost mengacu pada mesin itu.';
-
-  @override
-  String get remoteDesktopDomain => 'Domain (opsional)';
-
-  @override
-  String get remoteDesktopPassword => 'Kata sandi (opsional)';
-
-  @override
-  String get remoteDesktopSavePassword => 'Simpan kata sandi';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      'Disimpan di basis data terenkripsi. Cadangan menyertakan kata sandi tersimpan, dan hanya dienkripsi bila kata sandi cadangan ditetapkan.';
-
-  @override
-  String get remoteDesktopShareSession => 'Bagikan sesi';
-
-  @override
-  String get remoteDesktopProtocol => 'Protokol';
-
-  @override
-  String get remoteDesktopUniqueName =>
-      'Nama profil harus unik untuk server ini.';
-
-  @override
-  String get remoteDesktopNameRequired => 'Masukkan nama profil.';
-
-  @override
-  String get remoteDesktopHostRequired => 'Masukkan host target.';
-
-  @override
-  String get remoteDesktopPortRequired => 'Masukkan port yang valid.';
-
-  @override
-  String get remoteDesktopUsernameRequired => 'Masukkan nama pengguna RDP.';
-
-  @override
-  String get remoteDesktopNameInvalid =>
-      'Nama profil paling banyak 64 karakter dan tidak boleh berisi baris baru.';
-
-  @override
-  String get remoteDesktopHostInvalid =>
-      'Host tujuan tidak boleh berisi spasi atau baris baru.';
-
-  @override
-  String get remoteDesktopProtocolInvalid => 'Protokol tidak didukung.';
-
-  @override
-  String get remoteDesktopCredentialInvalid =>
-      'Nama pengguna dan domain paling banyak 256 karakter dan tidak boleh berisi baris baru.';
-
-  @override
-  String get remoteDesktopVncPasswordHint =>
-      'VNC klasik hanya menggunakan 8 karakter pertama';
-
-  @override
-  String get remoteDesktopVncPasswordAscii =>
-      'Kata sandi VNC klasik hanya boleh berisi karakter ASCII.';
-
-  @override
-  String get remoteDesktopCertificateRequired =>
-      'Konfirmasi sertifikat diperlukan';
-
-  @override
-  String get remoteDesktopWaiting => 'Menunggu desktop…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      'Server hanya menawarkan Standard RDP Security (RC4), yang tidak didukung. Di xrdp.ini, atur security_layer=tls (atau negotiate) dan pastikan xrdp dapat membaca sertifikat TLS-nya.';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      'Server tidak memiliki sertifikat TLS. Pasang sertifikat di server; untuk xrdp, atur certificate dan key_file di xrdp.ini.';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      'Server meminta sertifikat klien (masuk dengan kartu pintar), yang tidak didukung.';
-
-  @override
-  String get remoteDesktopFailWrongCredentials =>
-      'Nama pengguna atau kata sandi salah.';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut =>
-      'Akun terkunci. Coba lagi nanti, atau minta administrator membukanya.';
-
-  @override
-  String get remoteDesktopFailAccountDisabled => 'Akun dinonaktifkan.';
-
-  @override
-  String get remoteDesktopFailAccountExpired => 'Akun telah kedaluwarsa.';
-
-  @override
-  String get remoteDesktopFailPasswordExpired =>
-      'Kata sandi telah kedaluwarsa atau harus diubah. Ubah terlebih dahulu di server.';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      'Akun tidak boleh masuk pada waktu ini atau dari perangkat ini, atau kata sandi kosongnya tidak diizinkan untuk masuk jarak jauh.';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      'Akun tidak diizinkan masuk melalui Desktop Jarak Jauh. Tambahkan ke grup Remote Desktop Users di server.';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      'Server tidak menerima kredensial tersimpan. Masukkan kata sandi lagi.';
-
-  @override
-  String get remoteDesktopFailIdleTimeout =>
-      'Sesi diputus setelah batas waktu diam server.';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit =>
-      'Sesi mencapai batas waktu server.';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection =>
-      'Koneksi lain mengambil alih sesi ini.';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer => 'Sesi diputus di server.';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator =>
-      'Administrator mengeluarkan sesi ini.';
-
-  @override
-  String get remoteDesktopFailLoggedOff => 'Sesi telah keluar.';
-
-  @override
-  String get remoteDesktopFailServerShutdown => 'Server sedang dimatikan.';
-
-  @override
-  String get remoteDesktopFailServerReboot => 'Server sedang dimulai ulang.';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection =>
-      'Server menolak koneksi.';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      'Lisensi Desktop Jarak Jauh di server gagal. Periksa server lisensi dan Client Access License (CAL).';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'Server VNC tidak menawarkan jenis keamanan yang didukung; hanya kata sandi VNC atau tanpa keamanan yang didukung. Untuk TigerVNC, atur SecurityTypes=VncAuth.';
-
-  @override
-  String get remoteDesktopFailPasswordRequired =>
-      'Server VNC memerlukan kata sandi.';
-
-  @override
   String get tcpTargetUnreachable =>
       'Server tidak dapat terhubung ke alamat ini. Pastikan layanan berjalan dan mendengarkan di port tersebut.';
 
@@ -2870,10 +2450,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get monitorRelayForbidden =>
       'Monitor menolak koneksi ini: kata sandinya telah berubah atau tidak menerima koneksi melalui HTTP tanpa enkripsi. Masuk lagi atau hubungkan melalui HTTPS.';
-
-  @override
-  String get remoteDesktopCertificateChanged =>
-      'Sertifikat desktop jarak jauh berubah';
 
   @override
   String get remoteDesktopTrustCertificate => 'Percayai sertifikat?';
@@ -2894,16 +2470,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get certTrust => 'Percayai';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return 'Hapus profil desktop jarak jauh “$name”?';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return 'Menghubungkan kembali ($attempt/3)…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -3051,9 +2617,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get virtConsoleGraphical => 'Grafis';
-
-  @override
-  String get virtVncPasswordNeeded => 'Tampilan ini meminta kata sandi';
 
   @override
   String get virtConsoleSerialTip =>
@@ -6323,80 +5886,6 @@ class AppLocalizationsId extends AppLocalizations {
       'Manajemen berbagi saat ini mendukung server Linux.';
 
   @override
-  String get agentThisDevice => 'Perangkat ini';
-
-  @override
-  String get agentSource => 'Sumber';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return 'Tugas akan dihapus di $server.';
-  }
-
-  @override
-  String get agentPlan => 'Rencana';
-
-  @override
-  String get agentRemoteGone => 'Tugas ini sudah tidak ada di server.';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return 'Balas tugas di $server';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': 'Dalam antrean',
-      'running': 'Berjalan',
-      'waiting': 'Menunggu tanggapan Anda',
-      'done': 'Selesai',
-      'failed': 'Gagal',
-      'cancelled': 'Dihentikan',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return 'Selalu izinkan $rule';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return 'Ketik $name untuk menjalankan';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => 'Tetap jalankan';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return 'Kata sandi $user';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => 'Kata sandi salah';
-
-  @override
-  String get agentRemoteSudoRemember => 'Ingat selama 15 menit';
-
-  @override
-  String agentNewOn(String place) {
-    return 'Percakapan baru: $place';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return 'Ajukan pertanyaan kepada agent di $server, atau berikan tugas.';
-  }
-
-  @override
-  String get agentModeBypassWarn =>
-      'Izinkan semua: penghapusan, mulai ulang, dan perubahan konfigurasi dijalankan tanpa konfirmasi.';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array mengalami penurunan';
   }
@@ -6511,9 +6000,6 @@ class AppLocalizationsId extends AppLocalizations {
   String monitorUnread(int count) {
     return '$count belum dibaca';
   }
-
-  @override
-  String get monitorNoUpdates => 'Tidak ada aplikasi yang punya pembaruan.';
 
   @override
   String get monitorNoticesEmpty => 'Tidak ada notifikasi.';
@@ -6899,9 +6385,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get security => 'Keamanan';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => 'Buang perubahan yang belum disimpan?';
 
   @override
@@ -6966,11 +6449,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get sshAgentUnsupported =>
       'Perangkat ini tidak dapat menggunakan ssh-agent';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'Di Windows, ssh-agent dijangkau melalui named pipe, dan $path bukan named pipe';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -7039,98 +6517,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get average => 'rata-rata';
-
-  @override
-  String get monitorMcpAccess => 'Akses MCP';
-
-  @override
-  String get monitorMcpEndpoint => 'Endpoint';
-
-  @override
-  String get monitorMcpGlobalPolicy => 'Izin global';
-
-  @override
-  String get monitorMcpTokens => 'Token';
-
-  @override
-  String get monitorMcpNewToken => 'Token baru';
-
-  @override
-  String get monitorMcpDays => 'Hari';
-
-  @override
-  String get monitorMcpCreated => 'Token';
-
-  @override
-  String get monitorMcpRevoke => 'Cabut';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return 'Cabut $name?';
-  }
-
-  @override
-  String get monitorMcpLastUsed => 'Terakhir digunakan';
-
-  @override
-  String get monitorMcpNeverUsed => 'Belum pernah digunakan';
-
-  @override
-  String get monitorMcpExpires => 'Kedaluwarsa';
-
-  @override
-  String get monitorMcpExpired => 'Kedaluwarsa';
-
-  @override
-  String get monitorMcpNoTokens => 'Tidak ada token';
-
-  @override
-  String get monitorMcpAllScopes => 'Semua izin';
-
-  @override
-  String get monitorMcpAllowlist => 'Daftar izin';
-
-  @override
-  String get monitorMcpScopeRead => 'Pembacaan';
-
-  @override
-  String get monitorMcpScopeFsRead => 'Baca berkas';
-
-  @override
-  String get monitorMcpScopeFsWrite => 'Tulis berkas';
-
-  @override
-  String get monitorMcpScopeExec => 'Jalankan perintah';
-
-  @override
-  String get monitorMcpScopeProcess => 'Proses';
-
-  @override
-  String get monitorMcpScopeService => 'Layanan';
-
-  @override
-  String get monitorMcpScopeContainer => 'Kontainer';
-
-  @override
-  String get monitorMcpScopeCron => 'Cron';
-
-  @override
-  String get monitorMcpScopeVirt => 'Virtualisasi';
-
-  @override
-  String get monitorMcpScopeStacks => 'Aplikasi web';
-
-  @override
-  String get monitorMcpScopePower => 'Daya';
-
-  @override
-  String get monitorMcpNameRequired => 'Masukkan nama.';
-
-  @override
-  String get monitorMcpScopesRequired => 'Pilih setidaknya satu izin.';
-
-  @override
-  String get monitorMcpPasswordRequired => 'Masukkan kata sandi.';
 
   @override
   String get windowsServerUnsupported =>

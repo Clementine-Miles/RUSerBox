@@ -57,83 +57,16 @@ class AppLocalizationsUk extends AppLocalizations {
   String get preReleaseUpdates => 'Отримувати оновлення попередніх версій';
 
   @override
-  String get addSystemPrivateKeyTip =>
-      'Наразі приватних ключів нема, хочете додати той, що йде з системою (~/.ssh/id_rsa)?';
-
-  @override
   String get added2List => 'Додано до списку завдань';
 
   @override
   String get askAi => 'Запитати ШІ';
 
   @override
-  String get askAiInsertTerminal => 'Вставити в термінал';
-
-  @override
   String get remoteDesktop => 'Віддалений робочий стіл';
 
   @override
-  String get askAiRiskReadOnly => 'Лише читання';
-
-  @override
-  String get askAiRiskCaution => 'Змінює систему';
-
-  @override
-  String get askAiRiskUnvetted => 'Неперевірений хост';
-
-  @override
-  String get askAiRiskDestructive => 'Високий ризик';
-
-  @override
-  String get askAiHistory => 'Історія розмов';
-
-  @override
-  String get askAiNewConversation => 'Нова розмова';
-
-  @override
-  String get askAiUntitledConversation => 'Без назви';
-
-  @override
-  String get askAiRenameConversation => 'Перейменувати розмову';
-
-  @override
-  String get askAiDeleteConversationTitle => 'Видалити цю розмову?';
-
-  @override
-  String get askAiDeleteConversationTip =>
-      'Видаляє її з цього пристрою. Скасувати не можна.';
-
-  @override
-  String get agentNoHistory => 'Немає збережених глобальних розмов агента';
-
-  @override
-  String get agentClearHistoryTitle => 'Очистити глобальну історію агента?';
-
-  @override
-  String get agentClearHistoryTip =>
-      'Усі глобальні розмови агента буде видалено з цього пристрою.';
-
-  @override
-  String get agentCommandMayStillRun =>
-      'Зупинена команда, можливо, досі виконується на сервері.';
-
-  @override
-  String get agentToolShell => 'Shell';
-
-  @override
-  String get agentToolReadFile => 'Читання файлу';
-
-  @override
-  String get agentToolWriteFile => 'Запис файлу';
-
-  @override
   String get floatOverTabs => 'Поверх інших вкладок';
-
-  @override
-  String get agentToolSshConnect => 'Підключення по SSH';
-
-  @override
-  String get agentToolSshDisconnect => 'Відключити SSH';
 
   @override
   String get agentSshConnectTitle => 'Підключення до нового хоста';
@@ -144,9 +77,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get agentSshConnectTip =>
       'Agent запитує SSH-підключення. Введіть тут пароль.';
-
-  @override
-  String get agentAdHocSessions => 'Тимчасові підключення';
 
   @override
   String get agentSaveServerTitle => 'Зберегти як сервер';
@@ -753,9 +683,6 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String get pushToken => 'Надіслати токен';
-
-  @override
   String get proxyCommandNeedsLinux =>
       'ProxyCommand виконується в середовищі Linux на цьому пристрої. Спочатку встановіть систему Linux.';
 
@@ -795,9 +722,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get pveMissingAuthTicket =>
       'Вхід у PVE успішний, але квиток автентифікації не повернуто.';
-
-  @override
-  String get pveLoadingConnect => 'Підключення…';
 
   @override
   String get pvePassword => 'Пароль PVE';
@@ -1085,9 +1009,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get keyPassphrases => 'Парольні фрази ключів';
 
   @override
-  String get syncFiles => 'Навички агента';
-
-  @override
   String get syncRemoteTooNew =>
       'Синхронізовані дані створено в новішій версії ServerBox. Оновіть застосунок, щоб продовжити синхронізацію.';
 
@@ -1194,9 +1115,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get webdavSettingEmpty => 'Налаштування WebDav порожнє';
 
   @override
-  String get whenOpenApp => 'При відкритті програми';
-
-  @override
   String get wolTip =>
       'Після налаштування WOL (Wake-on-LAN), при кожному підключенні до сервера відправляється запит WOL.';
 
@@ -1210,9 +1128,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get writeScriptTip =>
       'Після підключення до сервера скрипт буде записано у `~/.config/server_box` \n | `/tmp/server_box` для моніторингу стану системи. Ви можете переглянути вміст скрипта.';
-
-  @override
-  String get menuGitHubRepository => 'Репозиторій GitHub';
 
   @override
   String get podmanDockerEmulationDetected =>
@@ -1324,14 +1239,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get processParseInvalidRows =>
       'Не вдалося прочитати деякі записи процесів.';
-
-  @override
-  String get processParseInvalidWindowsJson =>
-      'Не вдалося прочитати відповідь зі списком процесів Windows.';
-
-  @override
-  String get processParseInvalidWindowsRows =>
-      'Не вдалося прочитати деякі записи процесів Windows.';
 
   @override
   String get processKillTargetChanged =>
@@ -1521,18 +1428,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get continueInTerminal => 'Продовжити в терміналі';
 
   @override
-  String get askAiRiskUnknown => 'Не визначено';
-
-  @override
   String get agentLocalExec => 'Виконувати команди на цьому пристрої';
-
-  @override
-  String get agentLocalExecTip =>
-      'Дозволяє Agent працювати на машині, де запущено ServerBox. Його команди обробляються за режимом дозволів';
-
-  @override
-  String get agentLocalExecRootfsTip =>
-      'Дозволяє агенту працювати локально, у межах контейнера Linux, встановленого ServerBox';
 
   @override
   String get agentRedact => 'Приховувати секрети перед надсиланням';
@@ -1940,69 +1836,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String agentRetentionFmt(String kept) {
     return 'Monitor зберігає $kept';
   }
-
-  @override
-  String get agentServerTools => 'Інструменти серверів';
-
-  @override
-  String get agentServerToolsTip =>
-      'Виконуйте команди на сервері, читайте й записуйте файли, підключайтеся до інших хостів через SSH і використовуйте функції ServerBox.';
-
-  @override
-  String get agentTerminalTools => 'Термінал';
-
-  @override
-  String get agentTerminalToolsTip =>
-      'Читайте вміст екрана термінала й виконуйте команди на відповідному сервері.';
-
-  @override
-  String get agentToolTerminalScreen => 'Прочитати екран';
-
-  @override
-  String get agentProviders => 'Провайдери';
-
-  @override
-  String get agentProvidersTip => 'Ключі API, моделі та модель для нового чату';
-
-  @override
-  String get agentTools => 'Інструменти';
-
-  @override
-  String get agentToolsTip =>
-      'Що може використовувати Agent, і його сервери MCP';
-
-  @override
-  String get agentSnippetToolsTip =>
-      'Переглядайте, додавайте, редагуйте й видаляйте snippets.';
-
-  @override
-  String get agentVirtToolsTip =>
-      'Читання ВМ і контейнерів, завантажених вкладкою «Віртуалізація».';
-
-  @override
-  String get agentBenchmarkToolsTip =>
-      'Читання результатів бенчмарку; запуск або зупинка з вашого схвалення.';
-
-  @override
-  String get agentRemoteDesktopToolsTip =>
-      'Список профілів віддаленого робочого столу; підключення та відключення з вашого схвалення.';
-
-  @override
-  String get agentSkills => 'Навички';
-
-  @override
-  String get agentSkillsTip =>
-      'Інструкції для певних завдань, встановлюються з GitHub або за посиланням';
-
-  @override
-  String get agentPermissions => 'Дозволи';
-
-  @override
-  String get agentEmptyHint => 'Виконуйте дії на сервері.';
-
-  @override
-  String get agentTerminalEmptyHint =>
-      'Читайте поточний термінал і виконуйте в ньому команди.';
 
   @override
   String oldestSampleFmt(String time) {
@@ -2617,262 +2450,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get authShort => 'Автор.';
 
   @override
-  String get remoteDesktopFitToWindow => 'За розміром вікна';
-
-  @override
-  String get remoteDesktopActualSize => 'Фактичний розмір';
-
-  @override
-  String get remoteDesktopZoom => 'Масштаб';
-
-  @override
-  String get remoteDesktopViewOnly => 'Лише перегляд';
-
-  @override
-  String get remoteDesktopDisableViewOnly => 'Вимкнути режим перегляду';
-
-  @override
-  String get remoteDesktopSendClipboardText =>
-      'Надіслати текст із буфера обміну';
-
-  @override
-  String get remoteDesktopShowKeyboard => 'Показати клавіатуру';
-
-  @override
-  String get remoteDesktopMoreControls => 'Інші елементи керування';
-
-  @override
-  String get remoteDesktopUseDirectPointer =>
-      'Використовувати прямий вказівник';
-
-  @override
-  String get remoteDesktopUseTouchpadPointer =>
-      'Використовувати вказівник тачпада';
-
-  @override
-  String get remoteDesktopSendCtrlAltDelete => 'Надіслати Ctrl+Alt+Delete';
-
-  @override
-  String get remoteDesktopReconnect => 'Перепідключитися';
-
-  @override
-  String get remoteDesktopFullScreen => 'На весь екран';
-
-  @override
-  String get remoteDesktopExitFullScreen => 'Вийти з повноекранного режиму';
-
-  @override
-  String get remoteDesktopCloseSession => 'Закрити сеанс';
-
-  @override
-  String get remoteDesktopConnected => 'Підключено';
-
-  @override
-  String get remoteDesktopConnecting => 'Підключення';
-
-  @override
-  String get remoteDesktopReconnecting => 'Повторне підключення';
-
-  @override
-  String get remoteDesktopDisconnected => 'Відключено';
-
-  @override
-  String get remoteDesktopGuideTouch => 'Тачпад';
-
-  @override
-  String get remoteDesktopGuideTouchTip =>
-      'Один палець рухає вказівник як тачпад, дотик — клік. Дотик двома пальцями — правий клік, перетягування двома — прокручування, щипок — масштаб. Торкніться двічі й не відпускайте палець, щоб перетягувати.';
-
-  @override
-  String get remoteDesktopGuideKeyboardTip =>
-      'Відкриває екранну клавіатуру. Введений текст надсилається на віддалений робочий стіл.';
-
-  @override
-  String get remoteDesktopGuideViewOnlyTip =>
-      'Припиняє надсилання вказівника й клавіш, щоб дивитися без випадкових кліків.';
-
-  @override
-  String get remoteDesktopGuideMoreTip =>
-      'Тут є Ctrl+Alt+Delete, повторне підключення та повноекранний режим.';
-
-  @override
-  String get remoteDesktopGuidePointerTip =>
-      'А також прямий вказівник: палець клікає там, де торкається.';
-
-  @override
-  String get remoteDesktopVncClipboardLatin1Only =>
-      'Буфер обміну VNC підтримує лише текст у кодуванні Latin-1.';
-
-  @override
-  String get remoteDesktopAddProfile => 'Додати профіль';
-
-  @override
-  String get remoteDesktopNoProfiles =>
-      'Немає профілів віддаленого робочого стола';
-
-  @override
-  String get remoteDesktopAdd => 'Додати віддалений робочий стіл';
-
-  @override
-  String get remoteDesktopEdit => 'Редагувати віддалений робочий стіл';
-
-  @override
-  String get remoteDesktopTargetTip =>
-      'Адресу визначає SSH-сервер або Monitor. localhost указує на цю машину.';
-
-  @override
-  String get remoteDesktopDomain => 'Домен (необов\'язково)';
-
-  @override
-  String get remoteDesktopPassword => 'Пароль (необов\'язково)';
-
-  @override
-  String get remoteDesktopSavePassword => 'Зберегти пароль';
-
-  @override
-  String get remoteDesktopSavePasswordTip =>
-      'Зберігається в зашифрованій базі даних. Резервні копії містять збережені паролі й шифруються лише за наявності пароля резервної копії.';
-
-  @override
-  String get remoteDesktopShareSession => 'Поділитися сеансом';
-
-  @override
-  String get remoteDesktopProtocol => 'Протокол';
-
-  @override
-  String get remoteDesktopUniqueName =>
-      'Імена профілів мають бути унікальними для цього сервера.';
-
-  @override
-  String get remoteDesktopNameRequired => 'Введіть ім\'я профілю.';
-
-  @override
-  String get remoteDesktopHostRequired => 'Введіть цільовий хост.';
-
-  @override
-  String get remoteDesktopPortRequired => 'Введіть дійсний порт.';
-
-  @override
-  String get remoteDesktopUsernameRequired => 'Введіть ім\'я користувача RDP.';
-
-  @override
-  String get remoteDesktopNameInvalid =>
-      'Назва профілю — не більше 64 символів, без перенесень рядка.';
-
-  @override
-  String get remoteDesktopHostInvalid =>
-      'Цільовий хост не може містити пробілів або перенесень рядка.';
-
-  @override
-  String get remoteDesktopProtocolInvalid => 'Непідтримуваний протокол.';
-
-  @override
-  String get remoteDesktopCredentialInvalid =>
-      'Імʼя користувача й домен — не більше 256 символів, без перенесень рядка.';
-
-  @override
-  String get remoteDesktopVncPasswordHint =>
-      'Класичний VNC використовує лише перші 8 символів';
-
-  @override
-  String get remoteDesktopVncPasswordAscii =>
-      'Класичні паролі VNC можуть містити лише символи ASCII.';
-
-  @override
-  String get remoteDesktopCertificateRequired =>
-      'Потрібне підтвердження сертифіката';
-
-  @override
-  String get remoteDesktopWaiting => 'Очікування робочого стола…';
-
-  @override
-  String get remoteDesktopFailStandardRdpSecurityOnly =>
-      'Сервер пропонує лише Standard RDP Security (RC4), яка не підтримується. У xrdp.ini встановіть security_layer=tls (або negotiate) і переконайтеся, що xrdp може прочитати свій TLS-сертифікат.';
-
-  @override
-  String get remoteDesktopFailServerCertificateMissing =>
-      'На сервері немає TLS-сертифіката. Установіть його на сервері; для xrdp задайте certificate і key_file у xrdp.ini.';
-
-  @override
-  String get remoteDesktopFailClientCertificateRequired =>
-      'Сервер вимагає клієнтський сертифікат (вхід за смарт-карткою), що не підтримується.';
-
-  @override
-  String get remoteDesktopFailWrongCredentials =>
-      'Неправильне ім\'я користувача або пароль.';
-
-  @override
-  String get remoteDesktopFailAccountLockedOut =>
-      'Обліковий запис заблоковано. Спробуйте пізніше або попросіть адміністратора розблокувати його.';
-
-  @override
-  String get remoteDesktopFailAccountDisabled => 'Обліковий запис вимкнено.';
-
-  @override
-  String get remoteDesktopFailAccountExpired =>
-      'Термін дії облікового запису минув.';
-
-  @override
-  String get remoteDesktopFailPasswordExpired =>
-      'Термін дії пароля минув, або його потрібно змінити. Спочатку змініть його на сервері.';
-
-  @override
-  String get remoteDesktopFailLogonRestricted =>
-      'Обліковому запису заборонено вхід у цей час або з цього пристрою, або його порожній пароль не дозволено для віддаленого входу.';
-
-  @override
-  String get remoteDesktopFailRemoteLogonDenied =>
-      'Обліковому запису не дозволено вхід через віддалений робочий стіл. Додайте його до групи Remote Desktop Users на сервері.';
-
-  @override
-  String get remoteDesktopFailFreshCredentialsRequired =>
-      'Сервер не приймає збережені облікові дані. Введіть пароль ще раз.';
-
-  @override
-  String get remoteDesktopFailIdleTimeout =>
-      'Сеанс від\'єднано після ліміту простою сервера.';
-
-  @override
-  String get remoteDesktopFailSessionTimeLimit =>
-      'Сеанс досяг ліміту часу сервера.';
-
-  @override
-  String get remoteDesktopFailReplacedByOtherConnection =>
-      'Цей сеанс перехопило інше підключення.';
-
-  @override
-  String get remoteDesktopFailDisconnectedOnServer =>
-      'Сеанс від\'єднано на сервері.';
-
-  @override
-  String get remoteDesktopFailLoggedOffByAdministrator =>
-      'Адміністратор завершив сеанс.';
-
-  @override
-  String get remoteDesktopFailLoggedOff => 'Виконано вихід із сеансу.';
-
-  @override
-  String get remoteDesktopFailServerShutdown => 'Сервер вимикається.';
-
-  @override
-  String get remoteDesktopFailServerReboot => 'Сервер перезавантажується.';
-
-  @override
-  String get remoteDesktopFailServerDeniedConnection =>
-      'Сервер відхилив підключення.';
-
-  @override
-  String get remoteDesktopFailLicensingFailed =>
-      'Помилка ліцензування віддалених робочих столів на сервері. Перевірте сервер ліцензування та клієнтські ліцензії (CAL).';
-
-  @override
-  String get remoteDesktopFailVncSecurityUnsupported =>
-      'VNC-сервер не пропонує підтримуваних типів безпеки; підтримуються лише пароль VNC або без захисту. Для TigerVNC задайте SecurityTypes=VncAuth.';
-
-  @override
-  String get remoteDesktopFailPasswordRequired => 'VNC-сервер вимагає пароль.';
-
-  @override
   String get tcpTargetUnreachable =>
       'Сервер не зміг підключитися до цієї адреси. Перевірте, що служба запущена й слухає цей порт.';
 
@@ -2883,10 +2460,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get monitorRelayForbidden =>
       'Monitor відхилив це з’єднання: його пароль змінено або він не приймає підключення через незашифрований HTTP. Увійдіть знову або підключіться через HTTPS.';
-
-  @override
-  String get remoteDesktopCertificateChanged =>
-      'Сертифікат віддаленого робочого стола змінився';
 
   @override
   String get remoteDesktopTrustCertificate => 'Довіряти сертифікату?';
@@ -2907,16 +2480,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get certTrust => 'Довіряти';
-
-  @override
-  String remoteDesktopDeleteProfile(String name) {
-    return 'Видалити профіль віддаленого робочого стола «$name»?';
-  }
-
-  @override
-  String remoteDesktopReconnectAttempt(int attempt) {
-    return 'Повторне підключення ($attempt/3)…';
-  }
 
   @override
   String remoteDesktopPreviousCertificate(String fingerprint) {
@@ -3065,9 +2628,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get virtConsoleGraphical => 'Графічна';
-
-  @override
-  String get virtVncPasswordNeeded => 'Цей дисплей вимагає пароль';
 
   @override
   String get virtConsoleSerialTip =>
@@ -6364,80 +5924,6 @@ class AppLocalizationsUk extends AppLocalizations {
       'Керування спільним доступом наразі підтримує сервери Linux.';
 
   @override
-  String get agentThisDevice => 'Цей пристрій';
-
-  @override
-  String get agentSource => 'Джерело';
-
-  @override
-  String agentDeleteRemoteTip(String server) {
-    return 'Завдання буде видалено на сервері $server.';
-  }
-
-  @override
-  String get agentPlan => 'План';
-
-  @override
-  String get agentRemoteGone => 'Цього завдання більше немає на сервері.';
-
-  @override
-  String agentRemoteReplyHint(String server) {
-    return 'Відповісти на завдання на $server';
-  }
-
-  @override
-  String agentRemoteStatus(String server, String status) {
-    String _temp0 = intl.Intl.selectLogic(status, {
-      'queued': 'У черзі',
-      'running': 'Виконується',
-      'waiting': 'Очікує на вашу відповідь',
-      'done': 'Завершено',
-      'failed': 'Помилка',
-      'cancelled': 'Зупинено',
-      'other': '',
-    });
-    return '$server · $_temp0';
-  }
-
-  @override
-  String agentRemoteAlways(String rule) {
-    return 'Завжди дозволяти $rule';
-  }
-
-  @override
-  String agentRemoteTypeToRun(String name) {
-    return 'Введіть $name, щоб запустити';
-  }
-
-  @override
-  String get agentRemoteRunAnyway => 'Усе одно запустити';
-
-  @override
-  String agentRemoteSudoFor(String user) {
-    return 'Пароль користувача $user';
-  }
-
-  @override
-  String get agentRemoteSudoWrong => 'Неправильний пароль';
-
-  @override
-  String get agentRemoteSudoRemember => 'Запам’ятати на 15 хвилин';
-
-  @override
-  String agentNewOn(String place) {
-    return 'Нова розмова: $place';
-  }
-
-  @override
-  String agentRemoteNewHint(String server) {
-    return 'Поставте запитання агенту на $server або доручіть йому завдання.';
-  }
-
-  @override
-  String get agentModeBypassWarn =>
-      'Дозволити все: видалення, перезапуск і зміни конфігурації виконуються без підтвердження.';
-
-  @override
   String noticeStorageArrayDegraded(String array) {
     return '/dev/$array деградований';
   }
@@ -6552,9 +6038,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String monitorUnread(int count) {
     return 'Непрочитаних: $count';
   }
-
-  @override
-  String get monitorNoUpdates => 'Оновлень застосунків немає.';
 
   @override
   String get monitorNoticesEmpty => 'Сповіщень немає.';
@@ -6945,9 +6428,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get security => 'Безпека';
 
   @override
-  String get agentPermsGroup => 'Agent';
-
-  @override
   String get discardUnsaved => 'Скасувати незбережені зміни?';
 
   @override
@@ -7012,11 +6492,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get sshAgentUnsupported =>
       'Цей пристрій не може використовувати ssh-agent';
-
-  @override
-  String sshAgentNotPipe(String path) {
-    return 'У Windows ssh-agent доступний через named pipe, а $path ним не є';
-  }
 
   @override
   String sshAgentUnreachable(String path, String reason) {
@@ -7085,98 +6560,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get average => 'середнє';
-
-  @override
-  String get monitorMcpAccess => 'Доступ MCP';
-
-  @override
-  String get monitorMcpEndpoint => 'Кінцева точка';
-
-  @override
-  String get monitorMcpGlobalPolicy => 'Глобальні права';
-
-  @override
-  String get monitorMcpTokens => 'Токени';
-
-  @override
-  String get monitorMcpNewToken => 'Новий токен';
-
-  @override
-  String get monitorMcpDays => 'Днів';
-
-  @override
-  String get monitorMcpCreated => 'Токен';
-
-  @override
-  String get monitorMcpRevoke => 'Відкликати';
-
-  @override
-  String monitorMcpRevokeHint(String name) {
-    return 'Відкликати $name?';
-  }
-
-  @override
-  String get monitorMcpLastUsed => 'Останнє використання';
-
-  @override
-  String get monitorMcpNeverUsed => 'Не використовувався';
-
-  @override
-  String get monitorMcpExpires => 'Діє до';
-
-  @override
-  String get monitorMcpExpired => 'Прострочено';
-
-  @override
-  String get monitorMcpNoTokens => 'Немає токенів';
-
-  @override
-  String get monitorMcpAllScopes => 'Усі права';
-
-  @override
-  String get monitorMcpAllowlist => 'Білий список';
-
-  @override
-  String get monitorMcpScopeRead => 'Показники';
-
-  @override
-  String get monitorMcpScopeFsRead => 'Читання файлів';
-
-  @override
-  String get monitorMcpScopeFsWrite => 'Запис файлів';
-
-  @override
-  String get monitorMcpScopeExec => 'Виконання команд';
-
-  @override
-  String get monitorMcpScopeProcess => 'Процеси';
-
-  @override
-  String get monitorMcpScopeService => 'Служби';
-
-  @override
-  String get monitorMcpScopeContainer => 'Контейнери';
-
-  @override
-  String get monitorMcpScopeCron => 'Cron';
-
-  @override
-  String get monitorMcpScopeVirt => 'Віртуалізація';
-
-  @override
-  String get monitorMcpScopeStacks => 'Вебзастосунки';
-
-  @override
-  String get monitorMcpScopePower => 'Живлення';
-
-  @override
-  String get monitorMcpNameRequired => 'Введіть назву.';
-
-  @override
-  String get monitorMcpScopesRequired => 'Виберіть принаймні одне право.';
-
-  @override
-  String get monitorMcpPasswordRequired => 'Введіть пароль.';
 
   @override
   String get windowsServerUnsupported =>

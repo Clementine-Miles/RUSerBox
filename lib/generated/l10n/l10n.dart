@@ -211,12 +211,6 @@ abstract class AppLocalizations {
   /// **'Receive pre-release updates'**
   String get preReleaseUpdates;
 
-  /// Help text for the add system private key setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Currently private keys don\'t exist, do you want to add the one that comes with the system (~/.ssh/id_rsa)?'**
-  String get addSystemPrivateKeyTip;
-
   /// Action label for added 2 list.
   ///
   /// In en, this message translates to:
@@ -229,137 +223,17 @@ abstract class AppLocalizations {
   /// **'Ask AI'**
   String get askAi;
 
-  /// User-facing label or message for ask AI insert terminal.
-  ///
-  /// In en, this message translates to:
-  /// **'Insert into terminal'**
-  String get askAiInsertTerminal;
-
   /// User-facing label or message for remote desktop.
   ///
   /// In en, this message translates to:
   /// **'Remote desktop'**
   String get remoteDesktop;
 
-  /// User-facing label or message for ask AI risk read only.
-  ///
-  /// In en, this message translates to:
-  /// **'Read-only'**
-  String get askAiRiskReadOnly;
-
-  /// User-facing label or message for ask AI risk caution.
-  ///
-  /// In en, this message translates to:
-  /// **'Changes system'**
-  String get askAiRiskCaution;
-
-  /// User-facing label or message for ask AI risk unvetted.
-  ///
-  /// In en, this message translates to:
-  /// **'Unvetted host'**
-  String get askAiRiskUnvetted;
-
-  /// User-facing label or message for ask AI risk destructive.
-  ///
-  /// In en, this message translates to:
-  /// **'High risk'**
-  String get askAiRiskDestructive;
-
-  /// User-facing label or message for ask AI history.
-  ///
-  /// In en, this message translates to:
-  /// **'Conversation history'**
-  String get askAiHistory;
-
-  /// User-facing label or message for ask AI new conversation.
-  ///
-  /// In en, this message translates to:
-  /// **'New conversation'**
-  String get askAiNewConversation;
-
-  /// User-facing label or message for ask AI untitled conversation.
-  ///
-  /// In en, this message translates to:
-  /// **'Untitled'**
-  String get askAiUntitledConversation;
-
-  /// User-facing label or message for ask AI rename conversation.
-  ///
-  /// In en, this message translates to:
-  /// **'Rename conversation'**
-  String get askAiRenameConversation;
-
-  /// Title shown for the ask AI delete conversation dialog or section.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete this conversation?'**
-  String get askAiDeleteConversationTitle;
-
-  /// Help text for the ask AI delete conversation setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Deletes it from this device. Cannot be undone.'**
-  String get askAiDeleteConversationTip;
-
-  /// User-facing label or message for agent no history.
-  ///
-  /// In en, this message translates to:
-  /// **'No saved global Agent conversations'**
-  String get agentNoHistory;
-
-  /// Title shown for the agent clear history dialog or section.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear global Agent history?'**
-  String get agentClearHistoryTitle;
-
-  /// Help text for the agent clear history setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'All global Agent conversations will be removed from this device.'**
-  String get agentClearHistoryTip;
-
-  /// No description provided for @agentCommandMayStillRun.
-  ///
-  /// In en, this message translates to:
-  /// **'The stopped command may still be running on the server.'**
-  String get agentCommandMayStillRun;
-
-  /// User-facing label or message for agent tool shell.
-  ///
-  /// In en, this message translates to:
-  /// **'Shell'**
-  String get agentToolShell;
-
-  /// User-facing label or message for agent tool read file.
-  ///
-  /// In en, this message translates to:
-  /// **'Read file'**
-  String get agentToolReadFile;
-
-  /// User-facing label or message for agent tool write file.
-  ///
-  /// In en, this message translates to:
-  /// **'Write file'**
-  String get agentToolWriteFile;
-
   /// User-facing label or message for float over tabs.
   ///
   /// In en, this message translates to:
   /// **'Float over other tabs'**
   String get floatOverTabs;
-
-  /// User-facing label or message for agent tool SSH connect.
-  ///
-  /// In en, this message translates to:
-  /// **'SSH connect'**
-  String get agentToolSshConnect;
-
-  /// User-facing label or message for agent tool SSH disconnect.
-  ///
-  /// In en, this message translates to:
-  /// **'Disconnect SSH'**
-  String get agentToolSshDisconnect;
 
   /// Title shown for the agent SSH connect dialog or section.
   ///
@@ -378,12 +252,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The Agent wants an SSH connection. Enter the password here'**
   String get agentSshConnectTip;
-
-  /// User-facing label or message for agent ad hoc sessions.
-  ///
-  /// In en, this message translates to:
-  /// **'Temporary connections'**
-  String get agentAdHocSessions;
 
   /// Title shown for the agent save server dialog or section.
   ///
@@ -1423,12 +1291,6 @@ abstract class AppLocalizations {
   /// **'Cannot read the private key file {path}: {reason}'**
   String privateKeyFileUnreadable(String path, String reason);
 
-  /// User-facing label or message for push token.
-  ///
-  /// In en, this message translates to:
-  /// **'Push token'**
-  String get pushToken;
-
   /// Shown when a ProxyCommand is used on a phone with no Linux system installed to run it in.
   ///
   /// In en, this message translates to:
@@ -1494,12 +1356,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PVE login succeeded but no authentication ticket was returned.'**
   String get pveMissingAuthTicket;
-
-  /// User-facing label or message for pve loading connect.
-  ///
-  /// In en, this message translates to:
-  /// **'Connecting...'**
-  String get pveLoadingConnect;
 
   /// User-facing label or message for pve password.
   ///
@@ -1968,12 +1824,6 @@ abstract class AppLocalizations {
   /// **'Key passphrases'**
   String get keyPassphrases;
 
-  /// Sync category label.
-  ///
-  /// In en, this message translates to:
-  /// **'Agent skills'**
-  String get syncFiles;
-
   /// Shown on the backup page when this build stops syncing at data a newer build wrote.
   ///
   /// In en, this message translates to:
@@ -2160,12 +2010,6 @@ abstract class AppLocalizations {
   /// **'WebDav setting is empty'**
   String get webdavSettingEmpty;
 
-  /// User-facing label or message for when open app.
-  ///
-  /// In en, this message translates to:
-  /// **'When opening the app'**
-  String get whenOpenApp;
-
   /// Help text for the wol setting or action.
   ///
   /// In en, this message translates to:
@@ -2189,12 +2033,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'After connecting to the server, a script will be written to `~/.config/server_box` \n | `/tmp/server_box` to monitor the system status. You can review the script content.'**
   String get writeScriptTip;
-
-  /// User-facing label or message for menu git hub repository.
-  ///
-  /// In en, this message translates to:
-  /// **'GitHub Repository'**
-  String get menuGitHubRepository;
 
   /// User-facing label or message for podman docker emulation detected.
   ///
@@ -2369,18 +2207,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Some process entries could not be read.'**
   String get processParseInvalidRows;
-
-  /// User-facing label or message for process parse invalid windows json.
-  ///
-  /// In en, this message translates to:
-  /// **'The Windows process response could not be read.'**
-  String get processParseInvalidWindowsJson;
-
-  /// User-facing label or message for process parse invalid windows rows.
-  ///
-  /// In en, this message translates to:
-  /// **'Some Windows process entries could not be read.'**
-  String get processParseInvalidWindowsRows;
 
   /// User-facing label or message for process kill target changed.
   ///
@@ -2664,29 +2490,11 @@ abstract class AppLocalizations {
   /// **'Continue in terminal'**
   String get continueInTerminal;
 
-  /// User-facing label or message for ask AI risk unknown.
-  ///
-  /// In en, this message translates to:
-  /// **'Unclassified'**
-  String get askAiRiskUnknown;
-
   /// User-facing label or message for agent local exec.
   ///
   /// In en, this message translates to:
   /// **'Run commands on this device'**
   String get agentLocalExec;
-
-  /// Help text for the agent local exec setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Allows the Agent to run commands on this device according to the permission mode'**
-  String get agentLocalExecTip;
-
-  /// Help text for the agent local exec rootfs setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Lets the Agent work locally, confined to the Linux container ServerBox installed'**
-  String get agentLocalExecRootfsTip;
 
   /// Setting: replace credentials in what the Agent sends a model.
   ///
@@ -3395,114 +3203,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Monitor keeps {kept}'**
   String agentRetentionFmt(String kept);
-
-  /// Agent: agentServerTools.
-  ///
-  /// In en, this message translates to:
-  /// **'Server tools'**
-  String get agentServerTools;
-
-  /// Agent: agentServerToolsTip.
-  ///
-  /// In en, this message translates to:
-  /// **'Run commands and read or write files on your servers, connect to other hosts over SSH, and use ServerBox\'s own actions.'**
-  String get agentServerToolsTip;
-
-  /// Agent: agentTerminalTools.
-  ///
-  /// In en, this message translates to:
-  /// **'Terminal'**
-  String get agentTerminalTools;
-
-  /// Agent: agentTerminalToolsTip.
-  ///
-  /// In en, this message translates to:
-  /// **'In a terminal\'s own chats: read what the terminal shows, and run commands on its server.'**
-  String get agentTerminalToolsTip;
-
-  /// Agent: agentToolTerminalScreen.
-  ///
-  /// In en, this message translates to:
-  /// **'Read the screen'**
-  String get agentToolTerminalScreen;
-
-  /// Agent: agentProviders.
-  ///
-  /// In en, this message translates to:
-  /// **'Providers'**
-  String get agentProviders;
-
-  /// Agent: agentProvidersTip.
-  ///
-  /// In en, this message translates to:
-  /// **'API keys, models, and the model a new chat uses'**
-  String get agentProvidersTip;
-
-  /// Agent: agentTools.
-  ///
-  /// In en, this message translates to:
-  /// **'Tools'**
-  String get agentTools;
-
-  /// Agent: agentToolsTip.
-  ///
-  /// In en, this message translates to:
-  /// **'What the Agent may use, and its MCP servers'**
-  String get agentToolsTip;
-
-  /// Agent: agentSnippetToolsTip.
-  ///
-  /// In en, this message translates to:
-  /// **'List, add, change and delete your snippets. Changes are asked about.'**
-  String get agentSnippetToolsTip;
-
-  /// Agent: agentVirtToolsTip.
-  ///
-  /// In en, this message translates to:
-  /// **'Read the VMs and containers the Virtualization tab has loaded.'**
-  String get agentVirtToolsTip;
-
-  /// Agent: agentBenchmarkToolsTip.
-  ///
-  /// In en, this message translates to:
-  /// **'Read benchmark results, and run or stop a benchmark with your approval.'**
-  String get agentBenchmarkToolsTip;
-
-  /// Agent: agentRemoteDesktopToolsTip.
-  ///
-  /// In en, this message translates to:
-  /// **'List remote desktop profiles, and connect or disconnect with your approval.'**
-  String get agentRemoteDesktopToolsTip;
-
-  /// Agent: agentSkills.
-  ///
-  /// In en, this message translates to:
-  /// **'Skills'**
-  String get agentSkills;
-
-  /// Agent: agentSkillsTip.
-  ///
-  /// In en, this message translates to:
-  /// **'Instructions for particular tasks, installed from GitHub or a link'**
-  String get agentSkillsTip;
-
-  /// Agent: agentPermissions.
-  ///
-  /// In en, this message translates to:
-  /// **'Permissions'**
-  String get agentPermissions;
-
-  /// Agent: agentEmptyHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Ask about your servers, or ask the Agent to do something on them.'**
-  String get agentEmptyHint;
-
-  /// Agent: agentTerminalEmptyHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Ask about this server. The Agent can read this terminal and run commands here.'**
-  String get agentTerminalEmptyHint;
 
   /// Formatted user-facing message for oldest sample; runtime values are supplied by placeholders.
   ///
@@ -4530,444 +4230,6 @@ abstract class AppLocalizations {
   /// **'Auth'**
   String get authShort;
 
-  /// User-facing label or message for remote desktop fit to window.
-  ///
-  /// In en, this message translates to:
-  /// **'Fit to window'**
-  String get remoteDesktopFitToWindow;
-
-  /// User-facing label or message for remote desktop actual size.
-  ///
-  /// In en, this message translates to:
-  /// **'Actual size'**
-  String get remoteDesktopActualSize;
-
-  /// User-facing label or message for remote desktop zoom.
-  ///
-  /// In en, this message translates to:
-  /// **'Zoom'**
-  String get remoteDesktopZoom;
-
-  /// User-facing label or message for remote desktop view only.
-  ///
-  /// In en, this message translates to:
-  /// **'View only'**
-  String get remoteDesktopViewOnly;
-
-  /// User-facing label or message for remote desktop disable view only.
-  ///
-  /// In en, this message translates to:
-  /// **'Disable view only'**
-  String get remoteDesktopDisableViewOnly;
-
-  /// User-facing label or message for remote desktop send clipboard text.
-  ///
-  /// In en, this message translates to:
-  /// **'Send clipboard text'**
-  String get remoteDesktopSendClipboardText;
-
-  /// User-facing label or message for remote desktop show keyboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Show keyboard'**
-  String get remoteDesktopShowKeyboard;
-
-  /// User-facing label or message for remote desktop more controls.
-  ///
-  /// In en, this message translates to:
-  /// **'More controls'**
-  String get remoteDesktopMoreControls;
-
-  /// User-facing label or message for remote desktop use direct pointer.
-  ///
-  /// In en, this message translates to:
-  /// **'Use direct pointer'**
-  String get remoteDesktopUseDirectPointer;
-
-  /// User-facing label or message for remote desktop use touchpad pointer.
-  ///
-  /// In en, this message translates to:
-  /// **'Use touchpad pointer'**
-  String get remoteDesktopUseTouchpadPointer;
-
-  /// User-facing label or message for remote desktop send ctrl alt delete.
-  ///
-  /// In en, this message translates to:
-  /// **'Send Ctrl+Alt+Delete'**
-  String get remoteDesktopSendCtrlAltDelete;
-
-  /// User-facing label or message for remote desktop reconnect.
-  ///
-  /// In en, this message translates to:
-  /// **'Reconnect'**
-  String get remoteDesktopReconnect;
-
-  /// User-facing label or message for remote desktop full screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Full screen'**
-  String get remoteDesktopFullScreen;
-
-  /// No description provided for @remoteDesktopExitFullScreen.
-  ///
-  /// In en, this message translates to:
-  /// **'Exit full screen'**
-  String get remoteDesktopExitFullScreen;
-
-  /// User-facing label or message for remote desktop close session.
-  ///
-  /// In en, this message translates to:
-  /// **'Close session'**
-  String get remoteDesktopCloseSession;
-
-  /// User-facing label or message for remote desktop connected.
-  ///
-  /// In en, this message translates to:
-  /// **'Connected'**
-  String get remoteDesktopConnected;
-
-  /// Status message shown while remote desktop connecting.
-  ///
-  /// In en, this message translates to:
-  /// **'Connecting'**
-  String get remoteDesktopConnecting;
-
-  /// User-facing label or message for remote desktop reconnecting.
-  ///
-  /// In en, this message translates to:
-  /// **'Reconnecting'**
-  String get remoteDesktopReconnecting;
-
-  /// User-facing label or message for remote desktop disconnected.
-  ///
-  /// In en, this message translates to:
-  /// **'Disconnected'**
-  String get remoteDesktopDisconnected;
-
-  /// User-facing label or message for remote desktop guide touch.
-  ///
-  /// In en, this message translates to:
-  /// **'Touchpad'**
-  String get remoteDesktopGuideTouch;
-
-  /// Help text for the remote desktop guide touch setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'One finger moves the pointer like a touchpad, and a tap clicks. Tap with two fingers to right-click, drag with two to scroll, and pinch to zoom. Tap twice and keep the finger down to drag.'**
-  String get remoteDesktopGuideTouchTip;
-
-  /// Help text for the remote desktop guide keyboard setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Opens the on-screen keyboard. What you type is sent to the remote desktop.'**
-  String get remoteDesktopGuideKeyboardTip;
-
-  /// Help text for the remote desktop guide view only setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Stops sending the pointer and keys, so you can look without clicking anything by accident.'**
-  String get remoteDesktopGuideViewOnlyTip;
-
-  /// Help text for the remote desktop guide more setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'Ctrl+Alt+Delete, reconnecting and full screen are in here.'**
-  String get remoteDesktopGuideMoreTip;
-
-  /// Help text for the remote desktop guide pointer setting or action.
-  ///
-  /// In en, this message translates to:
-  /// **'So is a direct pointer, where a finger clicks what it touches.'**
-  String get remoteDesktopGuidePointerTip;
-
-  /// User-facing label or message for remote desktop VNC clipboard latin 1 only.
-  ///
-  /// In en, this message translates to:
-  /// **'VNC clipboard supports Latin-1 text only.'**
-  String get remoteDesktopVncClipboardLatin1Only;
-
-  /// No description provided for @remoteDesktopAddProfile.
-  ///
-  /// In en, this message translates to:
-  /// **'Add profile'**
-  String get remoteDesktopAddProfile;
-
-  /// No description provided for @remoteDesktopNoProfiles.
-  ///
-  /// In en, this message translates to:
-  /// **'No remote desktop profiles'**
-  String get remoteDesktopNoProfiles;
-
-  /// No description provided for @remoteDesktopAdd.
-  ///
-  /// In en, this message translates to:
-  /// **'Add remote desktop'**
-  String get remoteDesktopAdd;
-
-  /// No description provided for @remoteDesktopEdit.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit remote desktop'**
-  String get remoteDesktopEdit;
-
-  /// No description provided for @remoteDesktopTargetTip.
-  ///
-  /// In en, this message translates to:
-  /// **'The target is resolved from the SSH server or the Monitor. Localhost refers to that machine.'**
-  String get remoteDesktopTargetTip;
-
-  /// No description provided for @remoteDesktopDomain.
-  ///
-  /// In en, this message translates to:
-  /// **'Domain (optional)'**
-  String get remoteDesktopDomain;
-
-  /// No description provided for @remoteDesktopPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Password (optional)'**
-  String get remoteDesktopPassword;
-
-  /// No description provided for @remoteDesktopSavePassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Save password'**
-  String get remoteDesktopSavePassword;
-
-  /// No description provided for @remoteDesktopSavePasswordTip.
-  ///
-  /// In en, this message translates to:
-  /// **'Stored in the encrypted database. Backups include saved passwords, and are encrypted only when a backup password is set.'**
-  String get remoteDesktopSavePasswordTip;
-
-  /// No description provided for @remoteDesktopShareSession.
-  ///
-  /// In en, this message translates to:
-  /// **'Share session'**
-  String get remoteDesktopShareSession;
-
-  /// No description provided for @remoteDesktopProtocol.
-  ///
-  /// In en, this message translates to:
-  /// **'Protocol'**
-  String get remoteDesktopProtocol;
-
-  /// No description provided for @remoteDesktopUniqueName.
-  ///
-  /// In en, this message translates to:
-  /// **'Profile names must be unique for this server.'**
-  String get remoteDesktopUniqueName;
-
-  /// No description provided for @remoteDesktopNameRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter a profile name.'**
-  String get remoteDesktopNameRequired;
-
-  /// No description provided for @remoteDesktopHostRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter a target host.'**
-  String get remoteDesktopHostRequired;
-
-  /// No description provided for @remoteDesktopPortRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter a valid port.'**
-  String get remoteDesktopPortRequired;
-
-  /// No description provided for @remoteDesktopUsernameRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter the RDP username.'**
-  String get remoteDesktopUsernameRequired;
-
-  /// No description provided for @remoteDesktopNameInvalid.
-  ///
-  /// In en, this message translates to:
-  /// **'The profile name can be up to 64 characters and cannot contain line breaks.'**
-  String get remoteDesktopNameInvalid;
-
-  /// No description provided for @remoteDesktopHostInvalid.
-  ///
-  /// In en, this message translates to:
-  /// **'The target host cannot contain spaces or line breaks.'**
-  String get remoteDesktopHostInvalid;
-
-  /// Remote desktop: the protocol is not one the app supports.
-  ///
-  /// In en, this message translates to:
-  /// **'Unsupported protocol.'**
-  String get remoteDesktopProtocolInvalid;
-
-  /// No description provided for @remoteDesktopCredentialInvalid.
-  ///
-  /// In en, this message translates to:
-  /// **'The username and domain can be up to 256 characters and cannot contain line breaks.'**
-  String get remoteDesktopCredentialInvalid;
-
-  /// Placeholder of the VNC password field: a longer password is accepted, and only its first 8 characters are used to sign in, as in TigerVNC.
-  ///
-  /// In en, this message translates to:
-  /// **'Classic VNC uses only the first 8 characters'**
-  String get remoteDesktopVncPasswordHint;
-
-  /// No description provided for @remoteDesktopVncPasswordAscii.
-  ///
-  /// In en, this message translates to:
-  /// **'Classic VNC passwords must contain ASCII characters only.'**
-  String get remoteDesktopVncPasswordAscii;
-
-  /// No description provided for @remoteDesktopCertificateRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Certificate confirmation required'**
-  String get remoteDesktopCertificateRequired;
-
-  /// No description provided for @remoteDesktopWaiting.
-  ///
-  /// In en, this message translates to:
-  /// **'Waiting for desktop…'**
-  String get remoteDesktopWaiting;
-
-  /// No description provided for @remoteDesktopFailStandardRdpSecurityOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'The server only offers Standard RDP Security (RC4), which is not supported. In xrdp.ini set security_layer=tls (or negotiate) and make sure xrdp can read its TLS certificate.'**
-  String get remoteDesktopFailStandardRdpSecurityOnly;
-
-  /// No description provided for @remoteDesktopFailServerCertificateMissing.
-  ///
-  /// In en, this message translates to:
-  /// **'The server has no TLS certificate. Install one on the server; for xrdp, set certificate and key_file in xrdp.ini.'**
-  String get remoteDesktopFailServerCertificateMissing;
-
-  /// No description provided for @remoteDesktopFailClientCertificateRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'The server requires a client certificate (smart card logon), which is not supported.'**
-  String get remoteDesktopFailClientCertificateRequired;
-
-  /// No description provided for @remoteDesktopFailWrongCredentials.
-  ///
-  /// In en, this message translates to:
-  /// **'Wrong username or password.'**
-  String get remoteDesktopFailWrongCredentials;
-
-  /// No description provided for @remoteDesktopFailAccountLockedOut.
-  ///
-  /// In en, this message translates to:
-  /// **'The account is locked out. Try again later, or ask an administrator to unlock it.'**
-  String get remoteDesktopFailAccountLockedOut;
-
-  /// No description provided for @remoteDesktopFailAccountDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'The account is disabled.'**
-  String get remoteDesktopFailAccountDisabled;
-
-  /// No description provided for @remoteDesktopFailAccountExpired.
-  ///
-  /// In en, this message translates to:
-  /// **'The account has expired.'**
-  String get remoteDesktopFailAccountExpired;
-
-  /// No description provided for @remoteDesktopFailPasswordExpired.
-  ///
-  /// In en, this message translates to:
-  /// **'The password has expired or must be changed. Change it on the server first.'**
-  String get remoteDesktopFailPasswordExpired;
-
-  /// No description provided for @remoteDesktopFailLogonRestricted.
-  ///
-  /// In en, this message translates to:
-  /// **'The account may not log on at this time or from this device, or its blank password is not allowed for remote logon.'**
-  String get remoteDesktopFailLogonRestricted;
-
-  /// No description provided for @remoteDesktopFailRemoteLogonDenied.
-  ///
-  /// In en, this message translates to:
-  /// **'The account is not allowed to log on through Remote Desktop. Add it to the Remote Desktop Users group on the server.'**
-  String get remoteDesktopFailRemoteLogonDenied;
-
-  /// No description provided for @remoteDesktopFailFreshCredentialsRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'The server does not accept saved credentials. Enter the password again.'**
-  String get remoteDesktopFailFreshCredentialsRequired;
-
-  /// No description provided for @remoteDesktopFailIdleTimeout.
-  ///
-  /// In en, this message translates to:
-  /// **'The session was disconnected after the server\'s idle time limit.'**
-  String get remoteDesktopFailIdleTimeout;
-
-  /// No description provided for @remoteDesktopFailSessionTimeLimit.
-  ///
-  /// In en, this message translates to:
-  /// **'The session reached the server\'s time limit.'**
-  String get remoteDesktopFailSessionTimeLimit;
-
-  /// No description provided for @remoteDesktopFailReplacedByOtherConnection.
-  ///
-  /// In en, this message translates to:
-  /// **'Another connection took over this session.'**
-  String get remoteDesktopFailReplacedByOtherConnection;
-
-  /// No description provided for @remoteDesktopFailDisconnectedOnServer.
-  ///
-  /// In en, this message translates to:
-  /// **'The session was disconnected on the server.'**
-  String get remoteDesktopFailDisconnectedOnServer;
-
-  /// No description provided for @remoteDesktopFailLoggedOffByAdministrator.
-  ///
-  /// In en, this message translates to:
-  /// **'An administrator logged off the session.'**
-  String get remoteDesktopFailLoggedOffByAdministrator;
-
-  /// No description provided for @remoteDesktopFailLoggedOff.
-  ///
-  /// In en, this message translates to:
-  /// **'The session was logged off.'**
-  String get remoteDesktopFailLoggedOff;
-
-  /// No description provided for @remoteDesktopFailServerShutdown.
-  ///
-  /// In en, this message translates to:
-  /// **'The server is shutting down.'**
-  String get remoteDesktopFailServerShutdown;
-
-  /// No description provided for @remoteDesktopFailServerReboot.
-  ///
-  /// In en, this message translates to:
-  /// **'The server is restarting.'**
-  String get remoteDesktopFailServerReboot;
-
-  /// No description provided for @remoteDesktopFailServerDeniedConnection.
-  ///
-  /// In en, this message translates to:
-  /// **'The server denied the connection.'**
-  String get remoteDesktopFailServerDeniedConnection;
-
-  /// No description provided for @remoteDesktopFailLicensingFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Remote Desktop licensing failed on the server. Check its license server and Client Access Licenses.'**
-  String get remoteDesktopFailLicensingFailed;
-
-  /// No description provided for @remoteDesktopFailVncSecurityUnsupported.
-  ///
-  /// In en, this message translates to:
-  /// **'The VNC server offers no supported security type; only a VNC password or none is supported. For TigerVNC, set SecurityTypes=VncAuth.'**
-  String get remoteDesktopFailVncSecurityUnsupported;
-
-  /// No description provided for @remoteDesktopFailPasswordRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'The VNC server requires a password.'**
-  String get remoteDesktopFailPasswordRequired;
-
   /// No description provided for @tcpTargetUnreachable.
   ///
   /// In en, this message translates to:
@@ -4985,12 +4247,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The Monitor refused this connection: its password has changed, or it does not act over plain HTTP. Sign in again, or connect over HTTPS.'**
   String get monitorRelayForbidden;
-
-  /// No description provided for @remoteDesktopCertificateChanged.
-  ///
-  /// In en, this message translates to:
-  /// **'Remote desktop certificate changed'**
-  String get remoteDesktopCertificateChanged;
 
   /// No description provided for @remoteDesktopTrustCertificate.
   ///
@@ -5027,18 +4283,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Trust'**
   String get certTrust;
-
-  /// No description provided for @remoteDesktopDeleteProfile.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete remote desktop profile “{name}”?'**
-  String remoteDesktopDeleteProfile(String name);
-
-  /// No description provided for @remoteDesktopReconnectAttempt.
-  ///
-  /// In en, this message translates to:
-  /// **'Reconnecting ({attempt}/3)…'**
-  String remoteDesktopReconnectAttempt(int attempt);
 
   /// No description provided for @remoteDesktopPreviousCertificate.
   ///
@@ -5285,12 +4529,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Graphical'**
   String get virtConsoleGraphical;
-
-  /// Over a guest's graphical console whose VNC server refused the connection for a password; beside a button to enter it.
-  ///
-  /// In en, this message translates to:
-  /// **'This display asks for a password'**
-  String get virtVncPasswordNeeded;
 
   /// Under the button that opens a libvirt guest's serial console in the terminal.
   ///
@@ -10835,102 +10073,6 @@ abstract class AppLocalizations {
   /// **'Sharing management currently supports Linux servers.'**
   String get sharingConnectionsLinuxOnly;
 
-  /// Source filter in the Agent history: the chats kept on this device, not the servers' tasks.
-  ///
-  /// In en, this message translates to:
-  /// **'This device'**
-  String get agentThisDevice;
-
-  /// Button in the Agent history that filters the list by where a chat or task lives.
-  ///
-  /// In en, this message translates to:
-  /// **'Source'**
-  String get agentSource;
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: confirmation that deleting removes it on the server.
-  ///
-  /// In en, this message translates to:
-  /// **'The task is deleted on {server}.'**
-  String agentDeleteRemoteTip(String server);
-
-  /// Label of a monitor agent's plan step shown in a conversation.
-  ///
-  /// In en, this message translates to:
-  /// **'Plan'**
-  String get agentPlan;
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: it was deleted there.
-  ///
-  /// In en, this message translates to:
-  /// **'This task is no longer on the server.'**
-  String get agentRemoteGone;
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: hint of the reply box.
-  ///
-  /// In en, this message translates to:
-  /// **'Reply to the task on {server}'**
-  String agentRemoteReplyHint(String server);
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: the server it runs on and its state.
-  ///
-  /// In en, this message translates to:
-  /// **'{server} · {status, select, queued{Queued} running{Running} waiting{Waiting for you} done{Done} failed{Failed} cancelled{Stopped} other{}}'**
-  String agentRemoteStatus(String server, String status);
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: button that adds a command rule to the server's allow list and runs the command.
-  ///
-  /// In en, this message translates to:
-  /// **'Always allow {rule}'**
-  String agentRemoteAlways(String rule);
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: label of the field where the machine's name is typed to confirm a destructive command.
-  ///
-  /// In en, this message translates to:
-  /// **'Type {name} to run'**
-  String agentRemoteTypeToRun(String name);
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: button that runs a destructive command once the machine's name is typed.
-  ///
-  /// In en, this message translates to:
-  /// **'Run anyway'**
-  String get agentRemoteRunAnyway;
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: label of the sudo password field.
-  ///
-  /// In en, this message translates to:
-  /// **'Password of {user}'**
-  String agentRemoteSudoFor(String user);
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: the sudo password was refused.
-  ///
-  /// In en, this message translates to:
-  /// **'Wrong password'**
-  String get agentRemoteSudoWrong;
-
-  /// A monitor agent's Agent mode task, listed or opened in the app's Agent: the server keeps the sudo password in memory for 15 minutes.
-  ///
-  /// In en, this message translates to:
-  /// **'Remember for 15 minutes'**
-  String get agentRemoteSudoRemember;
-
-  /// Where a new Agent conversation is made: this device, or a server whose monitor agent runs it as a task. Label of the button that picks it; the place is 'This device' or a server's name.
-  ///
-  /// In en, this message translates to:
-  /// **'New in {place}'**
-  String agentNewOn(String place);
-
-  /// Where a new Agent conversation is made: this device, or a server whose monitor agent runs it as a task. Hint of the empty page and the field when a server is picked.
-  ///
-  /// In en, this message translates to:
-  /// **'Ask the agent on {server}, or give it a task.'**
-  String agentRemoteNewHint(String server);
-
-  /// Agent: warning shown while the allow-all mode is picked for a new task.
-  ///
-  /// In en, this message translates to:
-  /// **'Allow all: deleting, restarting and config changes run directly, without asking.'**
-  String get agentModeBypassWarn;
-
   /// Monitor tab: a Monitor notification or storage task, as the panel words it.
   ///
   /// In en, this message translates to:
@@ -11104,12 +10246,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} unread'**
   String monitorUnread(int count);
-
-  /// Web apps section: no app has an update.
-  ///
-  /// In en, this message translates to:
-  /// **'No app has an update.'**
-  String get monitorNoUpdates;
 
   /// Notifications section: none.
   ///
@@ -11771,12 +10907,6 @@ abstract class AppLocalizations {
   /// **'Security'**
   String get security;
 
-  /// Agent command permissions: Agent
-  ///
-  /// In en, this message translates to:
-  /// **'Agent'**
-  String get agentPermsGroup;
-
   /// Asked before leaving a page with unsaved edits
   ///
   /// In en, this message translates to:
@@ -11890,12 +11020,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This device cannot use an ssh-agent'**
   String get sshAgentUnsupported;
-
-  /// No description provided for @sshAgentNotPipe.
-  ///
-  /// In en, this message translates to:
-  /// **'On Windows an ssh-agent is reached through a named pipe, and {path} is not one'**
-  String sshAgentNotPipe(String path);
 
   /// No description provided for @sshAgentUnreachable.
   ///
@@ -12022,186 +11146,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'average'**
   String get average;
-
-  /// No description provided for @monitorMcpAccess.
-  ///
-  /// In en, this message translates to:
-  /// **'MCP access'**
-  String get monitorMcpAccess;
-
-  /// No description provided for @monitorMcpEndpoint.
-  ///
-  /// In en, this message translates to:
-  /// **'Endpoint'**
-  String get monitorMcpEndpoint;
-
-  /// No description provided for @monitorMcpGlobalPolicy.
-  ///
-  /// In en, this message translates to:
-  /// **'Global permissions'**
-  String get monitorMcpGlobalPolicy;
-
-  /// No description provided for @monitorMcpTokens.
-  ///
-  /// In en, this message translates to:
-  /// **'Tokens'**
-  String get monitorMcpTokens;
-
-  /// No description provided for @monitorMcpNewToken.
-  ///
-  /// In en, this message translates to:
-  /// **'New token'**
-  String get monitorMcpNewToken;
-
-  /// No description provided for @monitorMcpDays.
-  ///
-  /// In en, this message translates to:
-  /// **'Days'**
-  String get monitorMcpDays;
-
-  /// No description provided for @monitorMcpCreated.
-  ///
-  /// In en, this message translates to:
-  /// **'Token'**
-  String get monitorMcpCreated;
-
-  /// No description provided for @monitorMcpRevoke.
-  ///
-  /// In en, this message translates to:
-  /// **'Revoke'**
-  String get monitorMcpRevoke;
-
-  /// No description provided for @monitorMcpRevokeHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Revoke {name}?'**
-  String monitorMcpRevokeHint(String name);
-
-  /// No description provided for @monitorMcpLastUsed.
-  ///
-  /// In en, this message translates to:
-  /// **'Last used'**
-  String get monitorMcpLastUsed;
-
-  /// No description provided for @monitorMcpNeverUsed.
-  ///
-  /// In en, this message translates to:
-  /// **'Never used'**
-  String get monitorMcpNeverUsed;
-
-  /// No description provided for @monitorMcpExpires.
-  ///
-  /// In en, this message translates to:
-  /// **'Expires'**
-  String get monitorMcpExpires;
-
-  /// No description provided for @monitorMcpExpired.
-  ///
-  /// In en, this message translates to:
-  /// **'Expired'**
-  String get monitorMcpExpired;
-
-  /// No description provided for @monitorMcpNoTokens.
-  ///
-  /// In en, this message translates to:
-  /// **'No tokens'**
-  String get monitorMcpNoTokens;
-
-  /// No description provided for @monitorMcpAllScopes.
-  ///
-  /// In en, this message translates to:
-  /// **'All permissions'**
-  String get monitorMcpAllScopes;
-
-  /// No description provided for @monitorMcpAllowlist.
-  ///
-  /// In en, this message translates to:
-  /// **'Allowlist'**
-  String get monitorMcpAllowlist;
-
-  /// No description provided for @monitorMcpScopeRead.
-  ///
-  /// In en, this message translates to:
-  /// **'Readings'**
-  String get monitorMcpScopeRead;
-
-  /// No description provided for @monitorMcpScopeFsRead.
-  ///
-  /// In en, this message translates to:
-  /// **'Read files'**
-  String get monitorMcpScopeFsRead;
-
-  /// No description provided for @monitorMcpScopeFsWrite.
-  ///
-  /// In en, this message translates to:
-  /// **'Write files'**
-  String get monitorMcpScopeFsWrite;
-
-  /// No description provided for @monitorMcpScopeExec.
-  ///
-  /// In en, this message translates to:
-  /// **'Run commands'**
-  String get monitorMcpScopeExec;
-
-  /// No description provided for @monitorMcpScopeProcess.
-  ///
-  /// In en, this message translates to:
-  /// **'Processes'**
-  String get monitorMcpScopeProcess;
-
-  /// No description provided for @monitorMcpScopeService.
-  ///
-  /// In en, this message translates to:
-  /// **'Services'**
-  String get monitorMcpScopeService;
-
-  /// No description provided for @monitorMcpScopeContainer.
-  ///
-  /// In en, this message translates to:
-  /// **'Containers'**
-  String get monitorMcpScopeContainer;
-
-  /// No description provided for @monitorMcpScopeCron.
-  ///
-  /// In en, this message translates to:
-  /// **'Cron'**
-  String get monitorMcpScopeCron;
-
-  /// No description provided for @monitorMcpScopeVirt.
-  ///
-  /// In en, this message translates to:
-  /// **'Virtualization'**
-  String get monitorMcpScopeVirt;
-
-  /// No description provided for @monitorMcpScopeStacks.
-  ///
-  /// In en, this message translates to:
-  /// **'Web apps'**
-  String get monitorMcpScopeStacks;
-
-  /// No description provided for @monitorMcpScopePower.
-  ///
-  /// In en, this message translates to:
-  /// **'Power'**
-  String get monitorMcpScopePower;
-
-  /// No description provided for @monitorMcpNameRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter a name.'**
-  String get monitorMcpNameRequired;
-
-  /// No description provided for @monitorMcpScopesRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose at least one permission.'**
-  String get monitorMcpScopesRequired;
-
-  /// No description provided for @monitorMcpPasswordRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter the password.'**
-  String get monitorMcpPasswordRequired;
 
   /// No description provided for @windowsServerUnsupported.
   ///

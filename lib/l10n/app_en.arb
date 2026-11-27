@@ -56,10 +56,6 @@
   "@preReleaseUpdates": {
     "description": "User-facing label or message for pre release updates."
   },
-  "addSystemPrivateKeyTip": "Currently private keys don't exist, do you want to add the one that comes with the system (~/.ssh/id_rsa)?",
-  "@addSystemPrivateKeyTip": {
-    "description": "Help text for the add system private key setting or action."
-  },
   "added2List": "Added to task list",
   "@added2List": {
     "description": "Action label for added 2 list."
@@ -68,90 +64,13 @@
   "@askAi": {
     "description": "User-facing label or message for ask AI."
   },
-  "askAiInsertTerminal": "Insert into terminal",
-  "@askAiInsertTerminal": {
-    "description": "User-facing label or message for ask AI insert terminal."
-  },
   "remoteDesktop": "Remote desktop",
   "@remoteDesktop": {
     "description": "User-facing label or message for remote desktop."
   },
-  "askAiRiskReadOnly": "Read-only",
-  "@askAiRiskReadOnly": {
-    "description": "User-facing label or message for ask AI risk read only."
-  },
-  "askAiRiskCaution": "Changes system",
-  "@askAiRiskCaution": {
-    "description": "User-facing label or message for ask AI risk caution."
-  },
-  "askAiRiskUnvetted": "Unvetted host",
-  "@askAiRiskUnvetted": {
-    "description": "User-facing label or message for ask AI risk unvetted."
-  },
-  "askAiRiskDestructive": "High risk",
-  "@askAiRiskDestructive": {
-    "description": "User-facing label or message for ask AI risk destructive."
-  },
-  "askAiHistory": "Conversation history",
-  "@askAiHistory": {
-    "description": "User-facing label or message for ask AI history."
-  },
-  "askAiNewConversation": "New conversation",
-  "@askAiNewConversation": {
-    "description": "User-facing label or message for ask AI new conversation."
-  },
-  "askAiUntitledConversation": "Untitled",
-  "@askAiUntitledConversation": {
-    "description": "User-facing label or message for ask AI untitled conversation."
-  },
-  "askAiRenameConversation": "Rename conversation",
-  "@askAiRenameConversation": {
-    "description": "User-facing label or message for ask AI rename conversation."
-  },
-  "askAiDeleteConversationTitle": "Delete this conversation?",
-  "@askAiDeleteConversationTitle": {
-    "description": "Title shown for the ask AI delete conversation dialog or section."
-  },
-  "askAiDeleteConversationTip": "Deletes it from this device. Cannot be undone.",
-  "@askAiDeleteConversationTip": {
-    "description": "Help text for the ask AI delete conversation setting or action."
-  },
-  "agentNoHistory": "No saved global Agent conversations",
-  "@agentNoHistory": {
-    "description": "User-facing label or message for agent no history."
-  },
-  "agentClearHistoryTitle": "Clear global Agent history?",
-  "@agentClearHistoryTitle": {
-    "description": "Title shown for the agent clear history dialog or section."
-  },
-  "agentClearHistoryTip": "All global Agent conversations will be removed from this device.",
-  "@agentClearHistoryTip": {
-    "description": "Help text for the agent clear history setting or action."
-  },
-  "agentCommandMayStillRun": "The stopped command may still be running on the server.",
-  "agentToolShell": "Shell",
-  "@agentToolShell": {
-    "description": "User-facing label or message for agent tool shell."
-  },
-  "agentToolReadFile": "Read file",
-  "@agentToolReadFile": {
-    "description": "User-facing label or message for agent tool read file."
-  },
-  "agentToolWriteFile": "Write file",
-  "@agentToolWriteFile": {
-    "description": "User-facing label or message for agent tool write file."
-  },
   "floatOverTabs": "Float over other tabs",
   "@floatOverTabs": {
     "description": "User-facing label or message for float over tabs."
-  },
-  "agentToolSshConnect": "SSH connect",
-  "@agentToolSshConnect": {
-    "description": "User-facing label or message for agent tool SSH connect."
-  },
-  "agentToolSshDisconnect": "Disconnect SSH",
-  "@agentToolSshDisconnect": {
-    "description": "User-facing label or message for agent tool SSH disconnect."
   },
   "agentSshConnectTitle": "Connect to a new host",
   "@agentSshConnectTitle": {
@@ -164,10 +83,6 @@
   "agentSshConnectTip": "The Agent wants an SSH connection. Enter the password here",
   "@agentSshConnectTip": {
     "description": "Help text for the agent SSH connect setting or action."
-  },
-  "agentAdHocSessions": "Temporary connections",
-  "@agentAdHocSessions": {
-    "description": "User-facing label or message for agent ad hoc sessions."
   },
   "agentSaveServerTitle": "Save as a server",
   "@agentSaveServerTitle": {
@@ -961,10 +876,6 @@
       }
     }
   },
-  "pushToken": "Push token",
-  "@pushToken": {
-    "description": "User-facing label or message for push token."
-  },
   "proxyCommandNeedsLinux": "ProxyCommand runs in this device's Linux environment. Install a Linux system first.",
   "@proxyCommandNeedsLinux": {
     "description": "Shown when a ProxyCommand is used on a phone with no Linux system installed to run it in."
@@ -1008,10 +919,6 @@
   "pveMissingAuthTicket": "PVE login succeeded but no authentication ticket was returned.",
   "@pveMissingAuthTicket": {
     "description": "User-facing label or message for pve missing auth ticket."
-  },
-  "pveLoadingConnect": "Connecting...",
-  "@pveLoadingConnect": {
-    "description": "User-facing label or message for pve loading connect."
   },
   "pvePassword": "PVE Password",
   "@pvePassword": {
@@ -1382,10 +1289,6 @@
   "@keyPassphrases": {
     "description": "Sync category label."
   },
-  "syncFiles": "Agent skills",
-  "@syncFiles": {
-    "description": "Sync category label."
-  },
   "syncRemoteTooNew": "Synced data was created by a newer version of ServerBox. Update the app to continue syncing.",
   "@syncRemoteTooNew": {
     "description": "Shown on the backup page when this build stops syncing at data a newer build wrote."
@@ -1510,10 +1413,6 @@
   "@webdavSettingEmpty": {
     "description": "Empty-state message for webdav setting empty."
   },
-  "whenOpenApp": "When opening the app",
-  "@whenOpenApp": {
-    "description": "User-facing label or message for when open app."
-  },
   "wolTip": "After configuring WOL (Wake-on-LAN), a WOL request is sent each time the server is connected.",
   "@wolTip": {
     "description": "Help text for the wol setting or action."
@@ -1529,10 +1428,6 @@
   "writeScriptTip": "After connecting to the server, a script will be written to `~/.config/server_box` \n | `/tmp/server_box` to monitor the system status. You can review the script content.",
   "@writeScriptTip": {
     "description": "Help text for the write script setting or action."
-  },
-  "menuGitHubRepository": "GitHub Repository",
-  "@menuGitHubRepository": {
-    "description": "User-facing label or message for menu git hub repository."
   },
   "podmanDockerEmulationDetected": "Podman Docker emulation detected. Please switch to Podman in settings.",
   "@podmanDockerEmulationDetected": {
@@ -1657,14 +1552,6 @@
   "processParseInvalidRows": "Some process entries could not be read.",
   "@processParseInvalidRows": {
     "description": "User-facing label or message for process parse invalid rows."
-  },
-  "processParseInvalidWindowsJson": "The Windows process response could not be read.",
-  "@processParseInvalidWindowsJson": {
-    "description": "User-facing label or message for process parse invalid windows json."
-  },
-  "processParseInvalidWindowsRows": "Some Windows process entries could not be read.",
-  "@processParseInvalidWindowsRows": {
-    "description": "User-facing label or message for process parse invalid windows rows."
   },
   "processKillTargetChanged": "The process changed or exited. Refresh and try again.",
   "@processKillTargetChanged": {
@@ -1899,21 +1786,9 @@
   "@continueInTerminal": {
     "description": "User-facing label or message for continue in terminal."
   },
-  "askAiRiskUnknown": "Unclassified",
-  "@askAiRiskUnknown": {
-    "description": "User-facing label or message for ask AI risk unknown."
-  },
   "agentLocalExec": "Run commands on this device",
   "@agentLocalExec": {
     "description": "User-facing label or message for agent local exec."
-  },
-  "agentLocalExecTip": "Allows the Agent to run commands on this device according to the permission mode",
-  "@agentLocalExecTip": {
-    "description": "Help text for the agent local exec setting or action."
-  },
-  "agentLocalExecRootfsTip": "Lets the Agent work locally, confined to the Linux container ServerBox installed",
-  "@agentLocalExecRootfsTip": {
-    "description": "Help text for the agent local exec rootfs setting or action."
   },
   "agentRedact": "Redact secrets before sending",
   "@agentRedact": {
@@ -2450,78 +2325,6 @@
         "type": "String"
       }
     }
-  },
-  "agentServerTools": "Server tools",
-  "@agentServerTools": {
-    "description": "Agent: agentServerTools."
-  },
-  "agentServerToolsTip": "Run commands and read or write files on your servers, connect to other hosts over SSH, and use ServerBox's own actions.",
-  "@agentServerToolsTip": {
-    "description": "Agent: agentServerToolsTip."
-  },
-  "agentTerminalTools": "Terminal",
-  "@agentTerminalTools": {
-    "description": "Agent: agentTerminalTools."
-  },
-  "agentTerminalToolsTip": "In a terminal's own chats: read what the terminal shows, and run commands on its server.",
-  "@agentTerminalToolsTip": {
-    "description": "Agent: agentTerminalToolsTip."
-  },
-  "agentToolTerminalScreen": "Read the screen",
-  "@agentToolTerminalScreen": {
-    "description": "Agent: agentToolTerminalScreen."
-  },
-  "agentProviders": "Providers",
-  "@agentProviders": {
-    "description": "Agent: agentProviders."
-  },
-  "agentProvidersTip": "API keys, models, and the model a new chat uses",
-  "@agentProvidersTip": {
-    "description": "Agent: agentProvidersTip."
-  },
-  "agentTools": "Tools",
-  "@agentTools": {
-    "description": "Agent: agentTools."
-  },
-  "agentToolsTip": "What the Agent may use, and its MCP servers",
-  "@agentToolsTip": {
-    "description": "Agent: agentToolsTip."
-  },
-  "agentSnippetToolsTip": "List, add, change and delete your snippets. Changes are asked about.",
-  "@agentSnippetToolsTip": {
-    "description": "Agent: agentSnippetToolsTip."
-  },
-  "agentVirtToolsTip": "Read the VMs and containers the Virtualization tab has loaded.",
-  "@agentVirtToolsTip": {
-    "description": "Agent: agentVirtToolsTip."
-  },
-  "agentBenchmarkToolsTip": "Read benchmark results, and run or stop a benchmark with your approval.",
-  "@agentBenchmarkToolsTip": {
-    "description": "Agent: agentBenchmarkToolsTip."
-  },
-  "agentRemoteDesktopToolsTip": "List remote desktop profiles, and connect or disconnect with your approval.",
-  "@agentRemoteDesktopToolsTip": {
-    "description": "Agent: agentRemoteDesktopToolsTip."
-  },
-  "agentSkills": "Skills",
-  "@agentSkills": {
-    "description": "Agent: agentSkills."
-  },
-  "agentSkillsTip": "Instructions for particular tasks, installed from GitHub or a link",
-  "@agentSkillsTip": {
-    "description": "Agent: agentSkillsTip."
-  },
-  "agentPermissions": "Permissions",
-  "@agentPermissions": {
-    "description": "Agent: agentPermissions."
-  },
-  "agentEmptyHint": "Ask about your servers, or ask the Agent to do something on them.",
-  "@agentEmptyHint": {
-    "description": "Agent: agentEmptyHint."
-  },
-  "agentTerminalEmptyHint": "Ask about this server. The Agent can read this terminal and run commands here.",
-  "@agentTerminalEmptyHint": {
-    "description": "Agent: agentTerminalEmptyHint."
   },
   "oldestSampleFmt": "oldest sample {time}",
   "@oldestSampleFmt": {
@@ -3413,164 +3216,9 @@
   "@authShort": {
     "description": "User-facing label or message for auth short."
   },
-  "remoteDesktopFitToWindow": "Fit to window",
-  "@remoteDesktopFitToWindow": {
-    "description": "User-facing label or message for remote desktop fit to window."
-  },
-  "remoteDesktopActualSize": "Actual size",
-  "@remoteDesktopActualSize": {
-    "description": "User-facing label or message for remote desktop actual size."
-  },
-  "remoteDesktopZoom": "Zoom",
-  "@remoteDesktopZoom": {
-    "description": "User-facing label or message for remote desktop zoom."
-  },
-  "remoteDesktopViewOnly": "View only",
-  "@remoteDesktopViewOnly": {
-    "description": "User-facing label or message for remote desktop view only."
-  },
-  "remoteDesktopDisableViewOnly": "Disable view only",
-  "@remoteDesktopDisableViewOnly": {
-    "description": "User-facing label or message for remote desktop disable view only."
-  },
-  "remoteDesktopSendClipboardText": "Send clipboard text",
-  "@remoteDesktopSendClipboardText": {
-    "description": "User-facing label or message for remote desktop send clipboard text."
-  },
-  "remoteDesktopShowKeyboard": "Show keyboard",
-  "@remoteDesktopShowKeyboard": {
-    "description": "User-facing label or message for remote desktop show keyboard."
-  },
-  "remoteDesktopMoreControls": "More controls",
-  "@remoteDesktopMoreControls": {
-    "description": "User-facing label or message for remote desktop more controls."
-  },
-  "remoteDesktopUseDirectPointer": "Use direct pointer",
-  "@remoteDesktopUseDirectPointer": {
-    "description": "User-facing label or message for remote desktop use direct pointer."
-  },
-  "remoteDesktopUseTouchpadPointer": "Use touchpad pointer",
-  "@remoteDesktopUseTouchpadPointer": {
-    "description": "User-facing label or message for remote desktop use touchpad pointer."
-  },
-  "remoteDesktopSendCtrlAltDelete": "Send Ctrl+Alt+Delete",
-  "@remoteDesktopSendCtrlAltDelete": {
-    "description": "User-facing label or message for remote desktop send ctrl alt delete."
-  },
-  "remoteDesktopReconnect": "Reconnect",
-  "@remoteDesktopReconnect": {
-    "description": "User-facing label or message for remote desktop reconnect."
-  },
-  "remoteDesktopFullScreen": "Full screen",
-  "remoteDesktopExitFullScreen": "Exit full screen",
-  "@remoteDesktopFullScreen": {
-    "description": "User-facing label or message for remote desktop full screen."
-  },
-  "remoteDesktopCloseSession": "Close session",
-  "@remoteDesktopCloseSession": {
-    "description": "User-facing label or message for remote desktop close session."
-  },
-  "remoteDesktopConnected": "Connected",
-  "@remoteDesktopConnected": {
-    "description": "User-facing label or message for remote desktop connected."
-  },
-  "remoteDesktopConnecting": "Connecting",
-  "@remoteDesktopConnecting": {
-    "description": "Status message shown while remote desktop connecting."
-  },
-  "remoteDesktopReconnecting": "Reconnecting",
-  "@remoteDesktopReconnecting": {
-    "description": "User-facing label or message for remote desktop reconnecting."
-  },
-  "remoteDesktopDisconnected": "Disconnected",
-  "@remoteDesktopDisconnected": {
-    "description": "User-facing label or message for remote desktop disconnected."
-  },
-  "remoteDesktopGuideTouch": "Touchpad",
-  "@remoteDesktopGuideTouch": {
-    "description": "User-facing label or message for remote desktop guide touch."
-  },
-  "remoteDesktopGuideTouchTip": "One finger moves the pointer like a touchpad, and a tap clicks. Tap with two fingers to right-click, drag with two to scroll, and pinch to zoom. Tap twice and keep the finger down to drag.",
-  "@remoteDesktopGuideTouchTip": {
-    "description": "Help text for the remote desktop guide touch setting or action."
-  },
-  "remoteDesktopGuideKeyboardTip": "Opens the on-screen keyboard. What you type is sent to the remote desktop.",
-  "@remoteDesktopGuideKeyboardTip": {
-    "description": "Help text for the remote desktop guide keyboard setting or action."
-  },
-  "remoteDesktopGuideViewOnlyTip": "Stops sending the pointer and keys, so you can look without clicking anything by accident.",
-  "@remoteDesktopGuideViewOnlyTip": {
-    "description": "Help text for the remote desktop guide view only setting or action."
-  },
-  "remoteDesktopGuideMoreTip": "Ctrl+Alt+Delete, reconnecting and full screen are in here.",
-  "@remoteDesktopGuideMoreTip": {
-    "description": "Help text for the remote desktop guide more setting or action."
-  },
-  "remoteDesktopGuidePointerTip": "So is a direct pointer, where a finger clicks what it touches.",
-  "@remoteDesktopGuidePointerTip": {
-    "description": "Help text for the remote desktop guide pointer setting or action."
-  },
-  "remoteDesktopVncClipboardLatin1Only": "VNC clipboard supports Latin-1 text only.",
-  "@remoteDesktopVncClipboardLatin1Only": {
-    "description": "User-facing label or message for remote desktop VNC clipboard latin 1 only."
-  },
-  "remoteDesktopAddProfile": "Add profile",
-  "remoteDesktopNoProfiles": "No remote desktop profiles",
-  "remoteDesktopAdd": "Add remote desktop",
-  "remoteDesktopEdit": "Edit remote desktop",
-  "remoteDesktopTargetTip": "The target is resolved from the SSH server or the Monitor. Localhost refers to that machine.",
-  "remoteDesktopDomain": "Domain (optional)",
-  "remoteDesktopPassword": "Password (optional)",
-  "remoteDesktopSavePassword": "Save password",
-  "remoteDesktopSavePasswordTip": "Stored in the encrypted database. Backups include saved passwords, and are encrypted only when a backup password is set.",
-  "remoteDesktopShareSession": "Share session",
-  "remoteDesktopProtocol": "Protocol",
-  "remoteDesktopUniqueName": "Profile names must be unique for this server.",
-  "remoteDesktopNameRequired": "Enter a profile name.",
-  "remoteDesktopHostRequired": "Enter a target host.",
-  "remoteDesktopPortRequired": "Enter a valid port.",
-  "remoteDesktopUsernameRequired": "Enter the RDP username.",
-  "remoteDesktopNameInvalid": "The profile name can be up to 64 characters and cannot contain line breaks.",
-  "remoteDesktopHostInvalid": "The target host cannot contain spaces or line breaks.",
-  "remoteDesktopProtocolInvalid": "Unsupported protocol.",
-  "@remoteDesktopProtocolInvalid": {
-    "description": "Remote desktop: the protocol is not one the app supports."
-  },
-  "remoteDesktopCredentialInvalid": "The username and domain can be up to 256 characters and cannot contain line breaks.",
-  "remoteDesktopVncPasswordHint": "Classic VNC uses only the first 8 characters",
-  "@remoteDesktopVncPasswordHint": {
-    "description": "Placeholder of the VNC password field: a longer password is accepted, and only its first 8 characters are used to sign in, as in TigerVNC."
-  },
-  "remoteDesktopVncPasswordAscii": "Classic VNC passwords must contain ASCII characters only.",
-  "remoteDesktopCertificateRequired": "Certificate confirmation required",
-  "remoteDesktopWaiting": "Waiting for desktop…",
-  "remoteDesktopFailStandardRdpSecurityOnly": "The server only offers Standard RDP Security (RC4), which is not supported. In xrdp.ini set security_layer=tls (or negotiate) and make sure xrdp can read its TLS certificate.",
-  "remoteDesktopFailServerCertificateMissing": "The server has no TLS certificate. Install one on the server; for xrdp, set certificate and key_file in xrdp.ini.",
-  "remoteDesktopFailClientCertificateRequired": "The server requires a client certificate (smart card logon), which is not supported.",
-  "remoteDesktopFailWrongCredentials": "Wrong username or password.",
-  "remoteDesktopFailAccountLockedOut": "The account is locked out. Try again later, or ask an administrator to unlock it.",
-  "remoteDesktopFailAccountDisabled": "The account is disabled.",
-  "remoteDesktopFailAccountExpired": "The account has expired.",
-  "remoteDesktopFailPasswordExpired": "The password has expired or must be changed. Change it on the server first.",
-  "remoteDesktopFailLogonRestricted": "The account may not log on at this time or from this device, or its blank password is not allowed for remote logon.",
-  "remoteDesktopFailRemoteLogonDenied": "The account is not allowed to log on through Remote Desktop. Add it to the Remote Desktop Users group on the server.",
-  "remoteDesktopFailFreshCredentialsRequired": "The server does not accept saved credentials. Enter the password again.",
-  "remoteDesktopFailIdleTimeout": "The session was disconnected after the server's idle time limit.",
-  "remoteDesktopFailSessionTimeLimit": "The session reached the server's time limit.",
-  "remoteDesktopFailReplacedByOtherConnection": "Another connection took over this session.",
-  "remoteDesktopFailDisconnectedOnServer": "The session was disconnected on the server.",
-  "remoteDesktopFailLoggedOffByAdministrator": "An administrator logged off the session.",
-  "remoteDesktopFailLoggedOff": "The session was logged off.",
-  "remoteDesktopFailServerShutdown": "The server is shutting down.",
-  "remoteDesktopFailServerReboot": "The server is restarting.",
-  "remoteDesktopFailServerDeniedConnection": "The server denied the connection.",
-  "remoteDesktopFailLicensingFailed": "Remote Desktop licensing failed on the server. Check its license server and Client Access Licenses.",
-  "remoteDesktopFailVncSecurityUnsupported": "The VNC server offers no supported security type; only a VNC password or none is supported. For TigerVNC, set SecurityTypes=VncAuth.",
-  "remoteDesktopFailPasswordRequired": "The VNC server requires a password.",
   "tcpTargetUnreachable": "The server could not connect to this address. Check that the service is running and listening on that port.",
   "sshTcpForwardingProhibited": "The SSH server refused to forward this connection. Check AllowTcpForwarding and PermitOpen in its sshd_config, and any no-port-forwarding or permitopen option on the key in authorized_keys.",
   "monitorRelayForbidden": "The Monitor refused this connection: its password has changed, or it does not act over plain HTTP. Sign in again, or connect over HTTPS.",
-  "remoteDesktopCertificateChanged": "Remote desktop certificate changed",
   "remoteDesktopTrustCertificate": "Trust certificate?",
   "remoteDesktopCertificateChangedTip": "The certificate fingerprint no longer matches the saved value. Verify the new fingerprint before replacing trust.",
   "remoteDesktopCertificateUnverifiedTip": "The system could not verify this certificate. Verify its SHA-256 fingerprint before continuing.",
@@ -3579,22 +3227,6 @@
   "certTrust": "Trust",
   "@certTrust": {
     "description": "Accepts a certificate shown for review, where nothing reconnects at once (a form field is set)."
-  },
-  "remoteDesktopDeleteProfile": "Delete remote desktop profile “{name}”?",
-  "@remoteDesktopDeleteProfile": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteDesktopReconnectAttempt": "Reconnecting ({attempt}/3)…",
-  "@remoteDesktopReconnectAttempt": {
-    "placeholders": {
-      "attempt": {
-        "type": "int"
-      }
-    }
   },
   "remoteDesktopPreviousCertificate": "Previously trusted\n{fingerprint}",
   "@remoteDesktopPreviousCertificate": {
@@ -3810,10 +3442,6 @@
   "virtConsoleGraphical": "Graphical",
   "@virtConsoleGraphical": {
     "description": "Toggle for a guest's graphical (VNC) console, beside the text one."
-  },
-  "virtVncPasswordNeeded": "This display asks for a password",
-  "@virtVncPasswordNeeded": {
-    "description": "Over a guest's graphical console whose VNC server refused the connection for a password; beside a button to enter it."
   },
   "virtConsoleSerialTip": "Opens the guest's serial console with virsh on the host. Disconnect, or Ctrl+], returns to the host's shell.",
   "@virtConsoleSerialTip": {
@@ -8130,113 +7758,6 @@
   "@sharingConnectionsLinuxOnly": {
     "description": "Storage and sharing page text."
   },
-  "agentThisDevice": "This device",
-  "@agentThisDevice": {
-    "description": "Source filter in the Agent history: the chats kept on this device, not the servers' tasks."
-  },
-  "agentSource": "Source",
-  "@agentSource": {
-    "description": "Button in the Agent history that filters the list by where a chat or task lives."
-  },
-  "agentDeleteRemoteTip": "The task is deleted on {server}.",
-  "@agentDeleteRemoteTip": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: confirmation that deleting removes it on the server.",
-    "placeholders": {
-      "server": {
-        "type": "String"
-      }
-    }
-  },
-  "agentPlan": "Plan",
-  "@agentPlan": {
-    "description": "Label of a monitor agent's plan step shown in a conversation."
-  },
-  "agentRemoteGone": "This task is no longer on the server.",
-  "@agentRemoteGone": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: it was deleted there."
-  },
-  "agentRemoteReplyHint": "Reply to the task on {server}",
-  "@agentRemoteReplyHint": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: hint of the reply box.",
-    "placeholders": {
-      "server": {
-        "type": "String"
-      }
-    }
-  },
-  "agentRemoteStatus": "{server} · {status, select, queued{Queued} running{Running} waiting{Waiting for you} done{Done} failed{Failed} cancelled{Stopped} other{}}",
-  "@agentRemoteStatus": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: the server it runs on and its state.",
-    "placeholders": {
-      "server": {
-        "type": "String"
-      },
-      "status": {
-        "type": "String"
-      }
-    }
-  },
-  "agentRemoteAlways": "Always allow {rule}",
-  "@agentRemoteAlways": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: button that adds a command rule to the server's allow list and runs the command.",
-    "placeholders": {
-      "rule": {
-        "type": "String"
-      }
-    }
-  },
-  "agentRemoteTypeToRun": "Type {name} to run",
-  "@agentRemoteTypeToRun": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: label of the field where the machine's name is typed to confirm a destructive command.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "agentRemoteRunAnyway": "Run anyway",
-  "@agentRemoteRunAnyway": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: button that runs a destructive command once the machine's name is typed."
-  },
-  "agentRemoteSudoFor": "Password of {user}",
-  "@agentRemoteSudoFor": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: label of the sudo password field.",
-    "placeholders": {
-      "user": {
-        "type": "String"
-      }
-    }
-  },
-  "agentRemoteSudoWrong": "Wrong password",
-  "@agentRemoteSudoWrong": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: the sudo password was refused."
-  },
-  "agentRemoteSudoRemember": "Remember for 15 minutes",
-  "@agentRemoteSudoRemember": {
-    "description": "A monitor agent's Agent mode task, listed or opened in the app's Agent: the server keeps the sudo password in memory for 15 minutes."
-  },
-  "agentNewOn": "New in {place}",
-  "@agentNewOn": {
-    "description": "Where a new Agent conversation is made: this device, or a server whose monitor agent runs it as a task. Label of the button that picks it; the place is 'This device' or a server's name.",
-    "placeholders": {
-      "place": {
-        "type": "String"
-      }
-    }
-  },
-  "agentRemoteNewHint": "Ask the agent on {server}, or give it a task.",
-  "@agentRemoteNewHint": {
-    "description": "Where a new Agent conversation is made: this device, or a server whose monitor agent runs it as a task. Hint of the empty page and the field when a server is picked.",
-    "placeholders": {
-      "server": {
-        "type": "String"
-      }
-    }
-  },
-  "agentModeBypassWarn": "Allow all: deleting, restarting and config changes run directly, without asking.",
-  "@agentModeBypassWarn": {
-    "description": "Agent: warning shown while the allow-all mode is picked for a new task."
-  },
   "noticeStorageArrayDegraded": "/dev/{array} is degraded",
   "@noticeStorageArrayDegraded": {
     "description": "Monitor tab: a Monitor notification or storage task, as the panel words it.",
@@ -8413,10 +7934,6 @@
         "type": "int"
       }
     }
-  },
-  "monitorNoUpdates": "No app has an update.",
-  "@monitorNoUpdates": {
-    "description": "Web apps section: no app has an update."
   },
   "monitorNoticesEmpty": "No notifications.",
   "@monitorNoticesEmpty": {
@@ -8906,10 +8423,6 @@
   "@security": {
     "description": "Intro / server discovery: Security"
   },
-  "agentPermsGroup": "Agent",
-  "@agentPermsGroup": {
-    "description": "Agent command permissions: Agent"
-  },
   "discardUnsaved": "Discard unsaved changes?",
   "@discardUnsaved": {
     "description": "Asked before leaving a page with unsaved edits"
@@ -8960,14 +8473,6 @@
     }
   },
   "sshAgentUnsupported": "This device cannot use an ssh-agent",
-  "sshAgentNotPipe": "On Windows an ssh-agent is reached through a named pipe, and {path} is not one",
-  "@sshAgentNotPipe": {
-    "placeholders": {
-      "path": {
-        "type": "String"
-      }
-    }
-  },
   "sshAgentUnreachable": "Cannot reach the ssh-agent at {path}: {reason}",
   "@sshAgentUnreachable": {
     "placeholders": {
@@ -9028,42 +8533,5 @@
   "@hideSystemVersion": {},
   "average": "average",
   "@average": {},
-  "monitorMcpAccess": "MCP access",
-  "monitorMcpEndpoint": "Endpoint",
-  "monitorMcpGlobalPolicy": "Global permissions",
-  "monitorMcpTokens": "Tokens",
-  "monitorMcpNewToken": "New token",
-  "monitorMcpDays": "Days",
-  "monitorMcpCreated": "Token",
-  "monitorMcpRevoke": "Revoke",
-  "monitorMcpRevokeHint": "Revoke {name}?",
-  "@monitorMcpRevokeHint": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "monitorMcpLastUsed": "Last used",
-  "monitorMcpNeverUsed": "Never used",
-  "monitorMcpExpires": "Expires",
-  "monitorMcpExpired": "Expired",
-  "monitorMcpNoTokens": "No tokens",
-  "monitorMcpAllScopes": "All permissions",
-  "monitorMcpAllowlist": "Allowlist",
-  "monitorMcpScopeRead": "Readings",
-  "monitorMcpScopeFsRead": "Read files",
-  "monitorMcpScopeFsWrite": "Write files",
-  "monitorMcpScopeExec": "Run commands",
-  "monitorMcpScopeProcess": "Processes",
-  "monitorMcpScopeService": "Services",
-  "monitorMcpScopeContainer": "Containers",
-  "monitorMcpScopeCron": "Cron",
-  "monitorMcpScopeVirt": "Virtualization",
-  "monitorMcpScopeStacks": "Web apps",
-  "monitorMcpScopePower": "Power",
-  "monitorMcpNameRequired": "Enter a name.",
-  "monitorMcpScopesRequired": "Choose at least one permission.",
-  "monitorMcpPasswordRequired": "Enter the password.",
   "windowsServerUnsupported": "Windows servers are not supported. The terminal and file browser still work over SSH."
 }
