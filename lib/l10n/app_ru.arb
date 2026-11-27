@@ -2010,5 +2010,6 @@
   "monitorMcpScopePower": "Питание",
   "monitorMcpNameRequired": "Введите имя.",
   "monitorMcpScopesRequired": "Выберите хотя бы одно право.",
-  "monitorMcpPasswordRequired": "Введите пароль."
+  "monitorMcpPasswordRequired": "Введите пароль.",
+  "windowsServerUnsupported": "Серверы Windows не поддерживаются. Терминал и файловый браузер по-прежнему работают через SSH."
 }

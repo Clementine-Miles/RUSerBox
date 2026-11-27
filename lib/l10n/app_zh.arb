@@ -2008,5 +2008,6 @@
   "monitorMcpScopePower": "电源控制",
   "monitorMcpNameRequired": "请输入名称。",
   "monitorMcpScopesRequired": "至少选择一项权限。",
-  "monitorMcpPasswordRequired": "请输入密码。"
+  "monitorMcpPasswordRequired": "请输入密码。",
+  "windowsServerUnsupported": "不支持 Windows 服务器。终端和文件浏览仍可通过 SSH 使用。"
 }

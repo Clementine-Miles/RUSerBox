@@ -5,7 +5,7 @@
 //! Each test names its corresponding Dart case.
 
 use sbm_parser::types::*;
-use sbm_parser::{bsd, commands, linux, windows, SystemType};
+use sbm_parser::{bsd, commands, linux, SystemType};
 use std::collections::HashMap;
 
 // ---------- CPU:cpu_test.dart ----------
@@ -827,146 +827,6 @@ fn temps_parse_and_priority() {
     assert_eq!(temps.first(), Some(66.125));
 }
 
-// ---------- Windows:windows_parser.dart ----------
-
-/// Dart `WindowsParser.parseCpu`: single-processor map with summary head and per-logical-core split
-#[test]
-fn windows_parse_cpu_single() {
-    let raw = r#"{"LoadPercentage": 25, "NumberOfCores": 2, "NumberOfLogicalProcessors": 4}"#;
-    let cores = windows::parse_cpu(raw, &[]);
-    // 1 summary + 4 logical cores
-    assert_eq!(cores.len(), 5);
-    assert_eq!(cores[0].id, "cpu");
-    assert_eq!(cores[1].id, "cpu0");
-    assert_eq!(cores[1].user, 25);
-    assert_eq!(cores[1].idle, 75);
-    // Summary equals the per-core sum
-    assert_eq!(cores[0].user, 100);
-    assert_eq!(cores[0].idle, 300);
-}
-
-/// Pseudo-accumulation: accumulates on top of the previous result when passed
-#[test]
-fn windows_parse_cpu_accumulates() {
-    let raw = r#"{"LoadPercentage": 10, "NumberOfCores": 1, "NumberOfLogicalProcessors": 1}"#;
-    let first = windows::parse_cpu(raw, &[]);
-    let second = windows::parse_cpu(raw, &first);
-    assert_eq!(second[1].user, 20);
-    assert_eq!(second[1].idle, 180);
-}
-
-/// Dart `WindowsParser.parseMemory`: Win32_OperatingSystem is already KiB
-#[test]
-fn windows_parse_mem() {
-    let raw = r#"[{"TotalVisibleMemorySize": 16777216, "FreePhysicalMemory": 8388608}]"#;
-    let m = windows::parse_mem(raw).unwrap();
-    assert_eq!(m.total, 16777216);
-    assert_eq!(m.free, 8388608);
-    assert_eq!(m.avail, 8388608);
-}
-
-/// Dart `WindowsParser.parseDisks`: bytes → KiB, missing fields skipped
-#[test]
-fn windows_parse_disks() {
-    let raw = r#"[
-        {"DeviceID": "C:", "Size": 512000000000, "FreeSpace": 256000000000, "FileSystem": "NTFS"},
-        {"DeviceID": "D:", "Size": null, "FreeSpace": null, "FileSystem": null}
-    ]"#;
-    let disks = windows::parse_disks(raw);
-    assert_eq!(disks.len(), 1);
-    let c = &disks[0];
-    assert_eq!(c.path, "C:");
-    assert_eq!(c.size, 512000000000 / 1024);
-    assert_eq!(c.avail, 256000000000 / 1024);
-    assert_eq!(c.used, c.size - c.avail);
-    assert_eq!(c.used_percent, 50);
-    assert_eq!(c.fs_type.as_deref(), Some("NTFS"));
-}
-
-// ---- Real-device fixtures (Windows 11 Pro / 26200, captured on hardware) ----
-
-/// Real Win32_Processor output: single CPU, 14 cores / 20 threads, 35% load
-#[test]
-fn windows_real_cpu() {
-    let cores = windows::parse_cpu(include_str!("fixtures/win_cpu.json"), &[]);
-    assert_eq!(cores.len(), 21); // summary + 20 logical cores
-    assert_eq!(cores[0].id, "cpu");
-    assert_eq!(cores[0].user, 35 * 20);
-    assert_eq!(cores[0].idle, 65 * 20);
-    assert_eq!(cores[1].user, 35);
-}
-
-/// Real Win32_OperatingSystem output (64GB physical memory)
-#[test]
-fn windows_real_mem() {
-    let m = windows::parse_mem(include_str!("fixtures/win_mem.json")).unwrap();
-    assert_eq!(m.total, 66874508);
-    assert_eq!(m.free, 8798060);
-}
-
-/// Real Win32_LogicalDisk output (single C: NTFS 2TB volume)
-#[test]
-fn windows_real_disk() {
-    let disks = windows::parse_disks(include_str!("fixtures/win_disk.json"));
-    assert_eq!(disks.len(), 1);
-    let c = &disks[0];
-    assert_eq!(c.path, "C:");
-    assert_eq!(c.fs_type.as_deref(), Some("NTFS"));
-    assert_eq!(c.size, 2047328907264 / 1024);
-    assert_eq!(c.avail, 587356827648 / 1024);
-    assert_eq!(c.used_percent, 71);
-}
-
-/// Real MSAcpi_ThermalZoneTemperature output
-#[test]
-fn windows_real_temp() {
-    let temps = windows::parse_temps(include_str!("fixtures/win_temp.json"));
-    assert_eq!(temps.0.get(r"ACPI\ThermalZone\TZ00_0"), Some(&27.8));
-}
-
-/// A full volume (FreeSpace = 0) is a valid state and must not be dropped
-#[test]
-fn windows_parse_disks_keeps_full_volume() {
-    let raw = r#"[
-        {"DeviceID": "C:", "Size": 512000000000, "FreeSpace": 0, "FileSystem": "NTFS"}
-    ]"#;
-    let disks = windows::parse_disks(raw);
-    assert_eq!(disks.len(), 1);
-    assert_eq!(disks[0].avail, 0);
-    assert_eq!(disks[0].used, disks[0].size);
-    assert_eq!(disks[0].used_percent, 100);
-}
-
-/// Raw cumulative counters of the last sample group → NetIface (`_Total` skipped)
-#[test]
-fn windows_parse_net_last_sample() {
-    let raw = r#"[
-        [
-            {"Name": "_Total", "BytesReceivedPersec": 100, "BytesSentPersec": 100, "Timestamp_Sys100NS": 10000000},
-            {"Name": "Ethernet", "BytesReceivedPersec": 1000, "BytesSentPersec": 500, "Timestamp_Sys100NS": 10000000}
-        ],
-        [
-            {"Name": "_Total", "BytesReceivedPersec": 300, "BytesSentPersec": 200, "Timestamp_Sys100NS": 20000000},
-            {"Name": "Ethernet", "BytesReceivedPersec": 3000, "BytesSentPersec": 2000, "Timestamp_Sys100NS": 20000000}
-        ]
-    ]"#;
-    let ifaces = windows::parse_net(raw);
-    assert_eq!(ifaces.len(), 1);
-    assert_eq!(ifaces[0].device, "Ethernet");
-    assert_eq!(ifaces[0].rx_bytes, 3000);
-    assert_eq!(ifaces[0].tx_bytes, 2000);
-}
-
-/// Real-device fixture: cumulative counters also extracted from the `{"value": [...]}` wrapper form
-#[test]
-fn windows_real_net_totals() {
-    let ifaces = windows::parse_net(include_str!("fixtures/win_net.json"));
-    assert_eq!(ifaces.len(), 5);
-    for i in &ifaces {
-        assert!(!i.device.is_empty() && i.device != "_Total");
-    }
-}
-
 // ---------- Conn:conn_test.dart ----------
 
 /// Dart 'Conn.parse reads MaxConn and AttemptFails from /proc/net/snmp'
@@ -1028,24 +888,6 @@ fn diskio_parse() {
     assert_eq!(pieces[1].dev, "sda");
 }
 
-#[test]
-fn diskio_parse_windows_cumulative_logical_drives() {
-    let raw = r#"[
-        {"Name":"HarddiskVolume1","DiskReadBytesPersec":1024,"DiskWriteBytesPersec":2048},
-        {"Name":"c:","DiskReadBytesPersec":4096,"DiskWriteBytesPersec":8192},
-        {"Name":"D:","DiskReadBytesPersec":"16384","DiskWriteBytesPersec":"32768"},
-        {"Name":"_Total","DiskReadBytesPersec":99999,"DiskWriteBytesPersec":99999}
-    ]"#;
-    let pieces = windows::parse_diskio(raw);
-    assert_eq!(pieces.len(), 2);
-    assert_eq!(pieces[0].dev, "C:");
-    assert_eq!(pieces[0].sectors_read, 8);
-    assert_eq!(pieces[0].sectors_write, 16);
-    assert_eq!(pieces[1].dev, "D:");
-    assert_eq!(pieces[1].sectors_read, 32);
-    assert_eq!(pieces[1].sectors_write, 64);
-}
-
 // ---------- Battery: battery_test.dart ----------
 
 /// Dart 'parse battery': all 7 power_supply blocks parsed (no filtering)
@@ -1066,16 +908,6 @@ fn battery_parse_seven_supplies() {
     // The app's actual call keeps Li-poly only
     let li_poly = linux::parse_batteries(raw, true);
     assert_eq!(li_poly.len(), 1);
-}
-
-/// Windows Win32_Battery(server_status_update_req._parseWindowsBatteries)
-#[test]
-fn battery_parse_windows() {
-    let raw = r#"{"EstimatedChargeRemaining": 88, "BatteryStatus": 6}"#;
-    let batteries = windows::parse_batteries(raw);
-    assert_eq!(batteries.len(), 1);
-    assert_eq!(batteries[0].percent, Some(88));
-    assert_eq!(batteries[0].status, BatteryStatus::Charging);
 }
 
 // ---------- Sensors:sensors_test.dart ----------
@@ -1110,33 +942,6 @@ fn sensors_parse_2() {
         Some("+45.9°C  (low  = -273.1°C, high = +69.8°C)"),
         Some("+44.9°C"),
     ]);
-}
-
-/// Win32_TemperatureProbe(no Dart reference; new Windows-only parser)
-#[test]
-fn sensors_parse_windows() {
-    let raw = r#"[{"Name": "CPU Probe", "CurrentReading": 3033}, {"Name": null, "CurrentReading": 3001}]"#;
-    let sensors = windows::parse_sensors(raw);
-    assert_eq!(sensors.len(), 2);
-    assert_eq!(sensors[0].device, "CPU Probe");
-    assert_eq!(sensors[0].summary(), Some("30.2\u{b0}C"));
-    // Null Name falls back to a generic label instead of an empty string
-    assert_eq!(sensors[1].device, "Temperature Probe");
-    assert_eq!(sensors[1].summary(), Some("27.0\u{b0}C"));
-}
-
-/// Parses `Get-StorageReliabilityCounter` output. This Windows-only parser has
-/// no Dart equivalent.
-#[test]
-fn disk_smart_parse_windows() {
-    let raw = r#"[{"DeviceId": "0", "Temperature": 38, "TemperatureMax": 55, "Wear": 2, "PowerOnHours": 1200}]"#;
-    let disks = windows::parse_disk_smart(raw);
-    assert_eq!(disks.len(), 1);
-    assert_eq!(disks[0].device, "0");
-    assert_eq!(disks[0].temperature, Some(38.0));
-    assert_eq!(disks[0].power_on_hours, Some(1200));
-    // No pass/fail flag in this cmdlet's output — must not be fabricated
-    assert_eq!(disks[0].healthy, None);
 }
 
 // ---------- NVIDIA:nvidia_test.dart ----------
@@ -1625,15 +1430,12 @@ fn os_release_through_parse_status() {
     assert_eq!(status.sys.as_deref(), Some("Alpine Linux v3.20"));
 }
 
-/// Bsd and Windows have no os-release, and their `sys` command output must not
-/// be mined for one — `uname -or` prints `24.5.0 Darwin`, which has no `=` in
+/// Bsd has no os-release, and its `sys` command output must not be mined for
+/// one — `uname -or` prints `24.5.0 Darwin`, which has no `=` in
 /// it at all, but a future command's output might.
 #[test]
 fn os_id_is_linux_only() {
-    for (system, sys) in [
-        (SystemType::Bsd, "24.5.0 Darwin"),
-        (SystemType::Windows, "Microsoft Windows 11 Pro"),
-    ] {
+    for (system, sys) in [(SystemType::Bsd, "24.5.0 Darwin")] {
         let raw = HashMap::from([(commands::SYS.to_string(), sys.to_string())]);
         let status = sbm_parser::parse_status(system, &raw);
 
@@ -1650,82 +1452,6 @@ fn cpu_brand_parse() {
     assert_eq!(brands.len(), 1);
     assert_eq!(brands[0].0, "Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz");
     assert_eq!(brands[0].1, 2);
-}
-
-/// Ported from `test/platform/windows_test.dart`, which upstream added while this
-/// branch had already replaced `WindowsParser` with this module. The Dart
-/// tests are the spec; the behaviour they pin down was missing here, and the
-/// `free > size` case underflowed `size - free`.
-#[test]
-fn windows_mem_rejects_missing_and_impossible_values() {
-    assert!(windows::parse_mem("{}").is_none());
-    assert!(
-        windows::parse_mem(r#"{"TotalVisibleMemorySize":0,"FreePhysicalMemory":0}"#).is_none(),
-        "a zero total divides by zero in every percentage derived from it"
-    );
-    assert!(
-        windows::parse_mem(r#"{"TotalVisibleMemorySize":100,"FreePhysicalMemory":200}"#).is_none(),
-        "more free than total is not a reading"
-    );
-
-    let m = windows::parse_mem(r#"{"TotalVisibleMemorySize":100,"FreePhysicalMemory":20}"#)
-        .expect("a plausible pair is accepted");
-    assert_eq!(m.total, 100);
-    assert_eq!(m.free, 20);
-}
-
-#[test]
-fn windows_disks_accept_full_volumes_and_reject_bad_ranges() {
-    let full = windows::parse_disks(
-        r#"{"DeviceID":"C:","Size":1024,"FreeSpace":0,"FileSystem":"NTFS"}"#,
-    );
-    assert_eq!(full.len(), 1, "a full volume is a valid reading");
-    assert_eq!(full[0].avail, 0);
-    assert_eq!(full[0].used_percent, 100);
-
-    assert!(
-        windows::parse_disks(
-            r#"{"DeviceID":"C:","Size":1024,"FreeSpace":2048,"FileSystem":"NTFS"}"#
-        )
-        .is_empty(),
-        "more free than total would underflow size - free"
-    );
-}
-
-/// Also ported from `test/platform/windows_test.dart`. A processor entry whose load is
-/// out of range is dropped rather than clamped: 150 and -1 both mean the query
-/// failed, and both a pegged and an idle reading would be invented.
-#[test]
-fn windows_cpu_rejects_invalid_ranges_and_core_counts() {
-    for raw in [
-        r#"{"LoadPercentage":150,"NumberOfCores":4,"NumberOfLogicalProcessors":8}"#,
-        r#"{"LoadPercentage":-1,"NumberOfCores":4,"NumberOfLogicalProcessors":8}"#,
-        r#"{"LoadPercentage":50,"NumberOfCores":0,"NumberOfLogicalProcessors":0}"#,
-    ] {
-        assert!(windows::parse_cpu(raw, &[]).is_empty(), "accepted {raw}");
-    }
-}
-
-/// Ported from `test/unit/server/server_status_update_req_test.dart`. Win32_Battery's
-/// enumeration has a distinct "fully charged" state; folding it into
-/// discharging reported a battery on mains at 100% as draining.
-#[test]
-fn windows_battery_status_follows_the_win32_enumeration() {
-    use sbm_parser::types::BatteryStatus;
-
-    fn status_of(code: i64) -> BatteryStatus {
-        let raw = format!(r#"{{"EstimatedChargeRemaining":100,"BatteryStatus":{code}}}"#);
-        windows::parse_batteries(&raw).remove(0).status
-    }
-
-    assert_eq!(status_of(3), BatteryStatus::Full);
-    for code in 6..=9 {
-        assert_eq!(status_of(code), BatteryStatus::Charging, "code {code}");
-    }
-    assert_eq!(status_of(2), BatteryStatus::Unknown);
-    assert_eq!(status_of(10), BatteryStatus::Unknown);
-    assert_eq!(status_of(1), BatteryStatus::Discharging);
-    assert_eq!(status_of(5), BatteryStatus::Discharging);
 }
 
 /// A host without sensor chips: `sensors` prints its three-line notice on

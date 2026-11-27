@@ -40,33 +40,26 @@ class ShellFuncManager {
   static rs.SystemType ffiSystem(SystemType? systemType) => (systemType ?? SystemType.linux).ffi;
 
   /// Removes trailing path separators from [dir].
-  static String _normalizeDir(String dir, bool isWindows) {
-    final separator = isWindows
-        ? ScriptConstants.windowsPathSeparator
-        : ScriptConstants.unixPathSeparator;
-
-    final pattern = RegExp('${RegExp.escape(separator)}+\$');
-    return dir.replaceAll(pattern, '');
-  }
+  static String _normalizeDir(String dir) =>
+      dir.replaceAll(RegExp('${RegExp.escape(ScriptConstants.unixPathSeparator)}+\$'), '');
 
   /// Returns the script directory for [id].
   ///
   /// Uses [customDir] when provided; otherwise uses the stored default.
+  /// [systemType] is accepted so callers state the host; every administered
+  /// host takes the same POSIX layout.
   static String getScriptDir(
     String id, {
     SystemType? systemType,
     required String? customDir,
   }) {
-    final isWindows = systemType == SystemType.windows;
-
-    if (customDir != null) return _normalizeDir(customDir, isWindows);
-    return ScriptPaths.getScriptDir(id, isWindows: isWindows);
+    if (customDir != null) return _normalizeDir(customDir);
+    return ScriptPaths.getScriptDir(id);
   }
 
   /// Switches between the temporary and home script directories.
   static void switchScriptDir(String id, {SystemType? systemType}) {
-    final isWindows = systemType == SystemType.windows;
-    ScriptPaths.switchScriptDir(id, isWindows: isWindows);
+    ScriptPaths.switchScriptDir(id);
   }
 
   /// Returns the full script path for [id].
@@ -75,19 +68,11 @@ class ShellFuncManager {
     SystemType? systemType,
     required String? customDir,
   }) {
-    final isWindows = systemType == SystemType.windows;
     if (customDir != null) {
-      final normalizedDir = _normalizeDir(customDir, isWindows);
-      final fileName = isWindows
-          ? ScriptConstants.scriptFileWindows
-          : ScriptConstants.scriptFile;
-      final separator = isWindows
-          ? ScriptConstants.windowsPathSeparator
-          : ScriptConstants.unixPathSeparator;
-      return '$normalizedDir$separator$fileName';
+      return '${_normalizeDir(customDir)}${ScriptConstants.unixPathSeparator}'
+          '${ScriptConstants.scriptFile}';
     }
-
-    return ScriptPaths.getScriptPath(id, isWindows: isWindows);
+    return ScriptPaths.getScriptPath(id);
   }
 
   /// Builds the command that installs the script.
@@ -96,21 +81,11 @@ class ShellFuncManager {
     SystemType? systemType,
     required String? customDir,
   }) {
-    final scriptDir = getScriptDir(
-      id,
-      systemType: systemType,
-      customDir: customDir,
+    final normalizedDir = _normalizeDir(
+      getScriptDir(id, systemType: systemType, customDir: customDir),
     );
-    final isWindows = systemType == SystemType.windows;
-    final normalizedDir = _normalizeDir(scriptDir, isWindows);
-    final fileName = isWindows
-        ? ScriptConstants.scriptFileWindows
-        : ScriptConstants.scriptFile;
-    final separator = isWindows
-        ? ScriptConstants.windowsPathSeparator
-        : ScriptConstants.unixPathSeparator;
-    final scriptPath = '$normalizedDir$separator$fileName';
-
+    final scriptPath =
+        '$normalizedDir${ScriptConstants.unixPathSeparator}${ScriptConstants.scriptFile}';
     return ffi.installCommand(
       system: ffiSystem(systemType),
       scriptDir: normalizedDir,
@@ -120,11 +95,7 @@ class ShellFuncManager {
 
   /// What to write to [getInstallShellCmd]'s stdin to install [content].
   ///
-  /// Not [allScript] itself: the Windows install command stops at a marker line
-  /// rather than at end-of-input, because Windows OpenSSH does not reliably
-  /// deliver the channel's EOF to the child process and waiting for one hangs
-  /// the install with nothing to time it out. Which marker, and that there is
-  /// one at all, stays in `sbm_parser::script` — on Unix this returns [content]
+  /// The payload's shape is `sbm_parser::script`'s; today it is [content]
   /// unchanged.
   static String installPayload(String content, {SystemType? systemType}) {
     return ffi.installPayload(system: ffiSystem(systemType), content: content);

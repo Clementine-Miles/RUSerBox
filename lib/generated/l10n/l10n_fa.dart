@@ -7176,4 +7176,8 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get monitorMcpPasswordRequired => 'گذرواژه را وارد کنید.';
+
+  @override
+  String get windowsServerUnsupported =>
+      'سرورهای ویندوز پشتیبانی نمی‌شوند. ترمینال و مرورگر فایل همچنان از طریق SSH کار می‌کنند.';
 }

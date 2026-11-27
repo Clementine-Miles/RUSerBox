@@ -37,7 +37,8 @@ impl From<ShellFuncKind> for sbm_parser::script::ShellFunc {
     }
 }
 
-/// Build the full script for a system ("linux" | "bsd" | "windows").
+/// Build the full script for a system (empty for a Windows host, which is
+/// never administered).
 /// `disabled` uses the app's stored displayName format ("Linux.net", ...).
 #[flutter_rust_bridge::frb(sync)]
 pub fn build_script(
@@ -72,28 +73,14 @@ pub fn install_custom_cmds_command(
             )
         })
         .collect();
-    let script = sbm_parser::script::install_custom_cmds_script(system, &cmds);
-    wrap_for_default_shell(system, script)
+    sbm_parser::script::install_custom_cmds_script(system, &cmds)
 }
 
 /// Script that prints the custom-command directory back, for the editor to
 /// load. Output goes to `parse_custom_cmds_listing`.
 #[flutter_rust_bridge::frb(sync)]
 pub fn read_custom_cmds_command(system: SystemType) -> String {
-    wrap_for_default_shell(system, sbm_parser::script::read_custom_cmds_script(system))
-}
-
-/// Windows gets a complete command line, base64-wrapped, for the same reason
-/// `install_command` does: the raw PowerShell would not survive a host whose
-/// OpenSSH default shell is cmd.exe. Unix gets a script, to be fed to `sh` on
-/// stdin so nothing has to survive quoting either.
-fn wrap_for_default_shell(system: sbm_parser::SystemType, script: String) -> String {
-    match system {
-        sbm_parser::SystemType::Windows => {
-            sbm_parser::script::encoded_powershell_command(&script)
-        }
-        _ => script,
-    }
+    sbm_parser::script::read_custom_cmds_script(system)
 }
 
 /// The installed set, parsed from `read_custom_cmds_command`'s output.
@@ -123,10 +110,8 @@ pub fn install_command(
 
 /// What to write to [`install_command`]'s stdin for `content`.
 ///
-/// The Windows command stops at a marker line rather than at end-of-input,
-/// because Windows OpenSSH does not reliably deliver EOF to the child and
-/// waiting for one hangs the install indefinitely. This adds that line, so no
-/// caller has to know it exists; on Unix it returns `content` unchanged.
+/// `content` unchanged on every administered system; kept as a call so the
+/// app never assumes the payload's shape.
 #[flutter_rust_bridge::frb(sync)]
 pub fn install_payload(system: SystemType, content: String) -> String {
     sbm_parser::script::install_payload(system, &content)

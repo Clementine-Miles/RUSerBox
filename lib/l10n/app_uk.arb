@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "Живлення",
   "monitorMcpNameRequired": "Введіть назву.",
   "monitorMcpScopesRequired": "Виберіть принаймні одне право.",
-  "monitorMcpPasswordRequired": "Введіть пароль."
+  "monitorMcpPasswordRequired": "Введіть пароль.",
+  "windowsServerUnsupported": "Сервери Windows не підтримуються. Термінал і файловий браузер і надалі працюють через SSH."
 }

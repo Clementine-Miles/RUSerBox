@@ -130,13 +130,11 @@ extension _Actions on _ServerEditPageState {
   Iterable<ShellCmdType> get _diskInfoCmdTypes => const [
     StatusCmdType.disk,
     BSDStatusCmdType.disk,
-    WindowsStatusCmdType.disk,
   ];
 
   Iterable<ShellCmdType> get _diskHealthCmdTypes => const [
     StatusCmdType.diskSmart,
     BSDStatusCmdType.diskSmart,
-    WindowsStatusCmdType.diskSmart,
   ];
 
   void _refreshStoredSudoPasswordState() {
@@ -474,10 +472,8 @@ extension _Actions on _ServerEditPageState {
   String _cmdTypeTitle(ShellCmdType cmdType) {
     return switch (cmdType) {
       StatusCmdType.disk ||
-      BSDStatusCmdType.disk ||
-      WindowsStatusCmdType.disk => libL10n.disk,
-      StatusCmdType.diskSmart ||
-      WindowsStatusCmdType.diskSmart => l10n.diskHealth,
+      StatusCmdType.disk || BSDStatusCmdType.disk => libL10n.disk,
+      StatusCmdType.diskSmart || BSDStatusCmdType.diskSmart => l10n.diskHealth,
       _ => cmdType.name,
     };
   }

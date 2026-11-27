@@ -20,7 +20,6 @@ import 'package:server_box/data/model/server/status/battery.dart';
 import 'package:server_box/data/model/server/status/disk_smart.dart';
 import 'package:server_box/data/model/server/status/gpu.dart';
 import 'package:server_box/data/model/server/status/sensors.dart';
-import 'package:server_box/data/model/server/system.dart';
 import 'package:server_box/data/model/server/try_limiter.dart';
 import 'package:server_box/data/provider/app/session_requests.dart';
 import 'package:server_box/data/provider/bmc/bmc.dart';

@@ -7,10 +7,10 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:server_box/src/rust/api/parser.dart';
 import 'package:server_box/src/rust/frb_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `wrap_for_default_shell`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `from`
 
-/// Build the full script for a system ("linux" | "bsd" | "windows").
+/// Build the full script for a system (empty for a Windows host, which is
+/// never administered).
 /// `disabled` uses the app's stored displayName format ("Linux.net", ...).
 String buildScript({
   required SystemType system,
@@ -61,10 +61,8 @@ String installCommand({
 
 /// What to write to [`install_command`]'s stdin for `content`.
 ///
-/// The Windows command stops at a marker line rather than at end-of-input,
-/// because Windows OpenSSH does not reliably deliver EOF to the child and
-/// waiting for one hangs the install indefinitely. This adds that line, so no
-/// caller has to know it exists; on Unix it returns `content` unchanged.
+/// `content` unchanged on every administered system; kept as a call so the
+/// app never assumes the payload's shape.
 String installPayload({required SystemType system, required String content}) =>
     RustLib.instance.api.crateApiScriptInstallPayload(
       system: system,

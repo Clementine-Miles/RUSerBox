@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "電源",
   "monitorMcpNameRequired": "名前を入力してください。",
   "monitorMcpScopesRequired": "少なくとも 1 つの権限を選択してください。",
-  "monitorMcpPasswordRequired": "パスワードを入力してください。"
+  "monitorMcpPasswordRequired": "パスワードを入力してください。",
+  "windowsServerUnsupported": "Windows サーバーはサポートされていません。ターミナルとファイルブラウザーは引き続き SSH で使えます。"
 }

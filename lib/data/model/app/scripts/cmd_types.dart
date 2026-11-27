@@ -5,8 +5,7 @@ import 'package:material_ui/material_ui.dart';
 /// Platforms supported by status commands.
 enum CmdTypeSys {
   linux('Linux'),
-  bsd('BSD'),
-  windows('Windows');
+  bsd('BSD');
 
   final String sign;
   const CmdTypeSys(this.sign);
@@ -15,7 +14,6 @@ enum CmdTypeSys {
     return switch (this) {
       CmdTypeSys.linux => MingCute.linux_line,
       CmdTypeSys.bsd => LineAwesome.freebsd,
-      CmdTypeSys.windows => MingCute.windows_line,
     };
   }
 }
@@ -35,7 +33,6 @@ sealed class ShellCmdType implements Enum {
     return {
       ...StatusCmdType.values,
       ...BSDStatusCmdType.values,
-      ...WindowsStatusCmdType.values,
     };
   }
 }
@@ -90,32 +87,6 @@ enum BSDStatusCmdType implements ShellCmdType {
 
   @override
   CmdTypeSys get sysType => CmdTypeSys.bsd;
-}
-
-/// Windows PowerShell status commands
-enum WindowsStatusCmdType implements ShellCmdType {
-  echo,
-  time,
-  net,
-  sys,
-  cpu,
-  uptime,
-  conn,
-  disk,
-  mem,
-  temp,
-  host,
-  diskio,
-  battery,
-  nvidia,
-  amd,
-  sensors,
-  diskSmart,
-  cpuBrand,
-  ip;
-
-  @override
-  CmdTypeSys get sysType => CmdTypeSys.windows;
 }
 
 /// Presentation helpers for Unix status commands.

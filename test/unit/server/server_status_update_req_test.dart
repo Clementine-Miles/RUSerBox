@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/data/model/app/scripts/cmd_types.dart';
 import 'package:server_box/data/model/server/dist.dart';
 import 'package:server_box/data/model/server/server.dart';
-import 'package:server_box/data/model/server/status/battery.dart';
 import 'package:server_box/data/model/server/status/cpu.dart';
 import 'package:server_box/data/model/server/status/disk.dart';
 import 'package:server_box/data/model/server/status/sensors.dart';
@@ -58,29 +57,6 @@ void main() {
         );
 
         _expectBsdClearedResult(result);
-        _expectPreviousStatusImmutableFields(previous);
-      },
-    );
-
-    test(
-      'invalid windows payload does not reuse previous disk and metadata state',
-      () async {
-        final previous = _createPreviousStatus();
-
-        final result = await getStatus(
-          ServerStatusUpdateReq(
-            system: SystemType.windows,
-            ss: previous,
-            parsedOutput: {
-              WindowsStatusCmdType.time.name: '1710000000',
-              WindowsStatusCmdType.disk.name: 'not a valid disk payload',
-              WindowsStatusCmdType.host.name: '',
-              WindowsStatusCmdType.temp.name: '',
-            },
-          ),
-        );
-
-        _expectClearedResult(result);
         _expectPreviousStatusImmutableFields(previous);
       },
     );
@@ -271,89 +247,6 @@ __SBM_GPU_END__
       expect(ss.cpu.coresCount, 4);
     });
 
-    test('Windows CPU brand comes from the processor record', () async {
-      // One WMI record carries Name alongside the core counts, so the brand
-      // and the count it applies to can't disagree. Upstream reads the brand
-      // from a second, plain-text command instead.
-      final result = await getStatus(
-        ServerStatusUpdateReq(
-          system: SystemType.windows,
-          ss: InitStatus.status,
-          parsedOutput: {
-            WindowsStatusCmdType.cpu.name:
-                '{"Name":"Example CPU","LoadPercentage":50,'
-                '"NumberOfCores":4,"NumberOfLogicalProcessors":8}',
-          },
-        ),
-      );
-
-      expect(result.cpu.brand, {'Example CPU': 4});
-      // The logical processors, without the aggregate row in front of them.
-      expect(result.cpu.coresCount, 8);
-    });
-
-    test('Windows interfaces carry counters, not rates', () async {
-      // The WMI `*Persec` fields of the raw class are cumulative. Read as
-      // rates, the totals were a rate and the speed a difference of two.
-      final result = await getStatus(
-        ServerStatusUpdateReq(
-          system: SystemType.windows,
-          ss: InitStatus.status,
-          parsedOutput: {
-            WindowsStatusCmdType.net.name:
-                '[[{"Name":"Ethernet","BytesReceivedPersec":1000,'
-                '"BytesSentPersec":500,"Timestamp_Sys100NS":10000000}],'
-                '[{"Name":"Ethernet","BytesReceivedPersec":3000,'
-                '"BytesSentPersec":1500,"Timestamp_Sys100NS":20000000}]]',
-          },
-        ),
-      );
-
-      final ns = result.netSpeed;
-      expect(ns.devices, ['Ethernet']);
-      // Totals add it up although no prefix matches its name.
-      expect(ns.sizeInBytesOf(), BigInt.from(3000));
-      expect(ns.sizeOutBytesOf(), BigInt.from(1500));
-    });
-
-    test('Windows Celsius temperatures ignore Unix divisor settings', () async {
-      for (final divisor in [1.0, 1000.0]) {
-        final result = await getStatus(
-          ServerStatusUpdateReq(
-            system: SystemType.windows,
-            ss: InitStatus.status,
-            parsedOutput: {
-              WindowsStatusCmdType.temp.name:
-                  '{"InstanceName":"zone","Temperature":45.0}',
-            },
-            tempDivisor: divisor,
-          ),
-        );
-        expect(result.temps.first, 45);
-      }
-    });
-
-    test('Windows full batteries and hardware sections are retained', () async {
-      final result = await getStatus(
-        ServerStatusUpdateReq(
-          system: SystemType.windows,
-          ss: InitStatus.status,
-          parsedOutput: {
-            WindowsStatusCmdType.battery.name:
-                '{"EstimatedChargeRemaining":100,"BatteryStatus":3}',
-            WindowsStatusCmdType.sensors.name:
-                '{"Name":"Probe","CurrentReading":42}',
-            WindowsStatusCmdType.diskSmart.name:
-                '{"DeviceId":"0","Temperature":35,"PowerOnHours":10}',
-          },
-        ),
-      );
-
-      expect(result.batteries.single.status, BatteryStatus.full);
-      expect(result.sensors.single.device, 'Probe');
-      expect(result.diskSmart.single.device, '0');
-      expect(result.diskSmart.single.temperature, 35);
-    });
   });
 
   /// The wiring between the parser's JSON and the fields the marks are drawn

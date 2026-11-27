@@ -29,8 +29,8 @@
 
 use crate::api::pve::*;
 use crate::api::bmc::*;
-use crate::api::ssh_crypto::*;
-use crate::api::virt::*;use flutter_rust_bridge::{Handler, IntoIntoDart};
+use crate::api::virt::*;
+use crate::api::ssh_crypto::*;use flutter_rust_bridge::{Handler, IntoIntoDart};
 use flutter_rust_bridge::for_generated::{Lockable, transform_result_dco, Lifetimeable};
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, WriteBytesExt, ReadBytesExt};
 
@@ -9873,8 +9873,6 @@ return crate::api::proc::ProcRow{proc: var_proc, name: var_name, rss_kb: var_rss
         return match inner {
             0 => crate::api::proc::PsParseFailure::UnsupportedOutput,
 1 => crate::api::proc::PsParseFailure::InvalidRows,
-2 => crate::api::proc::PsParseFailure::InvalidWindowsJson,
-3 => crate::api::proc::PsParseFailure::InvalidWindowsRows,
             _ => unreachable!("Invalid variant for PsParseFailure: {}", inner),
         };}
                 }
@@ -15471,8 +15469,6 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::api::protocol::Protocol
                     match self.0 {
                     crate::api::proc::PsParseFailure::UnsupportedOutput => 0.into_dart(),
 crate::api::proc::PsParseFailure::InvalidRows => 1.into_dart(),
-crate::api::proc::PsParseFailure::InvalidWindowsJson => 2.into_dart(),
-crate::api::proc::PsParseFailure::InvalidWindowsRows => 3.into_dart(),
                     _ => unreachable!(),
                 }
                 }
@@ -21721,8 +21717,6 @@ crate::api::protocol::ProtocolCompat::ClientTooOld => { 2 }
                     // Codec=Sse (Serialization based), see doc to use other codecs
                     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {<i32>::sse_encode(match self {crate::api::proc::PsParseFailure::UnsupportedOutput => { 0 }
 crate::api::proc::PsParseFailure::InvalidRows => { 1 }
-crate::api::proc::PsParseFailure::InvalidWindowsJson => { 2 }
-crate::api::proc::PsParseFailure::InvalidWindowsRows => { 3 }
  _ => { unimplemented!(""); }}, serializer);}
                 }
                 
@@ -23588,8 +23582,8 @@ crate::api::virt_libvirt::VirtResourceOp::NetDelete{name} => { <i32>::sse_encode
 
 use crate::api::pve::*;
 use crate::api::bmc::*;
-use crate::api::ssh_crypto::*;
-use crate::api::virt::*;use flutter_rust_bridge::{Handler, IntoIntoDart};
+use crate::api::virt::*;
+use crate::api::ssh_crypto::*;use flutter_rust_bridge::{Handler, IntoIntoDart};
 use flutter_rust_bridge::for_generated::{Lockable, transform_result_dco, Lifetimeable};
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, WriteBytesExt, ReadBytesExt};use super::*;
 

@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "Energía",
   "monitorMcpNameRequired": "Introduce un nombre.",
   "monitorMcpScopesRequired": "Elige al menos un permiso.",
-  "monitorMcpPasswordRequired": "Introduce la contraseña."
+  "monitorMcpPasswordRequired": "Introduce la contraseña.",
+  "windowsServerUnsupported": "Los servidores Windows no son compatibles. La terminal y el explorador de archivos siguen funcionando por SSH."
 }

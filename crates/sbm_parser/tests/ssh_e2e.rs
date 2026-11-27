@@ -11,8 +11,6 @@
 //! at the workspace root; values are any destination the system `ssh` accepts,
 //! so `~/.ssh/config` aliases work natively:
 //! - `SBM_E2E_SSH_HOST`: a Unix remote (Linux or BSD/macOS)
-//! - `SBM_E2E_SSH_HOST_WINDOWS`: a Windows remote (OpenSSH server; both
-//!   cmd.exe and PowerShell default shells are supported)
 //!
 //! Run with `cargo test -p sbm_parser --test ssh_e2e -- --ignored`.
 //!
@@ -40,10 +38,6 @@ fn env_host(var: &str) -> Option<String> {
 
 fn ssh_host() -> Option<String> {
     env_host("SBM_E2E_SSH_HOST")
-}
-
-fn windows_host() -> Option<String> {
-    env_host("SBM_E2E_SSH_HOST_WINDOWS")
 }
 
 /// Put back whatever the account had in the custom-command directory before
@@ -191,13 +185,6 @@ fn check_ssh(cmd: &str, out: std::process::Output) -> Result<String, String> {
 fn ssh(host: &str, cmd: &str, stdin: Option<&str>) -> Result<String, String> {
     let quoted = format!("sh -c '{}'", cmd.replace('\'', r"'\''"));
     check_ssh(cmd, run_ssh(host, &quoted, stdin)?)
-}
-
-/// Like [`ssh`] but passes the command to the remote default shell verbatim
-/// (no `sh -c` wrap) — for Windows remotes, where commands are either
-/// shell-agnostic (`powershell -File`/-EncodedCommand) or plain cmd built-ins
-fn ssh_raw(host: &str, cmd: &str, stdin: Option<&str>) -> Result<String, String> {
-    check_ssh(cmd, run_ssh(host, cmd, stdin)?)
 }
 
 /// Like [`ssh`] but returns stdout regardless of exit status — for tools that
@@ -904,177 +891,3 @@ fn ssh_e2e_unix_zellij_discovery() {
     assert!(sessions.is_some(), "{}", String::from_utf8_lossy(&out.stderr));
 }
 
-/// Windows full chain: EncodedCommand install (works from cmd.exe default
-/// shells), -File execution, WMI double-sample output, CRLF splitting, and
-/// direct-vs-script parse comparisons. Status function only — destructive
-/// functions are never executed.
-#[test]
-#[ignore = "requires SBM_E2E_SSH_HOST_WINDOWS and a reachable Windows SSH server"]
-fn ssh_e2e_windows_script_parse_matches_direct_commands() {
-    let host = windows_host()
-        .expect("SBM_E2E_SSH_HOST_WINDOWS must be set in the environment or workspace-root .env");
-
-    // Resolve the real temp dir first (cmd expands %TEMP%; PowerShell default
-    // shells would print it literally, so fall back to an encoded query)
-    let temp = {
-        let t = ssh_raw(&host, "echo %TEMP%", None)
-            .unwrap_or_default()
-            .trim()
-            .to_string();
-        if t.contains(':') {
-            t
-        } else {
-            ssh_raw(
-                &host,
-                &script::encoded_powershell_command("Write-Output $env:TEMP"),
-                None,
-            )
-            .expect("resolve TEMP")
-            .trim()
-            .to_string()
-        }
-    };
-    assert!(temp.contains(':'), "unexpected TEMP dir: {temp:?}");
-    let dir = format!(r"{temp}\server_box_e2e");
-    let path = format!(r"{dir}\status.ps1");
-
-    let content = script::build_script(
-        SystemType::Windows,
-        &ScriptOptions {
-            build_number: "e2e".into(),
-            ..Default::default()
-        },
-    );
-    // `install_payload`, not `content`: the Windows install command stops at a
-    // marker line rather than at EOF, and the marker is this function's job
-    let payload = script::install_payload(SystemType::Windows, &content);
-    ssh_raw(
-        &host,
-        &script::install_command(SystemType::Windows, &dir, &path),
-        Some(&payload),
-    )
-    .expect("install script");
-    let raw = ssh_raw(
-        &host,
-        &script::exec_command(SystemType::Windows, &path, ShellFunc::Status),
-        None,
-    )
-    .expect("run status script");
-    // A second poll, for the net counters to be compared across the two
-    let raw_next = ssh_raw(
-        &host,
-        &script::exec_command(SystemType::Windows, &path, ShellFunc::Status),
-        None,
-    )
-    .expect("run status script again");
-    let _ = ssh_raw(
-        &host,
-        &script::encoded_powershell_command(&format!("Remove-Item -Recurse -Force '{dir}'")),
-        None,
-    );
-
-    let segments = script::parse_script_output(&raw);
-    assert!(!segments.is_empty(), "no segments parsed; raw: {raw:?}");
-    let sign = segments.get("echo").map(String::as_str).unwrap_or("");
-    assert!(
-        sign.contains("__windows"),
-        "expected windows sign, got {sign:?}"
-    );
-
-    let status = sbm_parser::parse_status(SystemType::Windows, &segments);
-
-    let mem = status.mem.expect("mem parsed");
-    assert!(mem.total > 0);
-    assert!(!status.cpu.is_empty(), "cpu parsed");
-    assert!(!status.disks.is_empty(), "disks parsed");
-    assert!(status.uptime.is_some(), "uptime parsed");
-    assert!(
-        !status.net.is_empty(),
-        "net counters parsed from WMI double sample"
-    );
-
-    // Counters since boot, as on Unix: none goes down between two polls, and a
-    // host with a session open moves some bytes. Rates would do neither
-    // reliably — which is what the app once read these as.
-    let next = sbm_parser::parse_status(
-        SystemType::Windows,
-        &script::parse_script_output(&raw_next),
-    );
-    let mut grew = false;
-    for a in &status.net {
-        let Some(b) = next.net.iter().find(|b| b.device == a.device) else {
-            continue;
-        };
-        assert!(
-            b.rx_bytes >= a.rx_bytes && b.tx_bytes >= a.tx_bytes,
-            "{}: counters went down: {a:?} -> {b:?}",
-            a.device
-        );
-        grew |= b.rx_bytes > a.rx_bytes || b.tx_bytes > a.tx_bytes;
-    }
-    assert!(grew, "no interface counted any traffic between two polls");
-
-    let remote_epoch: i64 = segments["time"]
-        .trim()
-        .parse()
-        .expect("time is a unix epoch");
-    let local_epoch = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs() as i64;
-    assert!(
-        (remote_epoch - local_epoch).abs() < 300,
-        "clock skew too large"
-    );
-
-    // Direct runs via EncodedCommand, so the remote default shell is irrelevant
-    let direct = |cmd: &str| ssh_raw(&host, &script::encoded_powershell_command(cmd), None);
-
-    let direct_host =
-        direct(manifest_cmd(SystemType::Windows, commands::HOST)).expect("direct host");
-    assert_eq!(
-        status.host,
-        sbm_parser::common::parse_hostname(&direct_host),
-        "hostname"
-    );
-
-    let direct_mem = sbm_parser::windows::parse_mem(
-        &direct(manifest_cmd(SystemType::Windows, commands::MEM)).expect("direct mem"),
-    )
-    .expect("direct mem parses");
-    assert_eq!(mem.total, direct_mem.total, "mem.total: script vs direct");
-
-    let direct_cpu = sbm_parser::windows::parse_cpu(
-        &direct(manifest_cmd(SystemType::Windows, commands::CPU)).expect("direct cpu"),
-        &[],
-    );
-    assert_eq!(
-        status.cpu.len(),
-        direct_cpu.len(),
-        "cpu core count: script vs direct"
-    );
-
-    let direct_sys = sbm_parser::common::parse_hostname(
-        &direct(manifest_cmd(SystemType::Windows, commands::SYS)).expect("direct sys"),
-    );
-    assert_eq!(status.sys, direct_sys, "sys: script vs direct");
-
-    // GPU contract: script parse equals direct parse (either may be empty)
-    let direct_nvidia = sbm_parser::gpu::nvidia_from_xml(
-        &direct(manifest_cmd(SystemType::Windows, commands::NVIDIA)).unwrap_or_default(),
-    );
-    let script_names: Vec<_> = status.nvidia.iter().map(|g| &g.name).collect();
-    let direct_names: Vec<_> = direct_nvidia.iter().map(|g| &g.name).collect();
-    assert_eq!(script_names, direct_names, "GPU names: script vs direct");
-
-    eprintln!(
-        "windows ssh e2e ok: host={:?} sys={:?} cores={} mem_total={}KiB disks={} net_ifaces={:?} gpus={}",
-        status.host,
-        status.sys,
-        status.cpu.len(),
-        mem.total,
-        status.disks.len(),
-        status.net.iter().map(|n| &n.device).collect::<Vec<_>>(),
-        status.nvidia.len()
-    );
-}

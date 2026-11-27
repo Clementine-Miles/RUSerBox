@@ -75,7 +75,7 @@ pub fn capabilities(system: SystemType) -> Capabilities {
         cpu: from_commands(system, &[commands::CPU]),
         cpu_brand: from_commands(system, &[commands::CPU_BRAND]),
         mem: from_commands(system, &[commands::MEM]),
-        // Bsd/Windows have no dedicated swap command or parser at all (their
+        // Bsd has no dedicated swap command or parser at all (their
         // MEM command's output carries no swap fields) — command-table
         // presence can't express this, since MEM itself exists everywhere
         swap: match system {
@@ -89,7 +89,7 @@ pub fn capabilities(system: SystemType) -> Capabilities {
             SystemType::Bsd | SystemType::Windows => FieldSupport::NotImplemented,
         },
         net: from_commands(system, &[commands::NET]),
-        temps: hw_from_commands(system, &[commands::TEMP_TYPE, commands::TEMP_VAL, commands::TEMP]),
+        temps: hw_from_commands(system, &[commands::TEMP_TYPE, commands::TEMP_VAL]),
         conn: from_commands(system, &[commands::CONN]),
         uptime: from_commands(system, &[commands::UPTIME]),
         sys: from_commands(system, &[commands::SYS]),
@@ -156,28 +156,11 @@ mod tests {
     }
 
     #[test]
-    fn windows_matrix() {
+    fn windows_is_not_administered() {
         let c = capabilities(SystemType::Windows);
-        assert_eq!(c.cpu, Yes);
-        assert_eq!(c.cpu_brand, Yes);
-        assert_eq!(c.mem, Yes);
-        assert_eq!(c.swap, No);
-        assert_eq!(c.disks, Yes);
-        assert_eq!(c.net, Yes);
-        assert_eq!(c.temps, Hw);
-        assert_eq!(c.conn, Yes);
-        assert_eq!(c.uptime, Yes);
-        assert_eq!(c.sys, Yes);
-        assert_eq!(c.host, Yes);
-        assert_eq!(c.diskio, Yes);
-        assert_eq!(c.batteries, Hw);
-        // Command exists (Win32_TemperatureProbe / Get-StorageReliabilityCounter);
-        // whether the dispatch actually consumes it is a separate concern (see
-        // module docs) — fixed in the windows::parse_sensors/parse_disk_smart change
-        assert_eq!(c.sensors, Hw);
-        assert_eq!(c.nvidia, Hw);
-        assert_eq!(c.amd, Hw);
-        assert_eq!(c.gpu, Hw);
-        assert_eq!(c.disk_smart, Hw);
+        assert_eq!(c.cpu, No);
+        assert_eq!(c.mem, No);
+        assert_eq!(c.disks, No);
+        assert_eq!(c.net, No);
     }
 }

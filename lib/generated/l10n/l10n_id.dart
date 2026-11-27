@@ -7131,4 +7131,8 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get monitorMcpPasswordRequired => 'Masukkan kata sandi.';
+
+  @override
+  String get windowsServerUnsupported =>
+      'Server Windows tidak didukung. Terminal dan penjelajah berkas tetap berfungsi melalui SSH.';
 }

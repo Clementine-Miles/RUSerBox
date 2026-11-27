@@ -10,9 +10,5 @@ void main() {
       ScriptConstants.scriptFile,
       'srvboxm_v${ScriptConstants.version}.sh',
     );
-    expect(
-      ScriptConstants.scriptFileWindows,
-      'srvboxm_v${ScriptConstants.version}.ps1',
-    );
   });
 }

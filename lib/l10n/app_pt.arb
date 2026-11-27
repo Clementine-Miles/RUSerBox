@@ -2004,5 +2004,6 @@
   "monitorMcpScopePower": "Energia",
   "monitorMcpNameRequired": "Digite um nome.",
   "monitorMcpScopesRequired": "Escolha pelo menos uma permissão.",
-  "monitorMcpPasswordRequired": "Digite a senha."
+  "monitorMcpPasswordRequired": "Digite a senha.",
+  "windowsServerUnsupported": "Servidores Windows não são suportados. O terminal e o navegador de arquivos continuam funcionando via SSH."
 }

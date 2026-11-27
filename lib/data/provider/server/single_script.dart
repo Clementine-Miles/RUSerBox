@@ -123,7 +123,7 @@ mixin _ScriptStatus on _ServerCore {
     final Iterable<ShellCmdType> commands = switch (system) {
       SystemType.linux => StatusCmdType.values,
       SystemType.bsd => BSDStatusCmdType.values,
-      SystemType.windows => WindowsStatusCmdType.values,
+      SystemType.windows => const <ShellCmdType>[],
     };
     return commands.any((command) => !disabled.contains(command.displayName));
   }
