@@ -27,9 +27,8 @@ permissions:
 jobs:
   # Which of the jobs this diff can actually affect.
   #
-  # `Rust tests (windows-latest)` is the one that costs real time (~7-9 min,
-  # most of it a cold compile); a docs-only or Dart-only PR paid it for
-  # nothing. The native app builds are not filtered here: they run only on
+  # The Rust job costs a cold compile; a docs-only or Dart-only PR need not
+  # pay it. The native app builds are not filtered here: they run only on
   # `workflow_dispatch`.
   #
   # Asks GitHub for the file list rather than diffing refs: no checkout, no
@@ -46,8 +45,6 @@ jobs:
     outputs:
       rust: ${{ steps.filter.outputs.rust }}
       dart: ${{ steps.filter.outputs.dart }}
-      docs: ${{ steps.filter.outputs.docs }}
-      website: ${{ steps.filter.outputs.website }}
       android: ${{ steps.filter.outputs.android }}
     env:
       GH_TOKEN: ${{ github.token }}
@@ -59,7 +56,7 @@ jobs:
 
           # Which filters are answered from the diff: all of them on a pull
           # request, none otherwise.
-          strict=' rust dart docs website android '
+          strict=' rust dart android '
 
           if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
             files="$(gh api --paginate \
@@ -105,13 +102,11 @@ jobs:
           # reaching main with nothing having compiled anything.
           shared='^\.github/(workflows/(analysis|build)\.yml$|actions/)|^pubspec\.(yaml|lock)$|^packages/'
 
-          emit rust "$shared|^crates/|^monitor/|^Cargo\.(toml|lock)$"
+          emit rust "$shared|^crates/|^Cargo\.(toml|lock)$"
           # `crates/` because `flutter test` loads the FFI dylib and the
           # generated bindings come from there.
           #
-          emit dart "$shared|^lib/|^test/|^integration_test/|^crates/|^Cargo\.(toml|lock)$|^analysis_options\.yaml$|^docs/(schemas|examples|src/content/docs)/|^assets/|^\.claude/skills/serverbox-help/|^android/app/src/main/(AndroidManifest\.xml|res/xml/)"
-          emit docs "$shared|^docs/"
-          emit website "$shared|^website/|^packages/webui/"
+          emit dart "$shared|^lib/|^test/|^integration_test/|^crates/|^Cargo\.(toml|lock)$|^analysis_options\.yaml$|^assets/|^android/app/src/main/(AndroidManifest\.xml|res/xml/)"
           emit android "$shared|^android/|^scripts/release/patch-jni-build-id\.sh$"
 
   reproducibilityCheck:
@@ -157,19 +152,15 @@ jobs:
         run: scripts/release/patch-jni-build-id.sh
 
   rustTests:
-    name: Rust tests (${{ matrix.os }})
+    name: Rust tests
     needs: changes
     if: needs.changes.outputs.rust == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       # File and line in a backtrace, without the full debuginfo: that is most
       # of what the linker writes, and linking the test binaries — over forty
-      # for the monitor alone — was most of this job on Windows.
+      # was most of this job.
       CARGO_PROFILE_DEV_DEBUG: line-tables-only
 
     steps:
@@ -191,88 +182,20 @@ jobs:
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Test Rust workspace
-        if: matrix.os == 'ubuntu-latest'
         run: cargo test --workspace --no-fail-fast
 
       # fl_lib's Rust is a workspace of its own, so `--workspace` above does
       # not reach it.
       - name: Test fl_lib's Rust
-        if: matrix.os == 'ubuntu-latest'
         run: cargo test --manifest-path packages/fl_lib/rust/Cargo.toml --workspace --no-fail-fast
 
-      # The agent runs pi through fl_pi_llm's Rust host, a crate outside this
-      # workspace (it is its own), so `--workspace` does not reach it either.
-      - name: Test fl_pi_llm's Rust host
-        if: matrix.os == 'ubuntu-latest'
-        run: cargo test --manifest-path packages/fl_pi_llm/fl_pi_llm/rust/Cargo.toml --no-default-features --features reqwest --no-fail-fast
-
-      # Only the crates with code of their own for Windows: the native sampler,
-      # the agent (ConPTY, paths, services) and the script's PowerShell side.
-      # The remaining crates are tested on Linux.
-      - name: Test Windows-specific crates
-        if: matrix.os == 'windows-latest'
-        run: cargo test -p sbm_parser -p sbm_native -p server_box_monitor --no-fail-fast
+      - name: Format
+        run: cargo fmt --all --check
 
       - name: Clippy
-        if: matrix.os == 'ubuntu-latest'
         run: |
           cargo clippy --workspace --all-targets --all-features -- -D warnings
           cargo clippy --manifest-path packages/fl_lib/rust/Cargo.toml --workspace --all-targets -- -D warnings
-
-  docs:
-    name: Documentation site
-    needs: changes
-    if: needs.changes.outputs.docs == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-          persist-credentials: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: docs/package-lock.json
-      # npm, and a `package-lock.json`, because Dependabot maintains one and
-      # does not maintain a `bun.lock`: it bumped `@astrojs/starlight` in
-      # docs/package.json alone, and `bun install --frozen-lockfile` refused
-      # the tree it left behind. Every Dependabot PR against docs/ or website/
-      # failed that way and no version of it could pass — the update the PR
-      # exists for is the one thing the bot cannot write. The other three npm
-      # directories here have always had both files updated together.
-      - name: Install and build
-        working-directory: docs
-        run: |
-          npm ci
-          npm run build
-
-  website:
-    name: Project website
-    needs: changes
-    if: needs.changes.outputs.website == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-          persist-credentials: false
-          submodules: true
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: website/package-lock.json
-      # Same as the docs above, npm for the same reason. This one had not broken
-      # yet, which was luck rather than a difference: its next Dependabot PR
-      # would have.
-      - name: Install and build
-        working-directory: website
-        run: |
-          npm ci
-          npm run build
 
   # The Kotlin side's JVM unit tests (`android/app/src/test`). No device and
   # no Rust: they need the Kotlin sources compiled and nothing else.
@@ -293,8 +216,8 @@ jobs:
 
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
-          distribution: "zulu"
-          java-version: "21"
+          distribution: "temurin"
+          java-version: "27"
 
       - uses: ./.github/actions/setup-flutter
 
@@ -382,7 +305,7 @@ jobs:
 
       # `flutter test` builds sbm_ffi through the build hook, and the
       # FFI-dependent suites load that build (`test/helpers/rust_lib_helper.dart`)
-      # — no `cargo build` of a second copy here. fl_lib's and fl_pi_llm's
+      # — no `cargo build` of a second copy here. fl_lib's
       # too, which every test loads from `build/native_assets`
       # (`test/flutter_test_config.dart`).
       - uses: ./.github/actions/build-hook-cache

@@ -4,7 +4,7 @@
 # The script is shipped as an asset rather than fetched by the server at run
 # time, so updating it is a commit here. This fetches one pinned revision,
 # writes it to assets/, and prints the three constants that have to move with
-# it — `monitor/tests/benchmark_asset.rs` fails until they agree with the file.
+# it — `test/unit/benchmark/yabs_asset_test.dart` fails until they agree with it.
 #
 # Usage:
 #   scripts/update-yabs.sh              # latest revision touching yabs.sh
@@ -67,5 +67,5 @@ pub const UPSTREAM_COMMIT: &str = "$commit";
 pub const UPSTREAM_VERSION: &str = "$version";
 pub const SHA256_HEX: &str = "$digest";
 
-Then run: cargo test -p server_box_monitor --test benchmark_asset && flutter test test/unit/benchmark/yabs_asset_test.dart
+Then run: flutter test test/unit/benchmark/yabs_asset_test.dart
 EOF

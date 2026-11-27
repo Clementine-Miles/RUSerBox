@@ -9,7 +9,7 @@ DEVICE ?=
 TEST ?=
 
 .PHONY: help deps pub-get run run-device analyze test test-one coverage \
-	gen gen-build gen-build-clean gen-l10n gen-proto build build-android clean monitor-dev monitor-deploy
+	gen gen-build gen-build-clean gen-l10n gen-proto build build-android clean test-rust
 
 help:
 	@printf '%s\n' \
@@ -32,12 +32,9 @@ help:
 		'  gen-proto          Regenerate the tombstone protobuf reader (needs protoc)' \
 		'' \
 		'Build targets:' \
-		'  build, build-android  Build the Android APK' \
+		'  build, build-android  Build and verify the arm64-v8a release APK' \
 		'  clean              Run flutter clean' \
-		'' \
-		'Monitor:' \
-		'  monitor-dev        Run the Monitor HTTP API on port 3770' \
-		'  monitor-deploy     Put this checkout on a test machine: make monitor-deploy HOST=<ssh host>'
+		'  test-rust          cargo test, fmt check and clippy for the Rust workspace'
 
 deps pub-get:
 	$(FLUTTER) pub get
@@ -108,10 +105,7 @@ build build-android:
 clean:
 	$(FLUTTER) clean
 
-# Install this checkout's agent on a development host.
-monitor-deploy:
-	@[ -n "$(HOST)" ] || { echo 'HOST=<ssh host> is required'; exit 2; }
-	@bash scripts/monitor-deploy.sh "$(HOST)"
-
-monitor-dev:
-	cd monitor && $(CARGO) run -p server_box_monitor -- serve
+test-rust:
+	$(CARGO) test --workspace
+	$(CARGO) fmt --all --check
+	$(CARGO) clippy --workspace --all-targets -- -D warnings
