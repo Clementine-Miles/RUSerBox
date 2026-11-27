@@ -23,7 +23,18 @@ name="$(sed -n -E 's/.*static const String name = "([^"]+)";/\1/p' lib/data/res/
 out_dir=build/app/outputs/flutter-apk
 rm -f "$out_dir"/*.apk "$out_dir"/*.sha256
 
+# As build-fdroid.sh: refresh the plugin metadata, then drop dev-only plugins
+# (integration_test) so the release registrant does not name them.
+flutter pub get --enforce-lockfile
+scripts/release/patch-jni-build-id.sh
+flutter build apk --no-pub --release --config-only
+dart --packages="$REPO_ROOT/scripts/release/empty-package-config.json" \
+  "$REPO_ROOT/scripts/release/prune_android_dev_plugins.dart"
+dart --packages="$REPO_ROOT/scripts/release/empty-package-config.json" \
+  "$REPO_ROOT/scripts/release/map_plugin_registrant_package.dart"
+
 scripts/release/android-signing.sh flutter build apk \
+  --no-pub \
   --release \
   --target-platform android-arm64 \
   --build-number="$build" \

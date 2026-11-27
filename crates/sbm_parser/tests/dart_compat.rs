@@ -1435,14 +1435,13 @@ fn os_release_through_parse_status() {
 /// it at all, but a future command's output might.
 #[test]
 fn os_id_is_linux_only() {
-    for (system, sys) in [(SystemType::Bsd, "24.5.0 Darwin")] {
-        let raw = HashMap::from([(commands::SYS.to_string(), sys.to_string())]);
-        let status = sbm_parser::parse_status(system, &raw);
+    let sys = "24.5.0 Darwin";
+    let raw = HashMap::from([(commands::SYS.to_string(), sys.to_string())]);
+    let status = sbm_parser::parse_status(SystemType::Bsd, &raw);
 
-        assert_eq!(status.sys.as_deref(), Some(sys));
-        assert_eq!(status.os_id, None);
-        assert!(status.os_id_like.is_empty());
-    }
+    assert_eq!(status.sys.as_deref(), Some(sys));
+    assert_eq!(status.os_id, None);
+    assert!(status.os_id_like.is_empty());
 }
 
 #[test]

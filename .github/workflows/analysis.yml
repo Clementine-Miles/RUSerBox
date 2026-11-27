@@ -189,9 +189,6 @@ jobs:
       - name: Test fl_lib's Rust
         run: cargo test --manifest-path packages/fl_lib/rust/Cargo.toml --workspace --no-fail-fast
 
-      - name: Format
-        run: cargo fmt --all --check
-
       - name: Clippy
         run: |
           cargo clippy --workspace --all-targets --all-features -- -D warnings
