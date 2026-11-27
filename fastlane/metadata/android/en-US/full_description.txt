@@ -1,10 +1,10 @@
-ServerBox is a Linux server monitoring and management tool.
+RUSerBox is a Linux, Unix and Windows server monitoring and management tool, written in Rust and drawn with Vulkan.
 
 Key features:
-• View status charts for CPU, sensors, GPU, and more
-• Manage servers with an SSH terminal and SFTP
-• Manage Docker containers, packages, and processes
-• Use biometric authentication, push notifications, home widgets, and the watchOS app
-• Follow system colors and use the app in multiple languages
+• Status charts for CPU, memory, disks, network, sensors and GPUs
+• An SSH terminal (Zellij sessions included) and SFTP
+• Docker and Podman containers, processes, systemd services and snippets
+• Home-screen widgets and alerts through the ServerBox Monitor
+• Gruvbox themes and 17 languages
 
-Special thanks to dartssh2 and xterm.dart.
+Requires a 64-bit ARM device with Android 9 or newer and Vulkan 1.1.

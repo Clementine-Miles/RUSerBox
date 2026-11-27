@@ -26,7 +26,7 @@ use sbm_virt::pve::{Auth, Client, Config, Options};
 use tokio::net::TcpListener;
 
 fn dir() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../test/fixtures/virt_tls")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/virt_tls")
 }
 
 fn certs(name: &str) -> Vec<CertificateDer<'static>> {

@@ -1,121 +1,84 @@
 English | [简体中文](README_zh.md)
 
-<h2 align="center">Flutter Server Box</h2>
-
-<div align="center">
-  <a href="https://discord.gg/SsVNbRhK7w"><img alt="discord" src="https://img.shields.io/badge/Discord-lpkt-purple"></a>
-  <a href="https://qm.qq.com/q/daCGa7eShG"><img alt="qq" src="https://img.shields.io/badge/QQ-Group-pink"></a>
-  <a href="https://t.me/lpktg"><img alt="telegram" src="https://img.shields.io/badge/Telegram-lpktg-green"></a>
-  <a href="https://lollipopkit.com/donate"><img alt="donate" src="https://img.shields.io/badge/donate-me-pink"></a>
-</div>
+<h2 align="center">RUSerBox</h2>
 
 <p align="center">
-A Flutter+Rust project which provides charts to display Linux, Unix and Windows server status and tools to manage servers.
+Server management for Android, written in Rust: status charts for Linux, Unix and Windows servers, an SSH terminal, files and tools — drawn natively with Vulkan.
 <br>
-Read the <a href="https://serverbox.lollipopkit.com/docs/">documentation site</a> for user guides, architecture notes, and development instructions.
+A Rust rewrite of <a href="https://github.com/lollipopkit/flutter_server_box">Flutter Server Box</a>.
 </p>
-
-## Acknowledgements
-
-Special thanks to <a href="https://github.com/TerminalStudio/dartssh2">dartssh2</a> & <a href="https://github.com/TerminalStudio/xterm.dart">xterm.dart</a>.
-Thanks to my partner for their emotional and financial support.
-Thanks to <a href="https://openai.com">OpenAI</a> for providing six months of ChatGPT Pro 20x subscription.
-
-## Screenshots
-
-<table>
-  <tr>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/home.jpg" alt="Server list"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/server-details.jpg" alt="Server details"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/terminal.jpg" alt="Terminal"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/files.jpg" alt="Files"></td>
-  </tr>
-</table>
-
-<details>
-<summary>8 more screenshots</summary>
-<br>
-<table>
-  <tr>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/container.jpg" alt="Containers"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/process.jpg" alt="Processes"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/services.jpg" alt="Services"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/users.jpg" alt="Users"></td>
-  </tr>
-  <tr>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/agent.jpg" alt="Agent"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/bench.jpg" alt="Benchmark"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/virt.jpg" alt="Virtualization"></td>
-  </tr>
-</table>
-</details>
-
 
 ## Installation
 
-Download an Android APK from [GitHub Releases](https://github.com/Clementine-Miles/ru_serbox/releases).
+Download the Android APK (arm64-v8a, Android 9+, Vulkan 1.1) from
+[GitHub Releases](https://github.com/Clementine-Miles/RUSerBox/releases). It
+installs over Flutter Server Box 1.0.x and keeps its servers, keys, snippets
+and settings.
 
 ## Features
 
 **Connecting**
 
-- Connect directly over SSH, through a jump host or with a `ProxyCommand`. You can also connect over HTTP through the [Monitor](https://serverbox.lollipopkit.com/docs/advanced/monitor-agent/) when you do not want to expose a host's SSH port. A server can use both methods, with automatic fallback if one is unavailable.
-- Open a shell on this device or install a Linux userland ([local terminal](https://serverbox.lollipopkit.com/docs/advanced/local-terminal/)) on Android.
+- SSH directly, through jump servers or a `ProxyCommand`, with an alternative
+  address to fall back to. Host keys are always verified; a new or changed key
+  is shown to you before anything is sent.
+- The [Monitor](monitor/) over HTTPS (a pinned certificate or the web PKI) for
+  hosts whose SSH port you do not want to expose. A server can use both, with
+  automatic fallback.
 
 **Watching**
 
-- Live and historical charts for CPU, memory, swap, disks, disk I/O and network, plus sensors, GPUs (NVIDIA, AMD), batteries and disk S.M.A.R.T.
-- See all servers at a glance, filter them by tag or view them on a [globe](https://serverbox.lollipopkit.com/docs/advanced/globe/).
-- Push alerts and [home-screen widgets](https://serverbox.lollipopkit.com/docs/advanced/widgets/). The Monitor keeps these features working while the app is closed.
+- Live charts for CPU (per core), memory, swap, disks, network, temperatures
+  and GPUs, from the shared status script or the Monitor.
+- Home-screen widgets fed by the Monitor; the Monitor's alerts and history.
 
 **Working on a server**
 
-- A full terminal with virtual keys on phones, plus a [workspace](https://serverbox.lollipopkit.com/docs/advanced/workspace/) with split panes that can send input to several terminals at once.
-- Browse, upload, download and edit files over SFTP or SCP. Markdown files open in a rendered preview.
-- [RDP and VNC](https://serverbox.lollipopkit.com/docs/advanced/remote-desktop/), to the server itself or to a desktop it can reach.
-- Docker and Podman, processes, systemd services, users and groups, firewall rules (ufw, firewalld), scheduled tasks, port forwards and snippets.
-- Virtual machines and containers on libvirt and Proxmox VE, and a server's BMC over Redfish ([BMC](https://serverbox.lollipopkit.com/docs/advanced/bmc/)).
-- Benchmarks (YABS) and iperf.
-- An [AI Agent](https://serverbox.lollipopkit.com/docs/advanced/agent/) that works with your servers and the model providers, MCP servers and skills you choose.
+- A terminal: xterm-compatible (alternate screen, 256 and true color, mouse
+  reporting, bracketed paste), CJK, wide and combining characters, Nerd Font
+  glyphs, scrollback, selection and copy, IME composition, hardware keyboards
+  and an on-screen key bar. Sessions over SSH or the Monitor's terminal.
+- Zellij sessions: list, attach, create, kill.
+- Files over SFTP (or the Monitor's file API): browse, upload, download,
+  rename, delete, create folders.
+- Processes (and stopping them), Docker/Podman containers (start, stop,
+  restart, logs, shell), systemd services, power actions, snippets, private
+  keys (import or generate Ed25519).
 
 **Making it yours**
 
-- Gruvbox Material and Gruvbox, each in light and dark, with built-in icon styles.
-- Biometric app lock and WebDAV backups, encrypted with a password you choose.
-- Android app in 17 languages.
+- Gruvbox Material and Gruvbox, light and dark; five bundled terminal fonts;
+  17 languages.
 
-## Help
+**Not yet in the Rust app** (present in Flutter Server Box 1.0.x): remote
+desktop pages (the RDP/VNC client is kept as `crates/sbm_remote_desktop`),
+virtualization, BMC, firewall, users, scheduled tasks, storage administration,
+shares, benchmarks, port-forward management, workspaces with split panes, the
+globe, backups and sync, biometric lock. Removed for good: the AI Agent and the
+terminal on the device itself (use Termux).
 
-- [ServerBox Monitor](https://github.com/Clementine-Miles/ru_serbox/tree/main/monitor) is a component you install on your servers. It is required for features that need to work while the app is closed — **push notifications** and **home-screen widgets**. It also offers another way to add a server: the app can connect to it over HTTP instead of SSH, which suits hosts whose SSH port you prefer not to expose, and gives charts historical data from before the app's first connection.
-- **Agent skills:** This repository includes two skills for AI agents. Add them with
+## Building
 
-  ```sh
-  npx skills add Clementine-Miles/ru_serbox
-  ```
+```sh
+make test                 # Rust workspace tests
+make build-android-debug  # needs the Android SDK/NDK, cargo-ndk and Gradle 9.8
+make monitor-dev          # the Monitor API on :3770
+```
 
-  - [`serverbox-help`](.claude/skills/serverbox-help): using the app and deploying and configuring the Monitor — adding servers, why a feature is missing for a server, permissions, alerts, widgets, backups. The app's own Agent ships with it.
-  - [`serverbox-onboarding`](.claude/skills/serverbox-onboarding): working on the code — setting up the Flutter + Rust + Node environment, building and testing, and how the project works.
+See [CLAUDE.md](CLAUDE.md) for the layout and the
+[development docs](docs/src/content/docs/development/) for details. No Dart or
+Flutter SDK is needed.
 
-  Their source is in this repository, so you can read what they will tell your Monitor before installing them.
+## Monitor
 
-Before opening an issue, please:
-
-1. Use the bug report template.
-2. Confirm that the issue is caused by ServerBox.
-3. Concrete, constructive feedback is welcome. Subjective requests, such as preferring another UI, may not be accepted.
+[ServerBox Monitor](monitor/) runs on your servers. It is required for
+features that work while the app is closed (push alerts, widgets), and gives
+charts history from before the app's first connection.
 
 ## Contributions
 
-[CONTRIBUTING.md](CONTRIBUTING.md) covers the development setup, the commit convention, the checks to run, and how translations work.
-
-Contributors sign the [CLA](CLA.md) once by leaving a comment on their first pull request. It grants the distribution rights described in the CLA alongside the AGPLv3 source. You retain the copyright to your work.
-
-If I forgot to add your name to the contributors list, please add a comment in the issue or PR you opened to let me know, I will add it as soon as possible.
-
-## My other apps
-
-- [LLMBox](https://github.com/lollipopkit/llmbox): a third-party client for the OpenAI API.
-- [MFuse](https://mfuse.lollipopkit.com): mounts SFTP, S3, WebDAV and more in macOS Finder through File Provider.
+[CONTRIBUTING.md](CONTRIBUTING.md) covers the development setup and the checks
+to run. Contributors sign the [CLA](CLA.md) once on their first pull request.
 
 ## License
 

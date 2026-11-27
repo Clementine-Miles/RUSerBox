@@ -1,26 +1,13 @@
-name: Flutter Build
+name: Android release
 
 on:
   workflow_dispatch:
     inputs:
       release:
-        description: 'Create GitHub Release from the selected v1.0.<build> tag'
+        description: 'Publish a GitHub Release from the selected v2.* tag'
         required: false
         type: boolean
         default: false
-      jobs:
-        # Comma-separated rather than a `choice`, which allows only one value,
-        # and there is no multi-select for `workflow_dispatch`. Empty means all,
-        # so the tag-push path is unaffected and so is dispatching without
-        # thinking about it.
-        #
-        # Unknown names are refused rather than ignored — see `Check job
-        # selection`. A typo that silently builds nothing looks exactly like a
-        # workflow that is broken.
-        description: 'What to run: android,monitor (empty = all; monitor is verification only)'
-        required: false
-        type: string
-        default: ''
   push:
     tags:
       - "v*"
@@ -28,523 +15,78 @@ on:
 permissions:
   contents: read
 
-env:
-  BUILD_TAG: test-build-${{ github.run_number }}-${{ github.sha }}
-
 jobs:
-  reproducibilityCheck:
-    # Static build-input validation. The independent byte-for-byte Android
-    # builds live in android-reproducible.yml, run by hand.
-    name: Build input checks
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    outputs:
-      # The selection, canonicalised once and matched exactly by every job
-      # below. Wrapped in commas so `contains(..., ',android,')` cannot match a
-      # substring of another name, and so the jobs never see the raw input —
-      # which is what let `an droid` validate (whitespace was stripped before
-      # the check) and then match nothing (it was not stripped afterwards),
-      # skipping every job while reporting success.
-      selected: ${{ steps.selection.outputs.selected }}
-      # What the artifacts are called, read from the one line that says so —
-      # `fl_build:` in pubspec.yaml. `fl_build` names the files it produces
-      # after it and the steps below name the files they publish, so a second
-      # copy here that drifted would publish a release whose asset paths match
-      # nothing, which `action-gh-release` reports as a warning and an empty
-      # release rather than as a failure.
-      appName: ${{ steps.appName.outputs.name }}
-      # The version every job names its artifacts after. Resolved once, here,
-      # because it was resolved in two jobs and used in six: Android, Linux and
-      # Windows renamed with an empty `BUILD_NUMBER`, so their globs looked for
-      # `*__*.apk` and their release paths for `v1.0.`, and
-      # `action-gh-release` reported a warning rather than a failure.
-      buildNumber: ${{ steps.buildNumber.outputs.build }}
-      # Whether this run publishes. `github.ref_type == 'tag'` alone was true
-      # of a manual dispatch against a tag with the release box unticked, which
-      # is the one case the box exists to say no to.
-      isRelease: ${{ steps.buildNumber.outputs.release }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-          submodules: true
-          persist-credentials: false
-          fetch-depth: 0
-      - name: Install Flutter
-        uses: ./.github/actions/setup-flutter
-      - name: Require tagged releases
-        if: inputs.release == true && github.ref_type != 'tag'
-        shell: bash
-        run: |
-          echo "Release builds must be started from a committed tag so the source can be reproduced by downstream builders."
-          echo "Create and push a v1.0.<build> tag after committing the release version files."
-          exit 1
-      - name: Check tag source version
-        if: github.ref_type == 'tag'
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          build_data="$(sed -n -E 's/.*static const int build = ([0-9]+);/\1/p' lib/data/res/build_data.dart | head -n 1)"
-          pub_version="$(sed -n -E 's/^version:[[:space:]]*([^+]+)\+([0-9]+)$/\1+\2/p' pubspec.yaml | head -n 1)"
-
-          if [[ -z "$build_data" ]]; then
-            echo "::error::BuildData.build not found in lib/data/res/build_data.dart"
-            exit 1
-          fi
-
-          # The whole tag, not the number on the end of it. Everything
-          # downstream writes `v1.0.<build>` out by hand — the artifact names in
-          # every platform job, and the tag `publishRelease` opens the release
-          # on — while this compared only `${GITHUB_REF_NAME##*.}` and never the
-          # `1.0.` in front of it. So a tag of any other shape validated and
-          # then published somewhere else: `v2.0.1491`, with a pubspec of
-          # `2.0.1491+1491`, passed here, built assets named `..._v1.0.1491_...`
-          # and had the release opened on `v1.0.1491` — a tag git need not even
-          # have, created at this commit — leaving the tag that was actually
-          # pushed with nothing on it.
-          expected_tag="v1.0.${build_data}"
-          if [[ "$GITHUB_REF_NAME" != "$expected_tag" ]]; then
-            echo "::error::this workflow publishes ${expected_tag}, but the tag is ${GITHUB_REF_NAME}."
-            echo "Push ${expected_tag}, or set BuildData.build to the tag's build number."
-            exit 1
-          fi
-
-          if [[ "$pub_version" != "1.0.${build_data}+${build_data}" ]]; then
-            echo "::error::pubspec.yaml version must be 1.0.${build_data}+${build_data}; got ${pub_version}."
-            exit 1
-          fi
-      - name: Check job selection
-        id: selection
-        shell: bash
-        # Through the environment, not `${{ }}` inside the script: an
-        # expression is substituted into the source before bash parses it, so
-        # a value containing a quote or a `;` would run as code. Only someone
-        # with write access can dispatch this, which lowers the stakes and does
-        # not change what the code says.
-        env:
-          REQUESTED: ${{ inputs.jobs }}
-          IS_DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
-          IS_RELEASE: ${{ inputs.release }}
-        run: |
-          set -euo pipefail
-
-          known="android monitor"
-          # `monitor` verifies a cross-build and publishes nothing, so its own
-          # `if` refuses a release run. Selecting it for one would validate,
-          # match nothing and finish green having built nothing at all.
-          verify_only="monitor"
-
-          if [[ "$IS_DISPATCH" != "true" || -z "${REQUESTED//[[:space:]]/}" ]]; then
-            # A tag push, or a dispatch that named nothing: everything runs.
-            selected="$known"
-          else
-            selected=""
-            bad=()
-            not_for_release=()
-            IFS=',' read -ra requested <<< "$REQUESTED"
-            for raw in "${requested[@]:-}"; do
-              # Trimmed at the ends only. Whitespace *inside* a token is a typo
-              # (`an droid`), not something to silently repair into a name the
-              # user did not type.
-              name="${raw#"${raw%%[![:space:]]*}"}"
-              name="${name%"${name##*[![:space:]]}"}"
-              [[ -z "$name" ]] && continue
-              if [[ " $known " != *" $name "* ]]; then bad+=("$name"); continue; fi
-              if [[ "$IS_RELEASE" == "true" && " $verify_only " == *" $name "* ]]; then
-                not_for_release+=("$name"); continue
-              fi
-              selected="$selected $name"
-            done
-
-            if (( ${#bad[@]} )); then
-              echo "Unknown job(s): ${bad[*]}"
-              echo "Valid names: $known"
-              exit 1
-            fi
-            if (( ${#not_for_release[@]} )); then
-              echo "Not available on a release run: ${not_for_release[*]}"
-              echo "Those verify a build rather than publish one."
-              exit 1
-            fi
-            if [[ -z "${selected//[[:space:]]/}" ]]; then
-              # Only reachable from a value that is all separators, such as
-              # `,` or `, ,` — which would otherwise pass and build nothing.
-              echo "No jobs selected. Leave the field empty to run all of them."
-              exit 1
-            fi
-          fi
-
-          canonical=",$(echo "$selected" | tr -s '[:space:]' ',' | sed 's/^,//;s/,$//'),"
-          echo "selected=$canonical" >> "$GITHUB_OUTPUT"
-          echo "Running:$selected"
-      - name: Check locked dependencies
-        shell: bash
-        run: |
-          flutter pub get --enforce-lockfile
-          git diff --exit-code -- pubspec.yaml pubspec.lock
-      - name: Check JNI build-id patch
-        shell: bash
-        run: scripts/release/patch-jni-build-id.sh
-      - name: Read the app name
-        id: appName
-        shell: bash
-        run: |
-          set -euo pipefail
-          # `yq eval`, which is mikefarah's — the one on the Linux runner
-          # images, and the one the Flutter setup action calls the same way.
-          # It only installs its own for Windows, which is where it is missing.
-          name="$(yq eval '.fl_build.appName' pubspec.yaml)"
-          # An absent key reads back as the string `null`, and a release named
-          # after it would publish under `null_v1.0.<n>_arm64.apk` rather than
-          # fail.
-          if [[ -z "$name" || "$name" == 'null' ]]; then
-            echo "::error::pubspec.yaml has no fl_build.appName"
-            exit 1
-          fi
-          echo "name=$name" >> "$GITHUB_OUTPUT"
-          echo "app name: $name"
-      - name: Resolve build number
-        id: buildNumber
-        shell: bash
-        env:
-          IS_DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
-          WANTS_RELEASE: ${{ inputs.release }}
-        run: |
-          set -euo pipefail
-          build="$(sed -n -E 's/.*static const int build = ([0-9]+);/\1/p' lib/data/res/build_data.dart | head -n 1)"
-          if [[ -z "$build" ]]; then
-            echo "::error::BuildData.build not found in lib/data/res/build_data.dart"
-            exit 1
-          fi
-          echo "build=$build" >> "$GITHUB_OUTPUT"
-
-          # A tag push always releases; a dispatch only when asked. Tag *and*
-          # dispatch is the case the old condition got wrong.
-          release=false
-          if [[ "$WANTS_RELEASE" == 'true' ]]; then
-            release=true
-          elif [[ "$IS_DISPATCH" != 'true' && "$GITHUB_REF_TYPE" == 'tag' ]]; then
-            release=true
-          fi
-          echo "release=$release" >> "$GITHUB_OUTPUT"
-          echo "build $build, release $release"
-
-  verifyMonitor:
-    name: Verify monitor ${{ matrix.platform }}-${{ matrix.arch }}
-    if: >-
-      github.event_name == 'workflow_dispatch' && inputs.release != true
-      && contains(needs.reproducibilityCheck.outputs.selected, ',monitor,')
-    needs: reproducibilityCheck
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-            platform: linux
-            arch: amd64
-          - os: ubuntu-24.04-arm
-            target: aarch64-unknown-linux-musl
-            platform: linux
-            arch: arm64
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            platform: macos
-            arch: arm64
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            platform: macos
-            arch: amd64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            platform: windows
-            arch: amd64
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
-    env:
-      SQLX_OFFLINE: "true"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-          submodules: true
-          persist-credentials: false
-      - name: Build (Linux)
-        if: matrix.platform == 'linux'
-        uses: ./.github/actions/monitor-linux-build
-        with:
-          target: ${{ matrix.target }}
-          profile: release
-      - name: Add Rust target
-        if: matrix.platform != 'linux'
-        run: rustup target add ${{ matrix.target }}
-      - name: Build
-        if: matrix.platform != 'linux'
-        shell: bash
-        run: cargo build -p server_box_monitor --release --target ${{ matrix.target }}
-
   buildAndroid:
-    name: Build Android (${{ matrix.abi }})
-    if: >-
-      github.ref_type == 'tag'
-      || contains(needs.reproducibilityCheck.outputs.selected, ',android,')
-    needs: reproducibilityCheck
+    name: Build Android (arm64-v8a)
     # The release key's 1Password token is a secret of environment `release`,
-    # which only `v*` tags (created by admins alone, a ruleset) may use: a
-    # workflow pushed to a branch cannot read it.
+    # which only `v*` tags (created by admins alone) may use.
     environment: ${{ github.ref_type == 'tag' && 'release' || '' }}
-    # From pubspec.yaml's `fl_build:`, by way of the job above — see its
-    # `appName`
-    # output. Job level rather than workflow level because that is the
-    # nearest scope an expression on `needs` can be written in.
-    env:
-      APP_NAME: ${{ needs.reproducibilityCheck.outputs.appName }}
-      BUILD_NUMBER: ${{ needs.reproducibilityCheck.outputs.buildNumber }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - abi: arm64
-            target: android-arm64
-          - abi: arm
-            target: android-arm
-          - abi: amd64
-            target: android-x64
-    permissions:
-      contents: read
+    timeout-minutes: 90
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
           submodules: true
           persist-credentials: false
-          fetch-depth: 0
-      - name: Install Flutter
-        uses: ./.github/actions/setup-flutter
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
-        with:
-          distribution: "zulu"
-          java-version: "21"
-      - name: Fix the Android build epoch
-        shell: bash
-        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+      - name: Check LFS files are real
+        run: scripts/check-lfs.sh
+      - uses: ./.github/actions/setup-rust-pinned
       - uses: ./.github/actions/setup-android-sdk
-      - name: Fetch dependencies
-        run: flutter pub get --enforce-lockfile
-      # The script F-Droid runs, so what it rebuilds from this commit is this
-      # APK without its signature. `fl_build` ran a plain `flutter build apk`
-      # instead: no dev plugins pruned, the plugin registrant left at a path
-      # under `.dart_tool`, so `libapp.so` came out different from F-Droid's
-      # (#1274) and tied to this runner's checkout path. The script also
-      # patches jni and builds proot for arm64.
-      - name: Build
-        shell: bash
-        run: scripts/release/build-fdroid.sh ${{ matrix.abi }}
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@ac638b010cf58a27ee6c972d7336334ccaf61c96 # v4
+        with:
+          gradle-version: "9.8.0"
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --locked --version 4.1.2
       - name: Install 1Password CLI
         if: github.ref_type == 'tag'
-        uses: 1password/install-cli-action@1a3160d5e9de1ae0803eaa08a88746f5ae3daa50 # v4.1.0
-        with:
-          version: 2.42.0
-      # Signing adds a signing block and touches no entry, which is what lets
-      # F-Droid copy the signature onto its own build to compare the two.
-      # `--alignment-preserved` keeps the entries where Gradle put them; the
-      # check after it fails the job if any moved or changed. v2 alone, as Gradle
-      # signed: apksigner also adds a JAR (v1) signature by default, which is
-      # three more entries.
-      - name: Sign
-        shell: bash
+        uses: 1password/install-cli-action@143a85f84a90555d121cde2ff5872e0f2d7ad8ec # v2
+      - name: Build the release APK
         env:
-          ABI: ${{ matrix.abi }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          # Off a tag there is no release key: sign with the debug key, which
+          # is enough to install and test the artifact.
+          ORG_GRADLE_PROJECT_allowDebugReleaseSigning: ${{ github.ref_type == 'tag' && 'false' || 'true' }}
+          SOURCE_DATE_EPOCH: ${{ github.event.repository.pushed_at }}
+        run: scripts/release/android-signing.sh gradle -p android assembleRelease
+      - name: Inspect the APK
+        run: scripts/release/inspect-apk.sh android/app/build/outputs/apk/release/app-release.apk
+      - name: Name the APK
         run: |
-          set -euo pipefail
-          case "$ABI" in
-            arm64) unsigned=app-arm64-v8a-release-unsigned.apk ;;
-            arm) unsigned=app-armeabi-v7a-release-unsigned.apk ;;
-            amd64) unsigned=app-x86_64-release-unsigned.apk ;;
-            *) echo "::error::unknown ABI $ABI"; exit 1 ;;
-          esac
-          unsigned="build/app/outputs/apk/release/$unsigned"
-          out="build/app/outputs/flutter-apk/${APP_NAME}_v1.0.${BUILD_NUMBER}_${ABI}.apk"
-
-          mkdir -p "$(dirname "$out")"
-          sign='"$APKSIGNER" sign \
-            --ks "$SBX_KEYSTORE" \
-            --ks-key-alias "$SBX_KEY_ALIAS" \
-            --ks-pass env:SBX_KEYSTORE_PASSWORD \
-            --key-pass env:SBX_KEY_PASSWORD \
-            --alignment-preserved \
-            --v1-signing-enabled false \
-            --v2-signing-enabled true \
-            --v3-signing-enabled false \
-            --v4-signing-enabled false \
-            --out "$1" \
-            "$2"'
-          if [ "$GITHUB_REF_TYPE" = tag ]; then
-            # `op run` masks the passwords in anything printed.
-            scripts/release/android-signing.sh sh -c "$sign" sh "$out" "$unsigned"
-          else
-            # Off a tag the release key is out of reach: a key made for this
-            # run, so the APK still installs for a test.
-            export SBX_KEYSTORE="$RUNNER_TEMP/throwaway.p12" SBX_KEY_ALIAS=throwaway
-            export SBX_KEYSTORE_PASSWORD=throwaway SBX_KEY_PASSWORD=throwaway
-            keytool -genkeypair -keystore "$SBX_KEYSTORE" -storetype PKCS12 \
-              -storepass:env SBX_KEYSTORE_PASSWORD -keypass:env SBX_KEY_PASSWORD \
-              -alias "$SBX_KEY_ALIAS" -keyalg EC -groupname secp384r1 \
-              -dname CN=throwaway -validity 1 >/dev/null
-            sh -c "$sign" sh "$out" "$unsigned"
-          fi
-          "$APKSIGNER" verify "$out"
-
-          entries() {
-            zipinfo -v "$1" | grep -E '^  (offset of local header|32-bit CRC value|compressed size)'
-          }
-          diff <(entries "$unsigned") <(entries "$out") ||
-            { echo "::error::signing changed the APK's entries"; exit 1; }
-          # Flutter's copies of the unsigned APKs, which are not published.
-          rm -f build/app/outputs/flutter-apk/app-*-release.apk
-      # `useLegacyPackaging` off means nothing is extracted from the APK, so
-      # `nativeLibraryDir` does not exist and proot cannot be run from
-      # anywhere. The APK still builds, installs and runs — the rootfs entry
-      # simply never appears. Checked here because nothing else would say so.
-      - name: Check proot shipped
-        if: matrix.abi == 'arm64'
-        shell: bash
-        run: |
-          shopt -s nullglob
-          apks=(build/app/outputs/flutter-apk/*_arm64.apk)
-          [ ${#apks[@]} -gt 0 ] || { echo "no arm64 APK was built"; exit 1; }
-          for apk in "${apks[@]}"; do
-            unzip -l "$apk" | grep -q 'lib/arm64-v8a/libproot.so' ||
-              { echo "$apk carries no proot; the Linux userland would be missing"; exit 1; }
-            unzip -l "$apk" | grep -q 'lib/arm64-v8a/libproot-loader.so' ||
-              { echo "$apk carries proot but not its loader; entering the rootfs would be refused"; exit 1; }
-          done
-      # Each matrix leg names one exact APK. Besides making a missing ABI fail
-      # at its source, this keeps the release build invocation identical to the
-      # one F-Droid runs for that ABI.
-      - name: Upload artifacts
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+          mkdir -p dist
+          cp android/app/build/outputs/apk/release/app-release.apk "dist/RUSerBox_${GITHUB_REF_NAME//\//-}_arm64.apk"
+          cp android/app/build/outputs/native-debug-symbols/release/native-debug-symbols.zip "dist/RUSerBox_${GITHUB_REF_NAME//\//-}_arm64_symbols.zip"
+          (cd dist && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: ${{ env.APP_NAME }}-${{ env.BUILD_TAG }}-android-${{ matrix.abi }}
-          path: build/app/outputs/flutter-apk/${{ env.APP_NAME }}_v1.0.${{ env.BUILD_NUMBER }}_${{ matrix.abi }}.apk
-          if-no-files-found: error
-          retention-days: 14
-      # A native crash reaches us as a tombstone full of addresses, and these
-      # are the only thing they resolve against. Not a release asset: users
-      # have no use for them, and `publishRelease` checks the asset list.
-      #
-      # 90 days rather than 14, because a crash is reported when a user hits
-      # it, not when the build was made. This does not cover an APK built by
-      # F-Droid on their own servers -- reproducibility is what covers that,
-      # by allowing the same binary to be rebuilt here.
-      - name: Name native debug symbols
-        shell: bash
-        run: |
-          mv build/app/outputs/native-debug-symbols/release/native-debug-symbols.zip \
-            build/app/outputs/native-debug-symbols/release/native-debug-symbols-${{ matrix.abi }}.zip
-      - name: Upload native debug symbols
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: ${{ env.APP_NAME }}-${{ env.BUILD_TAG }}-android-${{ matrix.abi }}-symbols
-          path: build/app/outputs/native-debug-symbols/release/native-debug-symbols-${{ matrix.abi }}.zip
-          if-no-files-found: error
-          retention-days: 90
+          name: android-arm64
+          path: dist/
 
-  # Publish only after all Android ABIs have built.
   publishRelease:
     name: Publish the release
-    if: needs.reproducibilityCheck.outputs.isRelease == 'true'
-    needs:
-      - reproducibilityCheck
-      - buildAndroid
+    if: github.ref_type == 'tag' && (github.event_name == 'push' || inputs.release)
+    needs: buildAndroid
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     permissions:
       contents: write
-    env:
-      APP_NAME: ${{ needs.reproducibilityCheck.outputs.appName }}
-      BUILD_NUMBER: ${{ needs.reproducibilityCheck.outputs.buildNumber }}
-      # Built from the build number rather than read from `github.ref_name`, so
-      # it is the same expression the platform jobs name their files with. The
-      # two are only interchangeable because `Check tag source version` refuses
-      # a tag that is not exactly this; without that check this opened a release
-      # on a tag nobody pushed.
-      TAG: v1.0.${{ needs.reproducibilityCheck.outputs.buildNumber }}
     steps:
-      - name: Collect the Android APKs
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
-          pattern: ${{ env.APP_NAME }}-${{ env.BUILD_TAG }}-android-*
+          name: android-arm64
           path: assets
-          merge-multiple: true
-      # Require all three APKs before staging the release.
-      - name: Check every expected asset arrived
-        shell: bash
+      - name: Keep the APK and its checksum
         run: |
-          set -euo pipefail
-
-          expected=(
-            "${APP_NAME}_${TAG}_arm64.apk"
-            "${APP_NAME}_${TAG}_arm.apk"
-            "${APP_NAME}_${TAG}_amd64.apk"
-          )
-
-          echo "collected:"
-          ls -la assets
-
-          missing=()
-          for name in "${expected[@]}"; do
-            [ -f "assets/$name" ] || missing+=("$name")
-          done
-
-          if (( ${#missing[@]} )); then
-            echo "::error::the release is incomplete, ${#missing[@]} asset(s) missing: ${missing[*]}"
-            exit 1
-          fi
-
-          # Everything that is not on the list, including the symbol bundles.
-          while IFS= read -r -d '' path; do
-            name="${path#assets/}"
-            keep=false
-            for want in "${expected[@]}"; do
-              if [[ "$name" == "$want" ]]; then keep=true; break; fi
-            done
-            if [[ "$keep" == false ]]; then rm -rf "$path"; fi
-          done < <(find assets -depth -mindepth 1 -print0)
-
-          echo "publishing:"
-          ls -la assets
-      # Checksum the published APKs.
-      - name: Write checksums
-        shell: bash
-        working-directory: assets
-        run: |
-          set -euo pipefail
-          files=(*)
-          sha256sum -- "${files[@]}" > SHA256SUMS
-          cat SHA256SUMS
-      # As a draft, so nothing is downloadable until the step below says so.
-      # `action-gh-release` sends `draft` on an update too, so a second call
-      # without it would publish the release — which is exactly what the step
-      # below is for.
-      - name: Stage the release
-        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
+          rm -f assets/*_symbols.zip
+          (cd assets && sha256sum -- *.apk > SHA256SUMS && cat SHA256SUMS)
+      - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         with:
-          tag_name: ${{ env.TAG }}
-          draft: true
+          tag_name: ${{ github.ref_name }}
           fail_on_unmatched_files: true
           files: assets/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release edit "$TAG" --draft=false --repo "$GITHUB_REPOSITORY"

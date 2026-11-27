@@ -1222,7 +1222,7 @@ async fn consoles_termproxy_and_vncproxy_tickets() {
 // ---------------------------------------------------------------------------
 
 fn pve_fixture(name: &str) -> Value {
-    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test/fixtures/pve").join(name);
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/pve").join(name);
     serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap()
 }
 

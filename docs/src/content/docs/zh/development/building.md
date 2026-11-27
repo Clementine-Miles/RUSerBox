@@ -1,82 +1,36 @@
 ---
-title: 构建指南
-description: 构建 Android 版 Server Box 和 Monitor
+title: 构建
+description: 为 Android（arm64-v8a）构建 RUSerBox，以及构建 Monitor
 ---
 
-Flutter App 使用仓库提供的 `fl_build` 工具构建。Monitor 是独立的 Rust 服务，需要单独构建。
+## 需要
 
-## 前置条件
+- `rust-toolchain.toml` 中的 Rust 工具链（rustup 会连同 `aarch64-linux-android` 目标一起安装）。
+- `android/compile-sdk-version.txt`、`build-tools-version.txt`、`ndk-version.txt` 指定版本的 Android SDK、构建工具和 NDK，并设置 `ANDROID_HOME`。
+- `cargo install cargo-ndk`、Gradle 9.8 和 JDK 17 或更新版本。
 
-- stable channel 的 Flutter SDK
-- Android SDK、NDK、JDK 21 和 GNU awk（`gawk`，用于构建 PRoot）
-- Rust toolchain：App 通过 Dart build hook、`flutter_rust_bridge_hooks` 和 native assets 构建 `crates/sbm_ffi`
+不需要 Dart 或 Flutter SDK。
 
-获取 Dart packages 前先初始化 Git submodule：
+## Android
 
-```bash
-git submodule update --init
+```sh
+make android-check          # 为 aarch64-linux-android 执行 cargo check
+make build-android-debug    # android/app/build/outputs/apk/debug/
+make build-android          # 发布版，通过 scripts/release/android-signing.sh 签名
+scripts/release/inspect-apk.sh android/app/build/outputs/apk/release/app-release.apk
 ```
 
-## 运行开发版
+Gradle 的 `cargoBuild` 任务运行 `cargo ndk -t arm64-v8a`，并把 `libruserbox.so` 作为唯一的原生库打包。APK 只面向 arm64-v8a，需要 Android 9（API 28）和 Vulkan 1.1，原生库不压缩存储并按 16 KiB 对齐。没有发布密钥时，本地检查发布版可以加上 `-PallowDebugReleaseSigning=true`。
 
-```bash
-# 在默认设备上运行
-flutter run
+## 开发窗口
 
-# 明确指定设备
-flutter run -d <device-id>
-```
+`make run-desktop` 在桌面窗口（Linux、Vulkan）中运行同一界面，数据位于 `./ruserbox-data`。它只是开发工具，不是发布目标：其数据库密钥未经封装。
 
-## 发布版构建
+## Monitor
 
-```bash
-make build-android
-```
-
-需要 Android SDK、JDK 和 1Password CLI：release build 使用 `scripts/release/android-signing.sh` 从 1Password 读取的签名 key。仅本地验证时，才显式传入 `-PallowDebugReleaseSigning=true` 使用 debug signing。可重现构建和 F-Droid 构建使用 `-PallowUnsignedRelease=true`，不配置任何签名；`scripts/release/android-build-env.sh` 会导出此选项。
-
-## 构建 Monitor
-
-Monitor 是独立的 server binary，构建步骤与 Flutter App 分开：
-
-```bash
-# 在仓库根目录执行
+```sh
+make monitor-dev
 cargo build -p server_box_monitor --release
 ```
 
-运行 `make monitor-dev` 可在 3770 端口启动 Monitor API。
-
-release 产物由 `monitor-release.yml` workflow 构建，目前只能通过 `workflow_dispatch` 运行。Monitor 的 `monitor-v*` tag 与 App release 分开管理。Docker 构建方法见 `monitor/Dockerfile`。
-
-## 构建前后处理
-
-每次构建时，`fl_build` 都会根据 Git 历史生成 `lib/data/res/build_data.dart` 中的构建版本号。App 名称在 `pubspec.yaml` 的 `fl_build:` 段中设置。
-
-## 故障排除
-
-### Clean build
-
-```bash
-flutter clean
-flutter pub get
-dart run build_runner build
-```
-
-### 依赖版本不匹配
-
-升级依赖前先确认版本兼容：
-
-```bash
-flutter pub upgrade
-```
-
-修改带有注解的 model 后，还需要运行代码生成；详见[代码生成](/docs/zh/development/codegen/)。
-
-## 发布清单
-
-1. 更新 `pubspec.yaml` 中的版本号。
-2. 运行代码生成和本地化生成。
-3. 运行 Dart、Flutter 和 Rust 测试。
-4. 构建 Android APK。
-5. 在真实设备上验证关键功能。
-6. 创建 GitHub Release。
+Monitor 仍保留 Linux（x86_64、arm64）、macOS 和 Windows 构建（`.github/workflows/monitor-release.yml`）。

@@ -1,94 +1,46 @@
 ---
 title: Building
-description: Build Server Box for Android and build the Monitor service
+description: Build RUSerBox for Android (arm64-v8a) and the Monitor
 ---
 
-Build the Flutter App with the repository's `fl_build` tool. The Monitor
-is a separate Rust service and has its own build steps.
+## Requirements
 
-## Prerequisites
+- Rust: the toolchain in `rust-toolchain.toml` (rustup installs it, with the
+  `aarch64-linux-android` target).
+- Android SDK, build tools and NDK at the versions in
+  `android/compile-sdk-version.txt`, `build-tools-version.txt` and
+  `ndk-version.txt`; `ANDROID_HOME` set.
+- `cargo install cargo-ndk`, Gradle 9.8 and JDK 17 or newer.
 
-- Flutter SDK on the stable channel
-- Android SDK, NDK, JDK 21, and GNU awk (`gawk`) for building PRoot
-- Rust toolchain: the App builds `crates/sbm_ffi` using a Dart build hook, `flutter_rust_bridge_hooks`, and native assets
+No Dart or Flutter SDK is involved.
 
-Initialize the Git submodules before fetching Dart packages:
+## Android
 
-```bash
-git submodule update --init
+```sh
+make android-check          # cargo check for aarch64-linux-android
+make build-android-debug    # android/app/build/outputs/apk/debug/
+make build-android          # release, signed through scripts/release/android-signing.sh
+scripts/release/inspect-apk.sh android/app/build/outputs/apk/release/app-release.apk
 ```
 
-## Run a development build
+Gradle's `cargoBuild` task runs `cargo ndk -t arm64-v8a` and packages
+`libruserbox.so` as the only native library. The APK targets arm64-v8a only,
+requires Android 9 (API 28) and Vulkan 1.1, and stores the library uncompressed
+with 16 KiB-aligned segments. For a local release check without the release
+key, add `-PallowDebugReleaseSigning=true`.
 
-```bash
-# Run on the default device
-flutter run
+## Development window
 
-# Select a device explicitly
-flutter run -d <device-id>
-```
+`make run-desktop` runs the same interface in a desktop window (Linux,
+Vulkan), with data in `./ruserbox-data`. It is a development aid, not a
+shipped target: its store key is not sealed.
 
-## Release build
+## Monitor
 
-```bash
-make build-android
-```
-
-Requires the Android SDK, a JDK, and the 1Password CLI: release builds are
-signed with the key that `scripts/release/android-signing.sh` reads from
-1Password. For local
-verification only, pass `-PallowDebugReleaseSigning=true` explicitly to use
-debug signing. Reproducible and F-Droid builds use
-`-PallowUnsignedRelease=true`, which omits signing configuration;
-`scripts/release/android-build-env.sh` exports this option.
-
-## Build the Monitor
-
-The Monitor is a standalone server binary. Build it separately from the
-Flutter App:
-
-```bash
-# From the repository root
+```sh
+make monitor-dev
 cargo build -p server_box_monitor --release
-
 ```
 
-Run `make monitor-dev` to start the API on port 3770.
-
-The `monitor-release.yml` workflow builds release artifacts and currently
-runs only through `workflow_dispatch`. Monitor `monitor-v*` tags are separate
-from App releases. For a Docker build, see `monitor/Dockerfile`.
-
-## Build hooks
-
-On every build, `fl_build` derives the build number from Git history and
-regenerates `lib/data/res/build_data.dart`. Set the App name in the `fl_build:` section of `pubspec.yaml`.
-
-## Troubleshooting
-
-### Clean build
-
-```bash
-flutter clean
-flutter pub get
-dart run build_runner build
-```
-
-### Dependency version conflict
-
-Check package compatibility before upgrading dependencies:
-
-```bash
-flutter pub upgrade
-```
-
-After changing an annotated model, run code generation as well; see [Code Generation](/docs/development/codegen/).
-
-## Release checklist
-
-1. Update the version in `pubspec.yaml`.
-2. Run code generation and localization generation.
-3. Run Dart, Flutter, and Rust tests.
-4. Build the Android APKs.
-5. Verify key features on real devices.
-6. Create the GitHub release.
+The Monitor keeps its own Linux (x86_64, arm64), macOS and Windows builds
+(`.github/workflows/monitor-release.yml`).

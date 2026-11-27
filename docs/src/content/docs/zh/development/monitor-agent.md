@@ -76,7 +76,7 @@ Android 应用会将各 Monitor 的 `device` token 保存在安全存储中，�
 
 ### 修改密码
 
-修改密码会注销其他所有访问。修改前签发的账户 token 在所有 endpoint 都返回 `401`（同一秒签发的 token 仍然有效，因此修改后立即重新登录可以正常使用），watch token 和 LK Cloud session 都会被删除；在运行中的 Monitor 里，终端会话、未使用的 ticket、正在运行的 Agent mode 任务、relay 和监听会收到 `{"type":"error","code":"password_changed"}` 并被关闭。在命令行中重置密码无法通知正在运行的 Monitor，已打开的连接会保持到 Monitor 重启。
+修改密码会注销其他所有访问。修改前签发的账户 token 在所有 endpoint 都返回 `401`（同一秒签发的 token 仍然有效，因此修改后立即重新登录可以正常使用），watch token 和 LK Cloud session 都会被删除；在运行中的 Monitor 里，终端会话、未使用的 ticket、relay 和监听会收到 `{"type":"error","code":"password_changed"}` 并被关闭。在命令行中重置密码无法通知正在运行的 Monitor，已打开的连接会保持到 Monitor 重启。
 
 ### 传输安全
 

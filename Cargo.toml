@@ -7,7 +7,7 @@
 # - monitor:           headless server-side monitoring and HTTP API
 [workspace]
 resolver = "2"
-members = ["crates/sbm_parser", "crates/sbm_store", "crates/sbm_ssh", "crates/sbm_monitor_client", "app", "crates/sbm_native", "crates/sbm_redfish", "crates/sbm_virt", "crates/sbm_ffi", "monitor"]
+members = ["crates/sbm_parser", "crates/sbm_store", "crates/sbm_ssh", "crates/sbm_monitor_client", "app", "crates/sbm_native", "crates/sbm_redfish", "crates/sbm_virt", "crates/sbm_remote_desktop", "crates/fl_lkc", "monitor"]
 exclude = ["third_party/ironrdp", ".pub-cache"]
 
 # Debug builds keep line tables only: the monitor alone links ~40 test

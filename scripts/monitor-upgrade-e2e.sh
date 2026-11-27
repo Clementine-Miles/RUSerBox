@@ -19,14 +19,14 @@ node=${1:-}
 [ -n "$node" ] || { sed -n '2,14p' "$0" >&2; exit 2; }
 build=${SBM_E2E_BUILD_HOST:-lkd-wsl}
 root=$(cd "$(dirname "$0")/.." && pwd)
-src='src/flutter_server_box'
+src='src/ruserbox'
 lab="$root/scripts/e2e-vm.sh"
 work=$(mktemp -d)
 remote() { printf '%s\n' "$1" | ssh "$build" sh -s; }
 
 echo "==> build: agent on $build"
 rsync -az --delete \
-  --exclude target --exclude node_modules --exclude build --exclude .dart_tool --exclude .git \
+  --exclude target --exclude node_modules --exclude build --exclude .git \
   --exclude '.claude/worktrees' \
   "$root/" "$build:$src/"
 remote ". \"\$HOME/.cargo/env\" 2>/dev/null; cd ~/$src && cargo build -q -p server_box_monitor --profile monitor-test --target x86_64-unknown-linux-musl"

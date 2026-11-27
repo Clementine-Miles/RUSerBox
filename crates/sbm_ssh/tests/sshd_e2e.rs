@@ -31,8 +31,8 @@ fn keygen(path: &Path) {
 }
 
 fn start() -> Option<Sshd> {
-    if !Path::new(SSHD).exists() || std::env::var("USER").unwrap_or_default() != "root" && !nix_root() {
-        eprintln!("skipped: no sshd or not root");
+    if !Path::new(SSHD).exists() {
+        eprintln!("skipped: no sshd");
         return None;
     }
     let dir = tempfile::tempdir().unwrap();
@@ -50,6 +50,7 @@ fn start() -> Option<Sshd> {
         ak = d.join("authorized_keys").display(),
     );
     std::fs::write(d.join("sshd_config"), cfg).unwrap();
+    // The privilege separation directory, needed only by an sshd run as root.
     std::fs::create_dir_all("/run/sshd").ok();
     let child = Command::new(SSHD).arg("-D").arg("-e").arg("-f").arg(d.join("sshd_config")).spawn().unwrap();
     for _ in 0..50 {
@@ -62,8 +63,9 @@ fn start() -> Option<Sshd> {
     panic!("sshd did not start");
 }
 
-fn nix_root() -> bool {
-    Command::new("id").arg("-u").output().map(|o| String::from_utf8_lossy(&o.stdout).trim() == "0").unwrap_or(false)
+/// The account the test runs as: a non-root sshd can only let in itself.
+fn me() -> String {
+    Command::new("id").arg("-un").output().map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned()).unwrap_or_else(|_| "root".into())
 }
 
 #[derive(Default)]
@@ -92,7 +94,7 @@ fn hop(s: &Sshd, id: &str) -> Hop {
         id: id.into(),
         host: "127.0.0.1".into(),
         port: s.port,
-        user: "root".into(),
+        user: me(),
         auth: Auth { private_key: Some(s.key.clone()), ..Default::default() },
         legacy_algorithms: false,
         proxy_command: None,

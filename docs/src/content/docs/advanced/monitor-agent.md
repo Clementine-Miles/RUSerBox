@@ -430,8 +430,8 @@ files — its database, `jwt.secret`, `credentials.key`, `config.toml` and its
 backups, `.env`, the TLS key and certificate, and the custom commands — since
 they hold credentials.
 
-The credentials the Monitor stores (BMC and Proxmox VE passwords, Agent mode
-provider keys, MCP tokens, the WebDAV password) are encrypted in the database
+The credentials the Monitor stores (BMC and Proxmox VE passwords, the WebDAV
+password) are encrypted in the database
 with `credentials.key`, kept beside it. Copy the two together when moving the
 Monitor by hand; without the key, those credentials have to be entered again. A
 settings backup does not need the key.
@@ -439,8 +439,7 @@ settings backup does not need the key.
 ### Upgrading from a Monitor with several accounts
 
 Earlier Monitors had several accounts, with roles and grants. On upgrade the
-oldest admin account's password becomes the Monitor's password. The other
-accounts' Agent mode tasks, memory and desk themes move to it; their desk
+oldest admin account's password becomes the Monitor's password. Their desk
 layout, windows and paired watches are removed. Roles and grants are not
 carried over.
 
@@ -655,3 +654,11 @@ variable.
 port is reachable. Then inspect the database's `access_log` table, which
 records the visitor, time, source, requested resource, and result without
 storing credentials.
+
+### Upgrading from a Monitor with Agent mode
+
+Agent mode, the MCP endpoint and its API tokens are gone. Upgrading drops their
+tables (migration 047), credentials included; a settings backup taken before
+the upgrade is migrated the same way when restored. An `[mcp]` section left in
+`config.toml` is ignored. Files Agent mode kept beside the database (`agent/`,
+`inference/`) are left on disk, never served, for the operator to delete.
