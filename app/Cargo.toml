@@ -1,0 +1,56 @@
+[package]
+name = "ruserbox"
+version = "2.0.0"
+edition = "2024"
+description = "RUSerBox: server management for Android, native Rust with Vulkan rendering"
+license = "AGPL-3.0-or-later"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "ruserbox-desktop"
+path = "src/bin/desktop.rs"
+required-features = ["desktop"]
+
+[features]
+default = []
+# A development window on Linux (winit + Vulkan); never shipped.
+desktop = ["dep:winit", "dep:egui-winit", "dep:pollster"]
+
+[dependencies]
+sbm_parser = { path = "../crates/sbm_parser" }
+sbm_store = { path = "../crates/sbm_store" }
+sbm_ssh = { path = "../crates/sbm_ssh" }
+sbm_monitor_client = { path = "../crates/sbm_monitor_client" }
+egui = { version = "0.37", default-features = false, features = ["default_fonts", "rayon"] }
+egui-wgpu = { version = "0.37", default-features = false }
+# Vulkan is the only backend compiled in: there is nothing to fall back to.
+wgpu = { version = "30", default-features = false, features = ["vulkan", "wgsl", "std"] }
+raw-window-handle = "0.6"
+alacritty_terminal = "0.26"
+tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "fs", "io-util"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+log = "0.4"
+thiserror = "2.0"
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+
+winit = { version = "0.30", optional = true, default-features = false, features = ["rwh_06", "x11", "wayland", "wayland-dlopen"] }
+egui-winit = { version = "0.37", optional = true, default-features = false, features = ["clipboard", "wayland", "x11"] }
+pollster = { version = "0.4", optional = true }
+
+[target.'cfg(target_os = "android")'.dependencies]
+android-activity = { version = "0.6", features = ["game-activity"] }
+android_logger = "0.15"
+jni = "0.21"
+ndk-context = "0.1"
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+env_logger = { version = "0.11", default-features = false }
+
+[dev-dependencies]
+pollster = "0.4"
+png = "0.18"
+tempfile = "3"

@@ -25,9 +25,10 @@ use russh::{ChannelMsg, Preferred, kex};
 use tokio::io::{AsyncRead, AsyncWrite};
 
 pub use forward::{Forward, ForwardSpec};
+pub use russh::keys;
 pub use russh_sftp::client::SftpSession;
 pub use shell::{Shell, ShellEvent};
-pub use status::{ScriptPaths, StatusRunner};
+pub use status::{SCRIPT_VERSION, ScriptPaths, StatusRunner};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
