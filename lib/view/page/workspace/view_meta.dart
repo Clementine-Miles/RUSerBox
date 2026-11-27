@@ -19,12 +19,11 @@ extension WorkspaceViewX on WorkspaceView {
     WorkspaceView.proc => ServerFuncBtn.process,
     WorkspaceView.systemd => ServerFuncBtn.systemd,
     WorkspaceView.snippet => ServerFuncBtn.snippet,
-    WorkspaceView.status || WorkspaceView.agent => null,
+    WorkspaceView.status => null,
   };
 
   IconData get icon => switch (this) {
     WorkspaceView.status => Icons.monitor_heart_outlined,
-    WorkspaceView.agent => Icons.auto_awesome,
     // Not the function row's: that one is a brand mark, and a strip of tabs
     // reads better in one family of glyphs.
     WorkspaceView.docker => Icons.view_in_ar_outlined,
@@ -34,7 +33,6 @@ extension WorkspaceViewX on WorkspaceView {
 
   String get label => switch (this) {
     WorkspaceView.status => l10n.status,
-    WorkspaceView.agent => 'Agent',
     _ => func!.toStr,
   };
 

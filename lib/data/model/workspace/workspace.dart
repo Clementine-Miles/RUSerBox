@@ -9,7 +9,6 @@ enum WorkspaceView {
   term,
   status,
   files,
-  agent,
   docker,
   proc,
   systemd,

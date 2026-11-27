@@ -11,7 +11,6 @@ import 'package:server_box/data/model/server/custom.dart';
 import 'package:server_box/data/model/server/port_forward.dart';
 import 'package:server_box/data/model/server/private_key_info.dart';
 import 'package:server_box/data/model/server/pve_config.dart';
-import 'package:server_box/data/model/server/remote_desktop.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/model/server/snippet.dart';
 import 'package:server_box/data/model/server/ssh_credential.dart';
@@ -19,7 +18,6 @@ import 'package:server_box/data/store/migrations/all.dart';
 import 'package:server_box/data/store/migrations/m008_settings_fixups.dart';
 import 'package:server_box/data/store/migrations/m009_grouped_settings.dart';
 import 'package:server_box/data/store/migrations/m021_home_tabs_bar.dart';
-import 'package:server_box/data/store/migrations/m022_ai_endpoint_version.dart';
 import 'package:server_box/data/store/schema.dart';
 import 'package:server_box/data/store/stores.dart';
 
@@ -312,31 +310,41 @@ void main() {
       expect(backup.settings['timeOut'], 11);
     });
 
-    test('exports and restores remote desktop profiles', () async {
+    test('an older file with remote desktop profiles restores without them', () async {
       const server = Spi(
         id: 'server-1',
         name: 'desktop host',
         ssh: SshCredential(ip: '10.0.0.1'),
       );
-      const profile = RemoteDesktopProfile(
-        id: 'desktop-1',
-        serverId: 'server-1',
-        name: 'Windows',
-        protocol: RemoteDesktopProtocol.rdp,
-        port: 3389,
-        username: 'admin',
-        password: 'saved-secret',
-      );
-      Stores.server.put(server);
-      Stores.remoteDesktop.put(profile);
+      final raw = json.decode(
+        BackupV2(
+          version: BackupV2.formatVer,
+          date: 1,
+          spis: {
+            server.id: json.decode(
+              json.encode(server.toJson(), toEncodable: (v) => (v as dynamic).toJson()),
+            ),
+          },
+          snippets: const {},
+          keys: const {},
+          container: const {},
+          history: const {},
+          settings: const {},
+        ).toJsonString(),
+      ) as Map<String, dynamic>;
+      raw['remoteDesktopProfiles'] = {
+        'desktop-1': {'id': 'desktop-1', 'serverId': server.id, 'protocol': 'rdp', 'port': 3389},
+      };
 
-      final backup = BackupV2.fromJsonString(
-        (await BackupV2.loadFromStore()).toJsonString(),
-      );
-      Stores.remoteDesktop.delete(profile);
-      await backup.merge(force: true);
+      await BackupV2.fromJsonString(json.encode(raw)).merge(force: true);
 
-      expect(Stores.remoteDesktop.fetchForServer(server.id), [profile]);
+      expect(Stores.server.fetchOneRaw(server.id)?.name, server.name);
+      expect(
+        SqliteDb.instance.select(
+          "SELECT 1 FROM sqlite_master WHERE name = 'remote_desktop_profile';",
+        ),
+        isEmpty,
+      );
     });
 
     /// A file from a build that kept `custom.cmds`: the commands are dropped,
@@ -574,37 +582,6 @@ void main() {
       });
     });
 
-    test('leaves the Agent local-exec permission out of the file', () async {
-      Stores.setting.agentLocalExec.put(true);
-
-      final backup = await BackupV2.loadFromStore();
-
-      expect(backup.settings.containsKey('agentLocalExec'), isFalse);
-    });
-
-    test('and does not take it from one either', () async {
-      Stores.setting.agentLocalExec.put(false);
-
-      final backup = BackupV2(
-        version: BackupV2.formatVer,
-        date: 1,
-        spis: const {},
-        snippets: const {},
-        keys: const {},
-        container: const {},
-        history: const {},
-        settings: {
-          'agentLocalExec': true,
-          'timeOut': 9,
-          Stores.setting.lastUpdateTsKey: <String, int>{},
-        },
-      );
-      await backup.merge(force: true);
-
-      expect(Stores.setting.agentLocalExec.fetch(), isFalse);
-      expect(Stores.setting.timeout.fetch(), 9, reason: 'the rest still lands');
-    });
-
     test('the Live Activity switch travels no further either', () async {
       // Same rule, one screen out: it decides whether a server's name and the
       // state of a connection to it are readable without unlocking. Restoring
@@ -694,17 +671,13 @@ void main() {
         },
       );
 
+      // The stored row, not the parsed bar: `agent` is a retired tab this
+      // build drops when it reads one.
       await withTabs(BackupV2.formatVer).merge(force: true);
-      expect(
-        [for (final t in Stores.setting.homeTabs.fetch()) t.name],
-        five,
-      );
+      expect(Stores.setting.get<List>('homeTabs'), five);
 
       await withTabs(HomeTabsBarMigration.appliedAt).merge(force: true);
-      expect(
-        [for (final t in Stores.setting.homeTabs.fetch()) t.name],
-        five.take(4),
-      );
+      expect(Stores.setting.get<List>('homeTabs'), five.take(4));
     });
 
     test('does not apply device-local markers from an older backup', () async {
@@ -734,7 +707,9 @@ void main() {
 
     test('regroups the settings a pre-grouping backup brings back', () async {
       Stores.setting.set('askAi', {'model': 'current-model'});
-      await Stores.setting.agentShell.width.set(999);
+      Stores.setting.set('agentShell', {
+        'window': {'width': 999.0},
+      });
 
       final backup = BackupV2(
         version: const GroupedSettingsMigration().from,
@@ -758,36 +733,12 @@ void main() {
         'model': 'from-backup',
         'apiKey': 'sk-from-backup',
       });
-      expect(Stores.setting.agentShell.width.get(), 321.0);
+      expect(
+        ((Stores.setting.get<Object>('agentShell')! as Map)['window'] as Map)['width'],
+        321.0,
+      );
       expect(Stores.setting.get<Object>('askAiModel'), isNull);
       expect(Stores.setting.get<Object>('agentShellWidth'), isNull);
-    });
-
-    test('versions the AI endpoint a pre-m022 backup brings back', () async {
-      final backup = BackupV2(
-        version: AiEndpointVersionMigration.appliedAt,
-        date: 1,
-        spis: const {},
-        snippets: const {},
-        keys: const {},
-        container: const {},
-        history: const {},
-        settings: {
-          'askAi': {
-            'baseUrl': 'https://api.openai.com',
-            'apiKey': 'sk-from-backup',
-            'model': 'gpt-5.6-luna',
-          },
-          Stores.setting.lastUpdateTsKey: <String, int>{},
-        },
-      );
-      await backup.merge(force: true);
-
-      // Unversioned, `LegacyAskAiMigration` makes it a provider that 404s.
-      expect(
-        (Stores.setting.get<Object>('askAi')! as Map)['baseUrl'],
-        'https://api.openai.com/v1',
-      );
     });
 
     test('restore settings steps are schema steps, in schema order', () {
@@ -873,13 +824,6 @@ void main() {
           type: PortForwardType.local,
           localPort: 8080,
         );
-        const remoteDesktop = RemoteDesktopProfile(
-          id: 'desktop-1',
-          serverId: 'backup-server-id',
-          name: 'Windows',
-          protocol: RemoteDesktopProtocol.rdp,
-          port: 3389,
-        );
         final backup = BackupV2(
           version: BackupV2.formatVer,
           date: 1,
@@ -894,7 +838,6 @@ void main() {
           snippets: {'snippet-1': snippet.toJson()},
           keys: const {},
           portForwards: {'forward-1': forward.toJson()},
-          remoteDesktopProfiles: {'desktop-1': remoteDesktop.toJson()},
           container: const {
             'backup-server-id': {'host_docker': 'tcp://10.0.0.2:2375'},
           },
@@ -916,10 +859,6 @@ void main() {
         expect(
           Stores.portForward.fetchForServer(local.id).single.id,
           forward.id,
-        );
-        expect(
-          Stores.remoteDesktop.fetchForServer(local.id).single.id,
-          remoteDesktop.id,
         );
         expect(
           Stores.container.fetch(local.id, ContainerType.docker),

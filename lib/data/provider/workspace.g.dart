@@ -119,7 +119,7 @@ final class WorkspaceTemplatesProvider
 }
 
 String _$workspaceTemplatesHash() =>
-    r'5e99787684dab1d51f9c6b98b897d819fb56de11';
+    r'f29860c2e9b895529279baeef0321f780ef4da17';
 
 /// The saved layouts.
 

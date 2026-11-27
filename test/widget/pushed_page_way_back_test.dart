@@ -36,8 +36,6 @@ import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
 import 'package:server_box/generated/l10n/l10n.dart';
 import 'package:server_box/src/rust/api/users.dart';
-import 'package:server_box/view/page/agent/permissions.dart';
-import 'package:server_box/view/page/agent/settings.dart';
 import 'package:server_box/view/page/backup.dart';
 import 'package:server_box/view/page/benchmark/result.dart';
 import 'package:server_box/view/page/bmc_credential/edit.dart';
@@ -55,7 +53,6 @@ import 'package:server_box/view/page/server/connection_stats.dart';
 import 'package:server_box/view/page/server/custom_cmds.dart';
 import 'package:server_box/view/page/server/detail/view.dart';
 import 'package:server_box/view/page/server/edit/edit.dart';
-import 'package:server_box/view/page/server/monitor_settings/api_tokens.dart';
 import 'package:server_box/view/page/server/monitor_settings/lists.dart';
 import 'package:server_box/view/page/server/monitor_settings/page.dart';
 import 'package:server_box/view/page/server/monitor_settings/push_edit.dart';
@@ -155,10 +152,6 @@ void main() {
   );
 
   final pages = <String, void Function(BuildContext)>{
-    'AgentProvidersPage': (c) => AgentProvidersPage.route.go(c),
-    'AgentRedactPage': (c) => AgentRedactPage.route.go(c),
-    'AgentSkillsPage': (c) => AgentSkillsPage.route.go(c),
-    'AgentToolsPage': (c) => AgentToolsPage.route.go(c),
     'BackupPage': (c) => BackupPage.route.go(c),
     'BenchmarkResultPage': (c) => BenchmarkResultPage.route.go(
       c,
@@ -196,10 +189,6 @@ void main() {
     'KeybindingsPage': (c) => KeybindingsPage.route.go(c),
     'KnownHostsPage': (c) => KnownHostsPage.route.go(c),
     'LocalFilePage': (c) => LocalFilePage.route.go(c),
-    'PermissionsPage': (c) => AgentPermissions.route.go(
-      c,
-      MonitorPermissionsSource(MonitorHttpCredential(addr: 'http://127.0.0.1:9', pwd: 'p')),
-    ),
     'MonitorCorsPage': (c) => MonitorCorsPage.route.go(
       c,
       MonitorCorsArgs(origins: const [], onChanged: (_) {}),
@@ -239,12 +228,6 @@ void main() {
       MonitorSettingsArgs(
         monitor: MonitorHttpCredential(addr: 'http://127.0.0.1:9', pwd: 'p'),
         subtitle: 'web',
-      ),
-    ),
-    'MonitorApiTokensPage': (c) => MonitorApiTokensPage.route.go(
-      c,
-      const MonitorApiTokensArgs(
-        MonitorHttpCredential(addr: 'http://127.0.0.1:9', pwd: 'p'),
       ),
     ),
     'PortForwardPage': (c) {

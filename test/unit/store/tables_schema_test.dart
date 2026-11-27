@@ -116,11 +116,6 @@ void main() {
       "VALUES ('pf', 'srv', 'pg', 'local', 15432);",
     );
     db.execute(
-      'INSERT INTO remote_desktop_profile '
-      '(id, server_id, name, protocol, port) '
-      "VALUES ('rd', 'srv', 'desktop', 'rdp', 3389);",
-    );
-    db.execute(
       "INSERT INTO conn_stat VALUES ('cs', 'srv', 'srv', 1, 'success', '', 5);",
     );
     db.execute("INSERT INTO server_dist VALUES ('srv', 'debian', 1);");
@@ -133,7 +128,6 @@ void main() {
       'server_disabled_cmd',
       'known_host',
       'port_forward',
-      'remote_desktop_profile',
       'conn_stat',
       // The cache of what each server was last seen running: keyed by the
       // server and cascading with it, so a deleted server leaves no reading
@@ -248,43 +242,6 @@ void main() {
       throwsA(isA<SqliteException>()),
     );
   });
-
-  test(
-    'a remote desktop profile has a valid protocol, port, and local name',
-    () {
-      addServer('srv');
-      db.execute(
-        'INSERT INTO remote_desktop_profile '
-        '(id, server_id, name, protocol, port) '
-        "VALUES ('rdp', 'srv', 'desktop', 'rdp', 3389);",
-      );
-      expect(
-        () => db.execute(
-          'INSERT INTO remote_desktop_profile '
-          '(id, server_id, name, protocol, port) '
-          "VALUES ('vnc', 'srv', 'desktop', 'vnc', 5900);",
-        ),
-        throwsA(isA<SqliteException>()),
-        reason: 'names are unique for one server',
-      );
-      expect(
-        () => db.execute(
-          'INSERT INTO remote_desktop_profile '
-          '(id, server_id, name, protocol, port) '
-          "VALUES ('bad-protocol', 'srv', 'other', 'spice', 5900);",
-        ),
-        throwsA(isA<SqliteException>()),
-      );
-      expect(
-        () => db.execute(
-          'INSERT INTO remote_desktop_profile '
-          '(id, server_id, name, protocol, port) '
-          "VALUES ('bad-port', 'srv', 'third', 'vnc', 0);",
-        ),
-        throwsA(isA<SqliteException>()),
-      );
-    },
-  );
 
   group('sync metadata', () {
     test('every sync root carries updated_at and rev', () {

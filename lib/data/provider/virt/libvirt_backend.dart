@@ -161,33 +161,11 @@ class LibvirtBackend extends _LibvirtCore with _Snapshots, _Storage, _Hardware, 
   )).virt;
 
   @override
-  Future<VirtConsole> console(VirtGuest guest, VirtConsoleKind kind) async {
-    switch (kind) {
-      case VirtConsoleKind.text:
-        return LibvirtSerialConsole(
-          command: ffi.virtConsoleCommand(domain: guest.id),
-          needsRoot: _viaSudo,
-        );
-      case VirtConsoleKind.vnc:
-        final info = await _run(ffi.virtVncConsoleScript(domain: guest.id), ffi.virtLibvirtVncConsole);
-        final display = info.display;
-        final port = display?.port;
-        if (display == null || display.protocol != 'vnc' || port == null) {
-          throw VirtErr(
-            type: VirtErrType.unsupported,
-            message: display == null
-                ? 'No VNC display while ${guest.name} is not running'
-                : 'The display is ${display.uri}, not a VNC port',
-          );
-        }
-        return LibvirtVncConsole(
-          host: _dialHost(display.host),
-          port: port,
-          password: info.password,
-          passwordKnown: info.passwordKnown,
-        );
-    }
-  }
+  Future<VirtConsole> console(VirtGuest guest, VirtConsoleKind kind) async =>
+      LibvirtSerialConsole(
+        command: ffi.virtConsoleCommand(domain: guest.id),
+        needsRoot: _viaSudo,
+      );
 }
 
 /// What every part of [LibvirtBackend] stands on: how it reaches the host,
@@ -395,13 +373,6 @@ ffi.VirtActionKind _kindOf(VirtPowerAction action) => switch (action) {
   VirtPowerAction.forceStop => ffi.VirtActionKind.forceStop,
   VirtPowerAction.suspend => ffi.VirtActionKind.suspend,
   VirtPowerAction.resume => ffi.VirtActionKind.resume,
-};
-
-/// A listen address as something to dial from the hypervisor: a wildcard
-/// is the hypervisor itself.
-String _dialHost(String? host) => switch (host) {
-  null || '' || '0.0.0.0' || '::' || '[::]' => '127.0.0.1',
-  final h => h,
 };
 
 VirtErr _toErr(ffi.VirtFfiError e, {bool action = false}) {

@@ -43,45 +43,6 @@ abstract final class MethodChans {
     }
   }
 
-  static Future<void> updateHomeWidget() async {
-    if (!isAndroid) return;
-    if (!Stores.setting.autoUpdateHomeWidget.fetch()) return;
-    try {
-      await _channel.invokeMethod('updateHomeWidget');
-    } catch (e, s) {
-      Loggers.app.warning('Failed to update home widget', e, s);
-    }
-  }
-
-  /// Hand the home-screen widgets the current monitor server list and a
-  /// read-only credential for each.
-  ///
-  /// The native side splits the payload: the list goes to a container the
-  /// widget process reads directly, and each `token` goes into the credential
-  /// store instead — see `WidgetSync` for why. It is a full replacement, so a
-  /// server absent from [payload] has its stored token dropped as well.
-  static Future<void> publishWidgetServers(String payload) async {
-    if (!isAndroid) return;
-    await _channel.invokeMethod('publishWidgetServers', payload);
-  }
-
-  /// Which servers the native side currently holds a widget token for, and
-  /// until when — as JSON, `[{"id","endpoint","expiresAt"}]`.
-  ///
-  /// Never the token itself. The renewal decision needs the endpoint it
-  /// belongs to and its deadline, and carrying the credential back across the
-  /// channel to answer that would undo the point of storing it natively.
-  ///
-  /// Answers from the *platform*, not from a copy kept here, because those two
-  /// come apart exactly where it matters: a reinstall empties the Android Keystore
-  /// while a restored backup refills this app's own database, and a renewal
-  /// decision made from the latter would skip every server whose credential no
-  /// longer exists.
-  static Future<String?> widgetTokenState() async {
-    if (!isAndroid) return null;
-    return await _channel.invokeMethod<String>('widgetTokenState');
-  }
-
   /// Hide the app's content from the Android app switcher.
   static Future<bool> setPrivacyBlur(bool enabled) async {
     if (!isAndroid) return true;

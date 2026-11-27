@@ -68,12 +68,6 @@ List<SettingsNode> _buildNodes() {
         ),
       ],
     ),
-    SettingsNode.leaf(
-      id: 'ai',
-      title: libL10n.ai,
-      icon: Icons.auto_awesome_outlined,
-      page: () => const AppSettingsPage(section: SettingsSection.ai),
-    ),
     SettingsNode.branch(
       id: 'server',
       title: libL10n.server,
@@ -94,14 +88,14 @@ List<SettingsNode> _buildNodes() {
           icon: Icons.sort,
           page: () => const ServerOrdersPage(embedded: true),
         ),
-        // A server's desktop and its guests' consoles are sessions on a
-        // server: how long one stays open once it is left is set here.
+        // A guest's console is a session on a server: how long one stays
+        // open once it is left is set here.
         SettingsNode.leaf(
-          id: 'server.remoteDesktop',
-          title: l10n.remoteDesktop,
-          icon: Icons.desktop_windows_outlined,
+          id: 'server.console',
+          title: l10n.virtConsole,
+          icon: Icons.terminal_outlined,
           page: () =>
-              const AppSettingsPage(section: SettingsSection.remoteDesktop),
+              const AppSettingsPage(section: SettingsSection.console),
         ),
       ],
     ),

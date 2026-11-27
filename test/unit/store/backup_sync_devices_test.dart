@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/core/sync/sync.dart';
@@ -211,9 +210,9 @@ void main() {
     await _settle();
     expect(edits, 1, reason: 'the history goes with the next sync');
 
-    LlmStores.tool.enabled.put(false);
+    Stores.sudoPassword.set('s1', 'pw');
     await _settle();
-    expect(edits, 2, reason: "the Agent's settings sync too");
+    expect(edits, 2, reason: 'the secrets sync too');
 
     await PrefProps.syncAppSettings.set(false);
     Stores.setting.maxRetryCount.put(7);
@@ -308,23 +307,23 @@ void main() {
     // An older build's backup, carrying them: this device keeps its own and
     // its clock.
     await become(desktop);
-    Stores.setting.set('agentShell', {'x': 1});
+    Stores.setting.set('terminalShell', {'x': 1});
     await _settle();
     final mine = Stores.lastModTime;
     await backup
         .copyWith(
           settings: {
             ...backup.settings,
-            'agentShell': {'x': 2},
+            'terminalShell': {'x': 2},
             Stores.setting.lastUpdateTsKey: {
               ..._stampsOf(backup.settings),
-              'agentShell': later,
+              'terminalShell': later,
             },
           },
         )
         .merge();
-    expect(Stores.setting.get<Object>('agentShell'), {'x': 1});
-    expect(Stores.setting.lastUpdateTs?.keys, isNot(contains('agentShell')));
+    expect(Stores.setting.get<Object>('terminalShell'), {'x': 1});
+    expect(Stores.setting.lastUpdateTs?.keys, isNot(contains('terminalShell')));
     expect(Stores.lastModTime, isNot(later));
     expect(Stores.lastModTime, greaterThanOrEqualTo(mine));
   });
@@ -344,7 +343,6 @@ const _deviceLocal = {
   'fontPath',
   'sshBgImage',
   'windowState',
-  'agentShell',
   'terminalShell',
   'useBioAuth',
   'delayBioAuthLock',

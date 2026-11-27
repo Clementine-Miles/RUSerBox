@@ -24,7 +24,6 @@ enum ServerFuncBtn {
   power(1491),
   users(1579),
   scheduledTasks(1579),
-  remoteDesktop(1617),
   firewall(1719),
   storage(1719),
   shares(1719);
@@ -78,7 +77,6 @@ enum ServerFuncBtn {
     power,
     users,
     scheduledTasks,
-    remoteDesktop,
     firewall,
     storage,
     shares,
@@ -101,6 +99,16 @@ enum ServerFuncBtn {
     'systemd',
     'portForward',
     'power',
+  ];
+
+  /// The positions an untagged integer of the current layout meant, frozen
+  /// as the last build with `remoteDesktop` declared them: an entry removed
+  /// since (`remoteDesktop`) resolves to nothing instead of re-pointing every
+  /// integer after it at a different button.
+  static const currentLayoutIndexNames = <String>[
+    'terminal', 'files', 'container', 'process', 'snippet', 'iperf', //
+    'systemd', 'portForward', 'power', 'users', 'scheduledTasks',
+    'remoteDesktop', 'firewall', 'storage', 'shares',
   ];
 
   static const _storedLayoutKey = 'layout';
@@ -138,7 +146,9 @@ enum ServerFuncBtn {
       final name = names[stored];
       return values.firstWhereOrNull((btn) => btn.name == name);
     }
-    return stored >= 0 && stored < values.length ? values[stored] : null;
+    if (stored < 0 || stored >= currentLayoutIndexNames.length) return null;
+    final name = currentLayoutIndexNames[stored];
+    return values.firstWhereOrNull((btn) => btn.name == name);
   }
 
   /// A stored list in either shape, as names this build knows.
@@ -190,7 +200,6 @@ enum ServerFuncBtn {
 
   /// The feature this entry opens, where it is one [Feature] knows about.
   Feature? get feature => switch (this) {
-    remoteDesktop => Feature.remoteDesktop,
     portForward => Feature.portForward,
     _ => null,
   };
@@ -208,7 +217,6 @@ enum ServerFuncBtn {
     power => Icons.power_settings_new,
     users => Icons.manage_accounts_outlined,
     scheduledTasks => Icons.schedule,
-    remoteDesktop => Icons.desktop_windows_outlined,
     firewall => Icons.shield_outlined,
     storage => Icons.storage,
     shares => Icons.folder_shared,
@@ -241,7 +249,6 @@ enum ServerFuncBtn {
     // that are there. Asked of [ServerCapabilities.forwardsOf] — see
     // [availableOn].
     portForward => caps.tcpRelay || caps.remoteListen,
-    remoteDesktop => caps.tcpRelay,
   };
 
   /// [availableWith] for [spi], asked of the capabilities this entry runs on:
@@ -292,7 +299,6 @@ enum ServerFuncBtn {
     power => l10n.power,
     users => l10n.systemUsers,
     scheduledTasks => l10n.scheduledTasks,
-    remoteDesktop => l10n.remoteDesktop,
     firewall => l10n.firewall,
     storage => l10n.storageTitle,
     shares => l10n.sharingTitle,

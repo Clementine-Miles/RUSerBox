@@ -1,5 +1,4 @@
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores;
 import 'package:server_box/data/model/server/bmc_cfg.dart';
 import 'package:server_box/data/model/server/custom.dart';
 import 'package:server_box/data/model/server/geo.dart';
@@ -11,7 +10,6 @@ import 'package:server_box/data/model/server/wol_cfg.dart';
 import 'package:server_box/data/store/entity_store.dart';
 import 'package:server_box/data/store/port_forward.dart';
 import 'package:server_box/data/store/pve.dart';
-import 'package:server_box/data/store/remote_desktop.dart';
 import 'package:server_box/data/store/snippet.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -23,23 +21,19 @@ import 'package:sqlite3/sqlite3.dart';
 class ServerStore extends EntityStore<Spi> {
   ServerStore({
     PortForwardStore? portForwards,
-    RemoteDesktopStore? remoteDesktops,
     SnippetStore? snippets,
     PveStore? pve,
   }) : _portForwards = portForwards,
-       _remoteDesktops = remoteDesktops,
        _snippets = snippets,
        _pve = pve;
 
   static final instance = ServerStore(
     portForwards: PortForwardStore.instance,
-    remoteDesktops: RemoteDesktopStore.instance,
     snippets: SnippetStore.instance,
     pve: PveStore.instance,
   );
 
   final PortForwardStore? _portForwards;
-  final RemoteDesktopStore? _remoteDesktops;
   final SnippetStore? _snippets;
 
   /// `server_pve` cascades with its server and moves with a rename, neither
@@ -455,12 +449,6 @@ class ServerStore extends EntityStore<Spi> {
         .select('SELECT id FROM port_forward WHERE server_id = ?;', [id])
         .map((r) => r['id'] as String)
         .toList();
-    final remoteDesktopIds = db
-        .select('SELECT id FROM remote_desktop_profile WHERE server_id = ?;', [
-          id,
-        ])
-        .map((r) => r['id'] as String)
-        .toList();
     final snippetIds = _referencingIds(
       'SELECT snippet_id AS id FROM snippet_auto_run_on WHERE server_id = ?;',
       id,
@@ -478,12 +466,6 @@ class ServerStore extends EntityStore<Spi> {
           ['port_forward', pfId, at],
         );
       }
-      for (final profileId in remoteDesktopIds) {
-        db.execute(
-          'INSERT OR REPLACE INTO tombstone (tbl, row_id, deleted_at) VALUES (?, ?, ?);',
-          ['remote_desktop_profile', profileId, at],
-        );
-      }
       final snippetSync = SyncedTable('snippet');
       for (final snippetId in snippetIds) {
         snippetSync.stamp(snippetId, at: at);
@@ -492,15 +474,11 @@ class ServerStore extends EntityStore<Spi> {
         if (ownerId != id) synced.stamp(ownerId, at: at);
       }
       db.execute('DELETE FROM port_forward WHERE server_id = ?;', [id]);
-      db.execute('DELETE FROM remote_desktop_profile WHERE server_id = ?;', [
-        id,
-      ]);
       db.execute('DELETE FROM $table WHERE $idColumn = ?;', [id]);
       synced.tombstone(id, at: at);
     });
     invalidate();
     if (pfIds.isNotEmpty) _portForwards?.invalidate();
-    if (remoteDesktopIds.isNotEmpty) _remoteDesktops?.invalidate();
     if (snippetIds.isNotEmpty) _snippets?.invalidate();
     if (hadPve) _pve?.invalidate();
   }
@@ -524,10 +502,6 @@ class ServerStore extends EntityStore<Spi> {
     );
     final portForwardIds = _referencingIds(
       'SELECT id FROM port_forward WHERE server_id = ?;',
-      old.id,
-    );
-    final remoteDesktopIds = _referencingIds(
-      'SELECT id FROM remote_desktop_profile WHERE server_id = ?;',
       old.id,
     );
     final jumpOwnerIds = _referencingIds(
@@ -576,7 +550,6 @@ class ServerStore extends EntityStore<Spi> {
           'container_runtime',
           'server_pve',
           'port_forward',
-          'remote_desktop_profile',
           'conn_stat',
           'server_dist',
           'benchmark_run',
@@ -595,10 +568,6 @@ class ServerStore extends EntityStore<Spi> {
           old.id,
         ]);
 
-        // The server's terminal chats are listed by its id — see
-        // `AgentScope.terminal`.
-        _rescopeTerminalChats(old.id, replacement.id);
-
         final snippetSync = SyncedTable('snippet');
         for (final snippetId in snippetIds) {
           snippetSync.stamp(snippetId, at: at);
@@ -606,10 +575,6 @@ class ServerStore extends EntityStore<Spi> {
         final forwardSync = SyncedTable('port_forward');
         for (final forwardId in portForwardIds) {
           forwardSync.stamp(forwardId, at: at);
-        }
-        final remoteDesktopSync = SyncedTable('remote_desktop_profile');
-        for (final profileId in remoteDesktopIds) {
-          remoteDesktopSync.stamp(profileId, at: at);
         }
         for (final ownerId in jumpOwnerIds) {
           if (ownerId != old.id) synced.stamp(ownerId, at: at);
@@ -628,22 +593,8 @@ class ServerStore extends EntityStore<Spi> {
 
     invalidate();
     if (portForwardIds.isNotEmpty) _portForwards?.invalidate();
-    if (remoteDesktopIds.isNotEmpty) _remoteDesktops?.invalidate();
     if (snippetIds.isNotEmpty) _snippets?.invalidate();
     if (hadPve) _pve?.invalidate();
-  }
-
-  /// Moves the chats of server [from]'s terminals to [to], within the rename's
-  /// transaction: a chat keeps its terminal by the server's id.
-  void _rescopeTerminalChats(String from, String to) {
-    final chats = LlmStores.chat;
-    for (final trashed in const [false, true]) {
-      for (final meta in chats.all(scope: 'terminal:$from', trashed: trashed)) {
-        if (!chats.set(meta.id, {...meta.toJson(), 'scope': 'terminal:$to'})) {
-          throw StateError('Moving chat ${meta.id} to server $to failed');
-        }
-      }
-    }
   }
 
   List<String> _referencingIds(String sql, String serverId) => db

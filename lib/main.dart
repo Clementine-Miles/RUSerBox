@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:computer/computer.dart';
 import 'package:dartssh2/dartssh2.dart';
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show StoreCredentials;
 import 'package:fl_tty/fl_tty.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +18,7 @@ import 'package:server_box/core/motion.dart';
 import 'package:server_box/core/service/crash_report.dart';
 import 'package:server_box/core/service/diagnostics_upload.dart';
 import 'package:server_box/core/service/native_exit.dart';
-import 'package:server_box/core/service/widget_sync.dart';
+import 'package:server_box/core/service/retired_widget_tokens.dart';
 import 'package:server_box/core/ssh/key_passphrase.dart';
 import 'package:server_box/core/ssh/native_crypto.dart';
 import 'package:server_box/core/sync/category.dart';
@@ -32,6 +31,7 @@ import 'package:server_box/core/utils/store_recovery.dart';
 import 'package:server_box/core/utils/sudo_password.dart';
 import 'package:server_box/data/model/server/dist_license.dart';
 import 'package:server_box/data/model/terminal/typeface.dart';
+import 'package:server_box/data/provider/app_providers.dart';
 import 'package:server_box/data/provider/store_reload.dart';
 import 'package:server_box/data/res/build_data.dart';
 import 'package:server_box/data/res/misc.dart';
@@ -41,12 +41,10 @@ import 'package:server_box/data/store/schema.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/store/sync_recorder.dart';
 import 'package:server_box/data/store/sync_records.dart';
-import 'package:server_box/data/store/sync_skills.dart';
 import 'package:server_box/data/store/tables.dart';
 import 'package:server_box/data/terminal/session_manager.dart';
 import 'package:server_box/hive/legacy_adapters.dart';
 import 'package:server_box/src/rust/frb_generated.dart';
-import 'package:server_box/view/agent/host.dart';
 import 'package:server_box/view/page/rescue/launch_failed.dart';
 import 'package:server_box/view/page/rescue/rescue_app.dart';
 import 'package:server_box/view/page/rescue/schema_too_new.dart';
@@ -55,12 +53,12 @@ import 'package:server_box/view/widget/host_key_dialog.dart';
 
 Future<void> main() async {
   await _runInZone(() async {
-    // The app's providers, made here rather than by a `ProviderScope`: the
-    // Agent's tools run outside any widget and read the same servers the pages
-    // do — see [LlmHost.init].
+    // The app's providers, made here rather than by a `ProviderScope`, so
+    // store reloads outside any widget reach the same container.
     final container = ProviderContainer();
+    AppProviders.container = container;
     try {
-      await _initApp(container);
+      await _initApp();
     } on SchemaTooNewException catch (e) {
       // The failure with the most to say: the data is intact, and the fix is
       // to reinstall the newer build.
@@ -131,7 +129,7 @@ String? _logDir() {
   }
 }
 
-Future<void> _initApp(ProviderContainer container) async {
+Future<void> _initApp() async {
   // The app's own, which is what lets its motion setting reach the
   // framework's animations — see [AppBinding].
   AppBinding();
@@ -197,9 +195,6 @@ Future<void> _initApp(ProviderContainer container) async {
   registerDistMarkLicenses();
   TerminalTypeface.registerLicenses();
   await _initData();
-  // After the stores and their migrations, before the first frame: a chat the
-  // Agent tab opens at once needs the runtime already there.
-  await LlmHost.init(container);
   // After the settings are open, and before the first frame is drawn with a
   // preference it has not read.
   AppMotion.init();
@@ -413,25 +408,15 @@ Future<void> _startBackgroundServices() async {
   }
   BakSyncer.watchEdits(() => bakSync.syncSoon());
   fileLog.init();
-  SyncSkills.follow();
   unawaited(KeyPassphrases.init());
   unawaited(SudoPassword.adoptKeychain());
 
-  // For the home-screen widgets, the list they offer on their
-  // configuration screen is whatever this last published, and the container
-  // holding it goes away with the app — so a reinstall has to re-publish
-  // before a widget can be configured at all.
-  if (isAndroid) {
-    unawaited(
-      (() async {
-        try {
-          await WidgetSync.instance.init();
-        } catch (e, s) {
-          Loggers.app.warning('WidgetSync init failed', e, s);
-        }
-      })(),
-    );
-  }
+  // The retired home-screen widget's Monitor tokens, revoked once.
+  unawaited(
+    RetiredWidgetTokens.revokeOnce().catchError(
+      (Object e, StackTrace s) => Loggers.app.warning('RetiredWidgetTokens', e, s),
+    ),
+  );
 
   // Android keeps its own copy of this, which a reinstall or a restored
   // backup leaves disagreeing with the settings store.
@@ -477,8 +462,6 @@ Future<void> _migrateStorage() async {
   await SchemaVersion.migrate(kSchemaMigrations);
   Diag.tag(SbDiagTag.schema, '${SchemaVersion.current}');
   SyncedStores.install();
-  // TODO: remove with `StoreCredentials.adoptKeychain`.
-  StoreCredentials.adopt = SyncRecorder.adopt;
   // What the syncs carry and how, before any runs; the shipped key files say
   // this label.
   SyncKeyring.init(label: 'ServerBox sync key');

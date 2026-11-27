@@ -68,9 +68,6 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     /// has to keep decoding.
     @Default(<String, Object?>{}) Map<String, Object?> portForwards,
 
-    /// Absent from files written before built-in RDP/VNC support.
-    @Default(<String, Object?>{}) Map<String, Object?> remoteDesktopProfiles,
-
     /// Same reason as [portForwards]: no file written before BMC support has
     /// one. A server whose `bmc.credId` names an account this map does not
     /// carry restores with the address and no account, which the editor shows.
@@ -84,8 +81,9 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     @Default(<String, Object?>{}) Map<String, Object?> pve,
 
     /// The synced kv stores beside [settings], by name
-    /// (`SyncRecorder.syncedStores`): the Agent's. Absent from files written
-    /// before they synced.
+    /// (`SyncedStores.byName`). Absent from files written before they synced.
+    /// A name this build no longer keeps (the retired AI stores) is ignored
+    /// on restore.
     @Default(<String, Object?>{}) Map<String, Object?> stores,
   }) = _BackupV2;
 
@@ -125,7 +123,6 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
       keys: Stores.key.getAllMap(),
       bmcCredentials: Stores.bmcCredential.getAllMap(),
       portForwards: Stores.portForward.getAllMap(),
-      remoteDesktopProfiles: Stores.remoteDesktop.getAllMap(),
       container: Stores.container.getAllMap(),
       pve: Stores.pve.getAllMap(),
       history: _backupStore(Stores.history),
@@ -197,7 +194,6 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     (Stores.key.getAllMap(), keys),
     (Stores.bmcCredential.getAllMap(), bmcCredentials),
     (Stores.portForward.getAllMap(), portForwards),
-    (Stores.remoteDesktop.getAllMap(), remoteDesktopProfiles),
     (_backupStore(Stores.history), history),
     if (categories.contains(SyncCategory.settings))
       (_backupStore(Stores.setting), settings),
@@ -387,7 +383,6 @@ abstract class BackupV2 with _$BackupV2 implements Mergeable {
     _validateRestorableStore('snippets', snippets);
     _validateRestorableStore('keys', keys);
     _validateRestorableStore('portForwards', portForwards);
-    _validateRestorableStore('remoteDesktopProfiles', remoteDesktopProfiles);
     _validateRestorableStore('bmcCredentials', bmcCredentials);
   }
 

@@ -160,13 +160,6 @@ void main() {
     // Its `vncwebsocket` path is the Rust session's (`pve_client.rs`).
     term as PveTermConsole;
     expect((term.node, term.vmid, term.port, term.ticket), ('pve', 100, 5900, 'PVEVNC:abc/='));
-    final vnc = await pve.console(guests[2], VirtConsoleKind.vnc);
-    expect(vnc, isA<PveVncConsole>());
-    expect(api.bodies.last, contains('websocket=1'));
-    expect(
-      (await _err(pve.console(guests.first, VirtConsoleKind.vnc))).type,
-      VirtErrType.unsupported,
-    );
   });
 
   test('an address changed while the tunnel opens: the new host is dialled', () async {

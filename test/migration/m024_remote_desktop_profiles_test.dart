@@ -2,6 +2,7 @@ import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/data/store/migrations/all.dart';
 import 'package:server_box/data/store/migrations/m024_remote_desktop_profiles.dart';
+import 'package:server_box/data/store/migrations/m043_retire_removed_features.dart';
 import 'package:server_box/data/store/schema.dart';
 import 'package:server_box/data/store/tables.dart';
 import '../helpers/table_names.dart';
@@ -39,24 +40,27 @@ void main() {
     expect(SchemaVersion.current, greaterThan(24));
   });
 
-  test('creates the same columns as a fresh database', () async {
+  // The table is retired (m043): a fresh database has none, and the columns
+  // below are what this released step wrote.
+  test('creates the table its release used, and m043 drops it', () async {
     await createTables(SqliteDb.instance);
-    final fresh = _columns();
+    expect(_columns(), isEmpty, reason: 'not in a fresh database');
+    expect(Tables.syncRoots, isNot(contains('remote_desktop_profile')));
 
-    await closeTables();
-    await SqliteDb.close();
-    SqliteDb.openInMemory();
-    SqliteDb.instance.execute('PRAGMA foreign_keys = ON;');
-    await createTables(SqliteDb.instance);
-    SqliteDb.instance.execute('DROP TABLE remote_desktop_profile;');
     await const RemoteDesktopProfilesMigration().apply();
+    expect(_columns().map((c) => c.$1), [
+      'updated_at', 'rev', 'id', 'server_id', 'name', 'protocol', 'host', //
+      'port', 'username', 'password', 'domain', 'view_only', 'shared',
+      'trusted_cert_sha256',
+    ]);
 
-    expect(_columns(), fresh);
-    expect(Tables.syncRoots, contains('remote_desktop_profile'));
+    await const RetireRemovedFeaturesMigration().apply();
+    expect(_columns(), isEmpty);
   });
 
   test('is safe to resume after the table was already created', () async {
     await createTables(SqliteDb.instance);
+    await const RemoteDesktopProfilesMigration().apply();
     final before = _columns();
     await const RemoteDesktopProfilesMigration().apply();
     expect(_columns(), before);

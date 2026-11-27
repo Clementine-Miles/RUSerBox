@@ -420,7 +420,7 @@ class WorkspaceTemplates extends _$WorkspaceTemplates {
           WsAxis.col,
           0.5,
           WsLeaf([WorkspaceView.status]),
-          WsLeaf([WorkspaceView.agent]),
+          WsLeaf([WorkspaceView.files]),
         ),
       ),
     ),

@@ -240,8 +240,6 @@ class SettingStore extends SqliteStore {
     }
   }
 
-  late final autoUpdateHomeWidget = propertyDefault('autoUpdateHomeWidget', false);
-
   /// Hide the app's content once it leaves the foreground, so the app
   /// switcher's card does not leave server names or terminal output readable.
   /// Mobile only.
@@ -431,49 +429,6 @@ class SettingStore extends SqliteStore {
   /// Whether collapse UI items by default
   late final collapseUIDefault = propertyDefault('collapseUIDefault', true);
 
-  /// Whether the Agent may run commands on this device.
-  ///
-  /// Off until asked for, unlike a configured server. A server was added
-  /// deliberately and is somewhere else; this machine is where the app's own
-  /// stores, private keys and keychain live, and nobody opted into a model
-  /// touching those by adding a server.
-  ///
-  /// Device-local — see [deviceLocalKeys]: this is what the app will let a
-  /// model do to this machine, and a restore should not carry it.
-  late final agentLocalExec = propertyDefault('agentLocalExec', false);
-
-  /// Whether secrets in what the Agent sends a model are replaced first. On
-  /// by default: a server's output is full of credentials nobody meant to
-  /// paste, and the model is somebody else's endpoint.
-  late final agentRedact = propertyDefault('agentRedact', true);
-
-  /// Built-in redaction kinds switched off, by the name their placeholders
-  /// carry. Empty keeps every one.
-  late final agentRedactOff = propertyDefault<List<String>>(
-    'agentRedactOff',
-    const [],
-    fromObj: stringList,
-  );
-
-  /// Rules of the user's own, each `{pattern, group, name}`, as the
-  /// redaction layer takes them.
-  late final agentRedactRules = propertyDefault<List<Map<String, Object?>>>(
-    'agentRedactRules',
-    const [],
-    fromObj: (raw) => [
-      if (raw is List)
-        for (final r in raw)
-          if (r is Map) r.map((k, v) => MapEntry(k.toString(), v)),
-    ],
-  );
-
-  /// Values a rule never replaces, whatever it matches.
-  late final agentRedactAllow = propertyDefault<List<String>>(
-    'agentRedactAllow',
-    const [],
-    fromObj: stringList,
-  );
-
   /// [raw]'s non-empty strings, whatever else it holds.
   static List<String> stringList(Object? raw) => [
     if (raw is List)
@@ -487,16 +442,12 @@ class SettingStore extends SqliteStore {
   /// Both are answers to "what may this machine do", and a backup file does not
   /// know which machine it is being read on.
   ///
-  /// [agentLocalExec]'s doc says a restore of a provider configuration must not
-  /// carry it, and until this existed it did: the key is an ordinary settings
-  /// row, so exporting on a machine where the Agent had been let loose and
-  /// restoring on a phone turned it on there with nothing said.
-  ///
   /// Handled beside the internal keys rather than by giving them internal
   /// names, so an install that has already answered the question keeps its
   /// answer instead of being quietly reset by a rename.
   static const deviceLocalKeys = {
-    'agentLocalExec',
+    // Whether this install has revoked the retired widget's Monitor tokens.
+    'retiredWidgetTokensRevoked',
     'liveActivity',
     // Whether this device keeps key passphrases: one that does not neither
     // sends nor takes them (`SyncCategory.passphrases`).
@@ -549,7 +500,6 @@ class SettingStore extends SqliteStore {
     'editorDarkTheme',
     // This device's screen, hardware and network.
     'windowState',
-    'agentShell',
     'terminalShell',
     'useBioAuth',
     'delayBioAuthLock',
@@ -573,28 +523,8 @@ class SettingStore extends SqliteStore {
   @override
   bool isDeviceLocalKey(String key) => deviceLocalKeys.contains(key);
 
-  /// The floating Agent's placement and size, as one row.
-  ///
-  /// Eight keys before this. See [FloatShellConfig] for the nesting and
-  /// [FloatShellProps] for the [FieldProp]s onto it.
-  late final agentShell = FloatShellProps(
-    propertyDefault<FloatShellConfig>(
-      'agentShell',
-      const FloatShellConfig(),
-      fromObj: (raw) => raw is Map
-          ? FloatShellConfig.fromJson(Map<String, dynamic>.from(raw))
-          : null,
-      toObj: (val) => val?.toJson(),
-    ),
-  );
-
   /// The floating terminal's placement and size. Same shape, own row.
   ///
-  /// Two defaults differ from the Agent's, and both are about not landing on
-  /// top of it. The window is wider and shorter because a terminal is measured
-  /// in columns and a conversation in messages; the pill sits higher up the
-  /// edge, which is the only thing that keeps two collapsed panels apart on a
-  /// phone, where the position is the whole of what tells them apart.
   late final terminalShell = FloatShellProps(
     propertyDefault<FloatShellConfig>(
       'terminalShell',
@@ -932,14 +862,6 @@ class SettingStore extends SqliteStore {
   late final sshPageSortBy = propertyDefault('sshPageSortBy', 0);
   late final sshPageSortAsc = propertyDefault('sshPageSortAsc', true);
 
-  /// The remote desktop server picker has the terminal picker's four orders,
-  /// but keeps its own choice so changing tabs does not change the ordering.
-  late final remoteDesktopSortBy = propertyDefault('remoteDesktopSortBy', 0);
-  late final remoteDesktopSortAsc = propertyDefault(
-    'remoteDesktopSortAsc',
-    true,
-  );
-
   /// How the server list is ordered, as an index into `_SortField` and a
   /// direction — the same pair, stored the same way, as the two above.
   ///
@@ -1073,16 +995,6 @@ class SettingStore extends SqliteStore {
   /// the button changes anything until it is pressed.
   late final globeGuided = propertyDefault('globeGuided', false);
 
-  /// Whether the remote desktop viewer's walkthrough has been shown.
-  ///
-  /// Once per install. On a touch screen the canvas is a touchpad — one
-  /// finger moves the pointer rather than clicking where it lands — and
-  /// nothing on screen says so, nor that two fingers right-click and scroll.
-  late final remoteDesktopGuided = propertyDefault(
-    'remoteDesktopGuided',
-    false,
-  );
-
   /// How long a remote session stays connected once it is off screen, in
   /// seconds; 0, the default, keeps it until it is closed. See
   /// `SessionKeepAlive`.
@@ -1139,6 +1051,22 @@ class SettingStore extends SqliteStore {
       'sshConnectionMode',
       'desktopSshAutoCopyPassword',
       'desktopTerminal',
+      // The removed AI features: the Agent's local-exec switch, its secret
+      // redaction, the floating Agent's placement and the old Ask AI config.
+      // A backup from an older build restores them; nothing reads them.
+      'agentLocalExec',
+      'agentRedact',
+      'agentRedactOff',
+      'agentRedactRules',
+      'agentRedactAllow',
+      'agentShell',
+      'askAi',
+      // The removed home-screen widget's auto-refresh switch.
+      'autoUpdateHomeWidget',
+      // The removed remote desktop viewer's sort order and walkthrough flag.
+      'remoteDesktopSortBy',
+      'remoteDesktopSortAsc',
+      'remoteDesktopGuided',
     ]) {
       remove(key, updateLastUpdateTsOnRemove: false);
     }

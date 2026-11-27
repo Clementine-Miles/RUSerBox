@@ -17,7 +17,7 @@ extension _HomePageSettings on _HomePageState {
   Widget _buildArea({required Widget? bar}) {
     return NestedNavigator(
       navigatorKey: _areaNavKey,
-      observers: [_areaRoutes, AgentScreen.settingsObserver],
+      observers: [_areaRoutes],
       // Always a `Scaffold`, the bar or not: a different widget here would
       // mount the tabs again. Its own messenger, so a tab's snack bar stands
       // over the bar rather than on it.
@@ -44,7 +44,7 @@ extension _HomePageSettings on _HomePageState {
     final nav = _areaNavKey.currentState;
     if (nav == null) return;
     final route = AppPageRoute<void>(
-      settings: const RouteSettings(name: AgentScreen.settingsRoute),
+      settings: const RouteSettings(name: '/settings'),
       builder: (_) => const SettingsPage(),
     );
     _onSettingsRoute(route);

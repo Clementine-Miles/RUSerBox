@@ -1,22 +1,16 @@
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores;
 import 'package:server_box/data/store/secret.dart';
 import 'package:server_box/data/store/setting.dart';
 
 /// What ServerBox records for fl_lib's [SyncRecorder]: the kv stores that
 /// sync, and the sync roots' tables, whose rows [SyncedTable] stamps.
 abstract final class SyncedStores {
-  /// The kv stores that sync, by name: the settings, the Agent's providers,
-  /// tool switches and memory, and the secrets. Every other one stays on the
-  /// device: `history` (what was typed and visited here) and the chats.
+  /// The kv stores that sync, by name: the settings and the secrets. Every
+  /// other one stays on the device: `history` (what was typed and visited
+  /// here).
   static final byName = <String, SqliteStore>{
     for (final store in [
       SettingStore.instance,
-      LlmStores.llm,
-      LlmStores.tool,
-      LlmStores.memory,
-      LlmStores.credential,
-      LlmStores.mcpSecret,
       SudoPasswordStore.instance,
       KeyPassphraseStore.instance,
       SyncRemoteStore.instance,
@@ -33,7 +27,6 @@ abstract final class SyncedStores {
     'bmc_credential',
     'snippet',
     'port_forward',
-    'remote_desktop_profile',
   ];
 
   /// Takes the kv edits from now on: at launch, outside any transaction.

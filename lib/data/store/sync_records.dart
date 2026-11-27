@@ -6,11 +6,10 @@ import 'package:server_box/data/store/benchmark.dart';
 import 'package:server_box/data/store/entity_store.dart';
 import 'package:server_box/data/store/store_reload.dart';
 import 'package:server_box/data/store/stores.dart';
-import 'package:server_box/data/store/sync_skills.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 /// ServerBox's records for fl_lib's [SyncRecords]: the entity tables, and the
-/// kinds kept outside the stores (skills and benchmarks).
+/// kinds kept outside the stores (benchmarks).
 abstract final class ServerSyncRecords {
   /// Registers them, and what tells the app of other devices' ops. Before any
   /// sync runs.
@@ -19,7 +18,6 @@ abstract final class ServerSyncRecords {
     SyncRecords.kinds
       ..clear()
       ..addAll({
-        SyncSkills.c: const SyncKind(read: SyncSkills.read, stamp: SyncSkills.stamp, install: SyncSkills.install),
         BenchmarkStore.c: SyncKind(read: (id) => Stores.benchmark.read(id), install: (ops) => Stores.benchmark.install(ops)),
       });
     SyncRecords.afterRead = (carries) async {
@@ -43,13 +41,11 @@ abstract final class ServerSyncRecords {
       Stores.server.invalidate();
       // A server's delete cascades these rows.
       Stores.portForward.invalidate();
-      Stores.remoteDesktop.invalidate();
       Stores.snippet.invalidate();
       Stores.pve.invalidate();
     }
     if (written.contains(Stores.snippet.table)) Stores.snippet.invalidate();
     if (written.contains(Stores.portForward.table)) Stores.portForward.invalidate();
-    if (written.contains(Stores.remoteDesktop.table)) Stores.remoteDesktop.invalidate();
     StoreReload.after({
       if (servers) ...{ReloadedStore.servers, ReloadedStore.containers},
       if (written.contains(Stores.snippet.table)) ReloadedStore.snippets,
@@ -179,7 +175,6 @@ final class EntityRecords implements SyncTableRecords {
     'private_key': null,
     'bmc_credential': null,
     'snippet': null,
-    'remote_desktop_profile': (scope: 'server_id', scopeJson: 'serverId'),
   };
 
   /// Two devices naming two records alike: the one stamped later keeps the

@@ -3,23 +3,20 @@ part of 'guest.dart';
 /// Where a guest's console goes.
 ///
 /// Which consoles there are comes from the guest's detail
-/// (`VirtGuestDetail.consoles`); with both, a toggle picks between them. How
-/// each is opened is [VirtConsoleConnect].
+/// (`VirtGuestDetail.consoles`); how it is opened is [VirtConsoleConnect].
 ///
-/// - **Text** is the terminal page, in place here: the one terminal the app
+/// The text console is the terminal page, in place here: the one terminal the app
 ///   has, with its virtual keys, theme and reconnect, given a console instead
 ///   of a shell (PVE), or a shell on the host with `virsh console` typed into
 ///   it (libvirt). A bar under it says what it is connected through, and that
 ///   a console prints nothing until it is sent something. Leaving it
 ///   leaves the console running ([VirtTextConsoles]), and coming back takes it
 ///   up again.
-/// - **Graphical** is the remote desktop viewer, in place here. Its toolbar
-///   has reconnect, full screen and close; closing brings back "Connect".
 ///
-/// Either one left — this view gone, another guest, another tab — is closed
-/// by [SessionKeepAlive] after the idle time the settings give, with a notice
+/// Left — this view gone, another guest, another tab — it is closed by
+/// [SessionKeepAlive] after the idle time the settings give, with a notice
 /// first; coming back before then finds it as it was. A guest that stops
-/// closes both at once (`_syncDetail` in guest.dart).
+/// closes it (`_syncDetail` in guest.dart).
 class VirtConsoleView extends StatelessWidget {
   const VirtConsoleView({
     super.key,
@@ -43,12 +40,9 @@ class VirtConsoleView extends StatelessWidget {
   /// segment. Null, or one the guest does not have, is [defaultKind].
   final VirtConsoleKind? kind;
 
-  /// Graphical first where there is one: a VM's screen is what its console
-  /// usually means, and its serial port is the fallback.
+  /// The text console, the only kind there is.
   static VirtConsoleKind defaultKind(Set<VirtConsoleKind> consoles) =>
-      consoles.contains(VirtConsoleKind.vnc)
-      ? VirtConsoleKind.vnc
-      : VirtConsoleKind.text;
+      VirtConsoleKind.text;
 
   /// Starts the guest, when that is on offer: a console of a guest that is
   /// off has nothing on it.
@@ -102,7 +96,7 @@ class VirtConsoleView extends StatelessWidget {
         }
         return _VirtConsoles(
           // A different guest is a different console: nothing of the last
-          // one's state, and its graphical session closed.
+          // one's state.
           key: ValueKey(guest.id),
           serverId: serverId,
           guest: guest,
@@ -138,18 +132,6 @@ class _VirtConsolesState extends ConsumerState<_VirtConsoles> {
 
   var _opening = false;
 
-  /// What the graphical session was last told about being on screen.
-  var _shown = false;
-
-  /// Kept from `initState`: [dispose] reports the session off screen and may
-  /// not use `ref`.
-  late final RemoteDesktopSessions _sessions;
-
-  late final String _vncId = VirtConsoleConnect.vncSessionId(
-    widget.serverId,
-    widget.guest.id,
-  );
-
   late final String _textId = VirtConsoleConnect.textSessionId(
     widget.serverId,
     widget.guest.id,
@@ -175,35 +157,8 @@ class _VirtConsolesState extends ConsumerState<_VirtConsoles> {
   /// prompt long ago. Null while no terminal is shown.
   SerialWake? _wake;
 
-  /// How many of these are mounted per graphical session.
-  ///
-  /// Two at once is a layout change — the guest pushed as a page becoming a
-  /// pane beside the list — and the one going says "off screen" after the
-  /// frame the one arriving said "on screen" in. Only the last one to go may.
-  static final _mounted = <String, int>{};
-
-  @override
-  void initState() {
-    super.initState();
-    _sessions = ref.read(remoteDesktopSessionsProvider.notifier);
-    _mounted.update(_vncId, (n) => n + 1, ifAbsent: () => 1);
-  }
-
   @override
   void dispose() {
-    // Not closed: [SessionKeepAlive] does that once it has been off screen
-    // long enough. After the frame, as in [build].
-    final id = _vncId;
-    final sessions = _sessions;
-    final left = (_mounted[id] ?? 1) - 1;
-    if (left <= 0) {
-      _mounted.remove(id);
-    } else {
-      _mounted[id] = left;
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_mounted.containsKey(id)) sessions.setConsoleVisible(id, false);
-    });
     _wake?.dispose();
     // After the page under them, which unmounts first and lets go of both.
     _textVisible.dispose();
@@ -216,24 +171,9 @@ class _VirtConsolesState extends ConsumerState<_VirtConsoles> {
     final onScreen = ref.watch(
       currentHomeTabProvider.select((tab) => tab == AppTab.virt),
     );
-    final vncOpen = ref.watch(
-      remoteDesktopSessionsProvider.select(
-        (s) => s.consoles.containsKey(_vncId),
-      ),
-    );
     final textRunning = ref.watch(
       virtTextConsolesProvider.select((ids) => ids.contains(_textId)),
     );
-    final visible = vncOpen && onScreen && _kind == VirtConsoleKind.vnc;
-    if (visible != _shown) {
-      _shown = visible;
-      // After the frame: a write to a provider may not happen while the tree
-      // is being built.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _sessions.setConsoleVisible(_vncId, visible);
-      });
-    }
-
     _syncText(
       shown: onScreen && _kind == VirtConsoleKind.text,
       running: textRunning,
@@ -241,12 +181,6 @@ class _VirtConsolesState extends ConsumerState<_VirtConsoles> {
 
     final text = _text;
     final body = switch (_kind) {
-      VirtConsoleKind.vnc when vncOpen => _buildVnc(),
-      VirtConsoleKind.vnc => _launcher(
-        icon: Icons.desktop_windows_outlined,
-        text: l10n.connect,
-        onTap: _openVnc,
-      ),
       VirtConsoleKind.text when text != null && onScreen => _buildText(text),
       // Being taken back: the page comes with the next frame.
       VirtConsoleKind.text when textRunning => UIs.placeholder,
@@ -501,109 +435,14 @@ class _VirtConsolesState extends ConsumerState<_VirtConsoles> {
       ],
     );
   }
-
-  /// The viewer, and over it — when the display refused the connection for
-  /// a password, which a libvirt display with one it could not read does —
-  /// the way to give it.
-  Widget _buildVnc() {
-    final refused = ref.watch(
-      remoteDesktopSessionsProvider.select(
-        (s) =>
-            s.consoles[_vncId]?.endReason ==
-            ffi.RemoteDesktopEndReason.authenticationFailed,
-      ),
-    );
-    final viewer = RemoteDesktopViewer(
-      sessionId: _vncId,
-      // The guest's header above already names it.
-      showName: false,
-    );
-    if (!refused) return viewer;
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(13, 0, 7, 5),
-          child: Row(
-            children: [
-              Icon(
-                Icons.lock_outline,
-                size: 17,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              UIs.width7,
-              Expanded(
-                child: Text(
-                  l10n.virtVncPasswordNeeded,
-                  style: UIs.text13,
-                ),
-              ),
-              Btn.text(text: libL10n.pwd, onTap: _askVncPassword),
-            ],
-          ),
-        ),
-        Expanded(child: viewer),
-      ],
-    );
-  }
-
-  /// Asks for the display's password and connects again with it — used for
-  /// this connection only, kept nowhere.
-  Future<void> _askVncPassword() async {
-    final ctrl = TextEditingController();
-    final password = await context.showSheet<String>(
-      title: 'VNC ${libL10n.pwd}',
-      childBuilder: (dialogContext) => DisposeWith(
-        notifiers: [ctrl],
-        child: Input(
-          controller: ctrl,
-          hint: libL10n.pwd,
-          obscureText: true,
-          autoFocus: true,
-          suggestion: false,
-          onSubmitted: (value) => dialogContext.popSheet(value),
-        ),
-      ),
-      actionsBuilder: (dialogContext) => [
-        Btn.cancel(),
-        Btn.text(
-          text: l10n.connect,
-          onTap: () => dialogContext.popSheet(ctrl.text),
-        ),
-      ],
-    );
-    if (password == null || password.isEmpty || !mounted) return;
-    // A new opener, not a reconnect of the old one: that one has no password.
-    await _sessions.close(_vncId);
-    if (!mounted) return;
-    _openVnc(password: password);
-  }
-
-  void _openVnc({String? password}) {
-    final container = ProviderScope.containerOf(context);
-    _sessions.openConsole(
-      VirtConsoleConnect.vncProfile(
-        serverId: widget.serverId,
-        guest: widget.guest,
-      ),
-      target: VirtConsoleConnect.vncTarget(
-        container,
-        serverId: widget.serverId,
-        guestId: widget.guest.id,
-        password: password,
-      ),
-      keepAliveName: '${widget.guest.name} · ${VirtConsoleKind.vnc.label}',
-    );
-  }
 }
 
 extension on VirtConsoleKind {
   String get label => switch (this) {
     VirtConsoleKind.text => libL10n.terminal,
-    VirtConsoleKind.vnc => l10n.virtConsoleGraphical,
   };
 
   IconData get icon => switch (this) {
     VirtConsoleKind.text => Icons.terminal,
-    VirtConsoleKind.vnc => Icons.desktop_windows_outlined,
   };
 }

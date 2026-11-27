@@ -32,9 +32,7 @@ extension AppTabViewX on AppTab {
       AppTab.ssh => libL10n.terminal,
       AppTab.snippet => libL10n.snippet,
       AppTab.file => libL10n.file,
-      AppTab.agent => 'Agent',
       AppTab.benchmark => l10n.benchmark,
-      AppTab.remoteDesktop => l10n.remoteDesktop,
       AppTab.virt => l10n.virtualization,
       AppTab.workspace => l10n.workspace,
       AppTab.monitor => l10n.monitorTab,
@@ -43,8 +41,6 @@ extension AppTabViewX on AppTab {
 
   /// The feature this tab is, where it is one [Feature] knows about.
   Feature? get feature => switch (this) {
-    AppTab.remoteDesktop => Feature.remoteDesktop,
-    AppTab.agent => Feature.agent,
     AppTab.benchmark => Feature.benchmark,
     AppTab.virt => Feature.virt,
     AppTab.workspace => Feature.workspace,
@@ -77,27 +73,14 @@ extension AppTabViewX on AppTab {
   /// on the label reaches it too.
   NavRailItem navRailItem({ContextMenuOpener? onMenu}) {
     return NavRailItem(
-      icon: _railIcon(icon),
-      selectedIcon: _railIcon(selectedIcon),
+      icon: icon,
+      selectedIcon: selectedIcon,
       label: label,
       badge: this == AppTab.server
           ? (opacity) => ConnCountRailBadge(opacity: opacity)
           : null,
       mark: beta ? (opacity) => feature!.mark(opacity: opacity)! : null,
       onMenu: onMenu,
-    );
-  }
-
-  Widget _railIcon(Widget icon) {
-    if (this != AppTab.agent) return icon;
-    return SizedBox.square(
-      dimension: NavRailMetrics.iconSize,
-      child: Center(
-        child: IconTheme.merge(
-          data: const IconThemeData(size: 22),
-          child: icon,
-        ),
-      ),
     );
   }
 }
@@ -127,12 +110,8 @@ class _AppTabIcon extends StatelessWidget {
                       : MingCute.folder_open_line,
                 AppTab.snippet =>
                   selected ? MingCute.code_fill : MingCute.code_line,
-                AppTab.agent =>
-                  selected ? MingCute.magic_2_fill : MingCute.magic_2_line,
                 AppTab.benchmark =>
                   selected ? MingCute.dashboard_fill : MingCute.dashboard_line,
-                AppTab.remoteDesktop =>
-                  selected ? MingCute.computer_fill : MingCute.computer_line,
                 AppTab.virt =>
                   selected ? MingCute.box_3_fill : MingCute.box_3_line,
                 AppTab.workspace =>
@@ -147,14 +126,8 @@ class _AppTabIcon extends StatelessWidget {
                   selected ? Icons.terminal : Icons.terminal_outlined,
                 AppTab.file => selected ? Icons.folder : Icons.folder_open,
                 AppTab.snippet => selected ? Icons.code : Icons.code_outlined,
-                AppTab.agent =>
-                  selected ? Icons.auto_awesome : Icons.auto_awesome_outlined,
                 AppTab.benchmark =>
                   selected ? Icons.speed : Icons.speed_outlined,
-                AppTab.remoteDesktop =>
-                  selected
-                      ? Icons.desktop_windows
-                      : Icons.desktop_windows_outlined,
                 AppTab.virt =>
                   selected ? Icons.view_in_ar : Icons.view_in_ar_outlined,
                 AppTab.workspace =>

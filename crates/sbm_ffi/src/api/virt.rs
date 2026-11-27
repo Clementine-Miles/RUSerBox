@@ -11,7 +11,6 @@ use sbm_virt::libvirt::{self, manage, net, snapshot};
 use super::virt_libvirt::{
     FirmwareDescriptor, VirtCloneSpec, VirtCloudInit, VirtCreateHost, VirtCreateSpec, VirtCreateVolumes, VirtCreated, VirtDomainDetail,
     VirtHardwareInfo, VirtHostDevices, VirtHostProbe, VirtHwChange, VirtHwOutcome, VirtResourceOp, VirtSeedRead, VirtStorage,
-    VirtVncConsoleInfo,
 };
 use super::exec_session::SudoEntry;
 use super::virt_view::{Chain, Diff, Snapshot, VirtGuestDetailReport, VirtHostReport};
@@ -343,18 +342,6 @@ pub fn virt_libvirt_power_plan(
             })
             .collect(),
     )
-}
-
-/// Display and VNC password, for opening a graphical console
-#[flutter_rust_bridge::frb(sync)]
-pub fn virt_vnc_console_script(domain: String) -> String {
-    libvirt::vnc_console_script(&domain)
-}
-
-/// [`virt_vnc_console_script`]'s output as `VirtVncConsoleInfo`. Holds
-/// the password: never logged.
-pub fn virt_libvirt_vnc_console(raw: String) -> Result<VirtVncConsoleInfo, VirtFfiError> {
-    Ok(libvirt::parse_vnc_console(&raw)?)
 }
 
 /// [`virt_domain_detail_script`]'s output as `VirtDomainDetail`

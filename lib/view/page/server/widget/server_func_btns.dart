@@ -569,24 +569,6 @@ void runServerFunc(
         if (!context.mounted) return;
         unawaited(SharesPage.route.go(context, SpiRequiredArgs(spi)));
         break;
-      case ServerFuncBtn.remoteDesktop:
-        // A monitor-backed server has nothing to connect here: the agent dials
-        // the target when the session opens, and the profile page works without
-        // it. Asking for an SSH client whenever SSH happens to be configured
-        // would refuse the transport this button was just made available on —
-        // a server carrying both can fall through to the agent, and only
-        // `_openTunnel` knows which one the session will end up using.
-        final hasOtherWayIn = spi.sshOn == null || spi.monitorOn != null;
-        if (!hasOtherWayIn && !await _ensureSshClient(context, spi.id, ref)) {
-          return;
-        }
-        if (!context.mounted) return;
-        // Into the tab, on this server, rather than a page of its own over the
-        // detail page: sessions live in the tab, and a pushed copy of its list
-        // had nowhere to go back to.
-        ref.read(remoteDesktopServerRequestProvider.notifier).go(spi.id);
-        ref.read(homeTabRequestProvider.notifier).go(AppTab.remoteDesktop);
-        break;
   }
 }
 

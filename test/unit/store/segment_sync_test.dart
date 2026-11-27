@@ -3,8 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm/fl_pi_llm.dart' show LlmPermissionMode;
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmApprovals;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/core/sync/category.dart';
@@ -176,19 +174,19 @@ void main() {
     await PrefStore.shared.init();
     final folder = _Folder();
     await _device();
-    LlmApprovals.pickMode(LlmPermissionMode.auto);
+    Stores.sudoPassword.set('s1', 'pw');
     await _sync(folder).sync();
 
     await _device();
-    await SyncCategory.ai.pref.set(false);
+    await SyncCategory.secrets.pref.set(false);
     final b = _sync(folder);
     await b.sync();
-    expect(LlmApprovals.stored.defaultMode, isNot(LlmPermissionMode.auto));
+    expect(Stores.sudoPassword.get<String>('s1'), isNull);
 
-    await SyncCategory.ai.pref.set(true);
+    await SyncCategory.secrets.pref.set(true);
     await b.reset();
     await b.sync();
-    expect(LlmApprovals.stored.defaultMode, LlmPermissionMode.auto);
+    expect(Stores.sudoPassword.get<String>('s1'), 'pw');
   });
 
   test('a newer format stops the read and is shown, for this engine only', () async {

@@ -1,5 +1,4 @@
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores;
 import 'package:get_it/get_it.dart';
 import 'package:server_box/data/store/benchmark.dart';
 import 'package:server_box/data/store/bmc_credential.dart';
@@ -11,7 +10,6 @@ import 'package:server_box/data/store/migrations/m003_hive_to_sqlite.dart';
 import 'package:server_box/data/store/port_forward.dart';
 import 'package:server_box/data/store/private_key.dart';
 import 'package:server_box/data/store/pve.dart';
-import 'package:server_box/data/store/remote_desktop.dart';
 import 'package:server_box/data/store/schema.dart';
 import 'package:server_box/data/store/secret.dart';
 import 'package:server_box/data/store/self_addr.dart';
@@ -55,7 +53,6 @@ abstract final class Stores {
   static ConnectionStatsStore get connectionStats =>
       getIt<ConnectionStatsStore>();
   static PortForwardStore get portForward => getIt<PortForwardStore>();
-  static RemoteDesktopStore get remoteDesktop => getIt<RemoteDesktopStore>();
 
   /// What each server said its own address is.
   ///
@@ -97,7 +94,6 @@ abstract final class Stores {
     bmcCredential,
     snippet,
     portForward,
-    remoteDesktop,
   ];
 
   /// The sync roots' tables: what `SyncRecorder` stamps as records.
@@ -127,9 +123,6 @@ abstract final class Stores {
     );
     getIt.registerLazySingleton<PortForwardStore>(
       () => PortForwardStore.instance,
-    );
-    getIt.registerLazySingleton<RemoteDesktopStore>(
-      () => RemoteDesktopStore.instance,
     );
     getIt.registerLazySingleton<SelfAddrStore>(() => SelfAddrStore.instance);
     getIt.registerLazySingleton<BenchmarkStore>(() => BenchmarkStore.instance);
@@ -165,14 +158,7 @@ abstract final class Stores {
       // is is not something the user did, so it must not move the clock sync
       // reads.
       selfAddr.init(),
-      // The Agent's: its chats, providers, tool switches and memory. Not in
-      // `_kvStores`: a conversation is a record of what was said, not an
-      // edit, and stays on this device; the rest syncs as
-      // `SyncedStores.byName` says.
-      ...LlmStores.all.map((store) => store.init()),
       // The secrets, a sync category of their own.
-      LlmStores.mcpSecret.init(),
-      LlmStores.credential.init(),
       sudoPassword.init(),
       keyPassphrase.init(),
       syncRemote.init(),

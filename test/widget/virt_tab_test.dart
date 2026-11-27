@@ -23,7 +23,6 @@ import 'package:server_box/data/model/virt/virt_create.dart';
 import 'package:server_box/data/model/virt/virt_detail.dart';
 import 'package:server_box/data/model/virt/virt_resources.dart';
 import 'package:server_box/data/provider/app/session_requests.dart';
-import 'package:server_box/data/provider/remote_desktop.dart';
 import 'package:server_box/data/provider/session_keep_alive.dart';
 import 'package:server_box/data/provider/virt/text_consoles.dart';
 import 'package:server_box/data/provider/virt/virt.dart';
@@ -36,7 +35,6 @@ import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
 import 'package:server_box/generated/l10n/l10n.dart';
 import 'package:server_box/src/rust/api/bmc.dart' show CertInfo;
-import 'package:server_box/view/page/remote_desktop/viewer.dart';
 import 'package:server_box/view/page/ssh/page/page.dart';
 import 'package:server_box/view/page/virt/common.dart';
 import 'package:server_box/view/page/virt/console_connect.dart';
@@ -372,51 +370,6 @@ void main() {
       expect(find.text('db-01'), findsOneWidget, reason: 'still kvm-host');
       expect(find.text('web-01'), findsNothing);
     });
-
-    testWidgets('an open console is paused off screen, not closed', (
-      tester,
-    ) async {
-      _details['qemu/100'] = const VirtGuestDetail(
-        consoles: {VirtConsoleKind.vnc},
-      );
-      final pages = PageController();
-      addTearDown(pages.dispose);
-      final container = await pump(tester, wide: true, pages: pages);
-      final tab = container.read(currentHomeTabProvider.notifier);
-      tab.update(AppTab.virt);
-      await tester.tap(find.text('web-01'));
-      await settle(tester);
-      await tester.tap(segment(app_locale.l10n.virtConsole));
-      await settle(tester);
-      await tester.tap(find.text(app_locale.l10n.connect));
-      await settle(tester);
-
-      final id = VirtConsoleConnect.vncSessionId(_pve, 'qemu/100');
-      RemoteDesktopSessionView? view() =>
-          container.read(remoteDesktopSessionsProvider).consoles[id];
-      expect(view()?.visible, isTrue);
-
-      // Another tab: the page stays, so does its session, and it stops
-      // drawing.
-      tab.update(AppTab.server);
-      pages.jumpToPage(1);
-      await settle(tester);
-      expect(view(), isNotNull, reason: 'not closed with the page');
-      expect(view()!.visible, isFalse);
-
-      tab.update(AppTab.virt);
-      pages.jumpToPage(0);
-      await settle(tester);
-      expect(view()?.visible, isTrue);
-      expect(find.byType(RemoteDesktopViewer), findsOneWidget);
-
-      // Nothing answers the console here; let its retries run out.
-      for (var i = 0; i < 12; i++) {
-        await tester.pump(const Duration(seconds: 1));
-      }
-      await container.read(remoteDesktopSessionsProvider.notifier).close(id);
-      await settle(tester);
-    });
   });
 
   group('layout', () {
@@ -486,24 +439,17 @@ void main() {
       tester,
     ) async {
       _details['qemu/100'] = const VirtGuestDetail(
-        consoles: {VirtConsoleKind.text, VirtConsoleKind.vnc},
+        consoles: {VirtConsoleKind.text},
       );
       await pump(tester, wide: true);
       await tester.tap(find.text('web-01'));
       await settle(tester);
 
-      // The Console segment's second level, only while it is chosen.
-      expect(segment(libL10n.terminal), findsNothing);
       await tester.tap(segment(app_locale.l10n.virtConsole));
       await settle(tester);
 
-      // Both, with the screen first.
-      expect(segment(app_locale.l10n.virtConsoleGraphical), findsOneWidget);
-      expect(segment(libL10n.terminal), findsOneWidget);
-      expect(find.text(app_locale.l10n.connect), findsOneWidget);
-
-      await tester.tap(segment(libL10n.terminal));
-      await settle(tester);
+      // Text only: no graphical console is offered.
+      expect(segment(app_locale.l10n.virtConsoleGraphical), findsNothing);
       expect(find.text(app_locale.l10n.connect), findsOneWidget);
       // The virsh escape is libvirt's; PVE's console has none to explain.
       expect(find.text(app_locale.l10n.virtConsoleSerialTip), findsNothing);
@@ -1009,7 +955,7 @@ void main() {
       expect(find.textContaining('connection reset'), findsOneWidget);
 
       _details['qemu/100'] = const VirtGuestDetail(
-        consoles: {VirtConsoleKind.vnc},
+        consoles: {VirtConsoleKind.text},
       );
       final before = _calls.where((c) => c.contains('.detail ')).length;
       await tester.tap(find.text(libL10n.retry));
@@ -1019,111 +965,6 @@ void main() {
         before + 1,
       );
       expect(find.text(app_locale.l10n.connect), findsOneWidget);
-    });
-
-    testWidgets('graphical: a failed connection is shown with a retry', (
-      tester,
-    ) async {
-      // Never is the default; this is about what closing looks like.
-      Stores.setting.remoteSessionIdleTimeout.put(60);
-      _details['qemu/100'] = const VirtGuestDetail(
-        consoles: {VirtConsoleKind.vnc},
-      );
-      final container = await openConsole(tester).then(
-        (_) => ProviderScope.containerOf(
-          tester.element(find.byType(VirtGuestView)),
-        ),
-      );
-      container.read(currentHomeTabProvider.notifier).update(AppTab.virt);
-
-      await tester.tap(find.text(app_locale.l10n.connect));
-      await settle(tester);
-      expect(find.byType(RemoteDesktopViewer), findsOneWidget);
-      final id = VirtConsoleConnect.vncSessionId(_pve, 'qemu/100');
-      // A console, not one of the remote desktop tab's sessions.
-      final sessions = container.read(remoteDesktopSessionsProvider);
-      expect(sessions.consoles.keys, [id]);
-      expect(sessions.sessions, isEmpty);
-
-      // Each attempt asks for a new ticket; the automatic retries give up.
-      for (var i = 0; i < 12; i++) {
-        await tester.pump(const Duration(seconds: 1));
-      }
-      expect(
-        _calls.where((c) => c == '$_pve.console qemu/100 vnc').length,
-        4,
-      );
-      expect(find.textContaining('no route to host'), findsOneWidget);
-      expect(find.text(app_locale.l10n.remoteDesktopReconnect), findsOneWidget);
-
-      // Leaving the console closes its session once it has been left long
-      // enough, with the notice's countdown first.
-      await tester.tap(segment(app_locale.l10n.virtOverview));
-      await settle(tester);
-      expect(
-        container.read(remoteDesktopSessionsProvider).consoles,
-        contains(id),
-        reason: 'not closed with the view',
-      );
-      await tester.pump(const Duration(seconds: 60));
-      expect(container.read(sessionKeepAliveProvider), contains(id));
-      // Which of the guest's consoles is about to close.
-      expect(
-        container.read(sessionKeepAliveProvider)[id]!.name,
-        'web-01 · ${app_locale.l10n.virtConsoleGraphical}',
-      );
-      await tester.pump(SessionKeepAlive.grace);
-      await settle(tester);
-      expect(container.read(remoteDesktopSessionsProvider).consoles, isEmpty);
-    });
-
-    testWidgets('graphical: back within the timeout, still connected', (
-      tester,
-    ) async {
-      _details['qemu/100'] = const VirtGuestDetail(
-        consoles: {VirtConsoleKind.vnc},
-      );
-      await openConsole(tester);
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(VirtGuestView)),
-      );
-      container.read(currentHomeTabProvider.notifier).update(AppTab.virt);
-      await tester.tap(find.text(app_locale.l10n.connect));
-      await settle(tester);
-      final id = VirtConsoleConnect.vncSessionId(_pve, 'qemu/100');
-      final session = container.read(remoteDesktopSessionsProvider).consoles[id];
-      expect(session, isNotNull);
-
-      await tester.tap(segment(app_locale.l10n.virtOverview));
-      await settle(tester);
-      expect(
-        container.read(remoteDesktopSessionsProvider).consoles[id]?.visible,
-        isFalse,
-      );
-      await tester.pump(const Duration(seconds: 50));
-
-      await tester.tap(segment(app_locale.l10n.virtConsole));
-      await settle(tester);
-      expect(find.byType(RemoteDesktopViewer), findsOneWidget);
-      expect(
-        container.read(remoteDesktopSessionsProvider).consoles[id]?.profile,
-        same(session!.profile),
-        reason: 'the same session, not a new one',
-      );
-      expect(
-        container.read(remoteDesktopSessionsProvider).consoles[id]?.visible,
-        isTrue,
-      );
-
-      // Well past the timeout from when it was left: on screen, it stays.
-      await tester.pump(const Duration(seconds: 90));
-      expect(container.read(sessionKeepAliveProvider), isEmpty);
-      expect(
-        container.read(remoteDesktopSessionsProvider).consoles,
-        contains(id),
-      );
-      await container.read(remoteDesktopSessionsProvider.notifier).close(id);
-      await settle(tester);
     });
 
     testWidgets('text: in place, kept when left, taken up again, closed', (

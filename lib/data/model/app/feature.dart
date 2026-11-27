@@ -9,8 +9,6 @@ import 'package:material_ui/material_ui.dart';
 /// [beta] or [mark] — rather than drawing a `BetaTag` of its own, so a
 /// feature leaving beta is one line here rather than a hunt for every mark.
 enum Feature {
-  remoteDesktop,
-  agent,
   benchmark,
   virt,
   workspace,
@@ -22,8 +20,6 @@ enum Feature {
 
   /// Whether the feature is still in beta.
   bool get beta => switch (this) {
-    remoteDesktop ||
-    agent ||
     benchmark ||
     virt ||
     workspace ||

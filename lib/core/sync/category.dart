@@ -1,9 +1,7 @@
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores;
 import 'package:flutter/foundation.dart';
 import 'package:server_box/data/store/benchmark.dart';
 import 'package:server_box/data/store/stores.dart';
-import 'package:server_box/data/store/sync_skills.dart';
 
 /// What the person chose to sync beside the records every sync carries
 /// (servers, keys, snippets, …), each its own switch on this device. One
@@ -13,19 +11,12 @@ enum SyncCategory {
   /// The app's settings.
   settings,
 
-  /// The Agent's providers, tool switches, permissions and memory.
-  ai,
-
-  /// Saved sudo passwords, AI provider keys, MCP headers, and the WebDAV the
-  /// backup syncs to.
+  /// Saved sudo passwords and the WebDAV the backup syncs to.
   secrets,
 
   /// SSH key passphrases. Apart from [secrets]: a device that keeps none
   /// neither sends nor takes them.
   passphrases,
-
-  /// The Agent's skills.
-  files,
 
   /// Benchmark results.
   benchmarks;
@@ -34,10 +25,8 @@ enum SyncCategory {
   /// off.
   PrefPropDefault<bool> get pref => switch (this) {
     settings => PrefProps.syncAppSettings,
-    ai => const PrefPropDefault('sync_ai', true, updateLastUpdateTsOnSetProp: false),
     secrets => const PrefPropDefault('sync_secrets', true, updateLastUpdateTsOnSetProp: false),
     passphrases => const PrefPropDefault('sync_passphrases', true, updateLastUpdateTsOnSetProp: false),
-    files => const PrefPropDefault('sync_files', true, updateLastUpdateTsOnSetProp: false),
     benchmarks => const PrefPropDefault('sync_benchmarks', true, updateLastUpdateTsOnSetProp: false),
   };
 
@@ -73,11 +62,8 @@ enum SyncCategory {
 
   static final _byCollection = <String, SyncCategory>{
     'kv:${Stores.setting.name}': settings,
-    SyncSkills.c: files,
     BenchmarkStore.c: benchmarks,
-    for (final store in [LlmStores.llm, LlmStores.tool, LlmStores.memory]) 'kv:${store.name}': ai,
-    for (final store in [LlmStores.credential, LlmStores.mcpSecret, Stores.sudoPassword, Stores.syncRemote])
-      'kv:${store.name}': secrets,
+    for (final store in [Stores.sudoPassword, Stores.syncRemote]) 'kv:${store.name}': secrets,
     'kv:${Stores.keyPassphrase.name}': passphrases,
   };
 

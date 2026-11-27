@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -12,7 +11,6 @@ import 'package:server_box/data/store/server.dart';
 import 'package:server_box/data/store/setting.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/generated/l10n/l10n.dart';
-import 'package:server_box/view/page/agent/settings.dart';
 import 'package:server_box/view/page/private_key/list.dart';
 import 'package:server_box/view/page/setting/entry.dart';
 import 'package:server_box/view/widget/edge_fade_scroll.dart';
@@ -310,18 +308,18 @@ void main() {
     expect(Stores.setting.appThemePreset.fetch(), Gruvbox.original);
   });
 
-  testWidgets('remote desktop is under Server, not a subject of its own', (
+  testWidgets('guest consoles are under Server, not a subject of their own', (
     tester,
   ) async {
     await pump(tester, width: 1200);
     final l10n = AppLocalizations.of(
       tester.element(find.byKey(settingsMenuKey)),
     )!;
-    expect(menuRow(l10n.remoteDesktop), findsNothing);
+    expect(menuRow(l10n.virtConsole), findsNothing);
     await tester.tap(menuRow(libL10n.server));
     await settle(tester);
-    expect(headerTab(l10n.remoteDesktop), findsOneWidget);
-    await tester.tap(headerTab(l10n.remoteDesktop));
+    expect(headerTab(l10n.virtConsole), findsOneWidget);
+    await tester.tap(headerTab(l10n.virtConsole));
     await settle(tester);
     expect(find.text(l10n.remoteSessionIdleTimeout), findsOneWidget);
   });
@@ -833,9 +831,9 @@ void main() {
     expect(NavTargetScope.maybeOf(list), isNull);
   });
 
-  testWidgets('AI is a subject of its own, not a page of App', (tester) async {
+  testWidgets('there are no AI settings', (tester) async {
     await pump(tester, width: 500);
-    expect(menuRow(libL10n.ai), findsOneWidget);
+    expect(menuRow(libL10n.ai), findsNothing);
 
     await tester.tap(menuRow(libL10n.app));
     await settle(tester, 20);
@@ -848,48 +846,5 @@ void main() {
     await settle(tester, 20);
     expect(find.text(libL10n.menuWiki), findsNothing);
     expect(find.text(libL10n.feedback), findsOneWidget);
-  });
-
-  // On iOS and macOS an edge swipe is a predictive back, and Flutter gives one
-  // to every route that is current in its own navigator: the page AI opened
-  // over the window, and the AI level under it in the settings' navigator.
-  // Both popped, and the swipe landed on the list.
-  testWidgets('a swipe back from a page AI opened returns to AI', (
-    tester,
-  ) async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-    // Reset in the body: the binding checks it before any tear-down runs.
-    try {
-      await pump(
-        tester,
-        width: 400,
-        theme: ThemeData(
-          pageTransitionsTheme: const PageTransitionsTheme(
-            builders: {
-              TargetPlatform.iOS: SwipeBackPageTransitionsBuilder(),
-            },
-          ),
-        ),
-      );
-      await tester.tap(menuRow(libL10n.ai));
-      await settle(tester, 20);
-      await tester.tap(find.text(l10n.agentProviders).first);
-      await settle(tester, 20);
-      expect(find.byType(AgentProvidersPage), findsOneWidget);
-
-      final swipe = await tester.startGesture(const Offset(2, 400));
-      for (var i = 0; i < 20; i++) {
-        await swipe.moveBy(const Offset(15, 0));
-        await tester.pump(const Duration(milliseconds: 16));
-      }
-      await swipe.up();
-      await settle(tester, 30);
-
-      expect(find.byType(AgentProvidersPage), findsNothing);
-      expect(barTitle(tester), libL10n.ai);
-      expect(find.text(l10n.agentProviders), findsOneWidget);
-    } finally {
-      debugDefaultTargetPlatformOverride = null;
-    }
   });
 }

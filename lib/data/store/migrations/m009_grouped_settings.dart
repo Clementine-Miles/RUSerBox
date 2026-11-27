@@ -79,7 +79,13 @@ class GroupedSettingsMigration extends SettingsMigration {
   }
 
   static void _groupAgentShell(SettingStore store) {
-    final config = store.agentShell.get();
+    // The retired floating Agent's row, by key: the panel is gone, and
+    // `SettingStore.removeRetiredKeys` drops the row, but the step that wrote
+    // it is released and stays as it was.
+    final raw = store.get<Object>('agentShell');
+    final config = raw is Map
+        ? FloatShellConfig.fromJson(Map<String, dynamic>.from(raw))
+        : const FloatShellConfig();
     final read = _Reader(store);
 
     final grouped = config.copyWith(

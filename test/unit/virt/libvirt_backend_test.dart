@@ -368,27 +368,9 @@ void main() {
     expect(e.message, isNotEmpty);
   });
 
-  test('detail and the VNC console', () async {
-    // What `--security-info` adds to the same document; a made-up password.
-    final secured = _fixture(
-      'dumpxml_cirros_run.xml',
-    ).replaceFirst("<graphics type='vnc'", "<graphics type='vnc' passwd='fake-pw1'");
-    var secureRefused = false;
+  test('detail, with its VNC display read but not offered as a console', () async {
     final exec = _Exec((call) {
       if (call.script.contains('domstats')) return _ok(_overview());
-      if (call.script.contains('--security-info')) {
-        return _ok(
-          _section('virt.display', _fixture('domdisplay_cirros_run.txt')) +
-              (secureRefused
-                  ? _section(
-                      'virt.secure_xml',
-                      'error: operation forbidden: read only access prevents '
-                          'virDomainGetXMLDesc with secure flag',
-                      1,
-                    )
-                  : _section('virt.secure_xml', secured)),
-        );
-      }
       return _ok(
         _section('virt.display', _fixture('domdisplay_cirros_run.txt')) +
             _section('virt.xml', _fixture('dumpxml_cirros_run.xml')),
@@ -400,25 +382,9 @@ void main() {
     expect(detail.disks, isNotEmpty);
     expect(detail.nics, isNotEmpty);
     expect(detail.display?.protocol, 'vnc');
-    expect(detail.consoles, contains(VirtConsoleKind.vnc));
+    expect(detail.consoles.every((c) => c == VirtConsoleKind.text), isTrue);
     expect(exec.calls.last.script, contains(_run));
 
-    final vnc = await virt.console(web, VirtConsoleKind.vnc);
-    expect(vnc, isA<LibvirtVncConsole>());
-    expect((vnc as LibvirtVncConsole).port, 5900);
-    expect(vnc.host, '127.0.0.1');
-    expect(vnc.password, 'fake-pw1');
-    expect(vnc.passwordKnown, isTrue);
-    expect('$vnc', isNot(contains('fake-pw1')), reason: 'never printed');
-
-    // Refused the password: the console is still offered, and says it does
-    // not know.
-    secureRefused = true;
-    final unknown =
-        await virt.console(web, VirtConsoleKind.vnc) as LibvirtVncConsole;
-    expect(unknown.port, 5900);
-    expect(unknown.password, isNull);
-    expect(unknown.passwordKnown, isFalse);
   });
   group('snapshots', () {
     test('listed with parent, time, memory and the current one', () async {

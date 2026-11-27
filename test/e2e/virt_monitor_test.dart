@@ -14,9 +14,6 @@
 ///   (`SBM_E2E_LIBVIRT_RUNNING` / `_PAUSED` / `_STOPPED`, same defaults);
 ///   only the paused one is changed (resumed and paused again), and the
 ///   stopped one gets a snapshot `sbxe2e-agent`, deleted again.
-///   A group of its own defines a throwaway domain `sbme2e-vncpw-*` (no disk,
-///   a VNC display with a made-up password), connects the real VNC engine to
-///   it through the authenticated loopback, and removes it again.
 /// - `SBM_E2E_MONITOR_SUDO_PASSWORD` — the sudo password of the account the
 ///   libvirt agent runs as, for an account outside the `libvirt` group (what
 ///   `install.sh` sets up: an ordinary user). Then the listing goes through
@@ -98,7 +95,6 @@ import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod show Provider;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pointycastle/export.dart' show DESedeEngine, KeyParameter;
 import 'package:server_box/core/monitor/terminal.dart';
 import 'package:server_box/core/utils/privileged_exec.dart';
 import 'package:server_box/core/utils/server_tcp.dart';
@@ -115,7 +111,6 @@ import 'package:server_box/data/model/virt/virt_detail.dart';
 import 'package:server_box/data/model/virt/virt_hardware.dart';
 import 'package:server_box/data/model/virt/virt_manage.dart';
 import 'package:server_box/data/model/virt/virt_resources.dart';
-import 'package:server_box/data/provider/remote_desktop.dart';
 import 'package:server_box/data/provider/server/single.dart';
 import 'package:server_box/data/provider/server/tcp_dialer.dart';
 import 'package:server_box/data/provider/virt/libvirt_backend.dart';
@@ -123,12 +118,10 @@ import 'package:server_box/data/provider/virt/pve_backend.dart';
 import 'package:server_box/data/provider/virt/virt.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
-import 'package:server_box/src/rust/api/remote_desktop.dart' as ffi;
 import 'package:server_box/view/page/virt/console_connect.dart';
 
 import '../helpers/rust_lib_helper.dart';
 import '../helpers/ssh_e2e.dart';
-import '../helpers/tunnel_client.dart';
 
 Future<void> main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -170,7 +163,6 @@ Future<void> main() async {
   // `--plain-name 'create and delete'` runs only these.
   if (libvirt != null) _libvirtCreate(libvirt);
   if (libvirt != null) _libvirtCloudInit(libvirt);
-  if (libvirt != null) _libvirtVncPassword(libvirt);
   if (libvirt != null) _libvirtHardware(libvirt);
   if (libvirt != null) _libvirtHardwareDevices(libvirt);
   if (libvirt != null) _libvirtClone(libvirt);
@@ -465,7 +457,7 @@ void _libvirt(_Agent agent) {
       expect(detail.disks, isNotEmpty);
       expect(detail.nics, isNotEmpty);
       expect(detail.display?.protocol, 'vnc');
-      expect(detail.consoles, {VirtConsoleKind.text, VirtConsoleKind.vnc});
+      expect(detail.consoles, {VirtConsoleKind.text});
     });
 
     test('storage, networks and snapshots through the agent (and sudo)',
@@ -495,25 +487,6 @@ void _libvirt(_Agent agent) {
         (await w.host.snapshots(off.id)).where((s) => s.name == 'sbxe2e-agent'),
         isEmpty,
       );
-    });
-
-    test('VNC console: RFB through the agent\'s TCP relay', () async {
-      final run = w.guest((g) => byName(g, runningName), runningName);
-      final target = await VirtConsoleConnect.vncTarget(
-        w.container,
-        serverId: w.id,
-        guestId: run.id,
-      )();
-      expect(target.password, isNull);
-      final rfb = _RfbReader(
-        await connectTunnel(target.tunnel),
-      );
-      try {
-        expect(ascii.decode(await rfb.take(12)), startsWith('RFB 003.00'));
-      } finally {
-        await rfb.close();
-        await target.tunnel.close();
-      }
     });
 
     test('serial console: typed into the agent\'s PTY, Ctrl+] leaves it',
@@ -574,167 +547,6 @@ void _libvirt(_Agent agent) {
         (g) => g.state == VirtGuestState.paused,
       );
       expect(again.stateReason, 'user');
-    });
-  });
-}
-
-// -----------------------------------------------------------------------------
-// A libvirt VNC display with a password
-// -----------------------------------------------------------------------------
-
-/// A throwaway domain of its own — no disk, a VNC display with a made-up
-/// password — defined, started, and removed again: the existing domains are
-/// not touched. Through the app's own path: the console read with
-/// `--security-info`, the agent's relay behind an authenticated loopback, and
-/// the real VNC engine presenting the tunnel's token and the password.
-void _libvirtVncPassword(_Agent agent) {
-  final sudoPassword = e2eEnv('SBM_E2E_MONITOR_SUDO_PASSWORD');
-  final name = _e2eName('vncpw');
-  const password = 'e2e-pw12';
-
-  group('VNC password: libvirt over the monitor agent', () {
-    late _World w;
-
-    Future<void> host(String script) async {
-      final exec = await w.server.ensureExec();
-      final result = await PrivilegedExec.run(
-        exec,
-        script,
-        isRoot: false,
-        password: sudoPassword,
-      );
-      expect(result.exitCode, 0, reason: result.combined);
-    }
-
-    setUpAll(() async {
-      w = _World(agent.spi('e2e-monitor-libvirt-vncpw'));
-      await w.host.firstLoad;
-      if (w.state.error?.type == VirtErrType.sudoPasswordRequired &&
-          sudoPassword != null) {
-        await w.host.provideSudoPassword(sudoPassword);
-      }
-      await host(
-        "cat > /tmp/$name.xml <<'X'\n"
-        "<domain type='kvm'>\n"
-        '  <name>$name</name>\n'
-        "  <memory unit='MiB'>64</memory>\n"
-        '  <vcpu>1</vcpu>\n'
-        "  <os><type arch='x86_64'>hvm</type></os>\n"
-        '  <devices>\n'
-        "    <graphics type='vnc' port='-1' autoport='yes' "
-        "listen='127.0.0.1' passwd='$password'/>\n"
-        '  </devices>\n'
-        '</domain>\n'
-        'X\n'
-        'virsh --connect qemu:///system define /tmp/$name.xml && '
-        'rm -f /tmp/$name.xml\n'
-        'virsh --connect qemu:///system start $name',
-      );
-      await w.host.refresh();
-    });
-    tearDownAll(() async {
-      try {
-        await host(
-          'virsh --connect qemu:///system destroy $name; '
-          'virsh --connect qemu:///system undefine $name; true',
-        );
-      } catch (_) {}
-      await w.dispose();
-    });
-
-    /// Runs the engine against [target] until it connects or ends.
-    Future<ffi.RemoteDesktopEvent> engine(
-      RemoteDesktopTarget target, {
-      String? password,
-    }) async {
-      final handle = ffi.RemoteDesktopSessionHandle.startVnc(
-        params: ffi.VncSessionParams(
-          connectHost: target.tunnel.address.address,
-          connectPort: target.tunnel.port,
-          accessToken: target.tunnel.accessToken,
-          password: password,
-          shared: true,
-        ),
-      );
-      final seen = <String>[];
-      try {
-        while (true) {
-          final event = await handle.nextEvent().timeout(
-            const Duration(seconds: 20),
-          );
-          seen.add('${event.runtimeType}');
-          switch (event) {
-            case ffi.RemoteDesktopEvent_ConnectionState(
-                  state: ffi.RemoteDesktopConnectionState.connected,
-                ) ||
-                ffi.RemoteDesktopEvent_Ended():
-              return event!;
-            case null:
-              fail('the engine stopped without ending: $seen');
-            default:
-              continue;
-          }
-        }
-      } finally {
-        handle.close();
-      }
-    }
-
-    Future<RemoteDesktopTarget> open() {
-      final guest = w.guest((g) => g.name == name, name);
-      return VirtConsoleConnect.vncTarget(
-        w.container,
-        serverId: w.id,
-        guestId: guest.id,
-      )();
-    }
-
-    test('read with --security-info, and the engine gets in with it', () async {
-      final target = await open();
-      try {
-        expect(target.password, password);
-        // Another local process, without the tunnel's token, gets nothing.
-        final stranger = await Socket.connect(
-          target.tunnel.address,
-          target.tunnel.port,
-        );
-        // Dropped with bytes it never read, the tunnel's end resets: the
-        // write's error lands on `done`, after the read has ended.
-        unawaited(stranger.done.catchError((_) {}));
-        stranger.add(List.filled(32, 0x41));
-        var leaked = 0;
-        await stranger
-            .forEach((b) => leaked += b.length)
-            .catchError((_) {}, test: (e) => e is SocketException)
-            .timeout(const Duration(seconds: 10));
-        expect(leaked, 0);
-
-        final event = await engine(target, password: target.password);
-        expect(
-          event,
-          isA<ffi.RemoteDesktopEvent_ConnectionState>(),
-          reason: '$event',
-        );
-      } finally {
-        await target.tunnel.close();
-      }
-    });
-
-    test('a wrong password is an authentication failure', () async {
-      final target = await open();
-      try {
-        final event = await engine(target, password: 'nope');
-        expect(
-          event,
-          isA<ffi.RemoteDesktopEvent_Ended>().having(
-            (e) => e.reason,
-            'reason',
-            ffi.RemoteDesktopEndReason.authenticationFailed,
-          ),
-        );
-      } finally {
-        await target.tunnel.close();
-      }
     });
   });
 }
@@ -3426,39 +3238,6 @@ void _pve(_Agent agent) {
       }
     });
 
-    test('vncproxy: RFB and VNC auth through the relay and websocket',
-        () async {
-      final vm = w.guest(isVm, 'VM $vmId');
-      final target = await VirtConsoleConnect.vncTarget(
-        w.container,
-        serverId: w.id,
-        guestId: vm.id,
-      )();
-      final password = target.password!;
-      expect(password.length, 8);
-      final rfb = _RfbReader(
-        await connectTunnel(target.tunnel),
-      );
-      try {
-        expect(
-          ascii.decode(await rfb.take(12)),
-          matches(RegExp(r'^RFB 003\.00\d\n$')),
-        );
-        rfb.add(ascii.encode('RFB 003.008\n'));
-        final count = (await rfb.take(1)).single;
-        final types = await rfb.take(count);
-        expect(types, contains(2));
-        rfb.add([2]);
-        rfb.add(_vncResponse(password, await rfb.take(16)));
-        final result = ByteData.sublistView(
-          Uint8List.fromList(await rfb.take(4)),
-        ).getUint32(0);
-        expect(result, 0, reason: 'SecurityResult OK');
-      } finally {
-        await rfb.close();
-        await target.tunnel.close();
-      }
-    });
   });
 }
 
@@ -3546,13 +3325,13 @@ void _pveTestVm(_Agent agent) {
       });
     });
 
-    test('detail: disks, NIC, display and both consoles', () async {
+    test('detail: disks, NIC, display and the text console', () async {
       final d = await w.host.detail(vm().id);
       expect(d.disks.map((x) => x.target), containsAll(['scsi0', 'ide2']));
       expect(d.nics.single.model, 'virtio');
       expect(d.nics.single.source, 'vmbr0');
       expect(d.graphics.map((g) => g.kind), ['std']);
-      expect(d.consoles, {VirtConsoleKind.vnc, VirtConsoleKind.text});
+      expect(d.consoles, {VirtConsoleKind.text});
     });
 
     test('serial console: getty on ttyS0 through the relay, typed into',
@@ -3569,35 +3348,6 @@ void _pveTestVm(_Agent agent) {
       } finally {
         shell.close();
         await out.cancel();
-      }
-    });
-
-    test('vncproxy: RFB and VNC auth through the relay', () async {
-      final target = await VirtConsoleConnect.vncTarget(
-        w.container,
-        serverId: w.id,
-        guestId: vm().id,
-      )();
-      final rfb = _RfbReader(
-        await connectTunnel(target.tunnel),
-      );
-      try {
-        expect(
-          ascii.decode(await rfb.take(12)),
-          matches(RegExp(r'^RFB 003\.00\d\n$')),
-        );
-        rfb.add(ascii.encode('RFB 003.008\n'));
-        final count = (await rfb.take(1)).single;
-        expect(await rfb.take(count), contains(2));
-        rfb.add([2]);
-        rfb.add(_vncResponse(target.password!, await rfb.take(16)));
-        final result = ByteData.sublistView(
-          Uint8List.fromList(await rfb.take(4)),
-        ).getUint32(0);
-        expect(result, 0, reason: 'SecurityResult OK');
-      } finally {
-        await rfb.close();
-        await target.tunnel.close();
       }
     });
 
@@ -3795,73 +3545,6 @@ class _Collector {
   }
 
   Future<void> cancel() => _sub.cancel();
-}
-
-/// Reads exact byte counts off a socket.
-class _RfbReader {
-  _RfbReader(this._socket) {
-    _sub = _socket.listen(
-      (b) {
-        _buf.addAll(b);
-        _wake();
-      },
-      onDone: () {
-        _done = true;
-        _wake();
-      },
-    );
-  }
-
-  final Socket _socket;
-  final _buf = <int>[];
-  late final StreamSubscription<Uint8List> _sub;
-  Completer<void>? _waiting;
-  var _done = false;
-
-  void _wake() {
-    _waiting?.complete();
-    _waiting = null;
-  }
-
-  void add(List<int> bytes) => _socket.add(bytes);
-
-  Future<List<int>> take(int n) async {
-    while (_buf.length < n) {
-      if (_done) fail('connection closed after ${_buf.length}/$n bytes');
-      _waiting = Completer<void>();
-      await _waiting!.future.timeout(const Duration(seconds: 15));
-    }
-    final out = _buf.sublist(0, n);
-    _buf.removeRange(0, n);
-    return out;
-  }
-
-  Future<void> close() async {
-    await _sub.cancel();
-    _socket.destroy();
-  }
-}
-
-/// RFB's VNC authentication: the challenge DES-encrypted with the password,
-/// each key byte bit-reversed. Single DES is 3DES-EDE with three equal keys.
-List<int> _vncResponse(String password, List<int> challenge) {
-  final key = Uint8List(8);
-  final pw = latin1.encode(password);
-  for (var i = 0; i < 8 && i < pw.length; i++) {
-    var b = pw[i], r = 0;
-    for (var bit = 0; bit < 8; bit++) {
-      r = (r << 1) | (b & 1);
-      b >>= 1;
-    }
-    key[i] = r;
-  }
-  final des = DESedeEngine()
-    ..init(true, KeyParameter(Uint8List.fromList([...key, ...key, ...key])));
-  final input = Uint8List.fromList(challenge);
-  final out = Uint8List(16);
-  des.processBlock(input, 0, out, 0);
-  des.processBlock(input, 8, out, 8);
-  return out;
 }
 
 // -----------------------------------------------------------------------------

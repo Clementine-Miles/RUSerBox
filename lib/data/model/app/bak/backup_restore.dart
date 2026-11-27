@@ -46,11 +46,6 @@ extension BackupV2Restore on BackupV2 {
         force: force,
         notify: false,
       );
-      final remoteDesktopsChanged = Stores.remoteDesktop.merge(
-        _remoteDesktopsWithRestoredServerIds(restored.serverIds),
-        force: force,
-        notify: false,
-      );
 
       final restoredContainer = _containerWithRestoredServerIds(
         restored.serverIds,
@@ -134,7 +129,6 @@ extension BackupV2Restore on BackupV2 {
         servers: serversChanged,
         snippets: snippetsChanged,
         forwards: forwardsChanged,
-        remoteDesktops: remoteDesktopsChanged,
         container: containerChanged,
         history: historyNotifications,
         settings: settingNotifications,
@@ -156,7 +150,6 @@ extension BackupV2Restore on BackupV2 {
       // A server tombstone cascades these rows even when their own merge pass
       // has no later write to announce.
       Stores.portForward.invalidate();
-      Stores.remoteDesktop.invalidate();
       Stores.snippet.invalidate();
       // A PVE write sets `servers`; a deleted server's row cascades
       // without one, since `restoreOne` answers false for a server not here.
@@ -164,9 +157,6 @@ extension BackupV2Restore on BackupV2 {
     }
     if (changed.snippets && !changed.servers) Stores.snippet.invalidate();
     if (changed.forwards && !changed.servers) Stores.portForward.invalidate();
-    if (changed.remoteDesktops && !changed.servers) {
-      Stores.remoteDesktop.invalidate();
-    }
     _notifySqliteStore(Stores.history, changed.history);
     _notifySqliteStore(Stores.setting, changed.settings);
     for (final MapEntry(key: store, value: keys) in changed.stores.entries) {
@@ -344,13 +334,6 @@ extension BackupV2Restore on BackupV2 {
     Map<String, String> serverIds,
   ) => {
     for (final entry in portForwards.entries)
-      entry.key: _recordWithRestoredServerId(entry.value, serverIds),
-  };
-
-  Map<String, Object?> _remoteDesktopsWithRestoredServerIds(
-    Map<String, String> serverIds,
-  ) => {
-    for (final entry in remoteDesktopProfiles.entries)
       entry.key: _recordWithRestoredServerId(entry.value, serverIds),
   };
 

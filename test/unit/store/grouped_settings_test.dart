@@ -115,7 +115,7 @@ void main() {
 
       await migration.apply();
 
-      final config = store.agentShell.get();
+      final config = _agentShell();
       expect(config.mode, 'docked');
       expect(config.window.left, 12.5);
       expect(config.window.top, 34.5);
@@ -134,8 +134,8 @@ void main() {
 
       await migration.apply();
 
-      expect(store.agentShell.get().window.left, -1.0);
-      expect(store.agentShell.get().window.width, 400.0);
+      expect(_agentShell().window.left, -1.0);
+      expect(_agentShell().window.width, 400.0);
     });
 
     test(
@@ -146,9 +146,9 @@ void main() {
 
         await migration.apply();
 
-        expect(store.agentShell.get().window.height, 700.0);
+        expect(_agentShell().window.height, 700.0);
         expect(
-          store.agentShell.get().window.width,
+          _agentShell().window.width,
           const FloatShellWindow().width,
         );
         // Removed all the same. Once the field is served by the grouped row the
@@ -180,7 +180,7 @@ void main() {
 
     expect(_rawValue('askAi'), first);
     expect(_askAi()['model'], 'some-model');
-    expect(store.agentShell.get().pill.y, 0.25);
+    expect(_agentShell().pill.y, 0.25);
   });
 
   test('none of it counts as a user edit', () async {
@@ -196,52 +196,52 @@ void main() {
 
   group('a field reads and writes like the property it replaced', () {
     test('get falls back to the model default', () {
-      expect(store.agentShell.pillY.get(), const FloatShellPill().y);
+      expect(store.terminalShell.pillY.get(), 0.38);
     });
 
     test('set touches one field and leaves the rest', () async {
-      await store.agentShell.width.set(500);
-      await store.agentShell.pillY.set(0.25);
+      await store.terminalShell.width.set(500);
+      await store.terminalShell.pillY.set(0.25);
 
-      expect(store.agentShell.width.get(), 500);
-      expect(store.agentShell.pillY.get(), 0.25);
-      expect(store.agentShell.height.get(), const FloatShellWindow().height);
+      expect(store.terminalShell.width.get(), 500);
+      expect(store.terminalShell.pillY.get(), 0.25);
+      expect(store.terminalShell.height.get(), 400);
       // Unset: the field reads as empty, which `storedMode` takes for the
       // panel's default.
-      expect(store.agentShell.mode.get(), '');
+      expect(store.terminalShell.mode.get(), '');
     });
 
     test(
       'remove puts the field back to its default, not the whole row',
       () async {
-        await store.agentShell.width.set(500);
-        await store.agentShell.pillY.set(0.25);
+        await store.terminalShell.width.set(500);
+        await store.terminalShell.pillY.set(0.25);
 
-        await store.agentShell.width.remove();
+        await store.terminalShell.width.remove();
 
-        expect(store.agentShell.width.get(), const FloatShellWindow().width);
-        expect(store.agentShell.pillY.get(), 0.25);
+        expect(store.terminalShell.width.get(), 560);
+        expect(store.terminalShell.pillY.get(), 0.25);
       },
     );
 
     test('fetch, put and delete are the same three operations', () async {
-      store.agentShell.mode.put('docked');
-      expect(store.agentShell.mode.fetch(), 'docked');
+      store.terminalShell.mode.put('docked');
+      expect(store.terminalShell.mode.fetch(), 'docked');
 
-      store.agentShell.mode.delete();
-      expect(store.agentShell.mode.fetch(), '');
+      store.terminalShell.mode.delete();
+      expect(store.terminalShell.mode.fetch(), '');
     });
   });
 
   group('a field listenable reports its own field', () {
     test('and fires when it changes', () async {
-      final listenable = store.agentShell.mode.listenable();
+      final listenable = store.terminalShell.mode.listenable();
       var fired = 0;
       void onChange() => fired++;
       listenable.addListener(onChange);
       addTearDown(() => listenable.removeListener(onChange));
 
-      await store.agentShell.mode.set('docked');
+      await store.terminalShell.mode.set('docked');
 
       expect(fired, 1);
       expect(listenable.value, 'docked');
@@ -251,14 +251,14 @@ void main() {
       // The parent notifies on every write to the object, so without the
       // filter a switch bound to one field would rebuild whenever any other
       // was touched.
-      final listenable = store.agentShell.mode.listenable();
+      final listenable = store.terminalShell.mode.listenable();
       var fired = 0;
       void onChange() => fired++;
       listenable.addListener(onChange);
       addTearDown(() => listenable.removeListener(onChange));
 
-      await store.agentShell.width.set(500);
-      await store.agentShell.pillY.set(0.25);
+      await store.terminalShell.width.set(500);
+      await store.terminalShell.pillY.set(0.25);
 
       expect(fired, 0);
     });
@@ -266,34 +266,42 @@ void main() {
     test('and the same callback added twice is removed twice', () async {
       // `ValueListenable` allows it, and keying one wrapper per callback lost
       // the first — it stayed registered on the store with no way to reach it.
-      final listenable = store.agentShell.mode.listenable();
+      final listenable = store.terminalShell.mode.listenable();
       var fired = 0;
       void onChange() => fired++;
       listenable.addListener(onChange);
       listenable.addListener(onChange);
 
-      await store.agentShell.mode.set('a');
+      await store.terminalShell.mode.set('a');
       expect(fired, 2);
 
       listenable.removeListener(onChange);
-      await store.agentShell.mode.set('b');
+      await store.terminalShell.mode.set('b');
       expect(fired, 3);
 
       listenable.removeListener(onChange);
-      await store.agentShell.mode.set('c');
+      await store.terminalShell.mode.set('c');
       expect(fired, 3);
     });
 
     test('and a removed listener hears nothing', () async {
-      final listenable = store.agentShell.mode.listenable();
+      final listenable = store.terminalShell.mode.listenable();
       var fired = 0;
       void onChange() => fired++;
       listenable.addListener(onChange);
       listenable.removeListener(onChange);
 
-      await store.agentShell.mode.set('docked');
+      await store.terminalShell.mode.set('docked');
 
       expect(fired, 0);
     });
   });
+}
+
+/// The retired floating Agent's row as m009 wrote it.
+FloatShellConfig _agentShell() {
+  final raw = SettingStore.instance.get<Object>('agentShell');
+  return raw is Map
+      ? FloatShellConfig.fromJson(Map<String, dynamic>.from(raw))
+      : const FloatShellConfig();
 }

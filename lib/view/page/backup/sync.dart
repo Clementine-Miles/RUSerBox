@@ -337,10 +337,8 @@ extension _SyncWidgets on _BackupPageState {
 
   (IconData, String) _category(SyncCategory c) => switch (c) {
     SyncCategory.settings => (Icons.settings, libL10n.setting),
-    SyncCategory.ai => (Icons.auto_awesome, libL10n.ai),
     SyncCategory.secrets => (Icons.password, l10n.syncSecrets),
     SyncCategory.passphrases => (Icons.key, l10n.keyPassphrases),
-    SyncCategory.files => (Icons.folder, l10n.syncFiles),
     SyncCategory.benchmarks => (Icons.speed, l10n.benchmark),
   };
 

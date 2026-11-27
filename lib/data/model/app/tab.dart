@@ -3,15 +3,10 @@ enum AppTab {
   ssh,
   file,
   snippet,
-  agent,
   benchmark,
-  remoteDesktop,
 
   /// Libvirt/KVM and Proxmox VE guests.
   ///
-  /// Index 7 by position, the one `monitorSettings` held — see
-  /// [_retiredIndices], which is why an integer 7 still resolves to nothing
-  /// rather than to this.
   virt,
 
   /// Several views of several servers at once, split into panes.
@@ -21,22 +16,15 @@ enum AppTab {
   /// they deployed, their notifications, audit logs and sessions.
   monitor;
 
-  /// Indices that named a tab which no longer exists, and so are never
-  /// resolved as an integer.
-  ///
-  /// 7 was `monitorSettings`, a whole tab for a `monitor` agent's own
-  /// configuration. It is reached from the agent's server instead — one button
-  /// in that page's bar — which is where someone already is when they want it.
-  ///
-  /// [values] is positional, so [virt], appended next, took index 7. It stays
-  /// listed anyway, and that is safe in both directions: every build since
-  /// the SQLite migration stores tabs by name, so no record written by one
-  /// holds an integer at all, and the builds that stored integers (Hive) came
-  /// before either tab existed. No stored bar can hold a 7, then, and one
-  /// that turns up anyway resolves to nothing rather than to a tab nobody
-  /// chose.
-  // TODO(migration): drop once no stored tab order can still hold it.
-  static const _retiredIndices = {7};
+  /// What an integer meant in the builds that stored tabs by position
+  /// (Hive). Every build since the SQLite migration stores names, so this is
+  /// read only for an old record; a retired tab (`agent`, `remoteDesktop`,
+  /// `monitorSettings`) resolves to nothing rather than to a tab nobody chose.
+  // TODO(migration): drop once no stored tab order can still hold an integer.
+  static const _legacyIndexNames = [
+    'server', 'ssh', 'file', 'snippet', 'agent', 'benchmark', //
+    'remoteDesktop', 'monitorSettings', 'virt', 'workspace', 'monitor',
+  ];
 
   /// The tabs a fresh install puts in the bar, and the fallback when a stored
   /// list cannot be read.
@@ -60,7 +48,7 @@ enum AppTab {
   /// arranged is stored and keeps its own tabs (schema step m030 adds
   /// Virtualization where a PVE host was configured); one never arranged is
   /// this list, read at launch, so both are behind "more" there.
-  static const defaultOrder = [server, ssh, file, agent];
+  static const defaultOrder = [server, ssh, file, workspace];
 
   /// The tabs not in [enabled], in declaration order — what "more" holds.
   ///
@@ -111,9 +99,8 @@ enum AppTab {
         if (tab.name == e) return tab;
       }
     } else if (e is int) {
-      if (_retiredIndices.contains(e)) return null;
-      if (e >= 0 && e < AppTab.values.length) {
-        return AppTab.values[e];
+      if (e >= 0 && e < _legacyIndexNames.length) {
+        return _parseAppTabFromElement(_legacyIndexNames[e]);
       }
     }
     return null;

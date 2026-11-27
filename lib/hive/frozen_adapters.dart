@@ -23,9 +23,9 @@ void registerHiveFrozenAdapters({bool override = false}) {
     1: AppTab.ssh,
     2: AppTab.file,
     3: AppTab.snippet,
-    4: AppTab.agent,
+    // 4 was the retired `agent` tab: the fallback, which the parser dedups.
     5: AppTab.benchmark,
-    6: AppTab.remoteDesktop,
+    // 6 was the retired `remoteDesktop` tab: the fallback.
     7: AppTab.virt,
     8: AppTab.workspace,
     9: AppTab.monitor,
@@ -47,7 +47,7 @@ void registerHiveFrozenAdapters({bool override = false}) {
     10: ServerFuncBtn.power,
     12: ServerFuncBtn.users,
     13: ServerFuncBtn.scheduledTasks,
-    14: ServerFuncBtn.remoteDesktop,
+    // 14 was the retired `remoteDesktop` entry.
     15: ServerFuncBtn.firewall,
     16: ServerFuncBtn.storage,
     17: ServerFuncBtn.shares,
