@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:file_picker/file_picker.dart';
 import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -233,8 +232,8 @@ final class _State extends ConsumerState<ServerStatusSharePage> {
           ),
           FilledButton.icon(
             onPressed: !ready || _sharing ? null : () => _share(poster),
-            icon: Icon(isDesktop ? Icons.save_alt : Icons.share, size: 18),
-            label: Text(isDesktop ? libL10n.save : libL10n.share),
+            icon: const Icon(Icons.share, size: 18),
+            label: Text(libL10n.share),
           ),
         ],
       ),
@@ -354,18 +353,6 @@ final class _State extends ConsumerState<ServerStatusSharePage> {
       if (png == null || !mounted) return;
       final name = 'serverbox-${_hideName ? 'status' : _fileSafe(poster.name)}-'
           '${DateTime.now().millisecondsSinceEpoch ~/ 1000}.png';
-      if (isDesktop) {
-        // A folder, then the file written here, as the rescue page's export
-        // does: macOS's save panel needs a sandbox entitlement this app,
-        // unsandboxed, does not declare.
-        final dir = await FilePicker.getDirectoryPath(dialogTitle: libL10n.save);
-        if (dir == null) return;
-        final path = dir.joinPath(name);
-        await File(path).writeAsBytes(png);
-        Toast.success(libL10n.saved);
-        await Pfs.revealPath(path);
-        return;
-      }
       // One directory, emptied each time: the share sheet reads the file
       // after this returns, so it cannot be removed here.
       final dir = Directory('${Directory.systemTemp.path}/serverbox-poster');

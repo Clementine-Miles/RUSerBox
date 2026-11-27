@@ -1,4 +1,3 @@
-import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter/services.dart';
 
 /// Listen <kbd>Cmd+Key</kbd> event.
@@ -15,16 +14,11 @@ final class KeyboardCtrlListener {
     required this.key,
     Set<PhysicalKeyboardKey>? ctrlKeys,
   }) {
-    this.ctrlKeys = ctrlKeys ?? (isMacOS ? macOSCtrlKeys : linuxWindowsCtrlKeys);
+    this.ctrlKeys = ctrlKeys ?? controlKeys;
     HardwareKeyboard.instance.addHandler(_handler);
   }
 
-  static final macOSCtrlKeys = {
-    PhysicalKeyboardKey.metaLeft,
-    PhysicalKeyboardKey.metaRight,
-  };
-
-  static final linuxWindowsCtrlKeys = {
+  static final controlKeys = {
     PhysicalKeyboardKey.controlLeft,
     PhysicalKeyboardKey.controlRight,
   };

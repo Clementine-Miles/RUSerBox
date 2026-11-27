@@ -186,7 +186,7 @@ class KbCaps extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final caps = KbChord.caps(chord, KbPlatform.current);
+    final caps = KbChord.caps(chord);
     if (caps.isEmpty) {
       return Text(l10n.kbUnassigned, style: UIs.text12Grey);
     }
@@ -326,7 +326,7 @@ class _RecorderState extends ConsumerState<_Recorder> {
     Toast.show(
       l10n.kbChanged(
         widget.command.title,
-        KbChord.label(chord, KbPlatform.current),
+        KbChord.label(chord),
       ),
     );
   }

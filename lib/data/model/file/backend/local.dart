@@ -71,9 +71,8 @@ class LocalFileBackend implements FileBackend {
   ///
   /// `dart:io` answers `notFound` for any failed lstat, so a path whose parent
   /// cannot be traversed reads as absent. `readlink` fails with the errno that
-  /// says which. Windows reports different codes; there it stays null.
+  /// says which.
   Future<FileEntry?> _absentAt(String native) async {
-    if (Platform.isWindows) return null;
     try {
       final target = await Link(native).target();
       // A link appeared in between.
@@ -195,8 +194,7 @@ class LocalFileBackend implements FileBackend {
   /// Public because the things only this device can do — handing a path to the
   /// editor, to the share sheet — take a native one, and they should not each
   /// re-derive the rule.
-  static String nativePath(String path) =>
-      Platform.isWindows ? path.replaceAll('/', r'\') : path;
+  static String nativePath(String path) => path;
 
   static String _native(String path) => nativePath(path);
 

@@ -109,12 +109,6 @@ class _LocalFilePageState extends ConsumerState<LocalFilePage> {
         );
 
   List<BarAction> _actions(FileBrowserHandle handle) => [
-    if (isDesktop || isIOS)
-      BarAction(
-        icon: Icons.folder_open_outlined,
-        label: libL10n.open,
-        onTap: () => Pfs.revealPath(Paths.file),
-      ),
     BarAction(
       icon: Icons.downloading,
       label: libL10n.mission,

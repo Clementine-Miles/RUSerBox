@@ -7,25 +7,23 @@ part 'keybindings.g.dart';
 
 /// The chords in force on this device: the defaults, and what was changed.
 final class KbState {
-  const KbState({required this.platform, required this.overrides});
+  const KbState({required this.overrides});
 
-  final KbPlatform platform;
-
-  /// This platform's changes only, by command id. An empty chord is a command
+  /// The changes, by command id. An empty chord is a command
   /// whose keys were removed.
   final Map<String, String> overrides;
 
   bool isModified(KbCommand c) => overrides.containsKey(c.id);
 
   /// The chord [c] runs on; empty when it has none.
-  String chordOf(KbCommand c) => overrides[c.id] ?? c.defaultFor(platform);
+  String chordOf(KbCommand c) => overrides[c.id] ?? c.chord;
 
   SingleActivator? activatorOf(KbCommand c) => KbChord.activator(chordOf(c));
 
   /// [c]'s chord as a tooltip says it; empty when it has none.
-  String labelOf(KbCommand c) => KbChord.label(chordOf(c), platform);
+  String labelOf(KbCommand c) => KbChord.label(chordOf(c));
 
-  /// `name ⌃⌘P`, or the name alone without a chord.
+  /// `name Ctrl+P`, or the name alone without a chord.
   String tip(String name, KbCommand c) {
     final keys = labelOf(c);
     return keys.isEmpty ? name : '$name $keys';
@@ -54,15 +52,15 @@ final class KbState {
 @Riverpod(keepAlive: true)
 class Keybindings extends _$Keybindings {
   @override
-  KbState build() {
-    final platform = KbPlatform.current;
-    return KbState(platform: platform, overrides: _read(platform));
-  }
+  KbState build() => KbState(overrides: _read());
 
-  static String _key(KbPlatform p, String id) => '${p.name}:$id';
+  /// Overrides are stored as `pc:<id>`: the key the PC-style keyboard (every
+  /// Android hardware keyboard) always used. A `mac:` row an older build
+  /// synced from an Apple device is left as it is.
+  static const _prefix = 'pc:';
 
-  static Map<String, String> _read(KbPlatform platform) {
-    final prefix = '${platform.name}:';
+  static Map<String, String> _read() {
+    const prefix = _prefix;
     return {
       for (final e in Stores.setting.keybindings.fetch().entries)
         // One no chord reads — written by hand, or by a build that took more
@@ -73,16 +71,15 @@ class Keybindings extends _$Keybindings {
     };
   }
 
-  /// Writes this platform's changes, leaving the other platform's alone.
+  /// Writes the changes, leaving any other row alone.
   void _write(Map<String, String> overrides) {
-    final p = state.platform;
     final all = {
       for (final e in Stores.setting.keybindings.fetch().entries)
-        if (!e.key.startsWith('${p.name}:')) e.key: e.value,
-      for (final e in overrides.entries) _key(p, e.key): e.value,
+        if (!e.key.startsWith(_prefix)) e.key: e.value,
+      for (final e in overrides.entries) '$_prefix${e.key}': e.value,
     };
     Stores.setting.keybindings.put(all);
-    state = KbState(platform: p, overrides: overrides);
+    state = KbState(overrides: overrides);
   }
 
   /// [command] bound to [chord], taken from any command it conflicts with.
@@ -96,7 +93,7 @@ class Keybindings extends _$Keybindings {
     }
     next[command.id] = chord;
     // Bound back to its default is not a change.
-    if (chord == command.defaultFor(state.platform)) next.remove(command.id);
+    if (chord == command.chord) next.remove(command.id);
     _write(next);
   }
 

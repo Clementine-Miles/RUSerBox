@@ -29,34 +29,23 @@ void main() {
     });
 
     test('caps follow the keyboard', () {
-      expect(KbChord.label(r'Ctrl+Meta+\', KbPlatform.mac), r'⌃⌘\');
-      expect(KbChord.label('Ctrl+Alt+P', KbPlatform.pc), 'Ctrl+Alt+P');
-      expect(KbChord.label('Escape', KbPlatform.pc), 'Esc');
+      expect(KbChord.label('Ctrl+Alt+P'), 'Ctrl+Alt+P');
+      expect(KbChord.label('Escape'), 'Esc');
     });
 
     test('every default parses, but the fixed range', () {
       for (final c in KbCommand.values) {
-        for (final p in KbPlatform.values) {
-          final parsed = KbChord.activator(c.defaultFor(p));
-          expect(parsed == null, c.fixed, reason: '${c.id} on ${p.name}');
-        }
+        final parsed = KbChord.activator(c.chord);
+        expect(parsed == null, c.fixed, reason: c.id);
       }
     });
 
     test('defaults do not collide within a scope', () {
-      for (final p in KbPlatform.values) {
-        final seen = <String>{};
-        for (final c in KbCommand.values) {
-          final scopes = c.scope == KbScope.global
-              ? KbScope.values
-              : [c.scope];
-          for (final s in scopes) {
-            expect(
-              seen.add('${s.name} ${c.defaultFor(p)}'),
-              isTrue,
-              reason: '${c.id} on ${p.name}',
-            );
-          }
+      final seen = <String>{};
+      for (final c in KbCommand.values) {
+        final scopes = c.scope == KbScope.global ? KbScope.values : [c.scope];
+        for (final s in scopes) {
+          expect(seen.add('${s.name} ${c.chord}'), isTrue, reason: c.id);
         }
       }
     });
@@ -92,7 +81,7 @@ void main() {
       ops().bind(KbCommand.wsSync, 'Ctrl+Ctrl+I');
       expect(kb().isModified(KbCommand.wsSync), isFalse);
       Stores.setting.keybindings.put({
-        '${kb().platform.name}:ws.sync': 'Alt+Ctrl+I',
+        'pc:ws.sync': 'Alt+Ctrl+I',
       });
       final again = ProviderContainer();
       addTearDown(again.dispose);
@@ -107,25 +96,25 @@ void main() {
     test('bound back to the default is no change', () {
       ops().bind(KbCommand.wsSync, 'Ctrl+Alt+Y');
       expect(kb().isModified(KbCommand.wsSync), isTrue);
-      ops().bind(KbCommand.wsSync, KbCommand.wsSync.defaultFor(kb().platform));
+      ops().bind(KbCommand.wsSync, KbCommand.wsSync.chord);
       expect(kb().isModified(KbCommand.wsSync), isFalse);
     });
 
-    test('survives a restart, and leaves the other platform alone', () {
-      final other = KbPlatform.values.firstWhere((p) => p != kb().platform);
-      Stores.setting.keybindings.put({'${other.name}:ws.sync': 'F9'});
+    test('survives a restart, and leaves an Apple row alone', () {
+      const other = 'mac';
+      Stores.setting.keybindings.put({'$other:ws.sync': 'F9'});
       ops().bind(KbCommand.wsSync, 'F8');
       final again = ProviderContainer();
       addTearDown(again.dispose);
       expect(again.read(keybindingsProvider).chordOf(KbCommand.wsSync), 'F8');
       expect(
-        Stores.setting.keybindings.fetch()['${other.name}:ws.sync'],
+        Stores.setting.keybindings.fetch()['$other:ws.sync'],
         'F9',
       );
       ops().resetAll();
       expect(kb().overrides, isEmpty);
       expect(
-        Stores.setting.keybindings.fetch()['${other.name}:ws.sync'],
+        Stores.setting.keybindings.fetch()['$other:ws.sync'],
         'F9',
       );
     });

@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -23,10 +22,8 @@ Map<ShortcutActivator, VoidCallback> desktopShortcuts({
   ShortcutActivator? Function(SingleActivator Function(LogicalKeyboardKey) chord)?
   settingsChord,
 }) {
-  // Meta on macOS, Control elsewhere. `SingleActivator` does not fold the two,
-  // and on Linux the Super key belongs to the window manager — a user pressing
-  // Super+1 is asking it for something else.
-  final meta = useMeta ?? Platform.isMacOS;
+  // Control, as on every Android hardware keyboard; Meta only when asked.
+  final meta = useMeta ?? false;
   SingleActivator chord(LogicalKeyboardKey key) =>
       SingleActivator(key, meta: meta, control: !meta);
 

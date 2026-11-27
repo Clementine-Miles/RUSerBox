@@ -487,15 +487,12 @@ class _ToastItemState extends State<_ToastItem> with TickerProviderStateMixin {
     // layer of its own to move around rather than redrawing every frame.
     Widget card = RepaintBoundary(child: _buildCard(theme, accent));
 
-    // Only where a pointer can hover. On a touch platform it is an annotation
-    // in every hit test for an event that cannot arrive.
-    if (isDesktop) {
-      card = MouseRegion(
-        onEnter: (_) => _onHover(true),
-        onExit: (_) => _onHover(false),
-        child: card,
-      );
-    }
+    // A mouse or trackpad on Android hovers too.
+    card = MouseRegion(
+      onEnter: (_) => _onHover(true),
+      onExit: (_) => _onHover(false),
+      child: card,
+    );
 
     // Under reduced motion it only fades: no slide, and no growing out of the
     // edge, which would push the rest of the stack along.

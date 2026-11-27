@@ -535,8 +535,6 @@ class _FileBrowserPageState extends ConsumerState<FileBrowserPage>
         label: libL10n.search,
         onTap: _search.start,
       ),
-      if (isDesktop)
-        BarAction(icon: Icons.refresh, label: libL10n.refresh, onTap: refresh),
     ];
 
     final body = Column(

@@ -258,8 +258,7 @@ final class _SettingsSearchField extends StatelessWidget {
                   ),
                 );
               }
-              // The chord, where a field that can be reached by one says so.
-              if (!isDesktop) return UIs.placeholder;
+              // The chord, for a hardware keyboard.
               return Consumer(
                 builder: (_, ref, _) => Text(
                   ref

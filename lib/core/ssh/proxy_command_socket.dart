@@ -240,9 +240,6 @@ class ProxyCommandSocket implements SSHSocket {
   static ({String executable, List<String> arguments}) _buildShellCommand(
     String command,
   ) {
-    if (Platform.isWindows) {
-      return (executable: 'cmd', arguments: ['/C', command]);
-    }
     return (executable: '/bin/sh', arguments: ['-c', command]);
   }
 
@@ -271,7 +268,7 @@ class ProxyCommandSocket implements SSHSocket {
       _process.kill(ProcessSignal.sigkill);
     } catch (_) {}
     try {
-      if (!Platform.isWindows && _processGroupId != null) {
+      if (_processGroupId != null) {
         Process.killPid(-_processGroupId, ProcessSignal.sigkill);
       }
     } catch (_) {}

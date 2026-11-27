@@ -2,7 +2,6 @@
 
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
@@ -208,13 +207,7 @@ extension _Actions on _SchemaTooNewPageState {
     // Not a save panel either: file_picker_darwin sets the panel's content
     // type after its file name, and for an extension no app has registered —
     // `db` is one — macOS then appends it a second time and saves `.db.db`.
-    final String? destDir;
-    if (isDesktop) {
-      destDir = await FilePicker.getDirectoryPath(dialogTitle: libL10n.backup);
-      if (destDir == null) return;
-    } else {
-      destDir = null;
-    }
+    const String? destDir = null;
 
     // Both callers reach here after awaiting a dialog, and desktop has awaited
     // the picker as well.
@@ -356,7 +349,6 @@ extension _Actions on _SchemaTooNewPageState {
   /// here the alternative is a screen the user cannot leave.
   Future<void> _onQuit() async {
     await SystemNavigator.pop();
-    if (isDesktop) exit(0);
   }
 
   Future<void> _onWipe() async {

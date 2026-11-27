@@ -1,4 +1,3 @@
-import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -6,69 +5,48 @@ import 'package:flutter/widgets.dart';
 /// their own page. Two commands of different scopes may share a chord.
 enum KbScope { global, workspace, settings, serverTab }
 
-/// The two keyboards a chord is written for. Apple's has Command, and holds
-/// it where every other holds Control; an iPad with a keyboard is one too.
-enum KbPlatform {
-  pc,
-  mac;
-
-  /// The machine the app runs on, as the rest of the app asks it — not
-  /// `defaultTargetPlatform`, which a test overrides while the keyboard
-  /// stays the host's.
-  static KbPlatform get current => isMacOS || isIOS ? mac : pc;
-}
-
 /// Something the keyboard can do, and the chords it does it with by default.
 ///
 /// A chord is a string — `Ctrl+Alt+\` — because that is what is stored, shown
 /// and compared; [KbChord] turns one into something Flutter can match.
 enum KbCommand {
-  wsSplitRight('ws.splitRight', KbScope.workspace, r'Ctrl+Alt+\', r'Ctrl+Meta+\'),
-  wsSplitDown('ws.splitDown', KbScope.workspace, 'Ctrl+Alt+-', 'Ctrl+Meta+-'),
-  wsFocusLeft('ws.focusLeft', KbScope.workspace, 'Ctrl+Alt+←', 'Ctrl+Meta+←'),
-  wsFocusRight('ws.focusRight', KbScope.workspace, 'Ctrl+Alt+→', 'Ctrl+Meta+→'),
-  wsFocusUp('ws.focusUp', KbScope.workspace, 'Ctrl+Alt+↑', 'Ctrl+Meta+↑'),
-  wsFocusDown('ws.focusDown', KbScope.workspace, 'Ctrl+Alt+↓', 'Ctrl+Meta+↓'),
-  wsNewTab('ws.newTab', KbScope.workspace, 'Ctrl+Alt+N', 'Ctrl+Meta+N'),
-  wsCloseTab('ws.closeTab', KbScope.workspace, 'Ctrl+Alt+W', 'Ctrl+Meta+W'),
-  wsNextTab('ws.nextTab', KbScope.workspace, 'Ctrl+Alt+]', 'Ctrl+Meta+]'),
-  wsPrevTab('ws.prevTab', KbScope.workspace, 'Ctrl+Alt+[', 'Ctrl+Meta+['),
-  wsTabs('ws.tabs', KbScope.workspace, 'Ctrl+Alt+O', 'Ctrl+Meta+O'),
-  wsReopenTab(
-    'ws.reopenTab',
-    KbScope.workspace,
-    'Ctrl+Alt+Shift+T',
-    'Ctrl+Meta+Shift+T',
-  ),
-  wsMaximize('ws.maximize', KbScope.workspace, 'Ctrl+Alt+M', 'Ctrl+Meta+M'),
-  wsSync('ws.sync', KbScope.workspace, 'Ctrl+Alt+I', 'Ctrl+Meta+I'),
-  wsQuickOpen('ws.quickOpen', KbScope.workspace, 'Ctrl+Alt+P', 'Ctrl+Meta+P'),
-  wsSwitcher('ws.switcher', KbScope.workspace, 'Ctrl+Alt+S', 'Ctrl+Meta+S'),
+  wsSplitRight('ws.splitRight', KbScope.workspace, r'Ctrl+Alt+\'),
+  wsSplitDown('ws.splitDown', KbScope.workspace, 'Ctrl+Alt+-'),
+  wsFocusLeft('ws.focusLeft', KbScope.workspace, 'Ctrl+Alt+←'),
+  wsFocusRight('ws.focusRight', KbScope.workspace, 'Ctrl+Alt+→'),
+  wsFocusUp('ws.focusUp', KbScope.workspace, 'Ctrl+Alt+↑'),
+  wsFocusDown('ws.focusDown', KbScope.workspace, 'Ctrl+Alt+↓'),
+  wsNewTab('ws.newTab', KbScope.workspace, 'Ctrl+Alt+N'),
+  wsCloseTab('ws.closeTab', KbScope.workspace, 'Ctrl+Alt+W'),
+  wsNextTab('ws.nextTab', KbScope.workspace, 'Ctrl+Alt+]'),
+  wsPrevTab('ws.prevTab', KbScope.workspace, 'Ctrl+Alt+['),
+  wsTabs('ws.tabs', KbScope.workspace, 'Ctrl+Alt+O'),
+  wsReopenTab('ws.reopenTab', KbScope.workspace, 'Ctrl+Alt+Shift+T'),
+  wsMaximize('ws.maximize', KbScope.workspace, 'Ctrl+Alt+M'),
+  wsSync('ws.sync', KbScope.workspace, 'Ctrl+Alt+I'),
+  wsQuickOpen('ws.quickOpen', KbScope.workspace, 'Ctrl+Alt+P'),
+  wsSwitcher('ws.switcher', KbScope.workspace, 'Ctrl+Alt+S'),
 
   /// Not a chord but nine, and not changeable: which digit is which tab is
   /// the whole of what it means. Listed so the page names every key the app
   /// takes.
-  homeTab('home.tab', KbScope.global, 'Ctrl+1…9', 'Meta+1…9', fixed: true),
-  appSettings('app.settings', KbScope.global, 'Ctrl+,', 'Meta+,'),
-  settingsSearch('settings.search', KbScope.settings, 'Ctrl+F', 'Meta+F'),
-  serverPrev('server.prev', KbScope.serverTab, 'Ctrl+[', 'Meta+['),
-  serverNext('server.next', KbScope.serverTab, 'Ctrl+]', 'Meta+]'),
-  serverList('server.list', KbScope.serverTab, 'Ctrl+K', 'Meta+K'),
-  serverClose('server.close', KbScope.serverTab, 'Escape', 'Escape');
+  homeTab('home.tab', KbScope.global, 'Ctrl+1…9', fixed: true),
+  appSettings('app.settings', KbScope.global, 'Ctrl+,'),
+  settingsSearch('settings.search', KbScope.settings, 'Ctrl+F'),
+  serverPrev('server.prev', KbScope.serverTab, 'Ctrl+['),
+  serverNext('server.next', KbScope.serverTab, 'Ctrl+]'),
+  serverList('server.list', KbScope.serverTab, 'Ctrl+K'),
+  serverClose('server.close', KbScope.serverTab, 'Escape');
 
-  const KbCommand(this.id, this.scope, this.pc, this.mac, {this.fixed = false});
+  const KbCommand(this.id, this.scope, this.chord, {this.fixed = false});
 
   /// Stable across builds: what an override is stored under.
   final String id;
   final KbScope scope;
-  final String pc;
-  final String mac;
+  /// The default chord: Control-based, as on every Android hardware
+  /// keyboard.
+  final String chord;
   final bool fixed;
-
-  String defaultFor(KbPlatform platform) => switch (platform) {
-    KbPlatform.pc => pc,
-    KbPlatform.mac => mac,
-  };
 
   /// Whether a chord bound to this and one bound to [other] could both be
   /// asked for in the same place.
@@ -219,33 +197,26 @@ abstract final class KbChord {
     ].join('+');
   }
 
-  /// [chord] as the keycaps it is pressed with: `⌃⌘\` on a Mac, `Ctrl`,
-  /// `Alt`, `\` elsewhere.
-  static List<String> caps(String chord, KbPlatform platform) {
+  /// [chord] as the keycaps it is pressed with: `Ctrl`, `Alt`, `\`.
+  static List<String> caps(String chord) {
     if (chord.isEmpty) return const [];
     return [
       for (final p in chord.split('+'))
-        switch ((platform, p)) {
-          (KbPlatform.mac, 'Ctrl') => '⌃',
-          (KbPlatform.mac, 'Meta') => '⌘',
-          (KbPlatform.mac, 'Alt') => '⌥',
-          (KbPlatform.mac, 'Shift') => '⇧',
-          (KbPlatform.pc, 'Meta') => 'Win',
-          (_, 'Escape') => 'Esc',
+        switch (p) {
+          'Escape' => 'Esc',
           _ => p,
         },
     ];
   }
 
   /// [chord] on one line, the way a tooltip says it.
-  static String label(String chord, KbPlatform platform) =>
-      caps(chord, platform).join(platform == KbPlatform.mac ? '' : '+');
+  static String label(String chord) => caps(chord).join('+');
 }
 
 /// A [SingleActivator] that leaves AltGr alone.
 ///
-/// Windows reports AltGr as Control and the right Alt held together, so on a
-/// German or French keyboard `\`, `[` and `]` are typed with exactly the
+/// AltGr arrives as Control and the right Alt held together, so on a German
+/// or French hardware keyboard `\`, `[` and `]` are typed with exactly the
 /// chords the workspace's defaults are — and a terminal that split itself on
 /// every backslash would be unusable. A chord with Control and Alt is the
 /// app's only through the left Alt, then; the right one types characters.
@@ -262,7 +233,6 @@ final class _KbActivator extends SingleActivator {
   bool accepts(KeyEvent event, HardwareKeyboard state) {
     if (control &&
         alt &&
-        KbPlatform.current == KbPlatform.pc &&
         state.physicalKeysPressed.contains(PhysicalKeyboardKey.altRight)) {
       return false;
     }

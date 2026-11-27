@@ -170,12 +170,6 @@ extension on _UsersPageState {
           child: Icon(Icons.sort, size: 18),
         ),
       ),
-      if (isDesktop)
-        Btn.icon(
-          text: libL10n.refresh,
-          icon: const Icon(Icons.refresh, size: 18),
-          onTap: _busy ? null : _refresh,
-        ),
     ];
   }
 

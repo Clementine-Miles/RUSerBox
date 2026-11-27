@@ -61,7 +61,6 @@ export 'src/core/utils/bounded_output_stream.dart';
 export 'src/core/rust.dart';
 export 'src/core/utils/age_cryptor.dart';
 export 'src/core/utils/crypto.dart';
-export 'src/core/utils/font.dart';
 export 'src/core/utils/func.dart';
 export 'src/core/utils/id.dart';
 export 'src/core/utils/keyboard.dart';

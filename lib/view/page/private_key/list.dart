@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +7,6 @@ import 'package:server_box/core/extension/context/locale.dart';
 import 'package:server_box/core/ssh/keygen.dart';
 import 'package:server_box/data/model/server/private_key_info.dart';
 import 'package:server_box/data/provider/private_key.dart';
-import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/view/page/private_key/edit.dart';
 import 'package:server_box/view/page/private_key/generate.dart';
 
@@ -79,7 +77,6 @@ class _PrivateKeyListState extends ConsumerState<PrivateKeysListPage>
 
   @override
   FutureOr<void> afterFirstLayout(BuildContext context) {
-    _autoAddSystemPriavteKey();
   }
 }
 
@@ -117,32 +114,4 @@ extension on _PrivateKeyListState {
     }
   }
 
-  void _autoAddSystemPriavteKey() async {
-    // Only trigger on desktop platform and no private key saved
-    if (isDesktop && Stores.key.keys().isEmpty) {
-      final home = Pfs.homeDir;
-      if (home == null) return;
-      final idRsaFile = File(home.joinPath('.ssh/id_rsa'));
-      if (!idRsaFile.existsSync()) return;
-      final sysPk = PrivateKeyInfo(
-        id: ShortId.generate(),
-        name: 'system',
-        key: await idRsaFile.readAsString(),
-      );
-      if (!mounted) return;
-      await context.showSheet(
-        title: libL10n.attention,
-        child: Text(l10n.addSystemPrivateKeyTip),
-        actions: Btn.ok(
-          onTap: () {
-            context.popSheet();
-            PrivateKeyEditPage.route.go(
-              context,
-              args: PrivateKeyEditPageArgs(pki: sysPk),
-            );
-          },
-        ).toList,
-      );
-    }
-  }
 }

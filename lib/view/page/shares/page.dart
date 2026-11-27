@@ -69,12 +69,6 @@ final class _SharesPageState extends ConsumerState<SharesPage> {
       appBar: CustomAppBar(
         title: TwoLineText(up: l10n.sharingTitle, down: widget.args.spi.name),
         actions: [
-          if (isDesktop)
-            Btn.icon(
-              text: libL10n.refresh,
-              icon: const Icon(Icons.refresh, size: 18),
-              onTap: _busy ? null : _refresh,
-            ),
         ],
       ),
       body: !linux

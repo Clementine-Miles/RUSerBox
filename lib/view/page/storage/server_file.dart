@@ -104,14 +104,8 @@ class _LocalServerFilePage extends StatelessWidget {
 
   final SftpPageArgs args;
 
-  /// `/`, or on Windows the drive holding home — `LocalFileBackend` takes
-  /// forward slashes everywhere and has no view above the drive letters.
-  static String get _root {
-    final home = LocalShellBackend.homeDir;
-    if (!isWindows || home == null) return '/';
-    final drive = RegExp(r'^[A-Za-z]:').firstMatch(home)?.group(0);
-    return drive == null ? '/' : '$drive/';
-  }
+  /// The local file system's root.
+  static String get _root => '/';
 
   static String? get _home => LocalShellBackend.homeDir?.replaceAll(r'\', '/');
 

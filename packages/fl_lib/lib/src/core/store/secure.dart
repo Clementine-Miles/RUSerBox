@@ -294,7 +294,7 @@ final class SecureProp {
   static bool? legacyApart;
 
   FlutterSecureStorage? get _legacy =>
-      (legacyApart ?? (isIOS || isMacOS)) ? legacy : null;
+      (legacyApart ?? false) ? legacy : null;
 
   /// Forgets the reads and writes counted against the rate limits, so each
   /// test starts with the whole allowance.

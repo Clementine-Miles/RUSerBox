@@ -7,7 +7,6 @@ import 'package:fl_lib/src/core/ext/datetime.dart';
 import 'package:fl_lib/src/core/ext/string.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// Platforms
@@ -47,46 +46,12 @@ enum Pfs {
 
   static final String seperator = isWindows ? '\\' : '/';
 
-  /// Whether macOS is confining this process to a container.
-  ///
-  /// The container id is in the environment of a sandboxed app and absent
-  /// otherwise, which is the cheapest reliable answer — verified both ways.
-  /// Asked of the running process rather than baked in at build time, so one
-  /// binary is honest in either build.
-  ///
-  /// False everywhere else: no other platform this ships on has two builds of
-  /// itself that differ in what the process may do.
-  static final bool isMacSandboxed =
-      isMacOS && Platform.environment.containsKey('APP_SANDBOX_CONTAINER_ID');
+  /// The home directory on the Linux test host; null on Android, whose app
+  /// sandbox has no user home.
+  static final String? homeDir = isLinux ? Platform.environment['HOME'] : null;
 
-  /// Available only on desktop,
-  /// return null on mobile
-  static final String? homeDir = () {
-    final envVars = Platform.environment;
-    if (isMacOS || isLinux) {
-      return envVars['HOME'];
-    } else if (isWindows) {
-      return envVars['UserProfile'];
-    }
-    return null;
-  }();
-
-  /// Share files.
-  /// Open share sheet on mobile, reveal in file explorer on desktop.
+  /// Share files through the system share sheet.
   static Future<ShareResult?> sharePaths({required List<String> paths, String? title}) async {
-    if (isDesktop) {
-      /// Open the paths
-      for (final path in paths) {
-        final file = File(path);
-        if (!await file.exists()) {
-          Logger.root.warning('File not found: $path');
-          continue;
-        }
-        await revealPath(path);
-      }
-      return null;
-    }
-
     title ??= libL10n.share;
     final files = paths.map((path) => XFile(path)).toList();
     final params = ShareParams(title: title, files: files);
@@ -129,16 +94,9 @@ enum Pfs {
     final picked = await pickFile();
     if (picked == null) return null;
 
-    switch (Pfs.type) {
-      case Pfs.web:
-        // Read on demand since file_picker 12; there is no eagerly filled
-        // `bytes` to reach for any more.
-        return await picked.readAsBytes();
-      default:
-        final path = picked.path;
-        if (path == null) return null;
-        return await File(path).readAsBytes();
-    }
+    final path = picked.path;
+    if (path == null) return await picked.readAsBytes();
+    return await File(path).readAsBytes();
   }
 
   /// Pick a file and return the file String.
@@ -159,33 +117,6 @@ enum Pfs {
     return data?.text;
   }
 
-  /// Reveal file / dir in file app.
-  ///
-  /// **Desktop, and iOS** for a path in Documents once the app sets
-  /// `UIFileSharingEnabled`: the Files app opens on it.
-  static Future<void> revealPath(String path) async {
-    try {
-      switch (type) {
-        case Pfs.ios:
-          final url = Uri(scheme: 'shareddocuments', host: '', path: path).toString();
-          if (!await url.launchUrl()) Logger.root.warning('reveal path: $url refused');
-          break;
-        case Pfs.macos:
-          await Process.run('open', ['--reveal', path]);
-          break;
-        case Pfs.windows:
-          await Process.run('explorer', ['/select,', path.replaceAll('"', '""')]);
-          break;
-        case Pfs.linux:
-          await Process.run('xdg-open', [path]);
-          break;
-        default:
-          throw UnimplementedError('Unsupported platform: $type');
-      }
-    } catch (e) {
-      Logger.root.warning('reveal path: $path', e);
-    }
-  }
 }
 
 final isAndroid = Pfs.type == Pfs.android;
