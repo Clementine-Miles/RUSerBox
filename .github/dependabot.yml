@@ -1,13 +1,7 @@
 version: 2
 
-# One group per language, not per directory: `rust`, `flutter`, `web`. What a
-# review of a dependency bump needs is everything that moves together, and for
-# this repository that boundary is the toolchain — four npm directories are one
-# JavaScript upgrade, three of them linked to each other by `file:`.
-#
-# A group can only span the directories of a single `updates` entry, and an
-# entry is one ecosystem. So cargo, pub and npm are three entries and cannot be
-# fewer; `directories` is what lets the npm one cover all four at once.
+# One group per ecosystem (`rust`, `flutter`, `github-actions`): a review of
+# a dependency bump needs everything that moves together.
 #
 # `cooldown: default-days: 7` on each of them is the same week that
 # `minimumReleaseAge = 604800` in the maintainer's bunfig applies locally: a
@@ -45,29 +39,7 @@ updates:
         patterns:
           - "*"
 
-  # Every JavaScript directory in one entry, so a week's upgrade arrives as one
-  # PR. The website builds against packages/webui as a `file:` dependency.
-  #
-  # Each of these keeps a `package-lock.json`, and that is what makes any of it
-  # work: Dependabot writes a manifest and its lockfile together, and a
-  # `bun.lock` is not one it writes. With bun it bumped docs/package.json alone
-  # and CI's frozen install refused every such PR — see the `docs` job in
-  # analysis.yml.
-  - package-ecosystem: npm
-    directories:
-      - "/docs"
-      - "/website"
-      - "/packages/webui"
-    schedule:
-      interval: weekly
-    cooldown:
-      default-days: 7
-    groups:
-      web:
-        patterns:
-          - "*"
-
-  # Its own group for the same reason as the three above: the actions in a
+  # Its own group for the same reason as the two above: the actions in a
   # workflow are bumped for one reason at a time (a runner's Node version, most
   # of them), and a review that sees them together is the one that can tell.
   # Ungrouped, a single week's run opened four PRs against the same two files.
@@ -81,19 +53,3 @@ updates:
       github-actions:
         patterns:
           - "*"
-
-  # fl_pi_llm, the LLM layer shared with LLMBox, moves with its own repository
-  # rather than with a release: a bump is the submodule pointer following its
-  # `main` (the `branch` in .gitmodules). Only that submodule — the others are
-  # moved by hand, with the change that needs them. The shortest cooldown
-  # there is: the commits are this project's own, reviewed where they were
-  # made. Left unset it is not none but GitHub's default of 3 days, and 0 is
-  # not accepted (`default-days` is 1 to 90).
-  - package-ecosystem: gitsubmodule
-    directory: "/"
-    schedule:
-      interval: weekly
-    cooldown:
-      default-days: 1
-    allow:
-      - dependency-name: "packages/fl_pi_llm"

@@ -17,7 +17,7 @@ on:
         # Unknown names are refused rather than ignored — see `Check job
         # selection`. A typo that silently builds nothing looks exactly like a
         # workflow that is broken.
-        description: 'What to run: android,monitor (empty = all; monitor is verification only)'
+        description: 'What to run: android (empty = all)'
         required: false
         type: string
         default: ''
@@ -46,18 +46,10 @@ jobs:
       # the check) and then match nothing (it was not stripped afterwards),
       # skipping every job while reporting success.
       selected: ${{ steps.selection.outputs.selected }}
-      # What the artifacts are called, read from the one line that says so —
-      # `fl_build:` in pubspec.yaml. `fl_build` names the files it produces
-      # after it and the steps below name the files they publish, so a second
-      # copy here that drifted would publish a release whose asset paths match
-      # nothing, which `action-gh-release` reports as a warning and an empty
-      # release rather than as a failure.
+      # What the artifacts are called: BuildData.name.
       appName: ${{ steps.appName.outputs.name }}
       # The version every job names its artifacts after. Resolved once, here,
-      # because it was resolved in two jobs and used in six: Android, Linux and
-      # Windows renamed with an empty `BUILD_NUMBER`, so their globs looked for
-      # `*__*.apk` and their release paths for `v1.0.`, and
-      # `action-gh-release` reported a warning rather than a failure.
+      # so an empty value cannot reach an artifact name.
       buildNumber: ${{ steps.buildNumber.outputs.build }}
       # Whether this run publishes. `github.ref_type == 'tag'` alone was true
       # of a manual dispatch against a tag with the release box unticked, which
@@ -130,11 +122,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          known="android monitor"
-          # `monitor` verifies a cross-build and publishes nothing, so its own
-          # `if` refuses a release run. Selecting it for one would validate,
-          # match nothing and finish green having built nothing at all.
-          verify_only="monitor"
+          known="android"
+          verify_only=""
 
           if [[ "$IS_DISPATCH" != "true" || -z "${REQUESTED//[[:space:]]/}" ]]; then
             # A tag push, or a dispatch that named nothing: everything runs.
@@ -192,15 +181,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # `yq eval`, which is mikefarah's — the one on the Linux runner
-          # images, and the one the Flutter setup action calls the same way.
-          # It only installs its own for Windows, which is where it is missing.
-          name="$(yq eval '.fl_build.appName' pubspec.yaml)"
-          # An absent key reads back as the string `null`, and a release named
-          # after it would publish under `null_v1.0.<n>_arm64.apk` rather than
-          # fail.
-          if [[ -z "$name" || "$name" == 'null' ]]; then
-            echo "::error::pubspec.yaml has no fl_build.appName"
+          # BuildData.name, which build-android.sh names the APK after too.
+          name="$(sed -n -E 's/.*static const String name = "([^"]+)";/\1/p' lib/data/res/build_data.dart)"
+          if [[ -z "$name" ]]; then
+            echo "::error::BuildData.name not found in lib/data/res/build_data.dart"
             exit 1
           fi
           echo "name=$name" >> "$GITHUB_OUTPUT"
@@ -231,63 +215,8 @@ jobs:
           echo "release=$release" >> "$GITHUB_OUTPUT"
           echo "build $build, release $release"
 
-  verifyMonitor:
-    name: Verify monitor ${{ matrix.platform }}-${{ matrix.arch }}
-    if: >-
-      github.event_name == 'workflow_dispatch' && inputs.release != true
-      && contains(needs.reproducibilityCheck.outputs.selected, ',monitor,')
-    needs: reproducibilityCheck
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-            platform: linux
-            arch: amd64
-          - os: ubuntu-24.04-arm
-            target: aarch64-unknown-linux-musl
-            platform: linux
-            arch: arm64
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            platform: macos
-            arch: arm64
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            platform: macos
-            arch: amd64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            platform: windows
-            arch: amd64
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
-    env:
-      SQLX_OFFLINE: "true"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          lfs: true
-          submodules: true
-          persist-credentials: false
-      - name: Build (Linux)
-        if: matrix.platform == 'linux'
-        uses: ./.github/actions/monitor-linux-build
-        with:
-          target: ${{ matrix.target }}
-          profile: release
-      - name: Add Rust target
-        if: matrix.platform != 'linux'
-        run: rustup target add ${{ matrix.target }}
-      - name: Build
-        if: matrix.platform != 'linux'
-        shell: bash
-        run: cargo build -p server_box_monitor --release --target ${{ matrix.target }}
-
   buildAndroid:
-    name: Build Android (${{ matrix.abi }})
+    name: Build Android (arm64-v8a)
     if: >-
       github.ref_type == 'tag'
       || contains(needs.reproducibilityCheck.outputs.selected, ',android,')
@@ -296,25 +225,19 @@ jobs:
     # which only `v*` tags (created by admins alone, a ruleset) may use: a
     # workflow pushed to a branch cannot read it.
     environment: ${{ github.ref_type == 'tag' && 'release' || '' }}
-    # From pubspec.yaml's `fl_build:`, by way of the job above — see its
-    # `appName`
-    # output. Job level rather than workflow level because that is the
+    # BuildData.name, by way of the job above. Job level rather than workflow level because that is the
     # nearest scope an expression on `needs` can be written in.
     env:
       APP_NAME: ${{ needs.reproducibilityCheck.outputs.appName }}
       BUILD_NUMBER: ${{ needs.reproducibilityCheck.outputs.buildNumber }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # arm64-v8a is the only ABI shipped (docs/ANDROID.md).
     strategy:
-      fail-fast: false
       matrix:
         include:
           - abi: arm64
             target: android-arm64
-          - abi: arm
-            target: android-arm
-          - abi: amd64
-            target: android-x64
     permissions:
       contents: read
     steps:
@@ -329,8 +252,8 @@ jobs:
         uses: ./.github/actions/setup-flutter
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
-          distribution: "zulu"
-          java-version: "21"
+          distribution: "temurin"
+          java-version: "27"
       - name: Fix the Android build epoch
         shell: bash
         run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
@@ -338,11 +261,8 @@ jobs:
       - name: Fetch dependencies
         run: flutter pub get --enforce-lockfile
       # The script F-Droid runs, so what it rebuilds from this commit is this
-      # APK without its signature. `fl_build` ran a plain `flutter build apk`
-      # instead: no dev plugins pruned, the plugin registrant left at a path
-      # under `.dart_tool`, so `libapp.so` came out different from F-Droid's
-      # (#1274) and tied to this runner's checkout path. The script also
-      # patches jni and builds proot for arm64.
+      # APK without its signature. The script also patches jni and builds
+      # proot.
       - name: Build
         shell: bash
         run: scripts/release/build-fdroid.sh ${{ matrix.abi }}
@@ -364,12 +284,8 @@ jobs:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
         run: |
           set -euo pipefail
-          case "$ABI" in
-            arm64) unsigned=app-arm64-v8a-release-unsigned.apk ;;
-            arm) unsigned=app-armeabi-v7a-release-unsigned.apk ;;
-            amd64) unsigned=app-x86_64-release-unsigned.apk ;;
-            *) echo "::error::unknown ABI $ABI"; exit 1 ;;
-          esac
+          [ "$ABI" = arm64 ] || { echo "::error::only arm64 is shipped"; exit 1; }
+          unsigned=app-arm64-v8a-release-unsigned.apk
           unsigned="build/app/outputs/apk/release/$unsigned"
           out="build/app/outputs/flutter-apk/${APP_NAME}_v1.0.${BUILD_NUMBER}_${ABI}.apk"
 
@@ -414,7 +330,6 @@ jobs:
       # anywhere. The APK still builds, installs and runs — the rootfs entry
       # simply never appears. Checked here because nothing else would say so.
       - name: Check proot shipped
-        if: matrix.abi == 'arm64'
         shell: bash
         run: |
           shopt -s nullglob
@@ -426,6 +341,13 @@ jobs:
             unzip -l "$apk" | grep -q 'lib/arm64-v8a/libproot-loader.so' ||
               { echo "$apk carries proot but not its loader; entering the rootfs would be refused"; exit 1; }
           done
+      # ABI set, AArch64 ELF, 16 KB LOAD alignment, zip alignment, signature
+      # and version code (scripts/release/verify-apk.sh).
+      - name: Verify the APK
+        shell: bash
+        run: |
+          export PATH="$PATH:$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          scripts/release/verify-apk.sh "build/app/outputs/flutter-apk/${APP_NAME}_v1.0.${BUILD_NUMBER}_arm64.apk"
       # Each matrix leg names one exact APK. Besides making a missing ABI fail
       # at its source, this keeps the release build invocation identical to the
       # one F-Droid runs for that ABI.
@@ -457,7 +379,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-  # Publish only after all Android ABIs have built.
+  # Publish only after the Android build.
   publishRelease:
     name: Publish the release
     if: needs.reproducibilityCheck.outputs.isRelease == 'true'
@@ -484,7 +406,7 @@ jobs:
           pattern: ${{ env.APP_NAME }}-${{ env.BUILD_TAG }}-android-*
           path: assets
           merge-multiple: true
-      # Require all three APKs before staging the release.
+      # Require the APK before staging the release.
       - name: Check every expected asset arrived
         shell: bash
         run: |
@@ -492,8 +414,6 @@ jobs:
 
           expected=(
             "${APP_NAME}_${TAG}_arm64.apk"
-            "${APP_NAME}_${TAG}_arm.apk"
-            "${APP_NAME}_${TAG}_amd64.apk"
           )
 
           echo "collected:"
