@@ -1,9 +1,9 @@
 abstract final class Urls {
   static const myGithub = 'https://github.com/lollipopkit';
-  static const thisRepo = 'https://github.com/Clementine-Miles/ru_serbox';
+  static const thisRepo = 'https://github.com/Clementine-Miles/RUSerBox';
 
   static const githubReleasesApi =
-      'https://api.github.com/repos/Clementine-Miles/ru_serbox/releases';
+      'https://api.github.com/repos/Clementine-Miles/RUSerBox/releases';
   static const appHelp = '$thisRepo#help';
 
   /// Where a crash report goes.
