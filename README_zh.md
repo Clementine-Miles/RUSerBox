@@ -1,128 +1,20 @@
-简体中文 | [English](README.md)
+[English](README.md) | 简体中文
 
-<h2 align="center">Flutter Server Box</h2>
+# RUSerBox
 
-<div align="center">
-  <a href="https://discord.gg/SsVNbRhK7w"><img alt="discord" src="https://img.shields.io/badge/Discord-lpkt-purple"></a>
-  <a href="https://qm.qq.com/q/daCGa7eShG"><img alt="qq" src="https://img.shields.io/badge/QQ-群-pink"></a>
-  <a href="https://t.me/lpktg"><img alt="telegram" src="https://img.shields.io/badge/Telegram-lpktg-green"></a>
-  <a href="https://lollipopkit.com/donate"><img alt="donate" src="https://img.shields.io/badge/捐赠-我-pink"></a>
-</div>
+面向 Android（arm64-v8a）的 Linux 服务器管理应用：SSH 与 SFTP、带 Zellij
+持久会话的完整终端、本机 Shell 与 PRoot Linux 环境，以及实时服务器监控。
+界面由 Flutter 绘制；服务器命令、解析与原生逻辑由 Rust 负责；Kotlin 只做
+必要的 Android 集成。
 
-<p align="center">
-使用 Flutter+Rust 开发的 Linux, Unix, Windows 服务器工具箱，提供服务器状态图表和管理工具。
-<br>
-用户指南、架构说明和开发文档请参阅<a href="https://serverbox.lollipopkit.com/docs/">文档站</a>。
-</p>
+RUSerBox 由 [ServerBox](https://github.com/lollipopkit/flutter_server_box)
+精简而来：没有 AI/MCP 功能、桌面/iOS/Web 版本、Windows 服务器后端、
+RDP/VNC 查看器、桌面小部件和主题商店。
 
+- 安装：从 [Releases](https://github.com/Clementine-Miles/RUSerBox/releases)
+  下载 arm64 APK。应用 ID、数据与签名保持不变，可直接覆盖升级。
+- 要求：64 位 ARM（arm64-v8a，Armv8/Armv9）设备，Android 7.0 及以上。
+- 主题：内置 Gruvbox 与 Gruvbox Material（硬/中/软对比度），绿色或蓝色强调色，
+  浅色/深色/跟随系统。终端字体：Hack 或 JetBrainsMono Nerd Font。
 
-## 致谢
-
-特别感谢 <a href="https://github.com/TerminalStudio/dartssh2">dartssh2</a> & <a href="https://github.com/TerminalStudio/xterm.dart">xterm.dart</a>。
-感谢我的对象提供的 精神+经济 支持。
-感谢 <a href="https://openai.com">OpenAI</a> 赠送的六个月 ChatGPT Pro 20x 订阅。
-
-
-## 截屏
-
-<table>
-  <tr>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/home.jpg" alt="服务器列表"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/server-details.jpg" alt="服务器详情"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/terminal.jpg" alt="终端"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/files.jpg" alt="文件"></td>
-  </tr>
-</table>
-
-<details>
-<summary>另外 8 张</summary>
-<br>
-<table>
-  <tr>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/container.jpg" alt="容器"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/process.jpg" alt="进程"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/services.jpg" alt="服务"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/users.jpg" alt="用户"></td>
-  </tr>
-  <tr>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/agent.jpg" alt="Agent"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/bench.jpg" alt="基准测试"></td>
-    <td><img width="180px" loading="lazy" src="https://cdn.lollipopkit.com/serverbox/screenshot/iphone/virt.jpg" alt="虚拟化"></td>
-  </tr>
-</table>
-</details>
-
-
-## 安装
-
-| 平台 | 下载 |
-| --- | --- |
-| Android | [GitHub](https://github.com/Clementine-Miles/ru_serbox/releases) |
-
-请只从可信来源下载。
-
-## 特点
-
-**连接**
-
-- 支持 SSH 直连、经跳板机连接或使用 `ProxyCommand`；也可通过 [Monitor](https://serverbox.lollipopkit.com/docs/zh/advanced/monitor-agent/) 使用 HTTP 连接，适用于不希望暴露 SSH 端口的主机。
-- 在 Android 上可打开本机 shell，或安装 Linux 用户空间（[本机终端](https://serverbox.lollipopkit.com/docs/zh/advanced/local-terminal/)）。
-
-**查看状态**
-
-- CPU、内存、交换分区、磁盘、磁盘 I/O 和网络的实时与历史图表，以及传感器、GPU（NVIDIA、AMD）、电池和磁盘 S.M.A.R.T.。
-- 一览所有服务器，可按标签筛选，也可在[地球视图](https://serverbox.lollipopkit.com/docs/zh/advanced/globe/)中查看。
-- 推送提醒、[桌面小组件](https://serverbox.lollipopkit.com/docs/zh/advanced/widgets/)；App 关闭后，Monitor 仍会为这些功能提供支持。
-
-**管理服务器**
-
-- 完整的终端；[工作区](https://serverbox.lollipopkit.com/docs/zh/advanced/workspace/)支持分屏。
-- 通过 SFTP 或 SCP 浏览、上传、下载并直接编辑文件。
-- [RDP 和 VNC](https://serverbox.lollipopkit.com/docs/zh/advanced/remote-desktop/)，可以连服务器本身，也可以连它能访问到的其他桌面。
-- Docker 与 Podman、进程、systemd 服务、用户与用户组、防火墙规则（ufw、firewalld）、定时任务、端口转发和代码片段。
-- 管理 libvirt 和 Proxmox VE 上的虚拟机与容器，通过 Redfish 管理服务器的 [BMC](https://serverbox.lollipopkit.com/docs/zh/advanced/bmc/)。
-- 基准测试（YABS）和 iperf。
-- [AI Agent](https://serverbox.lollipopkit.com/docs/zh/advanced/agent/) 可协助管理服务器，并使用你选择的模型提供商、MCP server 和 skill。
-
-**个性化**
-
-- Gruvbox Material 和 Gruvbox 提供浅色和深色外观，并保留内置图标样式。
-- 生物识别应用锁；可将备份保存到 WebDAV，并使用你设置的密码加密。
-- Android 客户端支持 17 种语言。
-
-## 帮助
-
-- [ServerBox Monitor](https://github.com/Clementine-Miles/ru_serbox/tree/main/monitor) 是安装在你服务器上的服务端组件。不打开 ServerBox app 时仍需工作的功能都依赖它 —— **推送通知**和 **桌面小部件**；它同时也是添加服务器的第二种方式：app 可以经 HTTP 而不是 SSH 访问它，适用于不便暴露 SSH 端口的主机，并且图表在 app 首次连接前就已有历史数据。
-- **Agent skills：** 本仓库包含三份供 AI agent 使用的 skill。使用下面的命令添加：
-
-  ```sh
-  npx skills add Clementine-Miles/ru_serbox
-  ```
-
-  - [`serverbox-help`](.claude/skills/serverbox-help)：使用 App，以及部署和配置 Monitor，例如添加服务器、某台服务器缺少某个功能的原因、权限、告警、小部件和备份。App 内置的 Agent 自带这份 skill。
-  - [`serverbox-onboarding`](.claude/skills/serverbox-onboarding)：参与开发，包括搭建 Flutter + Rust + Node 开发环境、构建与测试，以及项目的工作原理。
-
-  它们的源文件都在本仓库中，安装前可以先读一读它们会告诉你的 Monitor 什么。
-
-提交 issue 前请确认：
-
-1. 使用 bug 报告模板提交。
-2. 确认问题确实由 ServerBox 引起。
-3. 欢迎具体、建设性的反馈。主观偏好，例如更喜欢其他 UI，可能不会被采纳。
-
-## 贡献
-
-[CONTRIBUTING.md](CONTRIBUTING.md) 说明了开发环境、commit 规范、提交前要跑的检查，以及翻译流程。
-
-贡献者需要签署一次 [CLA](CLA_zh.md)（[英文原文](CLA.md)，以英文为准）：在你的第一个 PR 下留一条评论即可。CLA 规定了贡献内容的分发授权。源码仍采用 AGPLv3，你保留自己贡献的版权。
-
-如果我忘记在贡献者列表中添加你的名字，请在你打开的 issue 或 PR 中添加评论让我知道，我会尽快添加。
-
-## 我的其他 App
-
-- [LLMBox](https://github.com/lollipopkit/llmbox)：OpenAI API 的第三方客户端。
-- [MFuse](https://mfuse.lollipopkit.com)：通过 File Provider 把 SFTP、S3、WebDAV 等挂载到 macOS 访达。
-
-## 证书
-
-`AGPL v3 lollipopkit & 所有贡献者`
+文档见 [docs/](docs/)。许可证：AGPL v3。

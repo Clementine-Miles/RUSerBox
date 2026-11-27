@@ -13,7 +13,7 @@ import 'package:material_ui/material_ui.dart';
 /// It also moves closing the menu off the action. Every entry used to begin
 /// with `context.popSheet()` — the boilerplate that, forgotten or written as
 /// `context.pop()`, closes the page instead (see the rule in the project's
-/// CLAUDE.md). Here the menu closes itself and then runs [onTap].
+/// docs/ARCHITECTURE.md). Here the menu closes itself and then runs [onTap].
 @immutable
 class ContextMenuAction {
   const ContextMenuAction({

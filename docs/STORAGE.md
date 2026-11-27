@@ -2,7 +2,7 @@
 
 One encrypted SQLite file, not Hive. `KvStore` in fl_lib is `sealed`, so a new key-value backend goes there as another `part of 'iface.dart'`, not in this repo.
 
-- **Two shapes, and which a store uses is a decision.** `setting` and `history` are rows in the shared `kv(store, key, value, updated_at)` table with JSON values — unrelated preferences with nothing queried by field, where adding one stays a one-line change. Everything with relations owns a table: `server`, `private_key`, `snippet`, `port_forward`, `conn_stat` and their children. The Agent's are fl_pi_llm's: its `llm`/`tool`/`memory`/`llmCredential`/`mcpSecret` kv stores sync (`SyncedStores.byName`); its `chats` store and chat files do not. Saved sudo passwords, key passphrases and the WebDAV the backup syncs to (`SyncRemotes`) are kv stores too (`secret.dart`); which remote syncs stays a device-local pref. **What syncs is grouped by `SyncCategory`** (`lib/core/sync/category.dart`), one switch per kind on each device; a record of a kind turned off is kept as it came (`sync_passed`) and carried on in this device's snapshots. Skills and finished benchmarks are records of their own (`SyncSkills`, `BenchmarkStore.c`), stamped by what changed (`SyncRecorder.stampChanged`), and go through the log syncs only.
+- **Two shapes, and which a store uses is a decision.** `setting` and `history` are rows in the shared `kv(store, key, value, updated_at)` table with JSON values — unrelated preferences with nothing queried by field, where adding one stays a one-line change. Everything with relations owns a table: `server`, `private_key`, `snippet`, `port_forward`, `conn_stat` and their children. The synced kv stores are listed in `SyncedStores.byName`. Saved sudo passwords, key passphrases and the WebDAV the backup syncs to (`SyncRemotes`) are kv stores too (`secret.dart`); which remote syncs stays a device-local pref. **What syncs is grouped by `SyncCategory`** (`lib/core/sync/category.dart`), one switch per kind on each device; a record of a kind turned off is kept as it came (`sync_passed`) and carried on in this device's snapshots. Finished benchmarks are records of their own (`BenchmarkStore.c`), stamped by what changed (`SyncRecorder.stampChanged`), and go through the log syncs only.
 - **Drift owns the DDL and only the DDL** (`lib/data/store/db.dart`). Queries are hand-written and synchronous because the UI reads a store while building, and converting ~100 call sites to Drift's async API would be the change rather than the schema. `SqliteDb` opens the connection, applies the cipher and the per-connection `foreign_keys` pragma, then `createTables` takes the live handle.
   - `AppDb.schemaVersion` is 1 and stays there. Versioning is `SchemaVersion`, because the steps that matter read Hive boxes and remap ids — outside what a Drift migration can express.
 - **A primary key is an id, never something the user typed.** A private key keyed by its name detached every server pointing at it on rename; a snippet was keyed by its name too. Both have generated ids and a `UNIQUE` name column now, so a rename is an `UPDATE` and a collision surfaces as `DuplicateNameException` from `EntityStore.put` rather than in whichever dialog remembered to check.
@@ -23,3 +23,47 @@ One encrypted SQLite file, not Hive. `KvStore` in fl_lib is `sealed`, so a new k
 - **A schema step is three edits**: the class, `SchemaVersion.current` (`lib/data/store/schema.dart`), and `kSchemaMigrations` (`lib/data/store/migrations/all.dart`). Missing the second leaves every install on the old version with a green suite; missing the third throws `Missing schema migration from vN` at launch on a user's device. Neither is visible in the step's own test, which calls `apply()` directly.
 - **A step says whether the build before it still reads its result** (`SchemaMigration.olderBuildsRead`): true only for a column added nullable or with a default. The build that migrates records the oldest such reader (`schemaMinReader`); a build from `minReader` up to `current` opens storage a newer one wrote instead of refusing it, migrates nothing and syncs nothing (`SchemaVersion.readsAhead`): a sync op is a whole record, so one sent without the newer fields would clear them on every peer.
 - **Changing a table *constraint* is a create-copy-drop-rename, not an `ALTER`** — see `m017_both_transports.dart`. `server` is the parent of six `ON DELETE CASCADE` tables, so `foreign_keys` must be off across the drop (or it takes every tag, jump, env and identity file with it) and on again after (or every cascade is disarmed for the connection's life). `PRAGMA foreign_keys` is a no-op inside a transaction, so set it outside one. `legacy_alter_table` is the other half: without it the rename rewrites children's foreign keys to point at a table about to not exist.
+
+## Retired features (schema v44, `m043_retire_removed_features.dart`)
+
+Features removed from this fork leave stored data that older releases wrote.
+The policy: **active data is deleted locally, history is not rewritten, and
+nothing is propagated or reactivated.**
+
+- **AI / Agent / MCP**: the kv stores `chats`, `llm`, `tool`, `memory`,
+  `llmCredential` (provider keys) and `mcpSecret` (MCP headers), the legacy
+  `pi_chunks` table, and their `sync_record` / `sync_passed` stamps (and the
+  skills collection's) are deleted by the v44 step. The setting keys
+  (`agentLocalExec`, `agentRedact*`, `agentShell`, `askAi`) are dropped by
+  `SettingStore.removeRetiredKeys`, which also runs after a restore.
+- **Remote desktop (RDP/VNC)**: the `remote_desktop_profile` table (saved
+  desktop passwords), its index, tombstones and stamps are dropped by the same
+  step; its setting keys are retired. Drift no longer declares the table, so a
+  fresh database never has it; m024 still creates it on the upgrade path so
+  that later released steps run unchanged.
+- **Home-screen widgets**: `autoUpdateHomeWidget` is retired; the Android
+  side deletes the widget's shared preferences and Keystore key on launch
+  (`RetiredWidgetData`), and the app revokes the `widget:<id>` Monitor tokens
+  once, best effort (`RetiredWidgetTokens`).
+- **Windows servers**: kept. `SystemType.windows` stays a valid stored
+  value; such a server is shown as unsupported and is never sent a command.
+  Its credentials and keys are untouched.
+- **Themes and fonts**: `appThemePreset` keeps `original`/`material`; any
+  other value (a store theme id, AMOLED) reads as Gruvbox Material. A stored
+  retired terminal font reads as Hack.
+- **Enum positions**: home tabs and the server function row resolve legacy
+  integers through frozen tables (`AppTab._legacyIndexNames`,
+  `ServerFuncBtn.currentLayoutIndexNames`, the Hive frozen adapters), so a
+  removed entry resolves to nothing rather than re-pointing its neighbours.
+
+Sync and backup: no tombstone is written for retired data and no op is sent,
+so peers still on an older build keep their own copies and are not told to
+delete anything. An op for a retired collection arriving from such a peer is
+not kept by this build (`SyncRecords.keeps`), and a backup's AI stores,
+`remoteDesktopProfiles` and retired settings are ignored on restore (or
+dropped again by `removeRetiredKeys`).
+
+The step is irreversible and `olderBuildsRead` is false: a build older than
+v44 refuses the migrated database instead of reading it half-way. The
+supported upgrade path is every released ServerBox Android build, including
+Hive-era installs (`HiveImport`, kept).

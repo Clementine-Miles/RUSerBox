@@ -262,7 +262,7 @@ extension _Actions on _ServerEditPageState {
       reconnects: false,
     );
     // The dialog answers; this page acts on the answer and this page is what
-    // holds the field — see the dialog rules in CLAUDE.md
+    // holds the field — see the dialog rules in docs/ARCHITECTURE.md
     if (!accepted || !mounted) return null;
     return info.fingerprint;
   }
@@ -355,7 +355,7 @@ extension _Actions on _ServerEditPageState {
 
   Future<void> _onTapForgetPveCert() async {
     // The dialog answers; this page clears the field it holds — see the
-    // dialog rules in CLAUDE.md.
+    // dialog rules in docs/ARCHITECTURE.md.
     final ok = await context.showSheet<bool>(
       title: l10n.pveCertForget,
       child: Text(l10n.pveCertForgetTip),

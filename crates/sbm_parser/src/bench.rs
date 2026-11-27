@@ -10,7 +10,7 @@
 //!
 //! The bytes are *not* here. The script is an asset (`assets/yabs.b64`,
 //! base64: App Store validation refuses a bundled file that reads as an
-//! unsigned script — see `lib/data/model/server/benchmark/CLAUDE.md`) and
+//! unsigned script — see `docs/notes/benchmark.md`) and
 //! whoever ships it
 //! loads it: the app through `rootBundle`, the agent through `include_str!`.
 //! This module is the command layer, and [`decode_asset`] the one decoder each

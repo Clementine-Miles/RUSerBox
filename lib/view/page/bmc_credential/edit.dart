@@ -185,7 +185,7 @@ extension on _BmcCredentialEditPageState {
 
     await _notifier.delete(existing);
     // The page is closed by the code that awaited the dialog, on the page's own
-    // navigator — see the dialog rules in CLAUDE.md.
+    // navigator — see the dialog rules in docs/ARCHITECTURE.md.
     if (mounted) context.pop();
   }
 }
