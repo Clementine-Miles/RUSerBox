@@ -3,7 +3,7 @@
 # the file $SBX_KEYSTORE, removed afterwards, and its passwords and alias as
 # SBX_KEYSTORE_PASSWORD, SBX_KEY_PASSWORD and SBX_KEY_ALIAS.
 #
-#   scripts/release/android-signing.sh dart run fl_build -p android
+#   scripts/release/android-signing.sh flutter build apk ...   (see build-android.sh)
 #
 # CI signs in with OP_SERVICE_ACCOUNT_TOKEN; elsewhere `op` asks. A build
 # signed with the debug key, or not at all, runs without it.

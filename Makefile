@@ -103,7 +103,7 @@ gen-proto:
 		protoc --dart_out=lib/src/proto -I third_party/proto third_party/proto/tombstone.proto
 
 build build-android:
-	scripts/release/android-signing.sh $(DART) run fl_build -p android
+	scripts/release/build-android.sh
 
 clean:
 	$(FLUTTER) clean

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:computer/computer.dart';
 import 'package:dartssh2/dartssh2.dart';
 import 'package:fl_lib/fl_lib.dart';
 import 'package:fl_tty/fl_tty.dart';
@@ -433,11 +432,6 @@ Future<void> _startBackgroundServices() async {
       })(),
     );
   }
-
-  // Only for fl_lib's editor, the last user of the pool; this app's own
-  // background work goes through `compute`.
-  // TODO: drop with the `computer` dependency once fl_lib's editor moves off.
-  await Computer.shared.turnOn(workersCount: 1);
 }
 
 /// The storage layout brought up to this build's, before any provider loads.

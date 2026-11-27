@@ -14,14 +14,8 @@ cd "$REPO_ROOT"
 # shellcheck source=android-build-env.sh
 source "$REPO_ROOT/scripts/release/android-build-env.sh"
 
-variant="${1:-all}"
-case "$variant" in
-  all) target_args=() ;;
-  arm64) target_args=(--target-platform=android-arm64) ;;
-  arm) target_args=(--target-platform=android-arm) ;;
-  amd64) target_args=(--target-platform=android-x64) ;;
-  *) echo "usage: $0 [all|arm64|arm|amd64]" >&2; exit 2 ;;
-esac
+# arm64-v8a is the only ABI shipped.
+[ "$#" -eq 0 ] || [ "$1" = arm64 ] || { echo "usage: $0 [arm64]" >&2; exit 2; }
 
 [ ! -e "$FDROID_CACHE_DIR" ] || {
   echo "prepared build cache already exists: $FDROID_CACHE_DIR" >&2
@@ -41,12 +35,10 @@ rustup run "$rust_toolchain" cargo fetch \
   --locked \
   --manifest-path crates/sbm_ffi/Cargo.toml
 scripts/release/patch-jni-build-id.sh
-if [ "$variant" = all ] || [ "$variant" = arm64 ]; then
-  # Ahead of the build, with the pinned NDK: fl_tty's hook then takes it from
-  # packages/fl_tty/build/proot-android/out rather than building it itself.
-  PROOT_NDK_VERSION="$(tr -d '[:space:]' < android/ndk-version.txt)" \
-    packages/fl_tty/scripts/build-proot-android.sh
-fi
+# Ahead of the build, with the pinned NDK: fl_tty's hook then takes it from
+# packages/fl_tty/build/proot-android/out rather than building it itself.
+PROOT_NDK_VERSION="$(tr -d '[:space:]' < android/ndk-version.txt)" \
+  packages/fl_tty/scripts/build-proot-android.sh
 
 # Refresh Flutter's Android metadata after `pub get`, then remove dev-only
 # plugins before Gradle configures the release. The complete build below
@@ -64,7 +56,6 @@ dart --packages="$REPO_ROOT/scripts/release/empty-package-config.json" \
 # from source.
 flutter build apk \
   --release \
-  --split-per-abi \
   --no-pub \
-  "${target_args[@]}"
+  --target-platform=android-arm64
 flutter clean

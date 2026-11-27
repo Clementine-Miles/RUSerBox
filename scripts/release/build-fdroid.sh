@@ -23,30 +23,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-variant="${1:-all}"
-case "$variant" in
-  all)
-    target_args=()
-    expected_apk_names=(
-      app-arm64-v8a-release-unsigned.apk
-      app-armeabi-v7a-release-unsigned.apk
-      app-x86_64-release-unsigned.apk
-    )
-    ;;
-  arm64)
-    target_args=(--target-platform=android-arm64)
-    expected_apk_names=(app-arm64-v8a-release-unsigned.apk)
-    ;;
-  arm)
-    target_args=(--target-platform=android-arm)
-    expected_apk_names=(app-armeabi-v7a-release-unsigned.apk)
-    ;;
-  amd64)
-    target_args=(--target-platform=android-x64)
-    expected_apk_names=(app-x86_64-release-unsigned.apk)
-    ;;
-  *) echo "usage: $0 [all|arm64|arm|amd64]" >&2; exit 2 ;;
-esac
+# arm64-v8a is the only ABI shipped.
+[ "$#" -eq 0 ] || [ "$1" = arm64 ] || { echo "usage: $0 [arm64]" >&2; exit 2; }
+expected_apk_names=(app-release-unsigned.apk)
 
 if [ "${FDROID_OFFLINE:-false}" = true ]; then
   # The hook runs cargo with hooks_runner's environment allowlist, so
@@ -92,12 +71,10 @@ else
   flutter pub get --enforce-lockfile
 fi
 scripts/release/patch-jni-build-id.sh
-if [ "$variant" = all ] || [ "$variant" = arm64 ]; then
-  # Ahead of the build, with the pinned NDK: fl_tty's hook then takes it from
-  # packages/fl_tty/build/proot-android/out rather than building it itself.
-  PROOT_NDK_VERSION="$(tr -d '[:space:]' < android/ndk-version.txt)" \
-    packages/fl_tty/scripts/build-proot-android.sh
-fi
+# Ahead of the build, with the pinned NDK: fl_tty's hook then takes it from
+# packages/fl_tty/build/proot-android/out rather than building it itself.
+PROOT_NDK_VERSION="$(tr -d '[:space:]' < android/ndk-version.txt)" \
+  packages/fl_tty/scripts/build-proot-android.sh
 
 # Refresh Flutter's Android metadata after `pub get`, then remove dev-only
 # plugins before Gradle configures the release. The final assemble target
@@ -112,8 +89,7 @@ rm -rf build/app/outputs/apk/release build/app/outputs/flutter-apk
 flutter build apk \
   --no-pub \
   --release \
-  --split-per-abi \
-  "${target_args[@]}"
+  --target-platform=android-arm64
 
 mapfile -t apks < <(find build/app/outputs/apk/release -maxdepth 1 \
   -type f -name '*-release-unsigned.apk' -print | sort)
