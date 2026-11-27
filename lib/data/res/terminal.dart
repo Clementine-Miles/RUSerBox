@@ -1,5 +1,6 @@
 import 'package:fl_lib/fl_lib.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:server_box/data/res/gruvbox.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:xterm/ui.dart';
 
@@ -46,38 +47,52 @@ abstract final class TerminalLook {
         _ => context.isDark,
       };
 
+  /// The terminal's colours from the active Gruvbox variant.
+  ///
+  /// The normal ANSI colours are each family's standard terminal set
+  /// (classic Gruvbox's neutral tones, Gruvbox Material's own); the bright
+  /// ones are the family's anchors. Default foreground and background are
+  /// the variant's surface pair, and the selection its accent container. A
+  /// program's own 24-bit colours are drawn as sent: only the 16-colour
+  /// table and the defaults come from here.
   static TerminalTheme themeOf(BuildContext context) {
-    final palette = Stores.setting.appThemePreset.fetch().palette(
-      isDark(context) ? Brightness.dark : Brightness.light,
-    );
-    final background = Color(palette.background);
-    final foreground = Color(palette.foreground);
-    final ansi = palette.ansi;
+    final brightness = isDark(context) ? Brightness.dark : Brightness.light;
+    final theme = Stores.setting.appTheme;
+    final c = theme.colors(brightness);
+    final dark = brightness == Brightness.dark;
+    final classic = theme.family == GruvboxFamily.gruvbox;
+    // Classic Gruvbox's terminal palette: the "neutral" ANSI tones, the same
+    // in light and dark, with the faded anchors as the bright half in light.
+    const neutral = [0xFFCC241D, 0xFF98971A, 0xFFD79921, 0xFF458588, 0xFFB16286, 0xFF689D6A];
+    final normal = classic
+        ? [for (final v in neutral) Color(v)]
+        : [c.red, c.green, c.yellow, c.blue, c.purple, c.aqua];
+    final bright = [c.red, c.green, c.yellow, c.blue, c.purple, c.aqua];
     return TerminalTheme(
-      cursor: foreground,
-      selectionCursor: Color(palette.blue),
-      selection: Color(palette.raised),
-      foreground: foreground,
-      background: background,
-      searchHitBackground: Color(palette.yellow),
-      searchHitBackgroundCurrent: Color(palette.green),
-      searchHitForeground: background,
-      black: const Color(0xFF282828),
-      red: Color(ansi?[0] ?? palette.red),
-      green: Color(ansi?[1] ?? palette.green),
-      yellow: Color(ansi?[2] ?? palette.yellow),
-      blue: Color(ansi?[3] ?? palette.blue),
-      magenta: Color(ansi?[4] ?? palette.purple),
-      cyan: Color(ansi?[5] ?? palette.aqua),
-      white: const Color(0xFFEBDBB2),
+      cursor: c.foreground,
+      selectionCursor: c.accent,
+      selection: c.selection,
+      foreground: c.foreground,
+      background: c.background,
+      searchHitBackground: c.yellow,
+      searchHitBackgroundCurrent: c.orange,
+      searchHitForeground: c.background,
+      black: dark ? const Color(0xFF282828) : const Color(0xFFFBF1C7),
+      red: normal[0],
+      green: normal[1],
+      yellow: normal[2],
+      blue: normal[3],
+      magenta: normal[4],
+      cyan: normal[5],
+      white: dark ? const Color(0xFFA89984) : const Color(0xFF7C6F64),
       brightBlack: const Color(0xFF928374),
-      brightRed: Color(palette.red),
-      brightGreen: Color(palette.green),
-      brightYellow: Color(palette.yellow),
-      brightBlue: Color(palette.blue),
-      brightMagenta: Color(palette.purple),
-      brightCyan: Color(palette.aqua),
-      brightWhite: const Color(0xFFFBF1C7),
+      brightRed: bright[0],
+      brightGreen: bright[1],
+      brightYellow: bright[2],
+      brightBlue: bright[3],
+      brightMagenta: bright[4],
+      brightCyan: bright[5],
+      brightWhite: dark ? const Color(0xFFEBDBB2) : const Color(0xFF3C3836),
     );
   }
 }

@@ -34,6 +34,7 @@ import 'package:server_box/data/model/terminal/typeface.dart';
 import 'package:server_box/data/provider/app_providers.dart';
 import 'package:server_box/data/provider/store_reload.dart';
 import 'package:server_box/data/res/build_data.dart';
+import 'package:server_box/data/res/gruvbox.dart';
 import 'package:server_box/data/res/misc.dart';
 import 'package:server_box/data/store/migrations/all.dart';
 import 'package:server_box/data/store/migrations/build_features.dart';
@@ -194,6 +195,7 @@ Future<void> _initApp() async {
   // when that page asks for it.
   registerDistMarkLicenses();
   TerminalTypeface.registerLicenses();
+  GruvboxTheme.registerLicenses();
   await _initData();
   // After the settings are open, and before the first frame is drawn with a
   // preference it has not read.

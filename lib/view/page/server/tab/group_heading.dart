@@ -83,11 +83,11 @@ class ServerGroupHeading extends ConsumerWidget {
           Text('${ids.length}', style: UIs.text11Grey),
           if (over > 0) ...[
             const SizedBox(width: 7),
-            const Icon(Icons.warning_amber, size: 13, color: StatePalette.warn),
+            Icon(Icons.warning_amber, size: 13, color: StatePalette.warn),
             const SizedBox(width: 3),
             Text(
               '$over',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 height: 1,
                 color: StatePalette.warn,

@@ -368,7 +368,7 @@ class _UntestedNotice extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
+            Icon(
               Icons.info_outline,
               size: 18,
               color: StatePalette.warn,

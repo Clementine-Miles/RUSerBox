@@ -9,6 +9,7 @@ import 'package:server_box/core/service/diagnostics_upload.dart';
 import 'package:server_box/data/res/app_theme.dart';
 import 'package:server_box/data/res/build_data.dart';
 import 'package:server_box/data/res/chart_palette.dart';
+import 'package:server_box/data/res/gruvbox.dart';
 import 'package:server_box/data/res/url.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/generated/l10n/l10n.dart';
@@ -54,13 +55,16 @@ class _MyAppState extends State<MyApp> {
       listenable: Listenable.merge([
         RNodes.app,
         settings.appThemePreset.listenable(),
+        settings.appThemeAccent.listenable(),
+        settings.appThemeContrast.listenable(),
         settings.themeMode.listenable(),
         settings.locale.listenable(),
       ]),
       builder: (context, _) {
-        final theme = settings.appThemePreset.fetch();
+        final theme = settings.appTheme;
         return _buildApp(
           context,
+          theme: theme,
           light: buildAppTheme(theme, Brightness.light),
           dark: buildAppTheme(theme, Brightness.dark),
         );
@@ -70,6 +74,7 @@ class _MyAppState extends State<MyApp> {
 
   Widget _buildApp(
     BuildContext ctx, {
+    required GruvboxTheme theme,
     required ThemeData light,
     required ThemeData dark,
   }) {
@@ -91,7 +96,7 @@ class _MyAppState extends State<MyApp> {
         final accent = Theme.of(ctx).colorScheme.primary;
         UIs.colorSeed = accent;
         UIs.primaryColor = accent;
-        ChartPalette.resolve(accent, dark: ctx.isDark);
+        ChartPalette.resolve(theme, dark: ctx.isDark);
         // Above everything that reads the padding, toasts included — see
         // [WindowCornerInsets].
         final content = WindowCornerInsets(

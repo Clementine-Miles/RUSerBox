@@ -26,8 +26,8 @@ class RescueApp extends StatelessWidget {
       localeListResolutionCallback: LocaleUtil.resolve,
       // The system's, since the stored preference is in the database.
       themeMode: ThemeMode.system,
-      theme: buildAppTheme(Gruvbox.material, Brightness.light),
-      darkTheme: buildAppTheme(Gruvbox.material, Brightness.dark),
+      theme: buildAppTheme(const GruvboxTheme(), Brightness.light),
+      darkTheme: buildAppTheme(const GruvboxTheme(), Brightness.dark),
       // The other half of it: `libL10n` is a global that only this call
       // replaces, and `MyApp` makes it from its own home builder.
       home: Builder(

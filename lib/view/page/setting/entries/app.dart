@@ -30,30 +30,14 @@ extension _App on _AppSettingsPageState {
   }
 
   List<SettingsGroup> _buildAppearance() {
-    final palette = _setting.appThemePreset;
     final iconStyle = _setting.appIconStyle;
     return [
       SettingsGroup(libL10n.theme, [
         SettingsRow(libL10n.themeMode, () => const ThemeModeTile()),
         SettingsRow(
           libL10n.appearancePreset,
-          () => ValBuilder(
-            listenable: palette.listenable(),
-            builder: (value) => ListTile(
-              leading: const Icon(Icons.palette_outlined),
-              title: Text(libL10n.appearancePreset),
-              trailing: Text(value.label, style: UIs.text15),
-              onTap: () async {
-                final picked = await context.showPickSingleSheet(
-                  title: libL10n.appearancePreset,
-                  items: Gruvbox.values,
-                  display: (theme) => theme.label,
-                  initial: value,
-                );
-                if (picked != null) palette.put(picked);
-              },
-            ),
-          ),
+          () => const _GruvboxPicker(),
+          keywords: 'gruvbox material green blue hard medium soft contrast accent',
         ),
         SettingsRow(
           libL10n.appearanceIcons,
@@ -560,6 +544,100 @@ extension _App on _AppSettingsPageState {
         darkTheme: HighlightTheme.gruvbox_dark,
         fontFamily: editorFont.isEmpty ? null : editorFont,
       ),
+    );
+  }
+}
+
+/// The three theme choices: family, accent, and (Gruvbox Material only)
+/// background contrast. Each is its own setting, so changing one never moves
+/// the others or the light/dark mode.
+class _GruvboxPicker extends StatelessWidget {
+  const _GruvboxPicker();
+
+  @override
+  Widget build(BuildContext context) {
+    final setting = Stores.setting;
+    return ListenableBuilder(
+      listenable: Listenable.merge([
+        setting.appThemePreset.listenable(),
+        setting.appThemeAccent.listenable(),
+        setting.appThemeContrast.listenable(),
+      ]),
+      builder: (context, _) {
+        final family = setting.appThemePreset.fetch();
+        final accent = setting.appThemeAccent.fetch();
+        final contrast = setting.appThemeContrast.fetch();
+        final colors = setting.appTheme.colors(Theme.of(context).brightness);
+        Widget swatch(Color c) => Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+        );
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(13, 9, 13, 9),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 9,
+            children: [
+              Row(
+                spacing: 9,
+                children: [
+                  const Icon(Icons.palette_outlined),
+                  Expanded(child: Text(libL10n.appearancePreset)),
+                  for (final c in [
+                    colors.red,
+                    colors.orange,
+                    colors.yellow,
+                    colors.green,
+                    colors.aqua,
+                    colors.blue,
+                    colors.purple,
+                  ])
+                    swatch(c),
+                ],
+              ),
+              SegmentedButton<GruvboxFamily>(
+                showSelectedIcon: false,
+                segments: [
+                  for (final f in GruvboxFamily.values)
+                    ButtonSegment(value: f, label: Text(f.label)),
+                ],
+                selected: {family},
+                onSelectionChanged: (v) => setting.appThemePreset.put(v.single),
+              ),
+              SegmentedButton<GruvboxAccent>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(
+                    value: GruvboxAccent.green,
+                    icon: swatch(colors.green),
+                    label: const Text('Green'),
+                  ),
+                  ButtonSegment(
+                    value: GruvboxAccent.blue,
+                    icon: swatch(colors.blue),
+                    label: const Text('Blue'),
+                  ),
+                ],
+                selected: {accent},
+                onSelectionChanged: (v) => setting.appThemeAccent.put(v.single),
+              ),
+              if (family.hasContrast)
+                SegmentedButton<GruvboxContrast>(
+                  showSelectedIcon: false,
+                  segments: const [
+                    ButtonSegment(value: GruvboxContrast.soft, label: Text('Soft')),
+                    ButtonSegment(value: GruvboxContrast.medium, label: Text('Medium')),
+                    ButtonSegment(value: GruvboxContrast.hard, label: Text('Hard')),
+                  ],
+                  selected: {contrast},
+                  onSelectionChanged: (v) =>
+                      setting.appThemeContrast.put(v.single),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

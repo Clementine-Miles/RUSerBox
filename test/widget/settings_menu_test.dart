@@ -299,13 +299,18 @@ void main() {
 
     expect(find.widgetWithText(ListTile, libL10n.themeMode), findsOneWidget);
     expect(find.widgetWithText(ListTile, libL10n.appearanceIcons), findsOneWidget);
-    final palette = find.widgetWithText(ListTile, libL10n.appearancePreset);
-    expect(find.descendant(of: palette, matching: find.text('Gruvbox Material')), findsOneWidget);
-    await tester.tap(palette);
-    await settle(tester);
+    expect(find.text(libL10n.appearancePreset), findsOneWidget);
+    // No contrast choice for classic Gruvbox; Material offers three.
+    expect(find.text('Hard'), findsOneWidget);
     await tester.tap(find.text('Gruvbox').last);
     await settle(tester);
-    expect(Stores.setting.appThemePreset.fetch(), Gruvbox.original);
+    expect(Stores.setting.appThemePreset.fetch(), GruvboxFamily.gruvbox);
+    expect(find.text('Hard'), findsNothing);
+    final mode = Stores.setting.themeMode.fetch();
+    await tester.tap(find.text('Green'));
+    await settle(tester);
+    expect(Stores.setting.appThemeAccent.fetch(), GruvboxAccent.green);
+    expect(Stores.setting.themeMode.fetch(), mode, reason: 'mode untouched');
   });
 
   testWidgets('guest consoles are under Server, not a subject of their own', (

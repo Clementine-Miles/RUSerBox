@@ -1,38 +1,35 @@
 import 'package:flutter/painting.dart';
+import 'package:material_ui/material_ui.dart' show Brightness;
 import 'package:server_box/data/res/chart_series.dart';
+import 'package:server_box/data/res/gruvbox.dart';
 
-/// The colours a reading is drawn in, wherever it is drawn.
+/// The colours a reading is drawn in, wherever it is drawn: the active Gruvbox
+/// variant's semantic hues (CPU in the accent, memory purple, disk reads aqua
+/// and writes yellow, download green — blue under the green accent — and
+/// upload orange), so a reading keeps its colour across every chart and card.
 ///
-/// The active theme's accent provides the seed for [SeriesPalette]. Each
-/// chart series also has a label or number beside its color.
-///
-/// **Nine kinds share six series**, the way they already shared the fixed
-/// palette's hues: swap, the network total and the battery were one teal,
-/// disk usage and disk I/O one amber, the GPU and disk reads one purple. Two
-/// readings never drawn on the same chart can say which they are with the same
-/// colour. [SeriesPalette] holds six because six is what fits around the wheel
-/// at the 60° its rules ask for.
-///
-/// [resolve] is what keeps this current — see its own note.
+/// [resolve] is called by the app with the active variant before pages that
+/// display readings are built.
 abstract final class ChartPalette {
-  /// What the app opens with, and what it falls back to if the theme has not
-  /// been read yet: the default app theme.
-  static const _fallbackSeed = Color(0xFF7DAEA3);
+  static GruvboxColors _colors = const GruvboxTheme().colors(Brightness.dark);
+  static SeriesPalette _series = _seriesOf(_colors);
 
-  static SeriesPalette _series = SeriesPalette.fan(_fallbackSeed, dark: true);
-  static Color? _seed;
-  static bool? _dark;
+  static SeriesPalette _seriesOf(GruvboxColors c) => SeriesPalette.fixed([
+    c.cpu,
+    c.memory,
+    c.diskRead,
+    c.diskWrite,
+    c.netDownload,
+    c.netUpload,
+  ]);
 
-  /// Works the six out again, if either of the two things they depend on has
-  /// changed.
-  ///
-  /// The app resolves the palette from the active color scheme before building
-  /// pages that display readings.
-  static void resolve(Color seed, {required bool dark}) {
-    if (_seed == seed && _dark == dark) return;
-    _seed = seed;
-    _dark = dark;
-    _series = SeriesPalette.fan(seed, dark: dark);
+  /// Takes the colours of [theme] at [brightness], if they changed.
+  static void resolve(GruvboxTheme theme, {required bool dark}) {
+    final brightness = dark ? Brightness.dark : Brightness.light;
+    if (_colors.theme == theme && _colors.brightness == brightness) return;
+    _colors = theme.colors(brightness);
+    _series = _seriesOf(_colors);
+    StatePalette._colors = _colors;
   }
 
   /// The six as they stand, for a caller that wants them in order.
@@ -100,28 +97,25 @@ abstract final class ChartPalette {
   static Color get battery => _series.netRx;
 
   /// What a reading over `kServerAlertPercent` is drawn in — see
-  /// [StatePalette.warn], which is the same amber for the same reason.
-  static const warn = StatePalette.warn;
+  /// [StatePalette.warn].
+  static Color get warn => StatePalette.warn;
 }
 
-/// What a thing that is either working or not is drawn in.
-///
-/// Four states, and the same four wherever the question is asked: a server in
-/// a list, a systemd unit, a process, a reading against its threshold. Fixed
-/// where [ChartPalette]'s six are derived, because these carry meaning rather
-/// than emphasis. "Running" has to stay recognisable whatever seed the user picked,
-/// and a red that moved with the theme would be a warning nobody could learn.
-/// Kept beside the chart colours because the two are read together on every
-/// card.
+/// What a thing that is either working or not is drawn in: the same four
+/// states wherever the question is asked (a server in a list, a systemd unit,
+/// a process, a reading against its threshold), in the variant's own green,
+/// yellow, red and gray.
 abstract final class StatePalette {
-  static const running = Color(0xFF22C55E);
+  static GruvboxColors _colors = const GruvboxTheme().colors(Brightness.dark);
+
+  static Color get running => _colors.success;
 
   /// Starting, stopping, or a reading that has crossed its line: something to
   /// look at rather than something that has failed.
-  static const warn = Color(0xFFF59E0B);
+  static Color get warn => _colors.warning;
 
-  static const failed = Color(0xFFEF4444);
+  static Color get failed => _colors.danger;
 
   /// Present and doing nothing, which includes a server nobody has connected.
-  static const idle = Color(0xFF9E9E9E);
+  static Color get idle => _colors.idle;
 }
