@@ -51,10 +51,9 @@ void main() {
     expect(await framesOf(data), [monitorWsMaxFrameBytes, monitorWsMaxFrameBytes, 1]);
   });
 
+  // The agent's `MAX_FRAME` (4 MiB) in the Monitor's `api/ws/upgrade.rs`;
+  // the server source is no longer in this repository.
   test('the limit is the agent\'s', () {
-    final upgrade = File('monitor/src/api/ws/upgrade.rs').readAsStringSync();
-    final shift = RegExp(r'pub const MAX_FRAME: usize = 4 << 20;').hasMatch(upgrade);
-    expect(shift, isTrue, reason: 'monitor/src/api/ws/upgrade.rs changed its MAX_FRAME');
     expect(monitorWsMaxFrameBytes, 4 << 20);
   });
 

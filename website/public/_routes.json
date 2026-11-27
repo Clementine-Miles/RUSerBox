@@ -1,9 +1,0 @@
-{
-  "version": 1,
-  "include": [
-    "/",
-    "/docs",
-    "/docs/"
-  ],
-  "exclude": []
-}
