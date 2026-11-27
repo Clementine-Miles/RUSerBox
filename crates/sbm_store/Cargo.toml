@@ -1,0 +1,21 @@
+[package]
+name = "sbm_store"
+version = "0.1.0"
+edition = "2024"
+description = "The app's encrypted SQLite store (SQLite3MultipleCiphers), schema-compatible with the last Flutter release"
+license = "AGPL-3.0-or-later"
+publish = false
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+getrandom = "0.4"
+zeroize = "1.9"
+
+[build-dependencies]
+cc = "1"
+sqlite3mc-src = "=207.1.0"
+
+[dev-dependencies]
+tempfile = "3"
