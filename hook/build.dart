@@ -1,26 +1,30 @@
 import 'dart:io';
 
+import 'package:code_assets/code_assets.dart';
 import 'package:flutter_rust_bridge_hooks/flutter_rust_bridge_hooks.dart';
 
 import 'rust_build_environment.dart';
 
-/// Builds `crates/sbm_ffi` and hands the result to the Dart/Flutter SDK as a
-/// code asset.
+/// Builds `crates/sbm_ffi` and hands the result to the Flutter SDK as a code
+/// asset.
 ///
-/// This replaces cargokit, which drove cargo from a CocoaPods `script_phase` on
-/// Apple platforms, a CMake step on Linux and Windows, and a gradle plugin on
-/// Android — four integrations, one per platform, and the Apple one had no
-/// Swift Package Manager equivalent: a SwiftPM build tool plugin runs in a
-/// sandbox that denies writes to the project directory, so cargo cannot write
-/// `target/` or `~/.cargo` from one. That mattered because CocoaPods' registry
-/// goes read-only on 2026-12-02 and Flutter's fallback to it is removed some
-/// time after.
-///
-/// A build hook sidesteps the question rather than answering it: it is neither
-/// a pod nor a Swift package, so it produces no `.podspec` and no
-/// `Package.swift`, and the same file covers all five platforms.
+/// The app ships for Android `arm64-v8a` only (Rust target
+/// `aarch64-linux-android`). Any other Android architecture is refused here,
+/// so an emulator or 32-bit build cannot quietly produce an APK. Linux is the
+/// host `flutter test` loads the library on and is built host-native.
 void main(List<String> args) async {
   await build(args, (input, output) async {
+    if (input.config.buildCodeAssets) {
+      final code = input.config.code;
+      if (code.targetOS == OS.android &&
+          code.targetArchitecture != Architecture.arm64) {
+        throw UnsupportedError(
+          'RUSerBox ships for Android arm64-v8a only; '
+          'got ${code.targetArchitecture}. Build with '
+          '--target-platform android-arm64.',
+        );
+      }
+    }
     await FlutterRustBridgeNativeAssetsBuilder(
       cratePath: 'crates/sbm_ffi',
       extraCargoEnvironmentVariables: reproducibleCargoEnvironment(

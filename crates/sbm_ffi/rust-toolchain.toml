@@ -9,12 +9,12 @@
 # arrives with a new stable fails a pull request only once this is bumped,
 # not on the day rustup ships it.
 #
-# Android release targets and the Linux host used by Flutter tests.
+# The one Android target the app ships (arm64-v8a) and the Linux host that
+# `flutter test` loads the library on. Never set a default Cargo build target:
+# build scripts, proc-macros and host tests must stay host-native.
 [toolchain]
 channel = "1.98.1"
 targets = [
   "aarch64-linux-android",
-  "armv7-linux-androideabi",
-  "x86_64-linux-android",
   "x86_64-unknown-linux-gnu",
 ]
