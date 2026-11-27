@@ -183,7 +183,13 @@ void main() {
         ['iperf', 'systemd', 'portForward', 'power'],
       );
       expect(ServerFuncBtn.byStored('nothing-of-the-sort'), isNull);
-      expect(ServerFuncBtn.byStored(ServerFuncBtn.values.length), isNull);
+      expect(
+        ServerFuncBtn.byStored(ServerFuncBtn.currentLayoutIndexNames.length),
+        isNull,
+      );
+      // 11 was `remoteDesktop`: retired, so nothing rather than its neighbour.
+      expect(ServerFuncBtn.byStored(11), isNull);
+      expect(ServerFuncBtn.byStored(12), ServerFuncBtn.firewall);
       expect(ServerFuncBtn.byStored(-1), isNull);
     });
 

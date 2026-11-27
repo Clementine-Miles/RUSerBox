@@ -159,9 +159,8 @@ import 'package:crypto/crypto.dart' show sha256;
 import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pointycastle/export.dart'
-    show DESedeEngine, HMac, KeyParameter, SHA1Digest;
+    show HMac, KeyParameter, SHA1Digest;
 import 'package:server_box/core/extension/context/locale.dart';
-import 'package:server_box/core/pve/console.dart';
 import 'package:server_box/core/pve/termproxy.dart';
 import 'package:server_box/core/ssh/exec.dart';
 import 'package:server_box/core/utils/server_tcp.dart';
@@ -186,7 +185,6 @@ import 'package:server_box/src/rust/api/virt_libvirt.dart' as vl;
 import '../helpers/rust_lib_helper.dart';
 import '../helpers/spi_fixture.dart';
 import '../helpers/ssh_e2e.dart';
-import '../helpers/tunnel_client.dart';
 
 Future<void> main() async {
   // Standing alone: `--plain-name 'create and delete'` runs only these.
@@ -341,7 +339,7 @@ Future<void> _libvirt() async {
       expect(detail.nics.first.mac, matches(RegExp(r'^([0-9a-f]{2}:){5}')));
       expect(detail.display?.protocol, 'vnc');
       expect(detail.display?.port, greaterThanOrEqualTo(5900));
-      expect(detail.consoles, {VirtConsoleKind.text, VirtConsoleKind.vnc});
+      expect(detail.consoles, {VirtConsoleKind.text});
 
       final stopped = await virt.detail(await guest(stoppedName));
       expect(stopped.display, isNull);
@@ -365,27 +363,6 @@ Future<void> _libvirt() async {
       final stopped = await virt.hardware(await guest(stoppedName));
       expect(stopped.running, isFalse);
       expect(stopped.pending, isEmpty);
-    });
-
-    test('the VNC console speaks RFB through the SSH loopback tunnel', () async {
-      final run = await guest(runningName);
-      final console = await virt.console(run, VirtConsoleKind.vnc);
-      expect(console, isA<LibvirtVncConsole>());
-      console as LibvirtVncConsole;
-      final dialer = ServerTcpDialer(
-        spi: spiFixture(name: 'e2e', id: 'e2e', ip: target.hostname),
-        ssh: () async => ServerTcpSsh.client(client!),
-      );
-      final tunnel = await dialer.loopback(console.host, console.port);
-      final socket = await connectTunnel(tunnel);
-      final rfb = _RfbReader(socket);
-      try {
-        expect(ascii.decode(await rfb.take(12)), startsWith('RFB 003.00'));
-      } finally {
-        await rfb.close();
-        await tunnel.close();
-        dialer.close();
-      }
     });
 
     test('the serial console attaches in a shell and Ctrl+] leaves it', () async {
@@ -898,22 +875,6 @@ Future<void> _pve() async {
         term.close();
       });
 
-      test('vncproxy: RFB over the websocket tunnel, VNC auth with the '
-          'generated password', () async {
-        final vm = guestOf(await pve.load(), VirtGuestKind.qemu, vmId);
-
-        Future<({int result, List<int> types})> handshake(
-          String Function(PveVncConsole c) password,
-        ) => _pveVncHandshake(pve, vm, password);
-
-        final ok = await handshake((c) => c.rfbPassword);
-        expect(ok.types, contains(2), reason: 'VNC authentication offered');
-        expect(ok.result, 0, reason: 'SecurityResult OK');
-
-        // The check is real: a wrong password is refused.
-        final wrong = await handshake((c) => 'wrong!!!');
-        expect(wrong.result, isNot(0));
-      });
     });
   }
 }
@@ -1080,7 +1041,7 @@ Future<void> _pveTestVm() async {
         expect(nic.source, 'vmbr0');
         expect(nic.mac, matches(RegExp(r'^([0-9A-F]{2}:){5}[0-9A-F]{2}$')));
         expect(d.graphics.map((g) => g.kind), ['std']);
-        expect(d.consoles, {VirtConsoleKind.vnc, VirtConsoleKind.text});
+        expect(d.consoles, {VirtConsoleKind.text});
         expect(d.machine, 'l26');
       });
 
@@ -1098,12 +1059,6 @@ Future<void> _pveTestVm() async {
           await out.cancel();
         }
         await shell.done.timeout(const Duration(seconds: 5));
-      });
-
-      test('vncproxy: RFB and VNC auth', () async {
-        final ok = await _pveVncHandshake(pve, await vm(), (c) => c.rfbPassword);
-        expect(ok.types, contains(2));
-        expect(ok.result, 0, reason: 'SecurityResult OK');
       });
 
       test('suspend: paused at once, and in the listing itself; resume',
@@ -2392,47 +2347,6 @@ Future<void> _pvePassword() async {
 
 String _shQuote(String s) => "'${s.replaceAll("'", r"'\''")}'";
 
-/// Opens [vm]'s VNC console through [pve]'s websocket tunnel and answers the
-/// RFB handshake with [password]: the security types offered and the
-/// SecurityResult (0 is OK; -1 when VNC authentication was not offered).
-Future<({int result, List<int> types})> _pveVncHandshake(
-  PveBackend pve,
-  VirtGuest vm,
-  String Function(PveVncConsole c) password,
-) async {
-  final console = await pve.console(vm, VirtConsoleKind.vnc);
-  expect(console, isA<PveVncConsole>());
-  console as PveVncConsole;
-  // `generate-password`'s: 8 characters, not the ticket.
-  expect(console.password, isNot(console.ticket));
-  expect(console.password.length, 8);
-  final tunnel = await PveConsoleTunnelChannel.loopbackOnce(
-    PveConsoleTunnelChannel(await pve.openConsole(console)),
-  );
-  final rfb = _RfbReader(
-    await connectTunnel(tunnel),
-  );
-  try {
-    final version = ascii.decode(await rfb.take(12));
-    expect(version, matches(RegExp(r'^RFB 003\.00\d\n$')));
-    rfb.add(ascii.encode('RFB 003.008\n'));
-    final count = (await rfb.take(1)).single;
-    expect(count, greaterThan(0), reason: 'server refused: no types');
-    final types = await rfb.take(count);
-    if (!types.contains(2)) return (result: -1, types: types);
-    rfb.add([2]);
-    final challenge = await rfb.take(16);
-    rfb.add(_vncResponse(password(console), challenge));
-    final result = ByteData.sublistView(
-      Uint8List.fromList(await rfb.take(4)),
-    ).getUint32(0);
-    return (result: result, types: types);
-  } finally {
-    await rfb.close();
-    await tunnel.close();
-  }
-}
-
 Future<VirtErr> _virtErr(Future<Object?> future) async {
   try {
     await future;
@@ -2474,74 +2388,6 @@ class _Collector {
   }
 
   Future<void> cancel() => _sub.cancel();
-}
-
-/// Reads exact byte counts off a socket.
-class _RfbReader {
-  _RfbReader(this._socket) {
-    _sub = _socket.listen(
-      (b) {
-        _buf.addAll(b);
-        _wake();
-      },
-      onDone: () {
-        _done = true;
-        _wake();
-      },
-    );
-  }
-
-  final Socket _socket;
-  final _buf = <int>[];
-  late final StreamSubscription<Uint8List> _sub;
-  Completer<void>? _waiting;
-  var _done = false;
-
-  void _wake() {
-    _waiting?.complete();
-    _waiting = null;
-  }
-
-  void add(List<int> bytes) => _socket.add(bytes);
-
-  Future<List<int>> take(int n) async {
-    while (_buf.length < n) {
-      if (_done) fail('connection closed after ${_buf.length}/$n bytes');
-      _waiting = Completer<void>();
-      await _waiting!.future.timeout(const Duration(seconds: 15));
-    }
-    final out = _buf.sublist(0, n);
-    _buf.removeRange(0, n);
-    return out;
-  }
-
-  Future<void> close() async {
-    await _sub.cancel();
-    _socket.destroy();
-  }
-}
-
-/// RFB's VNC authentication: the 16-byte challenge DES-encrypted (ECB) with
-/// the password — its first 8 bytes, zero-padded — as the key, each key byte
-/// bit-reversed. Single DES is 3DES-EDE with three equal keys.
-List<int> _vncResponse(String password, List<int> challenge) {
-  final key = Uint8List(8);
-  final pw = latin1.encode(password);
-  for (var i = 0; i < 8 && i < pw.length; i++) {
-    var b = pw[i], r = 0;
-    for (var bit = 0; bit < 8; bit++) {
-      r = (r << 1) | (b & 1);
-      b >>= 1;
-    }
-    key[i] = r;
-  }
-  final des = DESedeEngine()
-    ..init(true, KeyParameter(Uint8List.fromList([...key, ...key, ...key])));
-  final input = Uint8List.fromList(challenge);
-  final out = Uint8List(16);
-  des.processBlock(input, 0, out, 0);
-  des.processBlock(input, 8, out, 8);
-  return out;
 }
 
 /// RFC 6238 TOTP, SHA-1, 6 digits, for the 30 s [step] — what PVE's `totp`

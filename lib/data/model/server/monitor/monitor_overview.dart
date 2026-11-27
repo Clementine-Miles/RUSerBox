@@ -303,7 +303,6 @@ abstract final class MonitorAuditKind {
     'push',
     'admin',
     'backup',
-    'mcp',
   ];
 }
 

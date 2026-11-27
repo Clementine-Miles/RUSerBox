@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_lib/fl_lib.dart' show FlRust;
-import 'package:fl_pi_llm/fl_pi_llm.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart' show ExternalLibrary;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/core/service/monitor_login_devices.dart';
 
@@ -17,17 +17,11 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   if (_nativeAsset('fl_lib_ffi') case final lib?) {
     await FlRust.ensureInitialized(library: lib);
   }
-  if (_nativeAsset('fl_pi_llm') case final lib?) {
-    await FlPiLlm.loadLibrary(externalLibrary: lib);
-  }
   await testMain();
 }
 
 ExternalLibrary? _nativeAsset(String name) {
-  final file = File(switch (Platform.operatingSystem) {
-    'macos' => 'build/native_assets/macos/lib$name.dylib',
-    'windows' => 'build/native_assets/windows/$name.dll',
-    _ => 'build/native_assets/linux/lib$name.so',
-  });
+  // Tests run on a Linux host; the app itself ships for Android only.
+  final file = File('build/native_assets/linux/lib$name.so');
   return file.existsSync() ? ExternalLibrary.open(file.path) : null;
 }

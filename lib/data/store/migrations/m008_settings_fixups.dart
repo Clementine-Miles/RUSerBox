@@ -104,7 +104,8 @@ class SettingsFixupsMigration extends SettingsMigration {
     final tabs = AppTab.parseAppTabsFromObj(store.get<Object>(key));
     if (tabs.length != legacyDefaults.length) return;
     if (!tabs.toSet().containsAll(legacyDefaults)) return;
-    _write(store, key, [...tabs, AppTab.agent].map((tab) => tab.name).toList());
+    // `agent` by name: the tab is retired, but this step wrote it then.
+    _write(store, key, [...tabs.map((tab) => tab.name), 'agent']);
   }
 
   /// `set` answers `false` rather than throwing — a write that could not be

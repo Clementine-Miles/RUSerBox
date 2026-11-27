@@ -1,17 +1,11 @@
-import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:server_box/core/pve/console.dart';
 import 'package:server_box/core/pve/termproxy.dart';
-import 'package:server_box/core/utils/server_tcp.dart';
 import 'package:server_box/data/model/app/error.dart';
-import 'package:server_box/data/model/server/remote_desktop.dart';
 import 'package:server_box/data/model/virt/virt.dart';
 import 'package:server_box/data/model/virt/virt_console.dart';
 import 'package:server_box/data/model/virt/virt_detail.dart';
-import 'package:server_box/data/provider/remote_desktop.dart';
 import 'package:server_box/data/provider/server/all.dart';
-import 'package:server_box/data/provider/server/single.dart';
 import 'package:server_box/data/provider/session_keep_alive.dart';
 import 'package:server_box/data/provider/virt/text_consoles.dart';
 import 'package:server_box/data/provider/virt/virt.dart';
@@ -25,26 +19,18 @@ import 'package:server_box/view/page/virt/common.dart';
 /// | Host    | Console | Carried by                                          |
 /// | ------- | ------- | --------------------------------------------------- |
 /// | PVE     | text    | `termproxy` → `vncwebsocket` → [PveTermShellBackend] in the terminal page |
-/// | PVE     | VNC     | `vncproxy` → `vncwebsocket` → [PveConsoleTunnelChannel] on a loopback port → the remote desktop engine |
 /// | libvirt | text    | `virsh console` typed into a shell on the host, by the terminal page |
-/// | libvirt | VNC     | `ServerTcpDialer.loopback` to the display's port → the remote desktop engine |
 ///
 /// Everything here reads the host through a [ProviderContainer] when it runs,
-/// not through a notifier captured once: the terminal page and the viewer
-/// call these again on every reconnect, and both outlive the view that made
-/// them.
+/// not through a notifier captured once: the terminal page
+/// calls these again on every reconnect, and outlives the view that made it.
 abstract final class VirtConsoleConnect {
   /// `virsh console`'s escape, Ctrl+]: leaves the console and returns to the
   /// shell it was typed into.
   static const serialEscape = [0x1d];
 
-  /// The remote desktop session a guest's graphical console is shown in.
-  static String vncSessionId(String serverId, String guestId) =>
-      'virt-console:$serverId:$guestId';
-
   /// The id a guest's text console is kept by while no page shows it — see
-  /// [VirtTextConsoles]. Not [vncSessionId]: both can be running at once, and
-  /// [SessionKeepAlive] tells sessions apart by id alone.
+  /// [VirtTextConsoles]; [SessionKeepAlive] tells sessions apart by id.
   static String textSessionId(String serverId, String guestId) =>
       'virt-text:$serverId:$guestId';
 
@@ -55,11 +41,6 @@ abstract final class VirtConsoleConnect {
     required String serverId,
     required String guestId,
   }) {
-    unawaited(
-      container
-          .read(remoteDesktopSessionsProvider.notifier)
-          .close(vncSessionId(serverId, guestId)),
-    );
     container
         .read(virtTextConsolesProvider.notifier)
         .close(textSessionId(serverId, guestId));
@@ -164,70 +145,6 @@ abstract final class VirtConsoleConnect {
     }
   }
 
-  /// Where each connection attempt of [guestId]'s graphical console goes.
-  ///
-  /// PVE: a new `vncproxy` ticket and its websocket every time, since the
-  /// proxy behind it accepts one connection and QEMU's password changes with
-  /// the ticket. libvirt: the display's port, dialled from the host, with the
-  /// display's own password where it could be read, [password] (typed by the
-  /// user, kept only in this opener) where it could not.
-  static RemoteDesktopTargetOpener vncTarget(
-    ProviderContainer container, {
-    required String serverId,
-    required String guestId,
-    String? password,
-  }) => () async {
-    try {
-      return await withHost(container, serverId, guestId, (host) async {
-        final console = await host.console(guestId, VirtConsoleKind.vnc);
-        switch (console) {
-          case PveVncConsole():
-            final tunnel = await PveConsoleTunnelChannel.loopbackOnce(
-              PveConsoleTunnelChannel(await host.openPveConsole(console)),
-            );
-            return (tunnel: tunnel, password: console.rfbPassword);
-          case LibvirtVncConsole(host: final at, :final port):
-            final dialer = _dialer(container, serverId);
-            try {
-              return (
-                tunnel: await dialer.loopback(at, port),
-                password: rfbPassword(console.password ?? password),
-              );
-            } finally {
-              // The tunnel owns what it runs on.
-              dialer.close();
-            }
-          default:
-            throw const VirtErr(type: VirtErrType.unsupported);
-        }
-      });
-    } catch (e) {
-      throw VirtConsoleFailure(describe(e), cause: e);
-    }
-  };
-
-  /// [password] as RFB's VNC authentication takes it: DES keyed with at most
-  /// its first 8 bytes, which is also all QEMU compares — a longer libvirt
-  /// password works cut to that.
-  static String? rfbPassword(String? password) {
-    if (password == null || password.isEmpty) return null;
-    return password.length <= 8 ? password : password.substring(0, 8);
-  }
-
-  /// A session for [guest]'s graphical console, as the remote desktop engine
-  /// needs one. Not stored: [RemoteDesktopSessions.openConsole] takes the
-  /// address and the password from [vncTarget] instead.
-  static RemoteDesktopProfile vncProfile({
-    required String serverId,
-    required VirtGuest guest,
-  }) => RemoteDesktopProfile(
-    id: vncSessionId(serverId, guest.id),
-    serverId: serverId,
-    name: guest.name,
-    protocol: RemoteDesktopProtocol.vnc,
-    port: RemoteDesktopProtocol.vnc.defaultPort,
-  );
-
   /// A failure in words for the user: the tab's title for a [VirtErr] and the
   /// host's own text under it.
   static String describe(Object e) => switch (e) {
@@ -271,28 +188,4 @@ abstract final class VirtConsoleConnect {
       sub.close();
     }
   }
-
-  static ServerTcpDialer _dialer(ProviderContainer container, String id) {
-    final spi = container.read(serversProvider).servers[id];
-    if (spi == null) throw const VirtErr(type: VirtErrType.serverRemoved);
-    return ServerTcpDialer(
-      spi: spi,
-      ssh: () async => ServerTcpSsh.client(
-        await container.read(serverProvider(id).notifier).ensureShellClient(),
-      ),
-      relayGrant: () => container.read(serverProvider(id)).agentAccess,
-    );
-  }
-}
-
-/// A graphical console that could not be opened. [toString] is [message],
-/// which is what the viewer shows.
-class VirtConsoleFailure implements Exception {
-  const VirtConsoleFailure(this.message, {this.cause});
-
-  final String message;
-  final Object? cause;
-
-  @override
-  String toString() => message;
 }

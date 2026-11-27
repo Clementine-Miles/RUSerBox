@@ -4,8 +4,6 @@ import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:server_box/core/service/scoped_token.dart';
-import 'package:server_box/core/service/widget_sync.dart';
 import 'package:server_box/core/ssh/host_keys.dart';
 import 'package:server_box/core/sync/sync.dart';
 import 'package:server_box/core/utils/refresh_interval.dart';
@@ -14,9 +12,7 @@ import 'package:server_box/data/model/app/error.dart';
 import 'package:server_box/data/model/server/server.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/model/server/try_limiter.dart';
-import 'package:server_box/data/provider/ai/agent_scope.dart';
 import 'package:server_box/data/provider/port_forward_provider.dart';
-import 'package:server_box/data/provider/remote_desktop.dart';
 import 'package:server_box/data/provider/server/refresh_scheduler.dart';
 import 'package:server_box/data/provider/server/selection.dart';
 import 'package:server_box/data/provider/server/single.dart';
@@ -370,19 +366,11 @@ class ServersNotifier extends _$ServersNotifier {
   Future<void> _delServer(String id) async {
     final deleting = state.servers[id];
     if (deleting == null) return;
-    // Keep the widget from minting while local cleanup still needs the row.
-    final finishWidgetDeletion = WidgetSync.instance.beginServerDeletion(deleting);
-    final List<String> newOrder;
-    try {
-      await ref.read(remoteDesktopSessionsProvider.notifier).closeForServer(id);
-      ref.read(workspacesProvider.notifier).removeServer(id);
-      await _clearServerData(id);
-      newOrder = List<String>.from(state.serverOrder)..remove(id);
-      Stores.setting.serverOrder.put(newOrder);
-      Stores.server.deleteById(id);
-    } finally {
-      finishWidgetDeletion();
-    }
+    ref.read(workspacesProvider.notifier).removeServer(id);
+    await _clearServerData(id);
+    final newOrder = List<String>.from(state.serverOrder)..remove(id);
+    Stores.setting.serverOrder.put(newOrder);
+    Stores.server.deleteById(id);
     final newServers = Map<String, Spi>.from(state.servers);
     newServers.remove(id);
 
@@ -402,9 +390,6 @@ class ServersNotifier extends _$ServersNotifier {
     );
     await _clearSudoPasswordOverrideBestEffort(id);
 
-    // Rebuild the widget list after removing the row from the server store.
-    unawaited(WidgetSync.instance.push());
-
     // Deselect if the deleted server was selected, and invalidate its provider
     // so the keepAlive notifier (PersistentShell, Pve socket) is disposed.
     if (ref.read(serverSelectionProvider) == id) {
@@ -420,7 +405,6 @@ class ServersNotifier extends _$ServersNotifier {
 
   Future<void> _clearServerData(String id) async {
     await ref.read(portForwardProvider(id).notifier).clear();
-    await AgentChats.clearScope(AgentScope.terminal(id));
     Stores.connectionStats.clearServerStats(id);
     Stores.selfAddr.forget(id);
   }
@@ -474,9 +458,6 @@ class ServersNotifier extends _$ServersNotifier {
 
     if (old != newSpi) {
       if (newSpi.id != old.id) {
-        await ref
-            .read(remoteDesktopSessionsProvider.notifier)
-            .closeForServer(old.id);
         // `EntityStore.update` explicitly rejects id changes; renaming must
         // move dependent rows and handle sync metadata itself.
         if (state.servers.containsKey(newSpi.id)) {
@@ -486,13 +467,6 @@ class ServersNotifier extends _$ServersNotifier {
       } else {
         Stores.server.update(old, newSpi);
       }
-      // Revoke with the old credential before minting its replacement.
-      revokeScopedTokensLeftBehind(
-        old,
-        newSpi,
-        queueWidgetRevoke: WidgetSync.instance.revokeEditedServer,
-      );
-
       final newServers = Map<String, Spi>.from(state.servers);
       final newOrder = List<String>.from(state.serverOrder);
       final newManualDisconnected = Set<String>.from(

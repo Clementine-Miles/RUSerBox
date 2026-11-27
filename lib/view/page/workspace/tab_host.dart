@@ -8,15 +8,12 @@ import 'package:server_box/data/model/server/server.dart';
 import 'package:server_box/data/model/server/server_private_info.dart';
 import 'package:server_box/data/model/server/try_limiter.dart';
 import 'package:server_box/data/model/workspace/workspace.dart';
-import 'package:server_box/data/provider/ai/agent_scope.dart';
 import 'package:server_box/data/provider/server/all.dart';
 import 'package:server_box/data/provider/server/single.dart';
 import 'package:server_box/data/provider/snippet.dart';
 import 'package:server_box/data/provider/workspace.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
-import 'package:server_box/view/agent/screen.dart';
-import 'package:server_box/view/page/agent/view.dart';
 import 'package:server_box/view/page/container/container.dart';
 import 'package:server_box/view/page/process/process.dart';
 import 'package:server_box/view/page/server/detail/view.dart';
@@ -151,7 +148,6 @@ class WsTabHost extends ConsumerWidget {
       runtime: runtime,
       child: NestedNavigator(
         rootId: tab.id,
-        observers: [AgentScreen.workspaceObserver(tab.id)],
         rootBuilder: (_) => _page(ref, spi),
       ),
     );
@@ -183,10 +179,6 @@ class WsTabHost extends ConsumerWidget {
       ),
       WorkspaceView.files => ServerFilePage(
         args: SftpPageArgs(spi: spi, actionsSink: runtime.actions),
-      ),
-      WorkspaceView.agent => AgentConversationView(
-        scope: AgentScope.terminal(spi.id),
-        compact: true,
       ),
       WorkspaceView.docker => ContainerPage(
         args: args,

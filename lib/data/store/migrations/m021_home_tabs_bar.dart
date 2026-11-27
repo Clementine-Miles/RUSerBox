@@ -1,4 +1,3 @@
-import 'package:server_box/data/model/app/tab.dart';
 import 'package:server_box/data/store/schema.dart';
 import 'package:server_box/data/store/setting.dart';
 
@@ -15,13 +14,9 @@ class HomeTabsBarMigration extends SettingsMigration {
 
   static const appliedAt = 21;
   static const key = 'homeTabs';
-  static const legacyTabs = {
-    AppTab.server,
-    AppTab.ssh,
-    AppTab.file,
-    AppTab.snippet,
-    AppTab.agent,
-  };
+  /// By name: `agent` is a retired tab this build no longer parses, and the
+  /// step must still recognise the bar it was written for.
+  static const legacyTabs = {'server', 'ssh', 'file', 'snippet', 'agent'};
 
   @override
   int get from => appliedAt;
@@ -35,7 +30,7 @@ class HomeTabsBarMigration extends SettingsMigration {
     final raw = store.get<Object>(key);
     if (raw is! List) return;
 
-    final tabs = AppTab.parseAppTabsFromObj(raw);
+    final tabs = [for (final e in raw) _name(e)];
     if (tabs.length != legacyTabs.length ||
         !tabs.toSet().containsAll(legacyTabs)) {
       return;
@@ -43,9 +38,19 @@ class HomeTabsBarMigration extends SettingsMigration {
 
     final ok = store.set(
       key,
-      tabs.take(tabs.length - 1).map((tab) => tab.name).toList(),
+      tabs.take(tabs.length - 1).toList(),
       updateLastUpdateTsOnSet: false,
     );
     if (!ok) throw StateError('m021: writing "$key" failed');
   }
+
+  /// A stored element as a tab name; an integer by the positions the builds
+  /// that wrote integers used.
+  static String? _name(Object? e) => switch (e) {
+    final String s => s,
+    final int i when i >= 0 && i < _legacyIndexNames.length => _legacyIndexNames[i],
+    _ => null,
+  };
+
+  static const _legacyIndexNames = ['server', 'ssh', 'file', 'snippet', 'agent'];
 }

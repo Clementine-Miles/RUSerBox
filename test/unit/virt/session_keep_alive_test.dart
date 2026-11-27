@@ -1,13 +1,9 @@
-import 'dart:async';
 
 import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:server_box/data/model/server/remote_desktop.dart';
-import 'package:server_box/data/provider/remote_desktop.dart';
-import 'package:server_box/data/provider/server/all.dart';
 import 'package:server_box/data/provider/session_keep_alive.dart';
 import 'package:server_box/data/store/setting.dart';
 import 'package:server_box/data/store/stores.dart';
@@ -365,66 +361,4 @@ void main() {
       show();
     });
   });
-
-  test('an owner provider disposed takes its registrations with it', () {
-    fakeAsync((async) {
-      Stores.setting.remoteSessionIdleTimeout.put(60);
-      async.flushMicrotasks();
-      final container = ProviderContainer(
-        overrides: [serversProvider.overrideWith(_NoServers.new)],
-      );
-      final keepAlive = container.read(sessionKeepAliveProvider.notifier);
-      final sessions = container.read(remoteDesktopSessionsProvider.notifier);
-      final profile = RemoteDesktopProfile.defaults(
-        id: 'vm',
-        serverId: 'server',
-        name: 'vm',
-        protocol: RemoteDesktopProtocol.vnc,
-      );
-      // Never connects: what is under test is the bookkeeping.
-      sessions.openConsole(
-        profile,
-        target: () => Completer<RemoteDesktopTarget>().future,
-      );
-      expect(keepAlive.isRegistered('vm'), isTrue);
-
-      container.invalidate(remoteDesktopSessionsProvider);
-      container.read(remoteDesktopSessionsProvider);
-      async.flushMicrotasks();
-      expect(
-        keepAlive.isRegistered('vm'),
-        isFalse,
-        reason: 'no notice for a desktop already closed',
-      );
-
-      // Off screen for the timeout and the grace: nothing to show or close.
-      async.elapse(const Duration(minutes: 5));
-      expect(container.read(sessionKeepAliveProvider), isEmpty);
-
-      // A registration the rebuilt provider makes is its own.
-      container
-          .read(remoteDesktopSessionsProvider.notifier)
-          .openConsole(
-            profile,
-            target: () => Completer<RemoteDesktopTarget>().future,
-          );
-      container.invalidate(remoteDesktopSessionsProvider);
-      keepAlive.register(
-        'vm',
-        name: 'vm',
-        host: 'other owner',
-        onClose: () {},
-      );
-      async.flushMicrotasks();
-      expect(keepAlive.isRegistered('vm'), isTrue);
-
-      container.dispose();
-      async.flushTimers();
-    });
-  });
-}
-
-final class _NoServers extends ServersNotifier {
-  @override
-  ServersState build() => const ServersState();
 }

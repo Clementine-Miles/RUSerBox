@@ -27,8 +27,6 @@ import tech.lolli.toolbox.incoming.IncomingActivity
 import tech.lolli.toolbox.incoming.IncomingFiles
 import tech.lolli.toolbox.incoming.IncomingInbox
 import tech.lolli.toolbox.linux.LinuxDocumentsProvider
-import tech.lolli.toolbox.widget.HomeWidget
-import tech.lolli.toolbox.widget.WidgetStore
 
 class MainActivity: FlutterFragmentActivity() {
     private lateinit var channel: MethodChannel
@@ -354,27 +352,6 @@ class MainActivity: FlutterFragmentActivity() {
                             result.error("SERVICE_ERROR", e.message, null)
                         }
                     }
-                    "updateHomeWidget" -> {
-                        HomeWidget.broadcastUpdate(applicationContext)
-                        result.success(null)
-                    }
-                    "publishWidgetServers" -> {
-                        val payload = method.arguments as? String
-                        if (payload == null) {
-                            result.success(null)
-                            return@setMethodCallHandler
-                        }
-                        WidgetStore.publish(applicationContext, payload)
-                        // Every placed widget of either size, not just one: a
-                        // republish can change a name, an address or a
-                        // credential, and which widget was pointed at which
-                        // server is not known here.
-                        HomeWidget.broadcastUpdate(applicationContext)
-                        result.success(null)
-                    }
-                    "widgetTokenState" -> {
-                        result.success(WidgetStore.tokenState(applicationContext))
-                    }
                     "setKeepAliveInBackground" -> {
                         keepAliveInBackground = method.arguments as? Boolean ?: false
                         result.success(null)
@@ -430,7 +407,7 @@ class MainActivity: FlutterFragmentActivity() {
         }
         Thread {
             IncomingFiles.purgeStale(applicationContext)
-            HomeWidget.publishPreviews(applicationContext)
+            RetiredWidgetData.purge(applicationContext)
         }.start()
 
         // Register broadcast receiver for stop all connections

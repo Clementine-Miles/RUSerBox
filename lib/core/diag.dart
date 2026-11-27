@@ -47,8 +47,6 @@ abstract final class SbDiag {
   /// finds out about it on a device they no longer have.
   static const backup = DiagCategory('backup');
 
-  /// The AI agent: a prompt going out, a tool it proposed being run.
-  static const agent = DiagCategory('agent');
 
   /// Reaching a BMC, which is a machine's management controller rather than
   /// the machine.

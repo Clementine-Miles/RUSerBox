@@ -27,7 +27,6 @@ extension _HomePageLifecycle on _HomePageState {
           _releasePrivacyCover();
         }
         unawaited(_restartServerRefreshCycle());
-        unawaited(MethodChans.updateHomeWidget());
         unawaited(_androidSystem.onResumed());
         _syncFullscreenSystemUi();
         break;

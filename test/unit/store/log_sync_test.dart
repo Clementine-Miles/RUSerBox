@@ -3,8 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm/fl_pi_llm.dart' show LlmApi, LlmCustomProvider;
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores, Skills;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/core/sync/category.dart';
@@ -18,7 +16,6 @@ import 'package:server_box/data/store/entity_store.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/store/sync_recorder.dart';
 import 'package:server_box/data/store/sync_records.dart';
-import 'package:server_box/data/store/sync_skills.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/spi_fixture.dart';
@@ -552,56 +549,6 @@ void main() {
     expect(Stores.setting.get<String>('bigNote'), big);
   });
 
-  test('an unreadable skills lock removes nothing elsewhere', () async {
-    final log = _Log();
-    final skills = await Directory.systemTemp.createTemp('sbm-skills-lock-');
-    addTearDown(() => skills.delete(recursive: true));
-    Skills.root = skills.path;
-    await _device();
-    Skills.import('notes', {
-      'lock': {'name': 'notes', 'description': 'Takes notes.', 'hash': 'h1'},
-      'files': {'SKILL.md': base64Encode(utf8.encode('---\nname: notes\n---\n'))},
-    });
-    await _sync(log).sync();
-    final sent = log.batches.length;
-
-    final lock = File('${skills.path}/.lock.json');
-    final readable = lock.readAsStringSync();
-    lock.writeAsStringSync('{');
-    Skills.root = skills.path;
-    await _sync(log).sync();
-    expect(log.batches.length, sent, reason: 'nothing sent as gone');
-
-    // Readable again as it was: nothing in it is a new edit here.
-    lock.writeAsStringSync(readable);
-    Skills.root = skills.path;
-    await _sync(log).sync();
-    expect(log.batches.length, sent, reason: 'nothing sent again');
-
-    // Lost with the lock, and readable again without it: still not removed,
-    // nor read as removed when every record is sent again.
-    lock.writeAsStringSync('{');
-    Skills.root = skills.path;
-    await _sync(log).sync();
-    Directory('${skills.path}/notes').deleteSync(recursive: true);
-    lock.writeAsStringSync('{}');
-    Skills.root = skills.path;
-    await _sync(log).sync();
-    final removals = [
-      for (final (_, body) in log.batches)
-        for (final op in (await _plain(body))['ops'] as List)
-          if (op['c'] == SyncSkills.c && op['d'] == null) op,
-    ];
-    expect(removals, isEmpty);
-    // What a send of every record (a snapshot, a log joined anew) reads of it.
-    expect(SyncSkills.read('notes'), same(SyncRecords.silent));
-
-    // Removed elsewhere since: a removal, which a snapshot carries on.
-    final h = syncTick(device: BigInt.from(99), last: '', nowMs: BigInt.from(SyncClock.now() + 1000));
-    SyncSkills.install([(c: SyncSkills.c, id: 'notes', h: h, d: null)]);
-    expect(SyncSkills.read('notes'), isNull);
-  });
-
   test('the same record under two ids (restored before ids existed) is one record, not two', () async {
     final log = _Log();
     await _device();
@@ -657,40 +604,6 @@ void main() {
     expect(Stores.snippet.fetchOneRaw('phone0001')?.script, 'from the phone');
   });
 
-  test('a provider added on each device is on both, the list builds before kept included', () async {
-    final log = _Log();
-    LlmCustomProvider provider(String id) =>
-        LlmCustomProvider(id: id, name: id, api: LlmApi.openaiCompletions, baseUrl: 'https://$id.example/v1');
-
-    await _device();
-    // As builds before kept them: one list, moved in as no edit.
-    LlmStores.llm.set('customProviders', [provider('old').toStoreJson()], updateLastUpdateTsOnSet: false);
-    LlmStores.llm.splitLegacyProviders(SyncRecorder.adopt);
-    LlmStores.llm.putCustomProvider(provider('a'));
-    await _sync(log).sync();
-
-    await _device();
-    LlmStores.llm.putCustomProvider(provider('b'));
-    await _sync(log).sync();
-    expect([for (final p in LlmStores.llm.customProviders) p.id], ['a', 'b', 'old']);
-
-    // A list another device sent as builds before kept it is split too.
-    await _device();
-    SyncRecorder.receiving(
-      syncStampOf(ms: BigInt.one, device: SyncRecorder.legacy),
-      () => LlmStores.llm.set('customProviders', [provider('listed').toStoreJson()]),
-    );
-    LlmStores.llm.splitLegacyProviders(SyncRecorder.adopt);
-    await _sync(log).sync();
-    expect([for (final p in LlmStores.llm.customProviders) p.id], ['a', 'b', 'listed', 'old']);
-
-    // One deleted since stays deleted, whatever list comes later.
-    LlmStores.llm.removeCustomProvider('old');
-    LlmStores.llm.set('customProviders', [provider('old').toStoreJson()], updateLastUpdateTsOnSet: false);
-    LlmStores.llm.splitLegacyProviders(SyncRecorder.adopt);
-    expect([for (final p in LlmStores.llm.customProviders) p.id], ['a', 'b', 'listed']);
-  });
-
   test('a run carries what it first asked; a category switched during it is the next run\'s', () async {
     final log = _Log();
     await _device();
@@ -714,67 +627,4 @@ void main() {
     ];
     expect(sent, contains('kv:setting/${Stores.setting.serverStatusUpdateInterval.key}'));
   });
-
-  test('a skill installed on one device is installed on the next, and removed', () async {
-    final log = _Log();
-    Future<void> device(String name) async {
-      final dir = await Directory.systemTemp.createTemp('sbm-skills-$name-');
-      addTearDown(() => dir.delete(recursive: true));
-      Skills.root = dir.path;
-      await _device();
-    }
-
-    await device('a');
-    Skills.import('notes', {
-      'lock': {'name': 'notes', 'description': 'Takes notes.', 'hash': 'h1'},
-      'files': {'SKILL.md': base64Encode(utf8.encode('---\nname: notes\n---\n'))},
-    });
-    await _sync(log).sync();
-
-    await device('b');
-    await _sync(log).sync();
-    expect(Skills.byDir('notes')?.description, 'Takes notes.');
-    expect(Skills.filesOf('notes'), ['SKILL.md']);
-    Skills.remove('notes');
-    await _sync(log).sync();
-
-    await device('c');
-    await _sync(log).sync();
-    expect(Skills.byDir('notes'), isNull);
-  });
-
-  test('a skill changed here is sent at once; one a sync installs is not sent back', () async {
-    final dir = await Directory.systemTemp.createTemp('sbm-skills-follow-');
-    addTearDown(() => dir.delete(recursive: true));
-    Skills.root = dir.path;
-    await _device();
-    SyncSkills.follow();
-    var woken = 0;
-    void wake() => woken++;
-    SyncRecorder.onLocal.add(wake);
-    addTearDown(() => SyncRecorder.onLocal.remove(wake));
-
-    Skills.import('notes', {
-      'lock': {'name': 'notes', 'description': 'Takes notes.', 'hash': 'h1'},
-      'files': {'SKILL.md': base64Encode(utf8.encode('---\nname: notes\n---\n'))},
-    });
-    await Future<void>.delayed(Duration.zero);
-    expect(woken, 1);
-    final stamped = SqliteDb.instance.select("SELECT hlc FROM sync_record WHERE c = 'skill' AND id = 'notes';");
-    expect(stamped, hasLength(1));
-
-    woken = 0;
-    SyncSkills.install([
-      (c: SyncSkills.c, id: 'other', h: '${'0' * 12}${'0' * 4}${'1' * 16}', d: {
-        'lock': {'name': 'other', 'description': 'Other.', 'hash': 'h2'},
-        'files': {'SKILL.md': base64Encode(utf8.encode('---\nname: other\n---\n'))},
-      }),
-    ]);
-    await Future<void>.delayed(Duration.zero);
-    expect(woken, 0, reason: 'what came from elsewhere is not an edit here');
-    Skills.remove('notes');
-    Skills.remove('other');
-  });
-
-
 }

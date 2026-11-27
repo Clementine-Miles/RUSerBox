@@ -2,7 +2,7 @@
 //! what the app reads off them, and what it hands from one call to the next.
 
 use flutter_rust_bridge::frb;
-pub use sbm_virt::libvirt::{VirtVersion, VirtHostProbe, VirtDisk, VirtNic, VirtGraphics, VirtDomainXml, VirtDisplay, VirtVncConsoleInfo, VirtDomainDetail, VirtVolumeRef, VirtPool, VirtDiskUse, VirtStorage, VirtCreateHost, VirtCreateSpec, VirtCreateVolumes, VirtCreated, VirtCloneDisk, VirtCloneSpec, VirtHwCpu, VirtHwDisk, VirtHwGraphics, VirtHwTpm, VirtHwHostdev, VirtHwNic, VirtHwConfig, VirtHwCaps, VirtHardwareInfo, FirmwareDescriptor, VirtHostUsb, VirtHostPci, VirtHostDevices, VirtHwChange, VirtHwNewDevice, VirtHwOutcome};
+pub use sbm_virt::libvirt::{VirtVersion, VirtHostProbe, VirtDisk, VirtNic, VirtGraphics, VirtDomainXml, VirtDisplay, VirtDomainDetail, VirtVolumeRef, VirtPool, VirtDiskUse, VirtStorage, VirtCreateHost, VirtCreateSpec, VirtCreateVolumes, VirtCreated, VirtCloneDisk, VirtCloneSpec, VirtHwCpu, VirtHwDisk, VirtHwGraphics, VirtHwTpm, VirtHwHostdev, VirtHwNic, VirtHwConfig, VirtHwCaps, VirtHardwareInfo, FirmwareDescriptor, VirtHostUsb, VirtHostPci, VirtHostDevices, VirtHwChange, VirtHwNewDevice, VirtHwOutcome};
 pub use sbm_virt::libvirt::cloud_init::{VirtCiIpv4, VirtCiNetwork, VirtCloudInit, VirtSeedRead};
 pub use sbm_virt::libvirt::manage::{VirtNetIpv4, VirtResourceOp};
 pub use super::virt_model::NetHost;
@@ -74,13 +74,6 @@ pub struct _VirtDisplay {
     pub port: Option<u16>,
     pub tls_port: Option<u16>,
     pub socket: Option<String>,
-}
-
-#[frb(mirror(VirtVncConsoleInfo))]
-pub struct _VirtVncConsoleInfo {
-    pub display: Option<VirtDisplay>,
-    pub password: Option<String>,
-    pub password_known: bool,
 }
 
 #[frb(mirror(VirtDomainDetail))]

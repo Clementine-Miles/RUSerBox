@@ -101,7 +101,6 @@ void main() {
       (1491, ServerFuncBtn.power),
       (1579, ServerFuncBtn.users),
       (1579, ServerFuncBtn.scheduledTasks),
-      (1617, ServerFuncBtn.remoteDesktop),
       (1719, ServerFuncBtn.firewall),
       (1719, ServerFuncBtn.storage),
       (1719, ServerFuncBtn.shares),
@@ -127,15 +126,12 @@ void main() {
     expect(row(), [ServerFuncBtn.terminal.name]);
   });
 
-  test('adds remote desktop after the last build without it', () async {
+  test('adds nothing for the retired remote desktop boundary', () async {
     setting.serverFuncBtns.put([ServerFuncBtn.terminal.name]);
 
     addNewServerFuncs(1617, 1618);
 
-    expect(row(), [
-      ServerFuncBtn.terminal.name,
-      ServerFuncBtn.remoteDesktop.name,
-    ]);
+    expect(row(), [ServerFuncBtn.terminal.name]);
   });
 
   test('adds storage and shares after the last build without them', () async {
@@ -211,7 +207,6 @@ void main() {
         ServerFuncBtn.power.name,
         ServerFuncBtn.users.name,
         ServerFuncBtn.scheduledTasks.name,
-        ServerFuncBtn.remoteDesktop.name,
       ]),
     );
   });

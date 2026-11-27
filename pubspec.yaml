@@ -89,14 +89,6 @@ dependencies:
   desktop_drop: ^0.8.4
   device_info_plus: ^13.2.0
   material_ui: ^1.5.0
-  # The LLM layer, shared with LLMBox: pi's agent loop and providers in
-  # QuickJS, built by its own hook like `sbm_ffi` (`fl_pi_llm`), and the
-  # chats, tools and provider settings over it (`fl_pi_llm_ui`). A submodule
-  # like fl_lib.
-  fl_pi_llm:
-    path: packages/fl_pi_llm/fl_pi_llm
-  fl_pi_llm_ui:
-    path: packages/fl_pi_llm/fl_pi_llm_ui
   # Imported by the app itself, not only through the packages that bring them
   # in: a transitive dependency can drop or change one under it.
   path_provider: ^2.1.6
@@ -105,9 +97,6 @@ dependencies:
   collection: ^1.19.1
   flutter_local_notifications: ^22.3.1
 dependency_overrides:
-  # fl_pi_llm_ui shares the vendored fl_lib used by the app.
-  fl_lib:
-    path: packages/fl_lib
   # TODO: remove once freezed releases the fix (rrousselGit/freezed#1376).
   # 4.0.x targets `PlanError._()` in copyWith (FRB's single-variant enum).
   freezed:
@@ -184,10 +173,6 @@ flutter:
     # base64, because App Store validation rejects a bundled `.sh` — see
     # `YabsScript.assetPath`. A shell script cannot be added to this list.
     - assets/yabs.b64
-    # The Agent's built-in skill, the very files Claude Code reads in this
-    # repository — one copy, see `LlmHost.builtinSkills`.
-    - .claude/skills/serverbox-help/
-    - .claude/skills/serverbox-help/references/
     # The directory, not each file: `Dist.markAsset` names them by enum name.
     # Only distributions whose logo carries an explicit copyright licence are
     # in there — see the README beside them, which Flutter leaves out because

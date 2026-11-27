@@ -13,7 +13,6 @@ import 'package:fl_lib/fl_lib.dart'
         SyncPasswordMismatch,
         SyncPasswordMissing,
         SyncRefused;
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show McpTools;
 import 'package:server_box/data/model/app/error.dart';
 
 /// Whether an error is a defect in this app, or the network's or the user's
@@ -59,8 +58,6 @@ abstract final class ReportFilter {
     // LK Cloud: unreachable, signed out, a plan without sync or its space
     // used up; and another device writing first three times in a row.
     LkcException() || RemoteChangedException() => false,
-    // An MCP server the user added, wanting a sign-in or refusing a request.
-    Object() when McpTools.isRemoteFailure(error) => false,
     _ => true,
   };
 

@@ -1526,31 +1526,6 @@ class VirtVersion {
           hypervisorVersion == other.hypervisorVersion;
 }
 
-class VirtVncConsoleInfo {
-  final VirtDisplay? display;
-  final String? password;
-  final bool passwordKnown;
-
-  const VirtVncConsoleInfo({
-    this.display,
-    this.password,
-    required this.passwordKnown,
-  });
-
-  @override
-  int get hashCode =>
-      display.hashCode ^ password.hashCode ^ passwordKnown.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is VirtVncConsoleInfo &&
-          runtimeType == other.runtimeType &&
-          display == other.display &&
-          password == other.password &&
-          passwordKnown == other.passwordKnown;
-}
-
 class VirtVolumeRef {
   final String name;
   final String? path;

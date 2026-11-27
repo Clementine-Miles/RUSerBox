@@ -22,7 +22,7 @@ void main() {
         AppTab.server,
         AppTab.ssh,
         AppTab.file,
-        AppTab.agent,
+        AppTab.workspace,
       ]);
       // Snippets are a library rather than a place, and a benchmark is a
       // quarter of an hour started deliberately — neither is wanted a tap away.
@@ -30,9 +30,7 @@ void main() {
       expect(AppTab.overflowOf(AppTab.defaultOrder), [
         AppTab.snippet,
         AppTab.benchmark,
-        AppTab.remoteDesktop,
         AppTab.virt,
-        AppTab.workspace,
         AppTab.monitor,
       ]);
     });
@@ -59,7 +57,6 @@ void main() {
       expect(AppTab.defaultOrder, isNot(AppTab.values));
       expect(AppTab.server.index, 0);
       expect(AppTab.snippet.index, 3);
-      expect(AppTab.agent.index, 4);
     });
   });
 
@@ -83,16 +80,13 @@ void main() {
       'agent',
     ]);
 
-    // The stored order, kept as it was -- not the default, which the two
-    // happen to differ from since Agent moved ahead of snippets.
+    // The stored order, kept as it was; the retired `agent` is dropped.
     expect(tabs, [
       AppTab.server,
       AppTab.ssh,
       AppTab.file,
       AppTab.snippet,
-      AppTab.agent,
     ]);
-    expect(tabs.where((tab) => tab == AppTab.agent), hasLength(1));
   });
 
   test('preserves an intentionally customized home tab list', () {
@@ -146,33 +140,27 @@ void main() {
     ]);
 
     expect(available, [
-      AppTab.agent,
       AppTab.benchmark,
-      AppTab.remoteDesktop,
       AppTab.virt,
       AppTab.workspace,
       AppTab.monitor,
     ]);
   });
 
-  /// A stored list may hold plain integers — `_parseAppTabFromElement`
-  /// resolves one against `values` by position — so a new tab may only ever be
-  /// appended. Inserting one would silently re-point every integer after it at
-  /// a different tab.
-  test('appends new tabs without changing earlier enum indices', () {
-    expect(AppTab.server.index, 0);
-    expect(AppTab.benchmark.index, 5);
-    expect(AppTab.remoteDesktop.index, 6);
-    expect(AppTab.virt.index, 7);
+  /// A stored integer resolves against the positions the builds that wrote
+  /// integers used, not today's declaration order: removing `agent` and
+  /// `remoteDesktop` must not re-point the integers after them.
+  test('resolves legacy integers by their historical positions', () {
+    expect(
+      AppTab.parseAppTabsFromObj([0, 4, 5, 6, 8, 9, 10]),
+      [AppTab.server, AppTab.benchmark, AppTab.virt, AppTab.workspace, AppTab.monitor],
+    );
   });
 
-  /// 7 was the Monitor settings tab. `values` is positional, so the next case
-  /// appended took that index — Virtualization — and without the retired list
-  /// an install that had the old tab in its bar would silently get the new tab
-  /// in its place.
+  /// 7 was the Monitor settings tab; 4 the Agent and 6 Remote desktop.
   test('drops a retired tab index instead of resolving it', () {
-    expect(AppTab.values[7], AppTab.virt);
     expect(AppTab.parseAppTabsFromObj([0, 7, 1]), [AppTab.server, AppTab.ssh]);
+    expect(AppTab.parseAppTabsFromObj([4, 6]), AppTab.defaultOrder);
     // Nothing left is nothing stored, which is what the default is for.
     expect(AppTab.parseAppTabsFromObj([7]), AppTab.defaultOrder);
     // The name is gone from `values` too, so a record that spelled it out is
@@ -192,9 +180,9 @@ void main() {
   });
 
   group('reorderHomeTabs', () {
-    // [server, file] | separator at 2 | [ssh, snippet, agent]
+    // [server, file] | separator at 2 | [ssh, snippet, benchmark]
     const enabled = [AppTab.server, AppTab.file];
-    const disabled = [AppTab.ssh, AppTab.snippet, AppTab.agent];
+    const disabled = [AppTab.ssh, AppTab.snippet, AppTab.benchmark];
 
     test('dragging past the separator enables a tab', () {
       final next = reorderHomeTabs(
@@ -205,7 +193,7 @@ void main() {
       );
 
       expect(next?.enabled, [AppTab.server, AppTab.ssh, AppTab.file]);
-      expect(next?.disabled, [AppTab.snippet, AppTab.agent]);
+      expect(next?.disabled, [AppTab.snippet, AppTab.benchmark]);
     });
 
     test('dragging under the separator disables a tab', () {
@@ -217,7 +205,7 @@ void main() {
       );
 
       expect(next?.enabled, [AppTab.server]);
-      expect(next?.disabled, [AppTab.ssh, AppTab.file, AppTab.snippet, AppTab.agent]);
+      expect(next?.disabled, [AppTab.ssh, AppTab.file, AppTab.snippet, AppTab.benchmark]);
     });
 
     test('reorders within one half without changing what is enabled', () {
@@ -279,8 +267,6 @@ void main() {
           if (tab.mark != null) tab,
       };
       expect(marked, {
-        AppTab.remoteDesktop,
-        AppTab.agent,
         AppTab.benchmark,
         AppTab.virt,
         AppTab.workspace,
@@ -301,7 +287,7 @@ void main() {
         for (final btn in ServerFuncBtn.values)
           if (btn.mark != null) btn,
       };
-      expect(marked, {ServerFuncBtn.remoteDesktop, ServerFuncBtn.portForward});
+      expect(marked, {ServerFuncBtn.portForward});
     });
   });
 

@@ -8,14 +8,12 @@ import 'dart:convert';
 import 'dart:ffi' as ffi;
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
-import 'package:server_box/src/rust/api/agent_pipe.dart';
 import 'package:server_box/src/rust/api/backup.dart';
 import 'package:server_box/src/rust/api/bench.dart';
 import 'package:server_box/src/rust/api/bmc.dart';
 import 'package:server_box/src/rust/api/container.dart';
 import 'package:server_box/src/rust/api/create.dart';
 import 'package:server_box/src/rust/api/cron.dart';
-import 'package:server_box/src/rust/api/desktop.dart';
 import 'package:server_box/src/rust/api/digest.dart';
 import 'package:server_box/src/rust/api/exec_session.dart';
 import 'package:server_box/src/rust/api/file.dart';
@@ -27,7 +25,6 @@ import 'package:server_box/src/rust/api/parser.dart';
 import 'package:server_box/src/rust/api/proc.dart';
 import 'package:server_box/src/rust/api/protocol.dart';
 import 'package:server_box/src/rust/api/pve.dart';
-import 'package:server_box/src/rust/api/remote_desktop.dart';
 import 'package:server_box/src/rust/api/resource.dart';
 import 'package:server_box/src/rust/api/script.dart';
 import 'package:server_box/src/rust/api/service.dart';
@@ -53,10 +50,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   });
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_AgentPipePtr => wire
-      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipePtr;
-
-  CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_BmcClientPtr => wire
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBmcClientPtr;
 
@@ -77,10 +70,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSessionPtr;
 
   CrossPlatformFinalizerArg
-  get rust_arc_decrement_strong_count_RemoteDesktopSessionHandlePtr => wire
-      ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandlePtr;
-
-  CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_SshAeadPtr => wire
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSshAeadPtr;
 
@@ -91,12 +80,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_SshMacPtr => wire
       ._rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSshMacPtr;
-
-  @protected
-  AgentPipe
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    dynamic raw,
-  );
 
   @protected
   BmcClient
@@ -125,12 +108,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   PveSession
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
-    dynamic raw,
-  );
-
-  @protected
-  RemoteDesktopSessionHandle
-  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
     dynamic raw,
   );
 
@@ -171,12 +148,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  AgentPipe
-  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    dynamic raw,
-  );
-
-  @protected
   BmcClient
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBmcClient(
     dynamic raw,
@@ -191,12 +162,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   PveSession
   dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
-    dynamic raw,
-  );
-
-  @protected
-  RemoteDesktopSessionHandle
-  dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
     dynamic raw,
   );
 
@@ -237,12 +202,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  AgentPipe
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    dynamic raw,
-  );
-
-  @protected
   BmcClient
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBmcClient(
     dynamic raw,
@@ -269,12 +228,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   PveSession
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
-    dynamic raw,
-  );
-
-  @protected
-  RemoteDesktopSessionHandle
-  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
     dynamic raw,
   );
 
@@ -524,12 +477,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ProcSortMode dco_decode_box_autoadd_proc_sort_mode(dynamic raw);
 
   @protected
-  ProfileError dco_decode_box_autoadd_profile_error(dynamic raw);
-
-  @protected
-  ProfileInput dco_decode_box_autoadd_profile_input(dynamic raw);
-
-  @protected
   PsParseIssue dco_decode_box_autoadd_ps_parse_issue(dynamic raw);
 
   @protected
@@ -548,9 +495,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PveTiming dco_decode_box_autoadd_pve_timing(dynamic raw);
 
   @protected
-  RdpSessionParams dco_decode_box_autoadd_rdp_session_params(dynamic raw);
-
-  @protected
   RedfishChassis dco_decode_box_autoadd_redfish_chassis(dynamic raw);
 
   @protected
@@ -564,14 +508,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Refusal dco_decode_box_autoadd_refusal(dynamic raw);
-
-  @protected
-  RemoteDesktopEvent dco_decode_box_autoadd_remote_desktop_event(dynamic raw);
-
-  @protected
-  RemoteDesktopFailure dco_decode_box_autoadd_remote_desktop_failure(
-    dynamic raw,
-  );
 
   @protected
   ResetRequest dco_decode_box_autoadd_reset_request(dynamic raw);
@@ -736,12 +672,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   VirtVersion dco_decode_box_autoadd_virt_version(dynamic raw);
-
-  @protected
-  VncPasswordError dco_decode_box_autoadd_vnc_password_error(dynamic raw);
-
-  @protected
-  VncSessionParams dco_decode_box_autoadd_vnc_session_params(dynamic raw);
 
   @protected
   Volume dco_decode_box_autoadd_volume(dynamic raw);
@@ -1015,9 +945,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   HwNic dco_decode_hw_nic(dynamic raw);
-
-  @protected
-  int dco_decode_i_16(dynamic raw);
 
   @protected
   int dco_decode_i_32(dynamic raw);
@@ -1561,9 +1488,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ProcSortMode? dco_decode_opt_box_autoadd_proc_sort_mode(dynamic raw);
 
   @protected
-  ProfileError? dco_decode_opt_box_autoadd_profile_error(dynamic raw);
-
-  @protected
   PsParseIssue? dco_decode_opt_box_autoadd_ps_parse_issue(dynamic raw);
 
   @protected
@@ -1583,16 +1507,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Refusal? dco_decode_opt_box_autoadd_refusal(dynamic raw);
-
-  @protected
-  RemoteDesktopEvent? dco_decode_opt_box_autoadd_remote_desktop_event(
-    dynamic raw,
-  );
-
-  @protected
-  RemoteDesktopFailure? dco_decode_opt_box_autoadd_remote_desktop_failure(
-    dynamic raw,
-  );
 
   @protected
   ResetRequest? dco_decode_opt_box_autoadd_reset_request(dynamic raw);
@@ -1691,9 +1605,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   VirtVersion? dco_decode_opt_box_autoadd_virt_version(dynamic raw);
 
   @protected
-  VncPasswordError? dco_decode_opt_box_autoadd_vnc_password_error(dynamic raw);
-
-  @protected
   Volume? dco_decode_opt_box_autoadd_volume(dynamic raw);
 
   @protected
@@ -1778,12 +1689,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ProcSortMode dco_decode_proc_sort_mode(dynamic raw);
 
   @protected
-  ProfileError dco_decode_profile_error(dynamic raw);
-
-  @protected
-  ProfileInput dco_decode_profile_input(dynamic raw);
-
-  @protected
   ProtocolCompat dco_decode_protocol_compat(dynamic raw);
 
   @protected
@@ -1821,9 +1726,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RaidLevelChoice dco_decode_raid_level_choice(dynamic raw);
-
-  @protected
-  RdpSessionParams dco_decode_rdp_session_params(dynamic raw);
 
   @protected
   (String, double) dco_decode_record_string_f_64(dynamic raw);
@@ -1868,20 +1770,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Refusal dco_decode_refusal(dynamic raw);
-
-  @protected
-  RemoteDesktopConnectionState dco_decode_remote_desktop_connection_state(
-    dynamic raw,
-  );
-
-  @protected
-  RemoteDesktopEndReason dco_decode_remote_desktop_end_reason(dynamic raw);
-
-  @protected
-  RemoteDesktopEvent dco_decode_remote_desktop_event(dynamic raw);
-
-  @protected
-  RemoteDesktopFailure dco_decode_remote_desktop_failure(dynamic raw);
 
   @protected
   ResetRequest dco_decode_reset_request(dynamic raw);
@@ -2277,16 +2165,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   VirtVersion dco_decode_virt_version(dynamic raw);
 
   @protected
-  VirtVncConsoleInfo dco_decode_virt_vnc_console_info(dynamic raw);
-
-  @protected
   VirtVolumeRef dco_decode_virt_volume_ref(dynamic raw);
-
-  @protected
-  VncPasswordError dco_decode_vnc_password_error(dynamic raw);
-
-  @protected
-  VncSessionParams dco_decode_vnc_session_params(dynamic raw);
 
   @protected
   Volume dco_decode_volume(dynamic raw);
@@ -2296,12 +2175,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   X25519KeyPair dco_decode_x_25519_key_pair(dynamic raw);
-
-  @protected
-  AgentPipe
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    SseDeserializer deserializer,
-  );
 
   @protected
   BmcClient
@@ -2330,12 +2203,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   PveSession
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  RemoteDesktopSessionHandle
-  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
     SseDeserializer deserializer,
   );
 
@@ -2376,12 +2243,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  AgentPipe
-  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   BmcClient
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBmcClient(
     SseDeserializer deserializer,
@@ -2396,12 +2257,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   PveSession
   sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  RemoteDesktopSessionHandle
-  sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
     SseDeserializer deserializer,
   );
 
@@ -2446,12 +2301,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  AgentPipe
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   BmcClient
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBmcClient(
     SseDeserializer deserializer,
@@ -2478,12 +2327,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   PveSession
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  RemoteDesktopSessionHandle
-  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
     SseDeserializer deserializer,
   );
 
@@ -2773,16 +2616,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  ProfileError sse_decode_box_autoadd_profile_error(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  ProfileInput sse_decode_box_autoadd_profile_input(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   PsParseIssue sse_decode_box_autoadd_ps_parse_issue(
     SseDeserializer deserializer,
   );
@@ -2807,11 +2640,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PveTiming sse_decode_box_autoadd_pve_timing(SseDeserializer deserializer);
 
   @protected
-  RdpSessionParams sse_decode_box_autoadd_rdp_session_params(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   RedfishChassis sse_decode_box_autoadd_redfish_chassis(
     SseDeserializer deserializer,
   );
@@ -2833,16 +2661,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Refusal sse_decode_box_autoadd_refusal(SseDeserializer deserializer);
-
-  @protected
-  RemoteDesktopEvent sse_decode_box_autoadd_remote_desktop_event(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  RemoteDesktopFailure sse_decode_box_autoadd_remote_desktop_failure(
-    SseDeserializer deserializer,
-  );
 
   @protected
   ResetRequest sse_decode_box_autoadd_reset_request(
@@ -3065,16 +2883,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   VirtVersion sse_decode_box_autoadd_virt_version(SseDeserializer deserializer);
-
-  @protected
-  VncPasswordError sse_decode_box_autoadd_vnc_password_error(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  VncSessionParams sse_decode_box_autoadd_vnc_session_params(
-    SseDeserializer deserializer,
-  );
 
   @protected
   Volume sse_decode_box_autoadd_volume(SseDeserializer deserializer);
@@ -3368,9 +3176,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   HwNic sse_decode_hw_nic(SseDeserializer deserializer);
-
-  @protected
-  int sse_decode_i_16(SseDeserializer deserializer);
 
   @protected
   int sse_decode_i_32(SseDeserializer deserializer);
@@ -4026,11 +3831,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  ProfileError? sse_decode_opt_box_autoadd_profile_error(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   PsParseIssue? sse_decode_opt_box_autoadd_ps_parse_issue(
     SseDeserializer deserializer,
   );
@@ -4060,16 +3860,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Refusal? sse_decode_opt_box_autoadd_refusal(SseDeserializer deserializer);
-
-  @protected
-  RemoteDesktopEvent? sse_decode_opt_box_autoadd_remote_desktop_event(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  RemoteDesktopFailure? sse_decode_opt_box_autoadd_remote_desktop_failure(
-    SseDeserializer deserializer,
-  );
 
   @protected
   ResetRequest? sse_decode_opt_box_autoadd_reset_request(
@@ -4208,11 +3998,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  VncPasswordError? sse_decode_opt_box_autoadd_vnc_password_error(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   Volume? sse_decode_opt_box_autoadd_volume(SseDeserializer deserializer);
 
   @protected
@@ -4305,12 +4090,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ProcSortMode sse_decode_proc_sort_mode(SseDeserializer deserializer);
 
   @protected
-  ProfileError sse_decode_profile_error(SseDeserializer deserializer);
-
-  @protected
-  ProfileInput sse_decode_profile_input(SseDeserializer deserializer);
-
-  @protected
   ProtocolCompat sse_decode_protocol_compat(SseDeserializer deserializer);
 
   @protected
@@ -4348,9 +4127,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RaidLevelChoice sse_decode_raid_level_choice(SseDeserializer deserializer);
-
-  @protected
-  RdpSessionParams sse_decode_rdp_session_params(SseDeserializer deserializer);
 
   @protected
   (String, double) sse_decode_record_string_f_64(SseDeserializer deserializer);
@@ -4401,26 +4177,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Refusal sse_decode_refusal(SseDeserializer deserializer);
-
-  @protected
-  RemoteDesktopConnectionState sse_decode_remote_desktop_connection_state(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  RemoteDesktopEndReason sse_decode_remote_desktop_end_reason(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  RemoteDesktopEvent sse_decode_remote_desktop_event(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  RemoteDesktopFailure sse_decode_remote_desktop_failure(
-    SseDeserializer deserializer,
-  );
 
   @protected
   ResetRequest sse_decode_reset_request(SseDeserializer deserializer);
@@ -4838,18 +4594,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   VirtVersion sse_decode_virt_version(SseDeserializer deserializer);
 
   @protected
-  VirtVncConsoleInfo sse_decode_virt_vnc_console_info(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   VirtVolumeRef sse_decode_virt_volume_ref(SseDeserializer deserializer);
-
-  @protected
-  VncPasswordError sse_decode_vnc_password_error(SseDeserializer deserializer);
-
-  @protected
-  VncSessionParams sse_decode_vnc_session_params(SseDeserializer deserializer);
 
   @protected
   Volume sse_decode_volume(SseDeserializer deserializer);
@@ -4859,13 +4604,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   X25519KeyPair sse_decode_x_25519_key_pair(SseDeserializer deserializer);
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    AgentPipe self,
-    SseSerializer serializer,
-  );
 
   @protected
   void
@@ -4899,13 +4637,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
     PveSession self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
-    RemoteDesktopSessionHandle self,
     SseSerializer serializer,
   );
 
@@ -4953,13 +4684,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
-  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    AgentPipe self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBmcClient(
     BmcClient self,
     SseSerializer serializer,
@@ -4976,13 +4700,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
     PveSession self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
-    RemoteDesktopSessionHandle self,
     SseSerializer serializer,
   );
 
@@ -5036,13 +4753,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    AgentPipe self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBmcClient(
     BmcClient self,
     SseSerializer serializer,
@@ -5073,13 +4783,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession(
     PveSession self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void
-  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
-    RemoteDesktopSessionHandle self,
     SseSerializer serializer,
   );
 
@@ -5447,18 +5150,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_box_autoadd_profile_error(
-    ProfileError self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_box_autoadd_profile_input(
-    ProfileInput self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_box_autoadd_ps_parse_issue(
     PsParseIssue self,
     SseSerializer serializer,
@@ -5492,12 +5183,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_box_autoadd_rdp_session_params(
-    RdpSessionParams self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_box_autoadd_redfish_chassis(
     RedfishChassis self,
     SseSerializer serializer,
@@ -5523,18 +5208,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_refusal(Refusal self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_box_autoadd_remote_desktop_event(
-    RemoteDesktopEvent self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_box_autoadd_remote_desktop_failure(
-    RemoteDesktopFailure self,
-    SseSerializer serializer,
-  );
 
   @protected
   void sse_encode_box_autoadd_reset_request(
@@ -5839,18 +5512,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_virt_version(
     VirtVersion self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_box_autoadd_vnc_password_error(
-    VncPasswordError self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_box_autoadd_vnc_session_params(
-    VncSessionParams self,
     SseSerializer serializer,
   );
 
@@ -6192,9 +5853,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_hw_nic(HwNic self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_i_16(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
@@ -7058,12 +6716,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_opt_box_autoadd_profile_error(
-    ProfileError? self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_opt_box_autoadd_ps_parse_issue(
     PsParseIssue? self,
     SseSerializer serializer,
@@ -7102,18 +6754,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_refusal(
     Refusal? self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_opt_box_autoadd_remote_desktop_event(
-    RemoteDesktopEvent? self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_opt_box_autoadd_remote_desktop_failure(
-    RemoteDesktopFailure? self,
     SseSerializer serializer,
   );
 
@@ -7283,12 +6923,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_opt_box_autoadd_vnc_password_error(
-    VncPasswordError? self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_opt_box_autoadd_volume(
     Volume? self,
     SseSerializer serializer,
@@ -7400,12 +7034,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_proc_sort_mode(ProcSortMode self, SseSerializer serializer);
 
   @protected
-  void sse_encode_profile_error(ProfileError self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_profile_input(ProfileInput self, SseSerializer serializer);
-
-  @protected
   void sse_encode_protocol_compat(
     ProtocolCompat self,
     SseSerializer serializer,
@@ -7459,12 +7087,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_raid_level_choice(
     RaidLevelChoice self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_rdp_session_params(
-    RdpSessionParams self,
     SseSerializer serializer,
   );
 
@@ -7542,30 +7164,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_refusal(Refusal self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_remote_desktop_connection_state(
-    RemoteDesktopConnectionState self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_remote_desktop_end_reason(
-    RemoteDesktopEndReason self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_remote_desktop_event(
-    RemoteDesktopEvent self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_remote_desktop_failure(
-    RemoteDesktopFailure self,
-    SseSerializer serializer,
-  );
 
   @protected
   void sse_encode_reset_request(ResetRequest self, SseSerializer serializer);
@@ -8060,25 +7658,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_virt_version(VirtVersion self, SseSerializer serializer);
 
   @protected
-  void sse_encode_virt_vnc_console_info(
-    VirtVncConsoleInfo self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_virt_volume_ref(VirtVolumeRef self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_vnc_password_error(
-    VncPasswordError self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_vnc_session_params(
-    VncSessionParams self,
-    SseSerializer serializer,
-  );
 
   @protected
   void sse_encode_volume(Volume self, SseSerializer serializer);
@@ -8106,40 +7686,6 @@ class RustLibWire implements BaseWire {
   /// The symbols are looked up in [dynamicLibrary].
   RustLibWire(ffi.DynamicLibrary dynamicLibrary)
     : _lookup = dynamicLibrary.lookup;
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    ffi.Pointer<ffi.Void> ptr,
-  ) {
-    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-      ptr,
-    );
-  }
-
-  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'frbgen_server_box_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe',
-      );
-  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe =
-      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipePtr
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-    ffi.Pointer<ffi.Void> ptr,
-  ) {
-    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe(
-      ptr,
-    );
-  }
-
-  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'frbgen_server_box_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe',
-      );
-  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipe =
-      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAgentPipePtr
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   void
   rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBmcClient(
@@ -8309,40 +7855,6 @@ class RustLibWire implements BaseWire {
       );
   late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSession =
       _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPveSessionPtr
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-
-  void
-  rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
-    ffi.Pointer<ffi.Void> ptr,
-  ) {
-    return _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
-      ptr,
-    );
-  }
-
-  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandlePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'frbgen_server_box_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle',
-      );
-  late final _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle =
-      _rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandlePtr
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-
-  void
-  rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
-    ffi.Pointer<ffi.Void> ptr,
-  ) {
-    return _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle(
-      ptr,
-    );
-  }
-
-  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandlePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'frbgen_server_box_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle',
-      );
-  late final _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandle =
-      _rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerRemoteDesktopSessionHandlePtr
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   void

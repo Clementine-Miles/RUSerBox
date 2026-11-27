@@ -37,6 +37,7 @@ import 'package:server_box/data/store/migrations/m039_ssh_identity_agent.dart';
 import 'package:server_box/data/store/migrations/m040_ssh_forward_agent.dart';
 import 'package:server_box/data/store/migrations/m041_ssh_control_path.dart';
 import 'package:server_box/data/store/migrations/m042_monitor_fallback_addr.dart';
+import 'package:server_box/data/store/migrations/m043_retire_removed_features.dart';
 import 'package:server_box/data/store/schema.dart';
 
 /// Every migration, ordered, in the one place that names them.
@@ -96,6 +97,7 @@ const kSchemaMigrations = <SchemaMigration>[
   SshForwardAgentMigration(),
   SshControlPathMigration(),
   MonitorFallbackAddrMigration(),
+  RetireRemovedFeaturesMigration(),
 ];
 
 /// The steps a restore runs on the settings it brought back, in schema order.
@@ -121,9 +123,6 @@ const kRestoreSettingsMigrations = <SettingsMigration>[
   VirtKeyNamesMigration(),
   // The five-tab home bar of older builds.
   HomeTabsBarMigration(),
-  // An `askAi.baseUrl` without its API version, which `LegacyAskAiMigration`
-  // turns into a provider at the next launch that then answers 404.
-  AiEndpointVersionMigration(),
 ];
 
 /// The [kRestoreSettingsMigrations] a file written at schema [fileVersion]

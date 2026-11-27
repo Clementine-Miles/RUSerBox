@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmL10nX;
 import 'package:material_ui/material_ui.dart';
 import 'package:server_box/core/app_navigator.dart';
 import 'package:server_box/core/extension/context/locale.dart';
@@ -13,7 +12,6 @@ import 'package:server_box/data/res/chart_palette.dart';
 import 'package:server_box/data/res/url.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/generated/l10n/l10n.dart';
-import 'package:server_box/view/agent/screen.dart';
 import 'package:server_box/view/page/home.dart';
 import 'package:server_box/view/page/server/full_screen.dart';
 import 'package:server_box/view/page/setting/entry.dart';
@@ -118,7 +116,7 @@ class _MyAppState extends State<MyApp> {
       localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       localeListResolutionCallback: LocaleUtil.resolve,
-      navigatorObservers: [AppRouteObserver.instance, AgentScreen.rootObserver],
+      navigatorObservers: [AppRouteObserver.instance],
       title: BuildData.name,
       themeMode: themeMode,
       theme: light,
@@ -127,7 +125,6 @@ class _MyAppState extends State<MyApp> {
         future: _introFuture,
         builder: (context, snapshot) {
           context.setLibL10n();
-          context.setLlmL10n();
           final appL10n = AppLocalizations.of(context);
           if (appL10n != null) l10n = appL10n;
 

@@ -126,15 +126,6 @@ List<VirtActionKind>? virtLibvirtPowerPlan({
   action: action,
 );
 
-/// Display and VNC password, for opening a graphical console
-String virtVncConsoleScript({required String domain}) =>
-    RustLib.instance.api.crateApiVirtVirtVncConsoleScript(domain: domain);
-
-/// [`virt_vnc_console_script`]'s output as `VirtVncConsoleInfo`. Holds
-/// the password: never logged.
-Future<VirtVncConsoleInfo> virtLibvirtVncConsole({required String raw}) =>
-    RustLib.instance.api.crateApiVirtVirtLibvirtVncConsole(raw: raw);
-
 /// [`virt_domain_detail_script`]'s output as `VirtDomainDetail`
 Future<VirtDomainDetail> virtLibvirtDomainDetail({required String raw}) =>
     RustLib.instance.api.crateApiVirtVirtLibvirtDomainDetail(raw: raw);

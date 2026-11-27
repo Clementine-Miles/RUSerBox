@@ -1,7 +1,7 @@
 part of '../entry.dart';
 
-extension _RemoteDesktop on _AppSettingsPageState {
-  List<SettingsGroup> _buildRemoteDesktop() {
+extension _Console on _AppSettingsPageState {
+  List<SettingsGroup> _buildConsole() {
     return [
       SettingsGroup(libL10n.general, [_buildRemoteSessionIdleTimeout()]),
     ];
@@ -44,7 +44,7 @@ extension _RemoteDesktop on _AppSettingsPageState {
       ),
       keywords:
           '${l10n.remoteSessionIdleTimeoutTip} ${l10n.remoteSessionKeepAlive} '
-          'vnc rdp ${l10n.virtConsole}',
+          '${l10n.virtConsole}',
     );
   }
 }

@@ -15,7 +15,6 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:server_box/core/pve/console.dart';
 import 'package:server_box/core/pve/termproxy.dart';
 import 'package:server_box/data/model/app/error.dart';
 import 'package:server_box/data/model/server/pve_config.dart';
@@ -26,7 +25,6 @@ import 'package:server_box/data/provider/virt/pve_backend.dart';
 
 import '../../helpers/pve_tunnel.dart';
 import '../../helpers/rust_lib_helper.dart';
-import '../../helpers/tunnel_client.dart';
 
 const _dir = 'test/fixtures/virt_tls';
 
@@ -239,59 +237,5 @@ void main() {
       ),
     );
     expect(upgrades, isEmpty, reason: 'nothing was sent past the handshake');
-  });
-
-  group('graphical', () {
-    Future<void> rfbThroughTunnel(PveVncConsole console, PveBackend pve) async {
-      final fromClient = BytesBuilder();
-      final gotClientBytes = Completer<void>();
-      onSocket = (ws, _) {
-        ws.add(Uint8List.fromList(ascii.encode('RFB 003.008\n')));
-        // Not part of the RFB stream.
-        ws.add('ignored');
-        ws.listen((frame) {
-          fromClient.add(frame as List<int>);
-          if (!gotClientBytes.isCompleted) gotClientBytes.complete();
-        });
-      };
-      final tunnel = await PveConsoleTunnelChannel.loopbackOnce(
-        PveConsoleTunnelChannel(await pve.openConsole(console)),
-      );
-      addTearDown(tunnel.close);
-      final vnc = await connectTunnel(tunnel);
-      addTearDown(vnc.destroy);
-      final greeting = await vnc.first.timeout(const Duration(seconds: 5));
-      expect(ascii.decode(greeting), 'RFB 003.008\n');
-      vnc.add(ascii.encode('RFB 003.008\n'));
-      await gotClientBytes.future.timeout(const Duration(seconds: 5));
-      expect(ascii.decode(fromClient.takeBytes()), 'RFB 003.008\n');
-    }
-
-    test('vncproxy with a generated password, RFB through the adapter', () async {
-      final pve = backend(pin: _leafFingerprint());
-      addTearDown(pve.close);
-      final console = await pve.console(_qemu, VirtConsoleKind.vnc);
-      expect(posts['/nodes/pve/qemu/101/vncproxy'], contains('websocket=1'));
-      expect(
-        posts['/nodes/pve/qemu/101/vncproxy'],
-        contains('generate-password=1'),
-      );
-      console as PveVncConsole;
-      expect(console.rfbPassword, 'Ab3dE6gH');
-      await rfbThroughTunnel(console, pve);
-      expect(upgrades.single['uri'], contains('/qemu/101/vncwebsocket'));
-      expect(upgrades.single['uri'], contains('vncticket=PVEVNC%3AVT'));
-    });
-
-    test('before PVE 7.2 the ticket is the password, cut to 8', () async {
-      oldPve = true;
-      final pve = backend(pin: _leafFingerprint());
-      addTearDown(pve.close);
-      final console = await pve.console(_qemu, VirtConsoleKind.vnc);
-      console as PveVncConsole;
-      expect(posts['/nodes/pve/qemu/101/vncproxy'], isNot(contains('generate')));
-      expect(console.password, 'PVEVNC:VT');
-      expect(console.rfbPassword, 'PVEVNC:V');
-    });
   });
 }

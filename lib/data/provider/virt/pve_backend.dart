@@ -203,21 +203,10 @@ class PveBackend implements VirtBackend {
     final t = await _rust(
       (s) => s.console(
         guest: _ref(guest),
-        kind: kind == VirtConsoleKind.vnc ? PveConsoleKind.vnc : PveConsoleKind.text,
+        kind: PveConsoleKind.text,
       ),
     );
     final guestKind = t.lxc ? VirtGuestKind.lxc : VirtGuestKind.qemu;
-    if (t.vnc) {
-      return PveVncConsole(
-        node: t.node,
-        guestKind: guestKind,
-        vmid: t.vmid,
-        port: t.port,
-        ticket: t.ticket,
-        user: t.user,
-        password: t.password ?? t.ticket,
-      );
-    }
     return PveTermConsole(
       node: t.node,
       guestKind: guestKind,
@@ -238,14 +227,11 @@ class PveBackend implements VirtBackend {
           node: console.node,
           lxc: console.guestKind == VirtGuestKind.lxc,
           vmid: console.vmid,
-          vnc: console is PveVncConsole,
+          vnc: false,
           port: console.port,
           ticket: console.ticket,
           user: console.user,
-          password: switch (console) {
-            PveVncConsole(:final password) => password,
-            PveTermConsole() => null,
-          },
+          password: null,
         ),
       ),
     );

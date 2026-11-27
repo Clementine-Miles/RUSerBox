@@ -1,9 +1,9 @@
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/data/store/migrations/all.dart';
 import 'package:server_box/data/store/migrations/m038_sync_all.dart';
 import 'package:server_box/data/store/schema.dart';
+import 'package:server_box/data/store/stores.dart';
 
 import '../helpers/test_db.dart';
 
@@ -49,15 +49,19 @@ void main() {
     await const SyncAllMigration().apply();
   });
 
-  test("makes records of the Agent's stores", () async {
-    LlmStores.tool.enabled.put(false);
+  test('makes records of the secrets stores', () async {
+    Stores.sudoPassword.set('s1', 'pw');
     SqliteDb.instance.execute('DELETE FROM sync_record;');
 
     await const SyncAllMigration().apply();
 
     final ids = [
-      for (final r in SqliteDb.instance.select("SELECT id FROM sync_record WHERE c = 'kv:tool';")) r['id'],
+      for (final r in SqliteDb.instance.select(
+        'SELECT id FROM sync_record WHERE c = ?;',
+        ['kv:${Stores.sudoPassword.name}'],
+      ))
+        r['id'],
     ];
-    expect(ids, ['enabled']);
+    expect(ids, ['s1']);
   });
 }

@@ -11,7 +11,7 @@ sealed class VirtConsole {
   VirtConsoleKind get kind;
 }
 
-/// A PVE console: `termproxy` or `vncproxy`, reached through the node's
+/// A PVE console: `termproxy`, reached through the node's
 /// `vncwebsocket`, which `PveBackend.openConsole` opens over the same
 /// transport and login as the API calls.
 sealed class PveConsole extends VirtConsole {
@@ -58,34 +58,6 @@ final class PveTermConsole extends PveConsole {
   VirtConsoleKind get kind => VirtConsoleKind.text;
 }
 
-/// PVE `vncproxy`: RFB over the websocket, one binary frame per slice of
-/// the stream.
-final class PveVncConsole extends PveConsole {
-  const PveVncConsole({
-    required super.node,
-    required super.guestKind,
-    required super.vmid,
-    required super.port,
-    required super.ticket,
-    required super.user,
-    required this.password,
-  });
-
-  /// The VNC password QEMU was given for this connection: the one
-  /// `generate-password` made, or — before PVE 7.2 — [ticket] itself. Never
-  /// logged.
-  final String password;
-
-  /// [password] as RFB's VNC authentication uses it: DES keyed with the first
-  /// 8 bytes, which is also all QEMU keeps of a longer one. So a ticket cut to
-  /// 8 authenticates exactly as the whole ticket would.
-  String get rfbPassword =>
-      password.length <= 8 ? password : password.substring(0, 8);
-
-  @override
-  VirtConsoleKind get kind => VirtConsoleKind.vnc;
-}
-
 /// libvirt serial console: [command] run in a terminal session on the server
 /// (it needs a PTY, so it is not an exec).
 final class LibvirtSerialConsole extends VirtConsole {
@@ -101,37 +73,4 @@ final class LibvirtSerialConsole extends VirtConsole {
 
   @override
   VirtConsoleKind get kind => VirtConsoleKind.text;
-}
-
-/// libvirt graphical console: a VNC server on the hypervisor. Dial [host]:
-/// [port] from the server's side with `ServerTcpDialer.loopback` and point
-/// the VNC client at the loopback port.
-///
-/// [password] is the display's own, read with `dumpxml --security-info`, for
-/// this one connection. Where it could not be read ([passwordKnown] false),
-/// the server's answer decides: one that asks is answered from the user.
-final class LibvirtVncConsole extends VirtConsole {
-  const LibvirtVncConsole({
-    required this.host,
-    required this.port,
-    this.password,
-    this.passwordKnown = true,
-  });
-
-  /// As seen from the hypervisor; a wildcard listen address is given as
-  /// loopback.
-  final String host;
-  final int port;
-
-  /// Never logged, never stored.
-  final String? password;
-  final bool passwordKnown;
-
-  @override
-  VirtConsoleKind get kind => VirtConsoleKind.vnc;
-
-  @override
-  String toString() =>
-      'LibvirtVncConsole($host:$port, '
-      'password: ${password == null ? 'none' : '[redacted]'})';
 }

@@ -6,11 +6,9 @@ part 'virt_detail.freezed.dart';
 /// The consoles a guest offers — see `VirtConsole` for what opening one gives.
 enum VirtConsoleKind {
   /// Text: PVE `termproxy` (an LXC shell, or a QEMU guest's `serial0`), or
-  /// libvirt's `virsh console` on the guest's serial device.
+  /// libvirt's `virsh console` on the guest's serial device. A guest's
+  /// graphical (VNC) display is not offered: this build has no viewer.
   text,
-
-  /// Graphical: VNC.
-  vnc,
 }
 
 /// A disk, CD drive or container volume.
@@ -148,10 +146,7 @@ extension GuestDetailVirt on vv.VirtGuestDetailReport {
     },
     consoles: {
       for (final c in consoles)
-        switch (c) {
-          vv.ConsoleKind.text => VirtConsoleKind.text,
-          vv.ConsoleKind.vnc => VirtConsoleKind.vnc,
-        },
+        if (c == vv.ConsoleKind.text) VirtConsoleKind.text,
     },
     description: description,
     arch: arch,

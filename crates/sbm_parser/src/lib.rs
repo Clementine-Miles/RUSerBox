@@ -11,7 +11,6 @@
 //!   (the delta helpers in `types::`) — no mutable state is held
 //! - Units follow the data source: memory/disk in KiB (meminfo/df -k), network in bytes
 
-pub mod agents;
 pub mod arm;
 pub mod bench;
 pub mod bsd;
@@ -20,13 +19,11 @@ pub mod commands;
 pub mod common;
 pub mod container;
 pub mod container_backup;
-pub mod desktop;
 pub mod exec_session;
 pub mod files;
 pub mod firewall;
 pub mod cron;
 pub mod gpu;
-pub mod inference;
 pub mod iperf;
 pub mod linux;
 pub mod monitor_agent;

@@ -20,8 +20,6 @@ import 'package:server_box/data/provider/virt/virt.dart';
 import 'package:server_box/data/res/build_data.dart';
 import 'package:server_box/data/res/url.dart';
 import 'package:server_box/data/store/stores.dart';
-import 'package:server_box/view/agent/screen.dart';
-import 'package:server_box/view/page/floating_panels.dart';
 import 'package:server_box/view/page/home/android_system.dart';
 import 'package:server_box/view/page/home/app_link.dart';
 import 'package:server_box/view/page/home/incoming.dart';
@@ -31,6 +29,7 @@ import 'package:server_box/view/page/notice/store_unreadable_notice.dart';
 import 'package:server_box/view/page/server/widget/legacy_status_notice.dart';
 import 'package:server_box/view/page/setting/entries/home_tabs.dart';
 import 'package:server_box/view/page/setting/entry.dart';
+import 'package:server_box/view/page/ssh/float.dart';
 import 'package:server_box/view/widget/app_icon.dart';
 import 'package:server_box/view/widget/nav_bar.dart';
 import 'package:server_box/view/widget/nav_rail.dart';
@@ -426,9 +425,8 @@ class _HomePageState extends ConsumerState<HomePage>
       ),
     );
 
-    // Above the `PageView` rather than inside a tab: the Agent and a floated
-    // terminal float over whichever tab you are on, so neither can belong to
-    // one of them.
+    // Above the `PageView` rather than inside a tab: a floated terminal floats
+    // over whichever tab you are on, so it cannot belong to one of them.
     //
     // They are told how big this box actually is rather than reading
     // `MediaQuery.sizeOf`. Those are not the same number — everything between
@@ -469,7 +467,7 @@ class _HomePageState extends ConsumerState<HomePage>
           return Stack(
             children: [
               mainContent(narrow, column, constraints.biggest),
-              FloatingPanels(area: constraints.biggest),
+              TerminalFloatingShell(area: constraints.biggest),
             ],
           );
         },
@@ -536,8 +534,6 @@ class _HomePageState extends ConsumerState<HomePage>
         ),
       );
     }
-
-    unawaited(MethodChans.updateHomeWidget());
 
     // In sequence, and awaited. Both are root-navigator dialogs, so firing
     // them together stacks one on the other; and the guide is an overlay above

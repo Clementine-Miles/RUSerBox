@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fl_lib/fl_lib.dart';
-import 'package:fl_pi_llm_ui/fl_pi_llm_ui.dart' show LlmStores;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:server_box/core/extension/context/locale.dart';
@@ -185,30 +184,11 @@ void main() {
     expect(Stores.setting.timeout.fetch(), 5);
   });
 
-  test("the Agent's settings sync, by their own switch", () async {
-    LlmStores.tool.enabled.put(false);
-    LlmStores.memory.write('MEMORY.md', 'note');
-    await write('remote.json');
-
-    await becomeAnotherDevice();
-    await SyncCategory.ai.pref.set(false);
-    Stores.snippet.put(const Snippet(id: 'sn1', name: 'df', script: 'df -h'));
-    await bakSync.sync(throttleMilli: 0, rs: _FileRemote(remote));
-    expect(LlmStores.tool.enabled.fetch(), isTrue, reason: 'switched off here');
-    expect(((await uploaded()).stores['tool'] as Map?)?['enabled'], isFalse, reason: 'carried on');
-
-    await SyncCategory.ai.pref.set(true);
-    await bakSync.sync(throttleMilli: 0, rs: _FileRemote(remote));
-    expect(LlmStores.tool.enabled.fetch(), isFalse);
-    expect(LlmStores.memory.read('MEMORY.md'), 'note');
-  });
-
   test('secrets go only into an encrypted backup', () async {
     Stores.sudoPassword.set('s1', 'pw');
     final plain = await BackupV2.backup('plain.json', null);
     final unencrypted = BackupV2.fromJsonString(await File(plain).readAsString());
     expect(unencrypted.stores.keys, isNot(contains(Stores.sudoPassword.name)));
-    expect(unencrypted.stores.keys, contains('tool'));
 
     final sealed = await BackupV2.backup('sealed.age', 'remote-password');
     final opened = await BackupV2.open(await File(sealed).readAsBytes(), 'remote-password');
@@ -219,7 +199,7 @@ void main() {
     expect((opened.stores[Stores.sudoPassword.name] as Map?)?['s1'], 'pw');
 
     // Nor carried into one from another device's.
-    final carried = await BackupV2.backup('carried.json', null, only: {SyncCategory.ai}, carry: opened);
+    final carried = await BackupV2.backup('carried.json', null, only: {SyncCategory.settings}, carry: opened);
     final clear = BackupV2.fromJsonString(await File(carried).readAsString());
     expect(clear.stores.keys, isNot(contains(Stores.sudoPassword.name)));
   });

@@ -15,7 +15,6 @@ import 'package:server_box/data/provider/workspace.dart';
 import 'package:server_box/data/store/stores.dart';
 import 'package:server_box/data/terminal/terminal_session.dart';
 import 'package:server_box/data/terminal/terminal_source.dart';
-import 'package:server_box/view/agent/screen.dart';
 import 'package:server_box/view/page/server/edit/edit.dart';
 import 'package:server_box/view/page/server/widget/server_side_tile.dart';
 import 'package:server_box/view/page/setting/entry.dart';
@@ -119,8 +118,6 @@ class _SSHTabPageState extends ConsumerState<SSHTabPage>
     leadingName: libL10n.select,
   );
 
-  late final VoidCallback _hideFromAgent;
-
   /// Notified when the picker's sort order changes. That order lives in the
   /// settings store rather than a provider, so nothing else would tell the
   /// picker — or the icon on the bar — to rebuild.
@@ -158,12 +155,6 @@ class _SSHTabPageState extends ConsumerState<SSHTabPage>
   @override
   void initState() {
     super.initState();
-    _hideFromAgent = AgentScreen.terminal(
-      () => switch (_sessions.current) {
-        final tab? => tab.data.page.args.source,
-        null => null,
-      },
-    );
     // Here and not lazily: [dispose] touches it, and `ref` is gone by then.
     _floating = ValueNotifier(ref.read(terminalShellProvider)?.session);
     Rootfs.removed.addListener(_onRootfsRemoved);
@@ -185,7 +176,6 @@ class _SSHTabPageState extends ConsumerState<SSHTabPage>
   @override
   void dispose() {
     Rootfs.removed.removeListener(_onRootfsRemoved);
-    _hideFromAgent();
     _sessions.dispose();
     _sortVersion.dispose();
     _search.dispose();
@@ -575,7 +565,6 @@ extension _Actions on _SSHTabPageState {
           label: l10n.zellijSessions,
           onTap: () => current.data.pageKey.currentState?.showZellijFromToolbar(),
         ), false),
-      if (onServer) (_agentAction, true),
       (_snippetAction, false),
       // On the bar: only asked for by a screen reader, which has no other
       // way to the output.
@@ -633,15 +622,6 @@ extension _Actions on _SSHTabPageState {
     // tab strip does.
     shell.float(state.session, title: tab.name);
   }
-
-  /// Opens the agent on the terminal that is on screen, the same way the
-  /// snippet picker beside it works.
-  BarAction get _agentAction => BarAction(
-    icon: Icons.auto_awesome,
-    label: l10n.askAi,
-    onTap: () =>
-        _sessions.current?.data.pageKey.currentState?.openAgentFromToolbar(),
-  );
 
   /// Shows and hides the server's readings under the terminal: the setting,
   /// reachable from where it takes effect.

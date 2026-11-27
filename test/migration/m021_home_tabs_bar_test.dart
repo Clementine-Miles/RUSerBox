@@ -36,7 +36,7 @@ void main() {
       AppTab.server.name,
       AppTab.ssh.name,
       AppTab.file.name,
-      AppTab.agent.name,
+      'agent',
       AppTab.snippet.name,
     ]);
 
@@ -46,7 +46,7 @@ void main() {
       AppTab.server.name,
       AppTab.ssh.name,
       AppTab.file.name,
-      AppTab.agent.name,
+      'agent',
     ]);
   });
 
@@ -54,7 +54,7 @@ void main() {
     store.set('homeTabs', [
       AppTab.snippet.name,
       AppTab.file.name,
-      AppTab.agent.name,
+      'agent',
       AppTab.server.name,
       AppTab.ssh.name,
     ]);
@@ -64,7 +64,7 @@ void main() {
     expect(store.get<List>('homeTabs'), [
       AppTab.snippet.name,
       AppTab.file.name,
-      AppTab.agent.name,
+      'agent',
       AppTab.server.name,
     ]);
   });
@@ -79,7 +79,7 @@ void main() {
       AppTab.server.name,
       AppTab.ssh.name,
       AppTab.file.name,
-      AppTab.agent.name,
+      'agent',
       AppTab.benchmark.name,
     ];
     store.set('homeTabs', newer);
@@ -92,7 +92,7 @@ void main() {
       AppTab.server.name,
       AppTab.ssh.name,
       AppTab.file.name,
-      AppTab.agent.name,
+      'agent',
       AppTab.snippet.name,
     ]);
 
@@ -103,7 +103,7 @@ void main() {
       AppTab.server.name,
       AppTab.ssh.name,
       AppTab.file.name,
-      AppTab.agent.name,
+      'agent',
     ]);
   });
 }
