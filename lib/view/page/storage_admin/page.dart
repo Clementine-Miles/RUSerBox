@@ -73,12 +73,6 @@ final class _StoragePageState extends ConsumerState<StoragePage> {
       appBar: CustomAppBar(
         title: TwoLineText(up: l10n.storageTitle, down: widget.args.spi.name),
         actions: [
-          if (isDesktop)
-            Btn.icon(
-              text: libL10n.refresh,
-              icon: const Icon(Icons.refresh, size: 18),
-              onTap: _busy ? null : _refresh,
-            ),
         ],
       ),
       body: !linux

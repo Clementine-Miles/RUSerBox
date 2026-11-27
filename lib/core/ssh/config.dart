@@ -10,9 +10,7 @@ abstract final class SSHConfig {
   static const String _defaultPath = '~/.ssh/config';
 
   static String? get _homePath {
-    final homePath = isWindows
-        ? Platform.environment['USERPROFILE']
-        : Platform.environment['HOME'];
+    final homePath = Platform.environment['HOME'];
     if (homePath == null || homePath.isEmpty) {
       return null;
     }
@@ -108,10 +106,8 @@ abstract final class SSHConfig {
     return v == null || v.isEmpty ? null : v;
   }
 
-  /// This process's numeric user id; none on Windows, which has no such
-  /// thing.
+  /// This process's numeric user id.
   static final String? _localUid = () {
-    if (Platform.isWindows) return null;
     try {
       final getuid = DynamicLibrary.process()
           .lookupFunction<Uint32 Function(), int Function()>('getuid');
@@ -139,7 +135,7 @@ abstract final class SSHConfig {
     final localUser =
         Platform.environment['USER'] ?? Platform.environment['USERNAME'];
     if (user == localUser && _homePath != null) return '$_homePath$suffix';
-    if (!Platform.isWindows && RegExp(r'^[A-Za-z0-9._-]+$').hasMatch(user)) {
+    if (RegExp(r'^[A-Za-z0-9._-]+$').hasMatch(user)) {
       try {
         for (final line in File('/etc/passwd').readAsLinesSync()) {
           final fields = line.split(':');
@@ -159,14 +155,6 @@ abstract final class SSHConfig {
 
     if (homePath != null) {
       paths.add('$homePath/.ssh/config');
-
-      // Sandboxed apps may report a container home instead of the user's home.
-      if (isMacOS) {
-        final username = Platform.environment['USER'];
-        if (username != null) {
-          paths.add('/Users/$username/.ssh/config');
-        }
-      }
     }
 
     return paths;

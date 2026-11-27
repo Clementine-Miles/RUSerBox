@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:server_box/data/res/build_data.dart';
 import 'package:server_box/src/rust/api/file.dart' as ffi;
 
 /// [Paths.file] — this device's files, as the browser and the transfers see
@@ -38,32 +37,7 @@ abstract final class LocalFiles {
 
   static Future<String> _ensure() async {
     final dir = await Paths.ensureFile();
-    await _importLegacyDocuments();
     return dir.path;
-  }
-
-  /// Copies files from the documents-directory release into app-owned storage.
-  ///
-  /// The source stays in place. It is user-visible data, and deleting it during
-  /// an automatic compatibility import would make a mistaken path decision
-  /// unrecoverable. Existing destination names win.
-  ///
-  /// Best-effort: macOS may refuse Documents access. The Device browser still
-  /// opens on its own directory, and a later launch can retry after access is
-  /// granted.
-  ///
-  /// TODO: remove after no supported install can have used the documents path.
-  static Future<void> _importLegacyDocuments() async {
-    if (!isDesktop) return;
-
-    final legacyPath = await Paths.userFilesPath(BuildData.name);
-    if (legacyPath == Paths.file) return;
-
-    try {
-      await importFrom(legacyPath);
-    } catch (e, s) {
-      Loggers.app.warning('Import $legacyPath into ${Paths.file}', e, s);
-    }
   }
 
   /// Copies missing top-level entries from [sourcePath] into the Device root.

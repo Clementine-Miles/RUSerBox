@@ -89,11 +89,7 @@ class ChoiceChipX<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final outPadding = this.outPadding ??
-        EdgeInsets.only(
-          left: 5,
-          right: 5,
-          top: isDesktop ? 7 : 0,
-        );
+        const EdgeInsets.only(left: 5, right: 5);
     return Padding(
       padding: outPadding,
       child: ChoiceChip(

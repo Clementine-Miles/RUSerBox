@@ -227,7 +227,6 @@ extension _SettingsLayout on _SettingsPageState {
     // has somewhere on this page to be reached from — `CallbackShortcuts`
     // reads the focus chain, and a page nobody has clicked in yet has nothing
     // on it. Traversal skipped, so Tab still walks the real controls.
-    if (!isDesktop) return scaffold;
     // As set on the shortcuts page; none when it was removed there.
     final search = ref
         .watch(keybindingsProvider)

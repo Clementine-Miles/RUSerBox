@@ -67,12 +67,6 @@ extension on _FirewalldViewState {
     final running = snapshot?.running ?? false;
     return [
       ...switchAction(FirewallKind.firewalld),
-      if (isDesktop)
-        Btn.icon(
-          text: libL10n.refresh,
-          icon: const Icon(Icons.refresh, size: 18),
-          onTap: busy ? null : refresh,
-        ),
       ContextMenuButton(
         tooltip: libL10n.more,
         enabled: snapshot != null && running && !busy,

@@ -156,13 +156,11 @@ class _SSHVirtualKeySettingPageState extends State<SSHVirtualKeySettingPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildCheckBox(item, isEnabled),
-              if (!isDesktop) ...[
-                const SizedBox(width: 7),
-                ReorderableDragStartListener(
-                  index: idx,
-                  child: const Icon(Icons.drag_handle),
-                ),
-              ],
+              const SizedBox(width: 7),
+              ReorderableDragStartListener(
+                index: idx,
+                child: const Icon(Icons.drag_handle),
+              ),
             ],
           ),
         ),

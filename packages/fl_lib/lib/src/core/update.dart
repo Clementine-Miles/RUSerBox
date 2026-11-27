@@ -17,8 +17,6 @@ abstract final class AppUpdateIface {
     bool beta = false,
     Widget? Function(BuildContext ctx)? noticeBuilder,
   }) async {
-    if (isWeb) return;
-
     try {
       await AppUpdate.fromGitHubReleasesUrl(
         url: githubReleasesUrl,

@@ -93,28 +93,14 @@ abstract final class Paths {
   }
 
   static Future<String> _getDoc(String appName) async {
-    assert(!isWeb);
-
     if (isAndroid) {
       final dir = await getExternalStorageDirectory();
       if (dir != null) return dir.path;
     }
 
-    if (isLinux || isWindows) {
-      final base = switch (Pfs.type) {
-        // XDG's data home. `$XDG_CONFIG_HOME` is for configuration, and a
-        // database, an image and a font are not that.
-        Pfs.linux => _xdgDir('XDG_DATA_HOME', '.local/share'),
-        // Local rather than roaming. `%APPDATA%` is copied to and from a
-        // domain server at every logon: it is meant for small settings, and
-        // the boxes here grow without bound, are written on every poll, and
-        // conflict outright if the same account is signed in on two machines.
-        // This app syncs what is worth syncing itself.
-        Pfs.windows =>
-          Platform.environment['LOCALAPPDATA'] ??
-              Platform.environment['APPDATA'],
-        _ => null,
-      };
+    // The Linux test host: XDG's data home.
+    if (isLinux) {
+      final base = _xdgDir('XDG_DATA_HOME', '.local/share');
       final path = base?.joinPath(appName) ?? '.${appName}_data';
 
       // Where the released builds put it. `$XDG_CONFIG_HOME` is not consulted
@@ -123,48 +109,16 @@ abstract final class Paths {
       //
       // TODO: remove once no install can still be writing the old location.
       await adoptLegacyDoc(
-        from: switch (Pfs.type) {
-          Pfs.linux => Pfs.homeDir?.joinPath('.config').joinPath(appName),
-          Pfs.windows => Platform.environment['APPDATA']?.joinPath(appName),
-          _ => null,
-        },
+        from: Pfs.homeDir?.joinPath('.config').joinPath(appName),
         to: path,
       );
 
       final p = (await Directory(path).create(recursive: true)).path;
 
-      // Move the db data created wrongly in the doc dir
-      if (isLinux) {
-        // $DOC/*.hive -> $XDG_DATA_HOME/$APP/*.hive
-        final wrong = await getApplicationDocumentsDirectory();
-        await for (final file in wrong.list()) {
-          if (file is! File || !file.path.endsWith('.hive')) continue;
-          file.rename(p.joinPath(file.path.split('/').last));
-        }
-      }
       return p;
     }
 
-    // macOS without the sandbox: the documents directory is the user's own
-    // `~/Documents`, which is no place for a database and the app's working
-    // directories — and which macOS gates behind a permission prompt this app
-    // would have no way to explain. [file] is the exception, and goes there on
-    // purpose; see [_fileGoesToUserDocs].
-    //
-    // The sandboxed build keeps the documents directory, because there it
-    // *is* the container: `~/Library/Containers/<id>/Data/Documents`, private
-    // to the app and where every install to date has its data.
-    if (isMacOS && !Pfs.isMacSandboxed) {
-      final home = Pfs.homeDir;
-      if (home != null) {
-        final dir = Directory(
-          home.joinPath('Library').joinPath('Application Support').joinPath(appName),
-        );
-        return (await dir.create(recursive: true)).path;
-      }
-    }
-
-    // macOS (sandboxed) / iOS
+    // Android without external storage.
     final dir = await getApplicationDocumentsDirectory();
     return dir.path;
   }
@@ -400,15 +354,9 @@ abstract final class Paths {
   /// Whether [file] belongs in the user's own documents directory rather than
   /// under [doc].
   ///
-  /// True on a desktop build that is not confined to a container: [doc] is
-  /// `~/Library/Application Support`, `~/.config` or `%APPDATA%` there, which
-  /// is the app's to keep and not somewhere the user is expected to open — and
-  /// [file] is the one directory holding files that are theirs.
-  ///
-  /// False in the macOS sandbox and on mobile, where [doc] *is* the app's
-  /// container and there is nothing to separate it from.
-  static bool get _fileGoesToUserDocs =>
-      isLinux || isWindows || (isMacOS && !Pfs.isMacSandboxed);
+  /// False on Android, where [doc] *is* the app's container; true only on the
+  /// Linux test host.
+  static bool get _fileGoesToUserDocs => isLinux;
 
   /// The user's own files: what was downloaded, and what they put there.
   ///

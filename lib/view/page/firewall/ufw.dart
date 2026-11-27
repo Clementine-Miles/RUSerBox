@@ -83,12 +83,6 @@ extension on _UfwViewState {
   List<Widget> _buildActions(UfwSnapshot? snapshot) {
     return [
       ...switchAction(FirewallKind.ufw),
-      if (isDesktop)
-        Btn.icon(
-          text: libL10n.refresh,
-          icon: const Icon(Icons.refresh, size: 18),
-          onTap: busy ? null : refresh,
-        ),
       ContextMenuButton(
         tooltip: libL10n.more,
         enabled: snapshot?.active == true && !busy,
