@@ -369,6 +369,14 @@ impl Client {
         self.json(Method::POST, "/api/v1/fs/rename", Some(&serde_json::json!({ "from": from, "to": to })), &[]).await.map(drop)
     }
 
+    /// A read-only token for [client_id] (the home-screen widget's): the
+    /// token and when it expires, in Unix milliseconds (0 when unsaid).
+    pub async fn issue_watch_token(&self, client_id: &str) -> Result<(String, i64)> {
+        let v = self.json(Method::POST, "/api/v1/watch-token", Some(&serde_json::json!({ "client_id": client_id })), &[]).await?;
+        let token = v.get("token").and_then(Value::as_str).filter(|t| !t.is_empty()).ok_or_else(|| Error::Invalid("no watch token".into()))?;
+        Ok((token.to_owned(), v.get("expires_at").and_then(Value::as_i64).unwrap_or(0)))
+    }
+
     /// A one-use ticket for a WebSocket (`terminal`, `stream`, `listen`).
     pub async fn ws_ticket(&self, purpose: &str) -> Result<String> {
         let v = self.json(Method::POST, "/api/v1/ws-ticket", Some(&serde_json::json!({ "purpose": purpose })), &[]).await?;

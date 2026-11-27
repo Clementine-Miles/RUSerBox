@@ -288,6 +288,7 @@ pub fn edit(app: &mut App, ui: &mut Ui, id: Option<String>) {
             Some(Ok(s)) => match store.put_server(&s) {
                 Ok(()) => {
                     app.core.stop(&s.id);
+                    app.widgets_published = false;
                     app.servers.form = None;
                     app.back();
                     app.toast(t("saved", "Saved"));
@@ -302,6 +303,7 @@ pub fn edit(app: &mut App, ui: &mut Ui, id: Option<String>) {
         app.core.stop(id);
         match store.delete_server(id) {
             Ok(()) => {
+                app.widgets_published = false;
                 app.servers.form = None;
                 app.stack.truncate(1);
             }

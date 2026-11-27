@@ -4,4 +4,6 @@
 pub mod android;
 #[cfg(all(feature = "desktop", not(target_os = "android")))]
 pub mod desktop;
+#[cfg(target_os = "android")]
+mod jni;
 pub mod keyfile;

@@ -36,6 +36,8 @@ pub trait Platform {
     fn keep_alive(&self, on: bool);
     /// Whether the system is in dark mode.
     fn system_dark(&self) -> bool;
+    /// Hands the home-screen widgets their server list (JSON).
+    fn publish_widgets(&self, _payload: &str) {}
 }
 
 /// Why a file is being picked.
@@ -87,6 +89,8 @@ pub struct App {
     toast: Option<(String, Instant)>,
     fonts_for: Option<Typeface>,
     applied_dark: Option<bool>,
+    /// Set false again when a server is saved or deleted.
+    pub widgets_published: bool,
 }
 
 impl App {
@@ -120,6 +124,7 @@ impl App {
             toast: None,
             fonts_for: None,
             applied_dark: None,
+            widgets_published: false,
         }
     }
 
@@ -187,6 +192,13 @@ impl App {
             self.toast(n);
         }
         platform.keep_alive(self.terms.any_open());
+        if !self.widgets_published {
+            self.widgets_published = true;
+            self.core.publish_widgets();
+        }
+        if let Some(payload) = lock(&self.core.widget_payload).take() {
+            platform.publish_widgets(&payload);
+        }
 
         let p = self.palette;
         let page = self.page().clone();

@@ -44,8 +44,8 @@ pollster = { version = "0.4", optional = true }
 [target.'cfg(target_os = "android")'.dependencies]
 android-activity = { version = "0.6", features = ["game-activity"] }
 android_logger = "0.15"
-jni = "0.21"
-ndk-context = "0.1"
+ndk = { version = "0.9", default-features = false }
+jni-sys = "0.4"
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
 env_logger = { version = "0.11", default-features = false }

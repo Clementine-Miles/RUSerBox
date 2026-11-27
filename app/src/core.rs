@@ -261,12 +261,14 @@ pub struct Core {
     pollers: HashMap<String, tokio::task::JoinHandle<()>>,
     /// Messages for a toast at the bottom of the screen.
     pub notices: Arc<Mutex<VecDeque<String>>>,
+    /// The widget server list, ready for the platform.
+    pub widget_payload: Arc<Mutex<Option<String>>>,
 }
 
 impl Core {
     pub fn new(store: Arc<Store>, ctx: egui::Context) -> Core {
         let rt = tokio::runtime::Builder::new_multi_thread().worker_threads(2).enable_all().thread_name("ruserbox-net").build().expect("tokio runtime");
-        Core { store, rt, ctx, prompts: Arc::default(), live: HashMap::new(), pollers: HashMap::new(), notices: Arc::default() }
+        Core { store, rt, ctx, prompts: Arc::default(), live: HashMap::new(), pollers: HashMap::new(), notices: Arc::default(), widget_payload: Arc::default() }
     }
 
     pub fn notice(&self, msg: impl Into<String>) {
@@ -518,6 +520,42 @@ impl Core {
             lock(&live).ssh = Some(sess.clone());
             Ok(sess)
         }
+    }
+
+    /// Builds the widget configuration screen's server list (Monitor servers
+    /// with a read-only token each) in the background; the platform takes it
+    /// from [`Core::widget_payload`].
+    pub fn publish_widgets(&self) {
+        let servers: Vec<Server> = self.store.servers().unwrap_or_default().into_iter().filter(|s| s.monitor.is_some()).collect();
+        let clients: Vec<(Server, Option<sbm_monitor_client::Client>)> = servers.into_iter().map(|s| {
+            let c = self.monitor_client(&s).ok();
+            (s, c)
+        }).collect();
+        let out = self.widget_payload.clone();
+        self.rt.spawn(async move {
+            let mut entries = Vec::new();
+            let mut sorted = clients;
+            sorted.sort_by_key(|(s, _)| s.name.to_lowercase());
+            for (s, c) in sorted {
+                let m = s.monitor.clone().expect("filtered");
+                let token = match c {
+                    Some(c) => c.issue_watch_token(&format!("widget:{}", s.id)).await.ok(),
+                    None => None,
+                };
+                let mut e = serde_json::json!({ "id": s.id, "name": s.name, "addr": m.addr.trim_end_matches('/'), "expiresAt": token.as_ref().map_or(0, |t| t.1), "allowInsecure": m.allow_insecure.unwrap_or(false) });
+                if let Some((t, _)) = token {
+                    e["token"] = serde_json::Value::String(t);
+                }
+                if let Some(f) = m.fallback_addr.filter(|f| !f.trim().is_empty()) {
+                    e["fallbackAddr"] = serde_json::Value::String(f.trim_end_matches('/').to_owned());
+                }
+                if let Some(c) = m.cert_sha256 {
+                    e["certSha256"] = serde_json::Value::String(c);
+                }
+                entries.push(e);
+            }
+            *lock(&out) = Some(serde_json::json!({ "v": 1, "servers": entries }).to_string());
+        });
     }
 
     /// Records a reading as if it had come from the server (previews, tests).
