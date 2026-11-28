@@ -60,3 +60,18 @@ Local shell, PTY and PRoot still ship in this baseline. Their eventual removal i
 The baseline host commands were `tini -s -- cargo test --locked --workspace --no-fail-fast` and `tini -s -- cargo test --locked --workspace --manifest-path packages/fl_lib/rust/Cargo.toml --no-fail-fast`. On this host the root suite passed 1,342 tests with 13 ignored. The separate workspace passed 120 with one ignored. Tini reaps the detached benchmark processes inside the cloud container.
 
 Record the device model, Android/API version, GPU driver, actual display refresh rate, thermal state, signing identity and workload alongside every device run. Compare the baseline and candidate on the same device for cold start, input-to-display percentiles, output throughput, memory, idle and sustained power. For the candidate, also capture atlas hits/misses, GPU timestamp queries, database growth and write amplification. No device measurements have been recorded.
+
+### First native APK checkpoint
+
+The native target at `539efe7e` built with cargo-apk2 1.5.0, cargo-ndk 4.1.2 and NDK r28c. The APK verifier checked the local debug signature, manifest, launcher DEX class, exported native entry points, ELF LOAD alignment and ZIP alignment. Its uncompressed arm64 library starts at ZIP offset 16384. The native activity currently probes the surface and reports the result through JNI.
+
+| Command | Observed result |
+| --- | --- |
+| `cargo test --locked -p ruserbox` | All three window lifecycle scheduling tests passed. |
+| `cargo ndk -t arm64-v8a --platform 33 clippy --locked --manifest-path app/Cargo.toml -- -D warnings` | Passed for the Android target. |
+| `(cd app && cargo apk2 build --lib)` followed by `python3 scripts/verify-native-apk.py target/debug/apk/ruserbox.apk` | Verified the signed development artifact with versionCode 192603. |
+| `tini -s -- cargo test --locked --workspace --no-fail-fast` | 1,345 passed, 13 ignored in the root workspace. |
+| `flutter analyze --no-pub lib test integration_test` | No issues found with Flutter 3.50.0. |
+| `flutter test --no-pub -r expanded test/migration/hive_release_migration_test.dart` | 45 passed across the 1466, 1480 and 1491 fixtures. These exercise the shipping Hive-to-SQLite migration. The native redb importer is pending. |
+
+ADB listed no attached device. Installation, runtime Vulkan support, physical input, IME composition, SAF, Keystore, accessibility, lifecycle behavior and power have no device results. The development APK does not complete P1 or P2.
