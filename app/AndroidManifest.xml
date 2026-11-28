@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="tech.lolli.toolbox" android:versionCode="192603" android:versionName="1.0.1926">
+    <uses-sdk android:minSdkVersion="33" android:targetSdkVersion="36" />
+    <uses-feature android:name="android.hardware.vulkan.version"
+        android:version="0x00403000" android:required="true" />
+
+    <application android:label="RUSerBox" android:allowBackup="false"
+        android:extractNativeLibs="true" android:usesCleartextTraffic="false">
+        <activity android:name=".NativeClientActivity" android:exported="true"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data android:name="android.app.lib_name" android:value="ruserbox" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

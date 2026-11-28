@@ -1,0 +1,27 @@
+[package]
+name = "ruserbox"
+version = "0.1.0"
+edition = "2024"
+license = "AGPL-3.0-only"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[target.'cfg(target_os = "android")'.dependencies]
+android-activity = { version = "=0.6.1", features = ["native-activity"] }
+ash = { version = "0.38", default-features = false, features = ["loaded", "std"] }
+jni = "0.22.4"
+
+[package.metadata.android]
+package = "tech.lolli.toolbox"
+build_targets = ["aarch64-linux-android"]
+java_sources = "../android/java"
+manifest_override = "AndroidManifest.xml"
+
+[package.metadata.android.sdk]
+min_sdk_version = 33
+target_sdk_version = 36
+
+[[package.metadata.android.application.activity]]
+name = "tech.lolli.toolbox.NativeClientActivity"
