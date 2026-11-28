@@ -50,8 +50,23 @@ final class TerminalStatus extends ChangeNotifier {
     return lines.join('\n');
   }
 
-  void dismiss(List<String> id) =>
-      shell.apply(ProgramStatusReport.clear(id: id));
+  /// Removes the one record at [id], as the user asked.
+  ///
+  /// A report's clear removes the records beneath it as well, and an empty
+  /// id clears the whole terminal (OSC 7501), which would take a program's
+  /// still-running children with a finished parent. So what the clear took
+  /// besides [id] is put back, in the order it was reported.
+  void dismiss(List<String> id) {
+    final key = id.join('/');
+    final others = [
+      for (final record in shell.records)
+        if (record.key != key) record.report,
+    ];
+    shell.apply(ProgramStatusReport.clear(id: id));
+    for (final report in others) {
+      if (shell[report.id] == null) shell.apply(report);
+    }
+  }
 
   ProgramState? get state => shell.state;
 
