@@ -5,14 +5,14 @@ set -euo pipefail
 [ $# -eq 1 ] || { echo "usage: $0 <ssh host>" >&2; exit 2; }
 host=$1
 root=$(cd "$(dirname "$0")/.." && pwd)
-src='src/flutter_server_box'
+src='src/ruserbox'
 app='apps/server-box-monitor'
 # The remote login shell may be fish: every remote command is sh's, on stdin.
 remote() { printf '%s\n' "$1" | ssh "$host" sh -s; }
 
 echo "==> agent: sync source to $host:~/$src"
 rsync -az --delete \
-  --exclude target --exclude node_modules --exclude build --exclude .dart_tool --exclude .git \
+  --exclude target --exclude node_modules --exclude build --exclude .git \
   --exclude '.claude/worktrees' \
   "$root/" "$host:$src/"
 echo "==> agent: build (monitor-test)"

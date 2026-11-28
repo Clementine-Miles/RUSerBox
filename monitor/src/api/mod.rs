@@ -10,9 +10,6 @@ macro_rules! require {
 }
 
 pub mod lkc;
-pub mod api_tokens;
-pub mod mcp;
-pub mod agent;
 pub mod cron;
 pub mod bmc;
 pub mod virt;

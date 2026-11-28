@@ -14,7 +14,6 @@ use crate::{
     monitoring::velocity::VelocityManager,
     utils::error::{MonitorError, Result},
 };
-use ntex_ratelimiter::RateLimiter;
 use sqlx::SqlitePool;
 use std::sync::{Arc, OnceLock};
 use tokio::sync::{Mutex, RwLock, Semaphore, broadcast};
@@ -122,10 +121,6 @@ pub struct AppState {
     /// now — see `api::ws::live`.
     pub live: Arc<crate::api::ws::live::LiveConnections>,
     pub login_throttle: Arc<LoginThrottle>,
-    /// Pre-auth per-IP rate limiter on `/api/v1/mcp`.
-    pub mcp_ip_limiter: Arc<RateLimiter>,
-    /// Post-auth per-token rate limiter on `/api/v1/mcp`, keyed by `api_tokens.id`.
-    pub mcp_token_limiter: Arc<RateLimiter<i64>>,
     /// Fired when the password changed, carrying the code a client whose
     /// connection ends because of it is told (`password_changed`).
     ///
@@ -141,8 +136,6 @@ pub struct AppState {
     pub blobs: Arc<crate::core::blobs::Blobs>,
     /// The database's credentials key — see `db::sealed`.
     pub sealer: Arc<crate::db::sealed::Sealer>,
-    /// Agent mode's tasks and the pi runtime they run in — see `agent_mode`.
-    pub agent: Arc<crate::agent_mode::AgentMode>,
     pub container_backups: Arc<crate::container_backups::ContainerBackups>,
     /// Backups of this agent's settings — see `monitor_backup`.
     pub monitor_backup: Arc<crate::monitor_backup::MonitorBackup>,
@@ -202,15 +195,17 @@ pub(super) fn agent_state(config: &Config) -> crate::core::fs_roots::Protected {
         protected.file(&db);
         protected.file(&crate::db::sealed::Sealer::key_path_beside(&db));
         protected.tree(crate::core::blobs::Blobs::beside(&db).dir());
-        protected.tree(&crate::agent_mode::AgentMode::dir_beside(&db));
         let parent = db.parent().unwrap_or_else(|| Path::new("."));
+        // What the removed AI Agent mode and its local inference kept beside
+        // the database: left on disk for the operator, never served.
+        protected.tree(&parent.join("agent"));
+        protected.tree(&parent.join("inference"));
         let legacy_stacks = parent.join("stacks");
         protected.in_each(&legacy_stacks, ".env");
         protected.tree(&legacy_stacks.join(".catalog"));
         protected.tree(&legacy_stacks.join(".desk-catalog"));
         protected.tree(&crate::container_backups::ContainerBackups::dir_beside(&db));
         protected.tree(&crate::monitor_backup::MonitorBackup::dir_beside(&db));
-        protected.tree(&crate::inference::legacy_dir_beside(&db));
         protected.tree(&parent.join("apps"));
     }
     protected.file(&config.jwt_secret_path());
@@ -269,8 +264,6 @@ impl AppState {
             pending: Arc::new(PendingStore::default()),
             live: Arc::default(),
             login_throttle: Arc::new(LoginThrottle::new()),
-            mcp_ip_limiter: RateLimiter::new(240, 60),
-            mcp_token_limiter: RateLimiter::new(120, 60),
             password_changed: broadcast::channel(16).0,
             notifications: Arc::default(),
             // Beside the database actually open, which a test's in-memory
@@ -279,7 +272,6 @@ impl AppState {
                 Some(file) => crate::core::blobs::Blobs::beside(&file),
                 None => crate::core::blobs::Blobs::temporary(),
             }),
-            agent: Arc::new(crate::agent_mode::AgentMode::new(db.clone(), sealer.clone(), sqlite_file_of(&db).as_deref())),
             sealer,
             container_backups: Arc::new(crate::container_backups::ContainerBackups::new(sqlite_file_of(&db).as_deref())),
             monitor_backup: Arc::new(crate::monitor_backup::MonitorBackup::new(sqlite_file_of(&db).as_deref())),

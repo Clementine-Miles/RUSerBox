@@ -60,14 +60,11 @@ pub enum Kind {
     /// no longer has: past events, still filtered by. TODO: remove once the
     /// audit log's retention has aged them out.
     Backup,
-    /// Agent mode (`agent_mode`): a task started, a command it ran, an answer
-    /// given, the configuration changed. The subject is the account; the
-    /// detail the verb and the command's first line — never a password, an
-    /// API key, what was typed or what a command printed.
+    /// The removed AI Agent mode's events: past events, still filtered by.
+    /// TODO: remove once the audit log's retention has aged them out.
     Agent,
-    /// A tool an MCP client ran through `POST /mcp` (#1681). The subject is
-    /// the credential kind (an API token); the detail is the tool's name —
-    /// never its arguments, which are a caller's to keep to itself.
+    /// The removed MCP endpoint's events: past events, still filtered by.
+    /// TODO: remove once the audit log's retention has aged them out.
     Mcp,
     /// A sign-in with the password, let in or refused. The detail says
     /// whether the device was one that signed in before (`device known`) —

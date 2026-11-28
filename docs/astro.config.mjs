@@ -47,12 +47,9 @@ export default defineConfig({
 					},
 					items: [
 						{ label: 'Monitor Agent', translations: { 'zh-CN': 'Monitor Agent' }, slug: 'advanced/monitor-agent' },
-						{ label: 'Monitor Agent Mode', translations: { 'zh-CN': 'Monitor Agent 模式' }, slug: 'advanced/monitor-agent-mode' },
 						{ label: 'Monitor Settings Backup', translations: { 'zh-CN': 'Monitor 设置备份' }, slug: 'advanced/monitor-backup' },
 						{ label: 'Workspace', translations: { 'zh-CN': '工作区' }, slug: 'advanced/workspace' },
 						{ label: 'Remote Desktop', translations: { 'zh-CN': '远程桌面' }, slug: 'advanced/remote-desktop' },
-						{ label: 'Agent', translations: { 'zh-CN': 'Agent' }, slug: 'advanced/agent' },
-						{ label: 'Terminal on This Device', translations: { 'zh-CN': '本机终端' }, slug: 'advanced/local-terminal' },
 						{ label: 'Zellij Sessions', translations: { 'zh-CN': 'Zellij 会话' }, slug: 'advanced/zellij' },
 						{ label: 'Program Status', translations: { 'zh-CN': '程序状态' }, slug: 'advanced/program-status' },
 						{ label: 'BMC (Redfish)', translations: { 'zh-CN': 'BMC(Redfish)' }, slug: 'advanced/bmc' },
@@ -76,8 +73,6 @@ export default defineConfig({
 					items: [
 						{ label: 'Project Structure', translations: { 'zh-CN': '项目结构' }, slug: 'development/structure' },
 						{ label: 'Implementation architecture', translations: { 'zh-CN': '实现架构' }, slug: 'development/architecture' },
-						{ label: 'Riverpod patterns', translations: { 'zh-CN': 'Riverpod 实践' }, slug: 'development/state' },
-						{ label: 'Code Generation', translations: { 'zh-CN': '代码生成' }, slug: 'development/codegen' },
 						{ label: 'Building', translations: { 'zh-CN': '构建' }, slug: 'development/building' },
 						{ label: 'Testing', translations: { 'zh-CN': '测试' }, slug: 'development/testing' },
 					],

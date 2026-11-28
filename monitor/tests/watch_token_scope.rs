@@ -362,32 +362,6 @@ fn forbidden_routes() -> Vec<(Method, &'static str, Option<serde_json::Value>)> 
         ),
         (Method::POST, "/api/v1/virt/backup-jobs/run", Some(json!({ "id": "x" }))),
         (Method::POST, "/api/v1/virt/backup-jobs/schedule", Some(json!({ "schedule": "02:00" }))),
-        // Agent mode: nothing is configured on a test server, so a start is
-        // refused after the auth check.
-        (Method::GET, "/api/v1/agent/flows", None),
-        (Method::POST, "/api/v1/agent/flows", Some(json!({ "prompt": "hi" }))),
-        (Method::GET, "/api/v1/agent/flows/absent", None),
-        (Method::DELETE, "/api/v1/agent/flows/absent", None),
-        (Method::POST, "/api/v1/agent/flows/absent/stop", None),
-        (Method::POST, "/api/v1/agent/flows/absent/reply", Some(json!({ "text": "hi" }))),
-        (Method::POST, "/api/v1/agent/flows/absent/answer", Some(json!({ "id": "x", "action": "cancel" }))),
-        (Method::GET, "/api/v1/agent/settings", None),
-        (Method::GET, "/api/v1/agent/choices", None),
-        (Method::GET, "/api/v1/agent/mcp", None),
-        (Method::PUT, "/api/v1/agent/mcp", Some(json!({ "servers": [] }))),
-        (Method::GET, "/api/v1/agent/skills", None),
-        (Method::POST, "/api/v1/agent/skills", Some(json!({ "source": "owner/repo" }))),
-        (Method::PUT, "/api/v1/agent/skills/absent", Some(json!({ "enabled": false }))),
-        (Method::DELETE, "/api/v1/agent/skills/absent", None),
-        (Method::POST, "/api/v1/agent/search", Some(json!({ "query": "x" }))),
-        (Method::GET, "/api/v1/agent/permissions", None),
-        (Method::POST, "/api/v1/agent/files?name=a.txt", Some(json!("x"))),
-        (Method::DELETE, "/api/v1/agent/files/absent", None),
-        (Method::POST, "/api/v1/agent/search/absent/task", Some(json!({}))),
-        (Method::GET, "/api/v1/agent/memory", None),
-        (Method::GET, "/api/v1/agent/memory/file?path=a.md", None),
-        (Method::PUT, "/api/v1/agent/memory/file", Some(json!({ "path": "a.md", "content": "x" }))),
-        (Method::DELETE, "/api/v1/agent/memory/file?path=a.md", None),
     ]
 }
 

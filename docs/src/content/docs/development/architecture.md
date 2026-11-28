@@ -1,96 +1,64 @@
 ---
 title: Implementation Architecture
-description: Implementation details for Server Box's Flutter, storage, connection, and native layers
+description: How RUSerBox is built — native Rust on Android, Vulkan rendering, and the shared server layer
 ---
 
-Use this page to find where features live in the source tree.
-
-## Layers
+RUSerBox is a Rust workspace. The Android app and the Monitor agent share the
+layer that talks to servers; each owns its own state and interface.
 
 ```text
-┌─────────────────────────────────────┐
-│ Presentation                        │
-│ lib/view/                           │
-│ Pages, Widgets, and user interaction│
-└─────────────────────────────────────┘
-                  │
-┌─────────────────────────────────────┐
-│ State and business coordination     │
-│ lib/data/provider/                  │
-│ Riverpod providers and async state  │
-└─────────────────────────────────────┘
-                  │
-┌─────────────────────────────────────┐
-│ Data and services                   │
-│ lib/data/model/, lib/data/store/    │
-│ Models, storage, and connections    │
-└─────────────────────────────────────┘
-                  │
-┌─────────────────────────────────────┐
-│ External integrations               │
-│ SSH, SFTP, Monitor HTTP, platform APIs│
-└─────────────────────────────────────┘
+┌──────────────────────────────── Android app (app/) ────────────────────────────────┐
+│ platform/android.rs   GameActivity loop, touch/keys/IME, surface lifecycle          │
+│ gfx.rs                egui → wgpu, Vulkan only (GfxError::NoVulkan otherwise)       │
+│ ui/                   pages: servers, status, terminal, files, snippets, keys, …    │
+│ term/                 VT emulation (alacritty_terminal) · key encoding · drawing    │
+│ core.rs               connections per server, status polling, host key prompts      │
+└───────────┬───────────────────────┬──────────────────────────┬─────────────────────┘
+            │                       │                          │
+   crates/sbm_ssh          crates/sbm_monitor_client     crates/sbm_store
+   russh: exec, PTY,       Monitor HTTP + terminal       encrypted store.db
+   SFTP, jumps, forwards   WebSocket, pinned TLS         (SQLite3 Multiple Ciphers)
+            │                       │
+            └──────── crates/sbm_parser ────────┐
+              commands, the status script,      │
+              parsers (shared with the Monitor) │
+                                                ▼
+                                   monitor/ (the agent, deployed separately)
 ```
 
-## Application foundation
+## Rendering
 
-`lib/main.dart` initializes dependencies, opens the encrypted local database,
-initializes Rust bindings, and starts Flutter with `runApp`. The root Widget
-sets up the theme and routes and creates the Riverpod `ProviderScope` used for
-dependency injection.
+The interface is egui, tessellated and drawn by wgpu with **only the Vulkan
+backend compiled in**. The instance is created for `Backends::VULKAN` and the
+selected adapter's backend is checked; a device without a usable Vulkan driver
+gets a plain error instead of a fallback renderer. Frames are drawn only when
+something asks for one (input, a background task, an animation) and are paced
+by FIFO presentation. The surface is created on `InitWindow` and dropped on
+`TerminateWindow`; the device outlives it, and a lost device is rebuilt.
 
-The home page provides tabs for servers, terminals, files, and snippets. Pages
-render state and handle interaction. Providers, services, and stores perform
-operations and manage state changes.
+## Android integration
 
-## State management: Riverpod
+`MainActivity` (Java) extends GameActivity and holds no app logic: Rust calls
+its methods over JNI for the clipboard, the document picker and saving, window
+insets, sealing the store key with the Android Keystore, migrating the key the
+Flutter build kept, the foreground service that keeps sessions alive in the
+background, and publishing the home-screen widgets' server list. The widgets
+themselves (AppWidget/RemoteViews) remain Kotlin.
 
-The project uses `riverpod_generator` to generate typed providers:
+Text input uses GameActivity's GameTextInput: the IME's composing region is
+shown as preedit at the terminal cursor and committed text is sent once.
 
-- `NotifierProvider` manages synchronous state with update methods.
-- `AsyncNotifierProvider` manages loading, success, and error states.
-- `StreamProvider` exposes continuously produced data.
-- Family providers maintain independent state for different servers or other parameters.
+## Connections
 
-Providers do not require `BuildContext`. This keeps services and business
-logic independent of the Widget tree. See [Riverpod patterns](/docs/development/state/)
-for provider declarations and lifecycle details.
+A server is reached over SSH, the Monitor, or both (SSH leads unless the
+Monitor is preferred; the other is the fallback). SSH host keys are always
+verified: unknown and changed keys are shown to the user and remembered only on
+accept. The Monitor client verifies TLS against the web PKI or a reviewed,
+pinned leaf certificate, and refuses an agent whose protocol it cannot speak.
 
-## Data persistence: encrypted SQLite
+## Storage
 
-The encrypted SQLite file `store.db` is the App's source of truth for local
-data. `SqliteDb` opens it, configures database encryption, and enables the
-`foreign_keys` pragma.
-
-Data uses one of two shapes:
-
-- **Key-value table `kv(store, key, value, updated_at)`** holds settings and
-  history that do not need relational queries. Values are JSON; values written
-  through `SqliteStore.set` must provide `toJson`.
-- **Entity tables** hold servers, private keys, snippets, port forwards,
-  connection statistics, Agent conversations, and related records. They use
-  columns, foreign keys, constraints, and indexes.
-
-Drift defines the DDL in `lib/data/store/db.dart`. `SqliteDb` manages the
-connection, and store queries remain hand-written and synchronous. Entity
-primary keys are generated IDs; user-provided names are ordinary columns with
-unique constraints. Lists and maps are stored in child tables.
-
-## Dependency injection
-
-Services and stores receive dependencies through three patterns:
-
-1. **Providers**: expose dependencies and state to the UI.
-2. **GetIt**: provide global service instances where service location is appropriate.
-3. **Constructor injection**: pass dependencies explicitly between classes.
-
-## Platform and Rust integration
-
-Flutter supplies the cross-platform UI. Platform integrations provide
-notifications, background services, filesystem access, and other operating
-system features. The App exposes Rust APIs to Dart through `crates/sbm_ffi`
-and flutter_rust_bridge; generated bindings are in `lib/src/rust/`.
-
-`crates/sbm_parser` contains parsing logic shared by the projects.
-`crates/sbm_native` collects metrics for the Monitor on the machine running
-the Monitor. The App does not invoke `sbm_native` on remote servers.
+One encrypted SQLite file, `store.db`, in the directory the Flutter build used,
+so an update keeps its servers, keys, snippets and settings. Schema v43 is the
+last Flutter release's; v44 removes the AI Agent's data. A newer or older file
+than the build understands is refused, never reset.

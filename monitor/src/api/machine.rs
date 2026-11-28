@@ -60,8 +60,6 @@ pub const FEATURES: &[&str] = &[
     "update",
     "notifications",
     "desk", // Compatibility for older Android clients.
-    // Agent mode (`api::agent`): tasks an AI agent runs here.
-    "agent_mode",
     // The monitoring rules firing now (`GET /alerts`, `api::notifications`).
     "alerts",
     // The audit log read back (`GET /audit`, `api::audit_log`).
@@ -70,8 +68,6 @@ pub const FEATURES: &[&str] = &[
     "live",
     // The LK Cloud account the agent is signed in to (`/lkc*`, `api::lkc`).
     "lkc",
-    // API tokens and the MCP endpoint (`/api-tokens`, `/mcp`, `api::mcp`).
-    "mcp",
 ];
 
 /// [`FEATURES`], as `/capabilities` lists them: `lkc` only while it is on

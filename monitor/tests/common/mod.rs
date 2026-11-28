@@ -33,9 +33,7 @@ pub async fn add_owner(db: &SqlitePool) {
 pub async fn owned_state(config: Config) -> Arc<AppState> {
     let db = database().await;
     add_owner(&db).await;
-    let state = AppState::new(Arc::new(config), db);
-    state.agent.reach_this_machine_only();
-    state
+    AppState::new(Arc::new(config), db)
 }
 
 /// For the machine-management endpoints (`api::machine`): an agent with its
@@ -86,8 +84,7 @@ pub mod machine {
         super::add_owner(&db).await;
         let state = AppState::new(Arc::new(config), db);
         // The models and servers the tests run are on loopback.
-        state.agent.reach_this_machine_only();
-        let shared = state.clone();
+            let shared = state.clone();
         let srv = web_test::server(async move |_| {
             let state = shared.clone();
             map_state_factory(Agent(state), App::<Agent>::new().configure(configure_api))

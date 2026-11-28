@@ -260,7 +260,7 @@ App 和 Monitor 采集数据时都不会等待交互式 `sudo` 输入。如果 S
 
 出于安全保护，无论运行账户权限如何，文件 API 均禁止读取 Monitor 自身的敏感文件（包括数据库、`jwt.secret`、`credentials.key`、`config.toml` 及其备份、`.env`、TLS 密钥与证书，以及自定义命令目录）。
 
-Monitor 保存的外部凭据（BMC 与 Proxmox VE 密码、Agent 模式的模型密钥、MCP 令牌、WebDAV 密码）均使用同目录下的 `credentials.key` 加密存储在数据库中。手动迁移 Monitor 时请一并复制数据库和 `credentials.key`；若缺少该密钥，迁移后需重新填写这些凭据。WebDAV 设置备份采用独立的 age 密钥加密，不依赖此文件。
+Monitor 保存的外部凭据（BMC 与 Proxmox VE 密码、WebDAV 密码）均使用同目录下的 `credentials.key` 加密存储在数据库中。手动迁移 Monitor 时请一并复制数据库和 `credentials.key`；若缺少该密钥，迁移后需重新填写这些凭据。WebDAV 设置备份采用独立的 age 密钥加密，不依赖此文件。
 
 ### 从多账号版本升级
 

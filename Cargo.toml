@@ -4,12 +4,19 @@
 #                       collection path only — never used by the SSH-based app
 # - crates/sbm_redfish: Redfish (BMC) client shared by monitor and the app
 # - crates/sbm_virt:   virtualization (libvirt command layer) shared by monitor and the app
-# - crates/sbm_ffi:    flutter_rust_bridge binding layer + cargokit Flutter plugin shell (one directory)
 # - monitor:           headless server-side monitoring and HTTP API
 [workspace]
 resolver = "2"
-members = ["crates/sbm_parser", "crates/sbm_native", "crates/sbm_redfish", "crates/sbm_virt", "crates/sbm_mcp", "crates/sbm_ffi", "monitor"]
-exclude = ["third_party/ironrdp", "packages/fl_pi_llm/fl_pi_llm/rust", ".pub-cache"]
+members = ["crates/sbm_parser", "crates/sbm_store", "crates/sbm_ssh", "crates/sbm_monitor_client", "app", "crates/sbm_native", "crates/sbm_redfish", "crates/sbm_virt", "crates/sbm_remote_desktop", "crates/fl_lkc", "monitor"]
+exclude = ["third_party/ironrdp", ".pub-cache"]
+
+# Debug builds keep line tables only: the monitor alone links ~40 test
+# binaries, and full debug info made `target/` tens of gigabytes.
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+debug = false
 
 [profile.release]
 # Smaller release binaries for the shipped container / native packages
@@ -31,31 +38,14 @@ strip = true
 [profile.release.build-override]
 strip = false
 
-# The one exception, and it is not about size.
-#
-# `sbm_ffi` is linked into the app, where it is one of the few things that can
-# take the process down — and a native crash arrives as a tombstone full of
-# addresses. Stripping here throws away the only thing those addresses can be
-# resolved against, so `crash_native` would be as far as any report ever got.
-#
-# On the platforms this is for, the shipped artifact is not larger. Gradle's
-# `debugSymbolLevel` extracts the symbols and strips the library on its way
-# into the APK; Apple's dSYM has always worked that way, and the copy inside
-# the `.app` carries 25 symbols against the 9664 cargo now emits. The monitor
-# binary is untouched and keeps the workspace setting, since a server-side
-# crash has the host's own tooling and a container image that should stay
-# small.
-#
-# Linux and Windows are the loose end, and the cost is about 1 MB. Neither has
-# an equivalent of `ApplicationExitInfo` or MetricKit, so nothing collects a
-# native crash there automatically, and whether their bundling strips this is
-# not something the Apple/Android paths above tell us. The symbols are still
-# what a core dump or a minidump would be read against, which is why this is
-# left as it is rather than special-cased. If the size matters more than that,
-# the fix is a strip step in those two CI jobs, not a different profile —
-# cargo cannot vary `strip` per target.
-[profile.release.package.sbm_ffi]
+# The app's Android library (`android/app/build.gradle` builds with it).
+# Not stripped here: Gradle's `debugSymbolLevel` keeps the symbol table for
+# native crash reports and strips the library on its way into the APK. Thin
+# LTO keeps the library small without a quarter-hour fat link.
+[profile.release-app]
+inherits = "release"
 strip = false
+lto = "thin"
 
 # The agent's own release profile, used by `monitor-release.yml` and by
 # `monitor/Dockerfile`, and by nothing the app builds.

@@ -329,6 +329,19 @@ impl ServerCertVerifier for CapturingVerifier {
     }
 }
 
+/// A rustls client configuration that accepts exactly [pin]'s leaf (on
+/// `ring`), for any HTTPS client that trusts a reviewed certificate rather
+/// than a CA: the BMC client here, and the app's Monitor client.
+pub fn pinned_tls_config(pin: PinnedCert) -> Result<rustls::ClientConfig, rustls::Error> {
+    let provider = std::sync::Arc::new(rustls::crypto::ring::default_provider());
+    let verifier = std::sync::Arc::new(PinnedVerifier { pin, algorithms: provider.signature_verification_algorithms });
+    Ok(rustls::ClientConfig::builder_with_provider(provider)
+        .with_safe_default_protocol_versions()?
+        .dangerous()
+        .with_custom_certificate_verifier(verifier)
+        .with_no_client_auth())
+}
+
 /// Accepts exactly the pinned leaf, and nothing else — the client's verifier.
 ///
 /// No chain is walked and no validity date is read: a BMC's certificate is

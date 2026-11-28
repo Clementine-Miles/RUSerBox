@@ -82,29 +82,9 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
             // The MCP clients' credentials and global policy (#1681): minted
             // after the password is given again, listed with their use, edited
             // or revoked by id.
-            .service(
-                web::resource("/api-tokens")
-                    .route(web::get().to(crate::api::api_tokens::list))
-                    .route(web::post().to(crate::api::api_tokens::create)),
-            )
-            .service(
-                web::resource("/api-tokens/policy")
-                    .route(web::get().to(crate::api::api_tokens::get_policy))
-                    .route(web::put().to(crate::api::api_tokens::put_policy)),
-            )
-            .service(
-                web::resource("/api-tokens/{id}")
-                    .route(web::put().to(crate::api::api_tokens::update))
-                    .route(web::delete().to(crate::api::api_tokens::revoke)),
-            )
             .route("/status", web::get().to(get_status))
             // The MCP clients' way in (#1681): stateless JSON, one message
             // per POST, behind an API token; GET/DELETE answer 405 per spec.
-            .service(
-                web::resource("/mcp")
-                    .route(web::post().to(crate::api::mcp::post))
-                    .default_service(web::to(crate::api::mcp::method_not_allowed)),
-            )
             .route("/metrics", web::get().to(get_metrics))
             .route("/capabilities", web::get().to(get_capabilities))
             .route("/ws-ticket", web::post().to(issue_ws_ticket))
@@ -236,28 +216,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
             .route("/live/connections/{id}", web::delete().to(crate::api::live::end_connection))
             .route("/live/devices/{id}", web::delete().to(crate::api::live::forget_device))
             .service(
-                web::resource("/agent/flows")
-                    .route(web::get().to(crate::api::agent::list))
-                    .route(web::post().to(crate::api::agent::start)),
-            )
-            .service(
-                web::resource("/agent/flows/{id}")
-                    .route(web::get().to(crate::api::agent::detail))
-                    .route(web::delete().to(crate::api::agent::remove)),
-            )
-            .service(
-                web::resource("/agent/flows/{id}/reply")
-                    .route(web::post().to(crate::api::agent::reply)),
-            )
-            .service(web::resource("/agent/flows/{id}/answer").route(web::post().to(crate::api::agent::answer)))
-            .service(web::resource("/agent/flows/{id}/stop").route(web::post().to(crate::api::agent::stop)))
-            .service(web::resource("/agent/events").route(web::get().to(crate::api::agent::events)))
-            .service(
-                web::resource("/agent/settings")
-                    .route(web::get().to(crate::api::agent::get_settings))
-                    .route(web::put().to(crate::api::agent::put_settings)),
-            )
-            .service(
                 web::resource("/lkc")
                     .route(web::get().to(crate::api::lkc::get))
                     .route(web::delete().to(crate::api::lkc::sign_out)),
@@ -266,46 +224,6 @@ pub fn configure_api(cfg: &mut web::ServiceConfig<Agent>) {
                 web::resource("/lkc/sign-in")
                     .route(web::post().to(crate::api::lkc::start))
                     .route(web::delete().to(crate::api::lkc::cancel)),
-            )
-            .service(web::resource("/agent/choices").route(web::get().to(crate::api::agent::choices)))
-            .service(
-                web::resource("/agent/mcp")
-                    .route(web::get().to(crate::api::agent::get_mcp))
-                    .route(web::put().to(crate::api::agent::put_mcp)),
-            )
-            .service(web::resource("/agent/mcp/oauth/start").route(web::post().to(crate::api::agent::mcp_oauth_start)))
-            .service(web::resource("/agent/mcp/oauth/callback").route(web::get().to(crate::api::agent::mcp_oauth_callback)))
-            .service(web::resource("/agent/mcp/oauth").route(web::delete().to(crate::api::agent::mcp_oauth_forget)))
-            .service(
-                web::resource("/agent/skills")
-                    .route(web::get().to(crate::api::agent::get_skills))
-                    .route(web::post().to(crate::api::agent::install_skill)),
-            )
-            .service(
-                web::resource("/agent/skills/{dir}")
-                    .route(web::put().to(crate::api::agent::put_skill))
-                    .route(web::delete().to(crate::api::agent::delete_skill)),
-            )
-            .service(web::resource("/agent/models").route(web::get().to(crate::api::agent::models)))
-            .service(web::resource("/agent/models/probe").route(web::post().to(crate::api::agent::probe)))
-            .service(
-                web::resource("/agent/permissions")
-                    .route(web::get().to(crate::api::agent::get_permissions))
-                    .route(web::put().to(crate::api::agent::put_permissions)),
-            )
-            .service(web::resource("/agent/search").route(web::post().to(crate::api::agent::search)))
-            .service(web::resource("/agent/search/{id}/task").route(web::post().to(crate::api::agent::adopt_search)))
-            .service(
-                web::resource("/agent/files")
-                    .route(web::post().to(crate::api::agent::upload)),
-            )
-            .service(web::resource("/agent/files/{id}").route(web::delete().to(crate::api::agent::discard)))
-            .service(web::resource("/agent/memory").route(web::get().to(crate::api::agent::memory_list)))
-            .service(
-                web::resource("/agent/memory/file")
-                    .route(web::get().to(crate::api::agent::memory_get))
-                    .route(web::put().to(crate::api::agent::memory_put))
-                    .route(web::delete().to(crate::api::agent::memory_delete)),
             )
             .service(web::resource("/storage").route(web::get().to(crate::api::storage::view)))
             .service(web::resource("/storage/health").route(web::post().to(crate::api::storage::health)))

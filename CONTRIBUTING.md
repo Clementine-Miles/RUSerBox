@@ -43,29 +43,16 @@ Two things that trip the check up:
 
 ### Setup
 
-1. Install [Flutter](https://flutter.dev/docs/get-started/install), and a
-   [Rust](https://rustup.rs) toolchain — part of the status parsing is a Rust
-   crate reached through FFI.
-2. `make deps` — fetch Dart/Flutter dependencies.
-3. `make run` — start the app. `make help` lists everything else.
+1. Install [Rust](https://rustup.rs); `rust-toolchain.toml` pins the version.
+2. For Android: the SDK, build tools and NDK pinned in `android/*-version.txt`,
+   `cargo install cargo-ndk`, Gradle 9.8 and a JDK (17+).
+3. `make help` lists the targets. `make run-desktop` runs the interface in a
+   desktop window while you work on it; `make build-android-debug` builds an
+   APK.
 
 Run `make monitor-dev` to start the Monitor HTTP API on port 3770.
 See [monitor/README.md](monitor/README.md) for the service's installation and
 configuration instructions.
-
-### Code generation
-
-Models use freezed, json_serializable, hive_ce, and riverpod annotations.
-After changing any of them:
-
-```sh
-make gen          # build_runner + gen-l10n
-```
-
-Never edit `*.g.dart` or `*.freezed.dart` by hand; regenerate instead.
-
-After changing `crates/sbm_ffi/src/api`, regenerate the FFI bindings with
-`flutter_rust_bridge_codegen generate`. `lib/src/rust/` is generated too.
 
 ### Formatting
 
@@ -76,13 +63,12 @@ editing.
 ### Checks before you push
 
 ```sh
-make analyze              # flutter analyze lib test
-make test                 # flutter test
-cargo test --workspace    # parser, native sampler, FFI, monitor
+make test           # cargo test --workspace
+make lint           # clippy, warnings denied
+make android-check  # if you touched app/
 ```
 
-`flutter analyze` runs on every pull request; the Rust tests are worth running
-locally if you touched anything under `crates/` or `monitor/`.
+All three run on every pull request (`.github/workflows/checks.yml`).
 
 ### Commit messages
 
@@ -94,7 +80,7 @@ fix: reconnect after the tunnel drops
 docs: describe the CLA check
 opt.: cache the parsed disk list
 rm: drop the unused sensor fallback
-migrate: move network parsing to Rust
+migrate: move network parsing into sbm_parser
 ```
 
 Common prefixes: `feat:`, `fix:`, `docs:`, `opt.:`, `rm:`, `migrate:`,
@@ -103,8 +89,9 @@ English.
 
 ## Translations
 
-New strings go into `lib/l10n/app_en.arb`, then `make gen` regenerates the Dart
-side. Translate by editing `lib/l10n/app_<locale>.arb`.
+Interface strings live in `app/l10n/<locale>.json`. A new string is read with
+`i18n::t("key", "English text")` and added to `en.json`; translate by adding
+the key to the other files.
 
 - Partial translations are fine — send what you have.
 - Machine-translated locales exist (marked in the README) and improvements to

@@ -1,4 +1,5 @@
 pub mod blobs;
+pub mod command;
 pub mod config;
 pub mod config_file;
 pub mod fs_roots;

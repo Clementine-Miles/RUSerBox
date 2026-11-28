@@ -174,7 +174,7 @@ async fn the_password_alone_signs_in() {
     let (status, body) = login(json!({ "password": common::PASSWORD })).await;
     assert_eq!(status, 200);
     let token = body["token"].as_str().unwrap().to_string();
-    let (status, _) = call(&srv, Some(&token), Method::GET, "/api/v1/agent/flows", None).await;
+    let (status, _) = call(&srv, Some(&token), Method::GET, "/api/v1/snippets", None).await;
     assert_eq!(status, 200);
 
     // What an older client sends: the name is not read.
@@ -331,7 +331,7 @@ async fn a_password_change_ends_what_the_old_one_paid_for() {
         .await
         .unwrap();
     let stolen = jwt_issued_ago(10);
-    let (status, _) = call(&srv, Some(&stolen), Method::GET, "/api/v1/agent/flows", None).await;
+    let (status, _) = call(&srv, Some(&stolen), Method::GET, "/api/v1/snippets", None).await;
     assert_eq!(status, 200);
     let (status, body) = call(
         &srv,
@@ -364,12 +364,12 @@ async fn a_password_change_ends_what_the_old_one_paid_for() {
     )
     .await;
     assert_eq!(status, 204);
-    let (status, _) = call(&srv, Some(&stolen), Method::GET, "/api/v1/agent/flows", None).await;
+    let (status, _) = call(&srv, Some(&stolen), Method::GET, "/api/v1/snippets", None).await;
     assert_eq!(status, 401);
     let (status, _) = call(&srv, Some(&paired), Method::GET, "/api/v1/metrics/history", None).await;
     assert_eq!(status, 401, "a watch token paired under the old password goes with it");
     // A token issued now — signing in with the new password — works at once.
-    let (status, _) = call(&srv, Some(&jwt()), Method::GET, "/api/v1/agent/flows", None).await;
+    let (status, _) = call(&srv, Some(&jwt()), Method::GET, "/api/v1/snippets", None).await;
     assert_eq!(status, 200);
     let (status, _) =
         call(&srv, None, Method::POST, "/api/v1/login", Some(json!({ "password": "a-new-password" }))).await;
@@ -413,15 +413,6 @@ async fn a_plaintext_link_only_reads() {
         (Method::GET, "/api/v1/shares", None),
         (Method::PUT, "/api/v1/bmc", Some(json!({ "targets": [] }))),
         (Method::DELETE, "/api/v1/virt/pve", None),
-        (Method::GET, "/api/v1/agent/permissions", None),
-        (Method::PUT, "/api/v1/agent/permissions", Some(json!({}))),
-        (Method::GET, "/api/v1/api-tokens", None),
-        (Method::POST, "/api/v1/api-tokens", Some(json!({ "name": "t", "password": common::PASSWORD }))),
-        (Method::PUT, "/api/v1/api-tokens/1", Some(json!({ "name": "t", "scopes": ["read"] }))),
-        (Method::DELETE, "/api/v1/api-tokens/1", None),
-        (Method::GET, "/api/v1/api-tokens/policy", None),
-        (Method::PUT, "/api/v1/api-tokens/policy", Some(json!({ "scopes": ["read"] }))),
-        (Method::GET, "/api/v1/agent/mcp", None),
         (Method::GET, "/api/v1/container-backups", None),
         (Method::DELETE, "/api/v1/container-backups/schedules/x", None),
         (Method::GET, "/api/v1/monitor-backup", None),
@@ -444,7 +435,7 @@ async fn a_plaintext_link_only_reads() {
     }
 }
 
-/// `test/fixtures/monitor/capabilities_insecure.json`, which the app's and
+/// `monitor/tests/fixtures/capabilities_insecure.json`, which the app's and
 /// the panel's tests read as this answer, against the answer itself: the same
 /// fields of the same kinds, the same `access` and `features`. What depends
 /// on the machine (its readings, platform, version, retention) is only
@@ -465,7 +456,7 @@ async fn the_clients_capabilities_fixture_is_what_a_plaintext_link_gets() {
     assert_eq!(resp.status().as_u16(), 200);
     let real: Value = serde_json::from_slice(&read_body(resp).await).unwrap();
 
-    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../test/fixtures/monitor/capabilities_insecure.json");
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/capabilities_insecure.json");
     let fixture: Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
     let (real, fixture) = (real.as_object().unwrap(), fixture.as_object().unwrap());
 

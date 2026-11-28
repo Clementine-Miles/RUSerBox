@@ -1,12 +1,12 @@
 version: 2
 
-# One group per language, not per directory: `rust`, `flutter`, `web`. What a
+# One group per language, not per directory: `rust`, `web`. What a
 # review of a dependency bump needs is everything that moves together, and for
 # this repository that boundary is the toolchain — four npm directories are one
 # JavaScript upgrade, three of them linked to each other by `file:`.
 #
 # A group can only span the directories of a single `updates` entry, and an
-# entry is one ecosystem. So cargo, pub and npm are three entries and cannot be
+# entry is one ecosystem. So cargo and npm are two entries and cannot be
 # fewer; `directories` is what lets the npm one cover all four at once.
 #
 # `cooldown: default-days: 7` on each of them is the same week that
@@ -34,17 +34,6 @@ updates:
       rust:
         patterns:
           - "*"
-  - package-ecosystem: pub
-    directory: "/"
-    schedule:
-      interval: weekly
-    cooldown:
-      default-days: 7
-    groups:
-      flutter:
-        patterns:
-          - "*"
-
   # Every JavaScript directory in one entry, so a week's upgrade arrives as one
   # PR. The website builds against packages/webui as a `file:` dependency.
   #
@@ -81,19 +70,3 @@ updates:
       github-actions:
         patterns:
           - "*"
-
-  # fl_pi_llm, the LLM layer shared with LLMBox, moves with its own repository
-  # rather than with a release: a bump is the submodule pointer following its
-  # `main` (the `branch` in .gitmodules). Only that submodule — the others are
-  # moved by hand, with the change that needs them. The shortest cooldown
-  # there is: the commits are this project's own, reviewed where they were
-  # made. Left unset it is not none but GitHub's default of 3 days, and 0 is
-  # not accepted (`default-days` is 1 to 90).
-  - package-ecosystem: gitsubmodule
-    directory: "/"
-    schedule:
-      interval: weekly
-    cooldown:
-      default-days: 1
-    allow:
-      - dependency-name: "packages/fl_pi_llm"

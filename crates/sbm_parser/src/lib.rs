@@ -26,7 +26,6 @@ pub mod files;
 pub mod firewall;
 pub mod cron;
 pub mod gpu;
-pub mod inference;
 pub mod iperf;
 pub mod linux;
 pub mod monitor_agent;

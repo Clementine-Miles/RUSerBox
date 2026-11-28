@@ -15,9 +15,7 @@
 //! restores on a machine with another key ([`Sealer::seal_all`]).
 //!
 //! A lost key loses the credentials, not the rest: each one reads as
-//! [`Error::Unreadable`] until it is entered again. Agent mode's chats are
-//! encrypted under a key derived from this one ([`Sealer::derive_key`]):
-//! the same reach, and lost with it.
+//! [`Error::Unreadable`] until it is entered again.
 
 use std::path::{Path, PathBuf};
 use std::sync::{Mutex, OnceLock};
@@ -50,11 +48,6 @@ const fn required(table: &'static str, column: &'static str) -> Field {
 pub const BMC_PASSWORD: Field = field("bmc_target", "password");
 pub const PVE_PASSWORD: Field = field("virt_pve", "password");
 pub const PVE_TOKEN_SECRET: Field = field("virt_pve", "token_secret");
-pub const AGENT_CREDENTIAL: Field = required("agent_credential", "credential");
-pub const AGENT_MCP_HEADERS: Field = required("agent_mcp_server", "headers");
-pub const MCP_OAUTH_CLIENT_SECRET: Field = field("mcp_oauth", "client_secret");
-pub const MCP_OAUTH_ACCESS_TOKEN: Field = required("mcp_oauth", "access_token");
-pub const MCP_OAUTH_REFRESH_TOKEN: Field = field("mcp_oauth", "refresh_token");
 pub const BACKUP_PASSWORD: Field = field("monitor_backup", "password");
 pub const LKC_ACCESS_TOKEN: Field = required("lkc_session", "access_token");
 pub const LKC_REFRESH_TOKEN: Field = field("lkc_session", "refresh_token");
@@ -65,11 +58,6 @@ pub const FIELDS: &[Field] = &[
     BMC_PASSWORD,
     PVE_PASSWORD,
     PVE_TOKEN_SECRET,
-    AGENT_CREDENTIAL,
-    AGENT_MCP_HEADERS,
-    MCP_OAUTH_CLIENT_SECRET,
-    MCP_OAUTH_ACCESS_TOKEN,
-    MCP_OAUTH_REFRESH_TOKEN,
     BACKUP_PASSWORD,
     LKC_ACCESS_TOKEN,
     LKC_REFRESH_TOKEN,
@@ -108,9 +96,9 @@ pub struct Sealer {
     loading: Mutex<()>,
 }
 
-/// The key as read, and as ring takes it.
+/// The key as ring takes it. The bytes read from the file are zeroized once
+/// it is built.
 struct Keys {
-    raw: Zeroizing<[u8; KEY_LEN]>,
     aead: LessSafeKey,
 }
 
@@ -169,19 +157,11 @@ impl Sealer {
             None => random_key()?,
         };
         let aead = LessSafeKey::new(UnboundKey::new(&AES_256_GCM, &raw[..]).expect("a 32-byte key"));
-        Ok(self.keys.get_or_init(|| Keys { raw, aead }))
+        Ok(self.keys.get_or_init(|| Keys { aead }))
     }
 
     fn key(&self) -> Result<&LessSafeKey, Error> {
         Ok(&self.keys()?.aead)
-    }
-
-    /// A key of [context]'s own from this database's, for what is kept
-    /// encrypted beside the database under this one key file (Agent mode's
-    /// chats): unreadable without it, as the sealed columns are, and lost
-    /// with it. [context] stays fixed for the life of what it encrypts.
-    pub fn derive_key(&self, context: &str) -> Result<Zeroizing<[u8; KEY_LEN]>, Error> {
-        Ok(Zeroizing::new(blake3::derive_key(context, &self.keys()?.raw[..])))
     }
 
     pub fn seal(&self, field: Field, plain: &str) -> Result<String, Error> {
@@ -378,7 +358,7 @@ mod tests {
         let db = dir.path().join("monitor.db");
         assert!(matches!(Sealer::beside(&db).ready_existing(), Err(Error::Key { .. })), "the CLI makes none");
         assert_eq!(std::fs::read_dir(dir.path()).unwrap().count(), 0);
-        let sealed = Sealer::beside(&db).seal(AGENT_CREDENTIAL, "k").unwrap();
+        let sealed = Sealer::beside(&db).seal(BMC_PASSWORD, "k").unwrap();
         assert!(Sealer::beside(&db).ready_existing().is_ok());
         let path = Sealer::key_path_beside(&db);
         #[cfg(unix)]
@@ -386,24 +366,12 @@ mod tests {
             use std::os::unix::fs::PermissionsExt;
             assert_eq!(std::fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o600);
         }
-        assert_eq!(Sealer::beside(&db).open(AGENT_CREDENTIAL, &sealed).unwrap(), "k");
+        assert_eq!(Sealer::beside(&db).open(BMC_PASSWORD, &sealed).unwrap(), "k");
         assert_eq!(std::fs::read_dir(dir.path()).unwrap().count(), 1, "no temporary file left");
 
         std::fs::write(&path, "").unwrap();
         assert!(matches!(Sealer::beside(&db).ready(), Err(Error::Key { .. })), "a damaged key is not replaced");
         assert_eq!(std::fs::read_to_string(&path).unwrap(), "");
-    }
-
-    #[test]
-    fn a_derived_key_follows_the_key_file() {
-        let dir = tempfile::tempdir().unwrap();
-        let db = dir.path().join("monitor.db");
-        let chats = Sealer::beside(&db).derive_key("chats").unwrap();
-        assert_eq!(*Sealer::beside(&db).derive_key("chats").unwrap(), *chats, "the same file, the same key");
-        assert_ne!(*Sealer::beside(&db).derive_key("other").unwrap(), *chats, "a context of its own");
-        let file = std::fs::read_to_string(Sealer::key_path_beside(&db)).unwrap();
-        assert_ne!(file.trim(), hex::encode(&chats[..]), "never the key file itself");
-        assert_ne!(*Sealer::temporary().derive_key("chats").unwrap(), *chats);
     }
 
     #[tokio::test]
@@ -434,7 +402,7 @@ mod tests {
     async fn seal_all_and_unseal_all_round_trip() {
         let db = sqlx::sqlite::SqlitePoolOptions::new().max_connections(1).connect("sqlite::memory:").await.unwrap();
         crate::db::database::MIGRATOR.run(&db).await.unwrap();
-        sqlx::query("INSERT INTO agent_credential (provider_id, credential, updated_at) VALUES ('a', '{\"key\":\"x\"}', ''), ('b', '', '')")
+        sqlx::query("INSERT INTO bmc_target (id, name, url, username, password, position, updated_at) VALUES ('a', 'a', 'https://a', 'root', '{\"key\":\"x\"}', 0, ''), ('b', 'b', 'https://b', 'root', '', 1, '')")
             .execute(&db)
             .await
             .unwrap();
@@ -442,10 +410,10 @@ mod tests {
         let mut conn = db.acquire().await.unwrap();
         assert_eq!(s.seal_all(&mut conn, "main").await.unwrap(), 1);
         assert_eq!(s.seal_all(&mut conn, "main").await.unwrap(), 0, "a sealed value is left as it is");
-        let stored: String = sqlx::query_scalar("SELECT credential FROM agent_credential WHERE provider_id = 'a'").fetch_one(&mut *conn).await.unwrap();
-        assert_eq!(s.open(AGENT_CREDENTIAL, &stored).unwrap(), "{\"key\":\"x\"}");
+        let stored: String = sqlx::query_scalar("SELECT password FROM bmc_target WHERE id = 'a'").fetch_one(&mut *conn).await.unwrap();
+        assert_eq!(s.open(BMC_PASSWORD, &stored).unwrap(), "{\"key\":\"x\"}");
         assert_eq!(s.unseal_all(&mut conn, "main").await.unwrap(), 1);
-        let stored: String = sqlx::query_scalar("SELECT credential FROM agent_credential WHERE provider_id = 'a'").fetch_one(&mut *conn).await.unwrap();
+        let stored: String = sqlx::query_scalar("SELECT password FROM bmc_target WHERE id = 'a'").fetch_one(&mut *conn).await.unwrap();
         assert_eq!(stored, "{\"key\":\"x\"}");
     }
 }

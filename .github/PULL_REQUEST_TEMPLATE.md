@@ -13,7 +13,7 @@ One comment is enough. See CONTRIBUTING.md for details.
 
 ## Checklist
 
-- [ ] `make analyze` and `make test` pass
-- [ ] `make gen` was run, if any model / ARB file changed
-- [ ] `cargo test --workspace` passes, if anything under `crates/` or `monitor/` changed
+- [ ] `make test` and `make lint` pass
+- [ ] `make android-check` passes, if anything under `app/` changed
+- [ ] `make build-android-debug` builds, if anything under `android/` changed
 - [ ] No formatter was run over untouched code

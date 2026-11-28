@@ -67,5 +67,5 @@ pub const UPSTREAM_COMMIT: &str = "$commit";
 pub const UPSTREAM_VERSION: &str = "$version";
 pub const SHA256_HEX: &str = "$digest";
 
-Then run: cargo test -p server_box_monitor --test benchmark_asset && flutter test test/unit/benchmark/yabs_asset_test.dart
+Then run: cargo test -p server_box_monitor --test benchmark_asset
 EOF
