@@ -85,7 +85,8 @@ void main() {
     expect(find.text('EU'), findsOneWidget);
     expect(
       find.text(
-        '${const TerminalStatusHeadline(state: ProgramState.working).stateLabel} 40%',
+        // `EU` names no program, so it shows its parent's.
+        '${const TerminalStatusHeadline(state: ProgramState.working).stateLabel} 40% · cargo',
       ),
       findsOneWidget,
     );

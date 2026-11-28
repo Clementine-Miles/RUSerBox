@@ -1,3 +1,4 @@
+import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,9 +24,14 @@ void main() {
     getIt.registerSingleton<SettingStore>(setting);
     getIt.registerSingleton<PveStore>(PveStore());
     FlutterSecureStorage.setMockInitialValues({});
+    // The intro asks the platform whether biometrics exist before it is built,
+    // and no platform answers in a widget test: the app would stay on its
+    // loading spinner.
+    LocalAuth.isAvailForTest = () async => false;
   });
 
   tearDown(() async {
+    LocalAuth.isAvailForTest = null;
     await getIt.reset();
     await closeTestDb();
   });

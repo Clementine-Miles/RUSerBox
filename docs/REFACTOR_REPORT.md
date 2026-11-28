@@ -43,7 +43,7 @@ libraries, all AArch64. `libsbm_ffi.so` 14.3 MB, `libfl_lib_ffi.so` 7.4 MB,
 | Check | Result |
 | --- | --- |
 | `flutter analyze lib test`, `flutter analyze` (fl_lib) | no issues |
-| `flutter test` (all non-e2e files) | 3618 passed, 11 skipped, 11 failed on the full run; 7 of those were tests of removed desktop/Windows behaviour, now removed or moved to the Android path. The 4 left: `local_file_backend_test` (expects a permission error, but the sandbox runs as root), `pve_backend_test` upload (the sandbox's HTTP proxy rewrites the multipart body), `app_locale_test` (timing; passes on rerun), `terminal_status_sheet_test` (code and test unchanged since baseline) |
+| `flutter test` (all non-e2e files) | 3618 passed, 11 skipped, 11 failed on the full run; 7 of those were tests of removed desktop/Windows behaviour, now removed or moved to the Android path. Two more were red on the baseline as well and are fixed: `app_locale_test` (the intro waited on an unmocked biometrics call) and `terminal_status_sheet_test` (dismissing a finished record also cleared the running ones under it). The 2 left fail only in this sandbox and pass in CI: `local_file_backend_test` (expects a permission error, but the sandbox runs as root) and `pve_backend_test` upload (the sandbox's HTTP proxy rewrites the multipart body) |
 | `cargo test --workspace` | all pass except `sbm_virt::probe_finds_pve_and_containers`, which fails only inside a Docker container (the probe correctly sees `/.dockerenv`); the crate was not changed |
 | `cargo test` fl_lib Rust workspace | pass (120 tests) |
 | `cargo clippy --workspace --all-targets -D warnings` | clean |
